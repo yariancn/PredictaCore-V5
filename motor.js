@@ -6,7 +6,7 @@ async function llamarIA(instruccion, prompt) {
 
     try {
         const r = await axios.post('https://api.x.ai/v1/chat/completions', {
-            // MODELO IDENTIFICADO: Sincronizado con tu consola de xAI
+            // ESTE ES EL NOMBRE QUE VISTE EN TU CONSOLA
             model: "grok-4-latest", 
             messages: [
                 { role: "system", content: instruccion },
