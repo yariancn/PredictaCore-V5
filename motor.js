@@ -6,17 +6,23 @@ async function llamarIA(instruccion, prompt) {
 
     try {
         const r = await axios.post('https://api.x.ai/v1/chat/completions', {
-            // CAMBIO: Usamos 'grok-2' que es el estándar de alta gama actual
-            model: "grok-2", 
-            messages: [{ role: "system", content: instruccion }, { role: "user", content: prompt }],
-            temperature: 0.1
+            // MODELO IDENTIFICADO: Sincronizado con tu consola de xAI
+            model: "grok-4-latest", 
+            messages: [
+                { role: "system", content: instruccion },
+                { role: "user", content: prompt }
+            ],
+            temperature: 0.1,
+            stream: false
         }, { 
-            headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+            headers: { 
+                'Authorization': `Bearer ${key}`, 
+                'Content-Type': 'application/json' 
+            }, 
             timeout: 90000 
         });
         return r.data.choices[0].message.content;
     } catch (e) {
-        // Si 'grok-2' falla, el sistema intentará reportar el motivo exacto
         const detail = e.response ? JSON.stringify(e.response.data) : e.message;
         throw new Error("XAI_FAIL: " + detail);
     }
