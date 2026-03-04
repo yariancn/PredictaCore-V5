@@ -5,7 +5,7 @@ function getHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PredictaCore Titán v20.0</title>
+        <title>PredictaCore Titán v23.5</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
         <style>
@@ -21,18 +21,18 @@ function getHTML() {
             <header class="mb-12 border-b border-zinc-800 pb-6 flex justify-between items-end">
                 <div>
                     <h1 class="text-4xl font-bold tracking-tighter text-white">PREDICTACORE <span class="gold-text italic">TITÁN</span></h1>
-                    <p class="text-zinc-500 text-[10px] mt-2 uppercase tracking-[0.3em] text-emerald-500 font-bold">Auditoría Forense Universal de Alta Gama</p>
+                    <p class="text-zinc-500 text-[10px] mt-2 uppercase tracking-[0.3em] text-emerald-500 font-bold italic text-glow">Estatus: Escaneo Externo Activo</p>
                 </div>
-                <div class="text-right text-[10px] text-zinc-600 font-mono uppercase tracking-widest">v20.0_System_Live</div>
+                <div class="text-right text-[10px] text-zinc-600 font-mono uppercase tracking-widest text-emerald-500">v23.5_GLOBAL_SEARCH_ENABLED</div>
             </header>
 
             <section class="terminal-box p-8 rounded-xl mb-12 shadow-2xl">
                 <div class="flex flex-col gap-6">
-                    <label class="text-[10px] text-zinc-500 uppercase tracking-widest ml-1">Ingresa el DNA del Activo (URL o Concepto)</label>
-                    <textarea id="targetData" placeholder="Ej: oxyhyperbaric.com" 
-                              class="bg-zinc-900 border border-zinc-800 rounded-lg p-5 w-full text-white focus:outline-none focus:border-gold h-24 transition-all"></textarea>
-                    <button onclick="iniciar()" id="btnRun" class="bg-emerald-600 hover:bg-emerald-400 text-black font-black py-5 px-8 rounded-lg transition-all text-sm tracking-[0.2em] uppercase shadow-lg shadow-emerald-900/20">
-                        EJECUTAR DISECCIÓN FORENSE
+                    <label class="text-[10px] text-zinc-500 uppercase tracking-widest ml-1 font-bold">DNA del Activo (Realizaremos un escaneo de visibilidad en Google)</label>
+                    <textarea id="targetData" placeholder="Ej: oxygengdl.com" 
+                              class="bg-zinc-900 border border-zinc-800 rounded-lg p-5 w-full text-white focus:outline-none focus:border-gold h-24 transition-all text-lg"></textarea>
+                    <button onclick="iniciar()" id="btnRun" class="bg-emerald-600 hover:bg-emerald-400 text-black font-black py-5 px-8 rounded-lg transition-all text-sm tracking-[0.2em] uppercase shadow-lg shadow-emerald-900/40">
+                        EJECUTAR DISECCIÓN Y BÚSQUEDA
                     </button>
                 </div>
             </section>
@@ -43,15 +43,15 @@ function getHTML() {
 
         <script>
             const etapas = [
-                { id: 'INTRO', title: '1. MANIFIESTO ESTRATÉGICO' },
-                { id: 'GEMELOS', title: '2. CONSENSO DE GEMELOS SINTÉTICOS' },
-                { id: 'SCORECARD', title: '3. SCORECARD DETALLADO' },
-                { id: 'BENCHMARK', title: '4. BENCHMARK COMPETITIVO' },
-                { id: 'SWOT', title: '5. ANÁLISIS SWOT ESTRATÉGICO' },
-                { id: 'WISHLIST', title: '6. WISHLIST DE GEMELOS' },
-                { id: 'FUGAS', title: '7. LAS 15 FUGAS DE CAPITAL' },
+                { id: 'INTRO', title: '1. MANIFIESTO Y VISIBILIDAD' },
+                { id: 'GEMELOS', title: '2. PERFILES PSICOLÓGICOS' },
+                { id: 'SCORECARD', title: '3. SCORECARD DE DESEMPEÑO REAL' },
+                { id: 'BENCHMARK', title: '4. ANÁLISIS DE COMPETENCIA LOCAL' },
+                { id: 'SWOT', title: '5. MAPA DE GUERRA (FODA)' },
+                { id: 'WISHLIST', title: '6. LO QUE EL CLIENTE EXIGE ENCONTRAR' },
+                { id: 'FUGAS', title: '7. LAS 15 FUGAS DE DINERO (WEB + GOOGLE)' },
                 { id: 'ACCIONES', title: '8. LAS 15 ACCIONES TÁCTICAS' },
-                { id: 'HERRAMIENTAS', title: '9. HERRAMIENTAS DE MEJORA' },
+                { id: 'HERRAMIENTAS', title: '9. HERRAMIENTAS DE ESCALA' },
                 { id: 'OMNI', title: '10. BLOQUES DE AUTORIDAD Y RUTA' }
             ];
 
@@ -65,7 +65,7 @@ function getHTML() {
                 
                 btn.disabled = true;
                 contenedor.innerHTML = "";
-                status.innerText = "Sincronizando Gemelos Sintéticos...";
+                status.innerText = "SALIENDO A GOOGLE PARA ESCANEAR REPUTACIÓN...";
 
                 try {
                     const resDna = await fetch('/get-dna', {
@@ -76,10 +76,10 @@ function getHTML() {
                     const { dna } = await resDna.json();
                     
                     for (const etapa of etapas) {
-                        status.innerText = "Extrayendo: " + etapa.id;
+                        status.innerText = "DISECCIONANDO: " + etapa.title;
                         const div = document.createElement('div');
-                        div.className = "terminal-box p-10 rounded-xl border-l-4 border-zinc-800 animate-pulse mb-10";
-                        div.innerHTML = "<h3 class='gold-text font-bold mb-6 uppercase text-xs tracking-widest'>" + etapa.title + "</h3><div class='text-zinc-700 text-sm italic'>Analizando flujos de capital...</div>";
+                        div.className = "terminal-box p-10 rounded-xl border-l-4 border-zinc-800 animate-pulse mb-10 shadow-xl";
+                        div.innerHTML = "<h3 class='gold-text font-bold mb-6 uppercase text-xs tracking-widest'>" + etapa.title + "</h3><div class='text-zinc-700 text-sm italic font-mono'>Consultando fuentes externas y datos forenses...</div>";
                         contenedor.appendChild(div);
 
                         const res = await fetch('/diseccion', {
@@ -92,14 +92,15 @@ function getHTML() {
                         div.classList.remove('animate-pulse', 'border-zinc-800');
                         div.classList.add('border-gold');
                         div.innerHTML = "<h3 class='gold-text font-bold mb-8 uppercase text-xs tracking-[0.3em]'>" + etapa.title + "</h3>" + 
-                                       "<div class='prose prose-invert max-w-none text-zinc-300 leading-relaxed whitespace-pre-wrap text-[15px]'>" + data.content + "</div>";
+                                       "<div class='prose prose-invert max-w-none text-zinc-300 leading-relaxed whitespace-pre-wrap text-[16px]'>" + data.content + "</div>";
                         
                         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                     }
-                    status.innerText = "AUDITORÍA COMPLETADA. ACTIVO DISECCIONADO.";
+                    status.innerText = "AUDITORÍA COMPLETADA CON DATOS DE GOOGLE.";
+                    status.className = "text-[10px] font-mono text-emerald-500 mb-8 px-2 text-center uppercase tracking-[0.4em]";
                     btn.disabled = false;
                 } catch (e) {
-                    status.innerText = "FALLO CRÍTICO: " + e.message;
+                    status.innerText = "FALLO EN EL ESCANEO EXTERNO: " + e.message;
                     btn.disabled = false;
                 }
             }
