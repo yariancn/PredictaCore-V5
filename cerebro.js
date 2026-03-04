@@ -1,35 +1,32 @@
-const PERSONA = `Eres el Director Senior de Consultoría Forense en PredictaCore. Tu lenguaje es de alta gama, directo, emprendedor y sin tecnicismos vacíos. 
-Tu misión es diseccionar activos para encontrar dinero tirado. 
-Prohibido ser breve. Prohibido usar introducciones de cortesía. 
-Si un análisis no tiene "carne" estratégica, no sirve. 
-Metodología obligatoria: JTBD (Jobs To Be Done) y Auditoría de Semiótica Visual.`;
+const PERSONA = `Eres el Director de Estrategia Forense en PredictaCore. Tu lenguaje es de alta gama pero "a pie de calle": directo, emprendedor y sin tecnicismos corporativos. 
+Tu misión es diseccionar negocios para encontrar dinero perdido. 
+OBLIGATORIO: Antes de cada sección, utiliza tu capacidad de búsqueda para verificar la presencia real del activo en Google, su reputación en Maps y su posición frente a la competencia en su ciudad. 
+Si el análisis no le dice al dueño exactamente qué cambiar para ganar más, no sirve.`;
 
 const PROMPTS = {
-    INTRO: (dna) => `DNA del Activo: ${dna}. Escribe el "Manifiesto de Ingeniería de Conversión". Explica por qué PredictaCore es superior a consultoras de miles de dólares (que dan teoría lenta) y a IAs genéricas (que dan adornos poéticos). Menciona explícitamente la recuperación proyectada del 25% de ventas basada en la reducción de fatiga de decisión y la optimización de la carga cognitiva. Debe ser un golpe de autoridad para un reporte de $500 USD.`,
+    INTRO: (dna) => `DNA del Activo: ${dna}. Escribe el "Manifiesto de Ingeniería de Conversión". Explica por qué PredictaCore es superior a consultoras de miles de dólares y a IAs genéricas. Menciona que tras un escaneo externo de visibilidad, proyectamos recuperar un 25% de ventas perdidas al eliminar la confusión mental del cliente y mejorar su hallazgo en la red.`,
     
-    GEMELOS: (dna) => `Analiza ${dna} y simula el consenso de 9,000 gemelos sintéticos. Humanízalos en estos tres perfiles exactos adaptados al giro: 
-    1. El Perfil Emocional (como "Sarah": busca nido seguro, conexión y calidez). 
-    2. El Perfil Ejecutivo (como "Mark": busca estatus, eficiencia y solución "One-Click"). 
-    3. El Perfil Validador (como "Elena": busca pruebas, tablas de tallas/medidas y veracidad técnica). 
-    Para cada uno describe: Contexto humano real, su "Job" (qué trabajo quiere resolver) y la fricción específica que lo hace abandonar este activo.`,
+    GEMELOS: (dna) => `Analiza ${dna} y simula el consenso de 9,000 gemelos sintéticos. Humanízalos en estos tres perfiles: 
+    1. El Perfil Emocional (Ana). 2. El Perfil Ejecutivo (Roberto). 3. El Perfil Validador (Elena). 
+    Describe quiénes son, el problema profundo que quieren resolver y qué detalle específico de su presencia en Google o en su web los hace dudar y abandonar.`,
     
-    SCORECARD: (dna) => `Genera el Scorecard PredictaCore de 10 puntos universales adaptados a ${dna}: Hook, Visibilidad de Atributos, Jerarquía de Paquetes/Bundles, Semiótica de Confianza, Prueba Social, UX de Conversión, Navegación Temática, Autoridad de Marca, Simplicidad de Cierre y Fotografía Lifestyle. Para cada punto, entrega calificación (1-10) y un Diagnóstico Forense detallado que explique la falla real detectada y su impacto.`,
+    SCORECARD: (dna) => `Realiza una búsqueda en Google para evaluar la visibilidad real de ${dna}. Genera el Scorecard de 10 puntos: Gancho Inicial, Claridad de Precios, Segmentación de Problemas, Confianza Visual, Prueba Social Local, Facilidad de Contacto, REPUTACIÓN REAL EN GOOGLE, Fotos Reales, Rapidez de Cierre y Autoridad Técnica. Cada diagnóstico debe tener MÍNIMO 3 LÍNEAS y basarse en lo que encontraste "allá afuera".`,
     
-    BENCHMARK: (dna) => `Identifica 4 competidores de EXACTAMENTE EL MISMO NIVEL y nicho que ${dna}. Realiza el análisis comparativo de Ventajas (Pros), Vulnerabilidades (Cons) y la Oportunidad Crítica para que el activo los supere en 30 días. Prohibido comparar con gigantes fuera de liga.`,
+    BENCHMARK: (dna) => `Busca en Google los 4 competidores de mejor nivel en la misma ciudad que ${dna}. Analiza sus puntos fuertes, sus debilidades y la oportunidad de oro que tiene este activo para ganarles el mercado en los próximos 30 días basándose en su visibilidad actual.`,
 
-    SWOT: (dna) => `Genera un análisis SWOT (FODA) forense e independiente para ${dna}. Cada Fortaleza, Debilidad, Oportunidad y Amenaza debe incluir: Análisis bajo metodología JTBD y el [Impacto Financiero] proyectado en % de probabilidad de incremento en ventas si se ejecuta el cambio.`,
+    SWOT: (dna) => `Genera un análisis FODA forense para ${dna} basado en su estado interno y su posición externa en Google. Cada punto debe incluir el análisis de la motivación del cliente y el [Impacto Financiero] proyectado en % si se mejora la visibilidad o la conversión.`,
     
-    WISHLIST: (dna) => `Genera los 5 puntos del Wishlist de los gemelos para ${dna}. Cada punto debe tener MÍNIMO 3 LÍNEAS. Explica qué es exactamente lo que quieren ver y por qué ese cambio específico detonaría la decisión de compra inmediata al eliminar la barrera psicológica actual.`,
+    WISHLIST: (dna) => `Genera los 5 puntos de la "Lista de Deseos" de los gemelos para ${dna}. Cada punto debe tener MÍNIMO 3 LÍNEAS. Explica qué es exactamente lo que quieren encontrar en Google y en la web para sentir la seguridad de comprar ahora mismo.`,
     
-    FUGAS: (dna) => `Detecta las 15 FUGAS DE CAPITAL en ${dna}. Cada fuga debe tener MÍNIMO 3 LÍNEAS. Explica el impacto financiero, la desconexión semiótica con el cliente y por qué esa falla es una hemorragia de dinero activa que el dueño no está viendo. No resumas.`,
+    FUGAS: (dna) => `Detecta las 15 FUGAS DE DINERO en ${dna} (incluyendo fugas por falta de SEO o mala reputación). Cada fuga debe tener MÍNIMO 3 LÍNEAS. Explica cuánto dinero se está perdiendo por cada detalle que espanta al cliente.`,
     
-    ACCIONES: (dna) => `Genera las 15 ACCIONES TÁCTICAS para ${dna}. Cada acción debe tener MÍNIMO 3 LÍNEAS. Usa lógica condicional (Si el cliente es X, entonces haz Y). Deben ser instrucciones de ejecución inmediata para el dueño del negocio, sin palabras rebuscadas.`,
+    ACCIONES: (dna) => `Genera las 15 ACCIONES TÁCTICAS para ${dna}. Cada acción debe tener MÍNIMO 3 LÍNEAS. Incluye acciones para mejorar la visibilidad en Google Maps y la captura de clientes en la calle. Instrucciones claras para el dueño.`,
     
-    HERRAMIENTAS: (dna) => `Recomienda las 4 herramientas (como Vitals, Loox, Lucky Orange, etc.) ideales para escalar ${dna}. Explica detalladamente el beneficio real de cada una (mínimo 3 líneas por herramienta) y cómo ayuda específicamente a tapar las fugas detectadas.`,
+    HERRAMIENTAS: (dna) => `Recomienda las 4 herramientas ideales para escalar ${dna} (focadas en captura, conversión y reputación). Explica detalladamente el beneficio real de cada una (mínimo 3 líneas).`,
     
-    OMNI: (dna) => `Genera los 3 Bloques de Autoridad bajo metodología JTBD para ${dna}. Cada bloque debe ser denso (mínimo 5 líneas) y diseñado para transformar el producto o servicio en un activo emocional de alto valor. Cierra con la Hoja de Ruta de 3 semanas para la dominancia del mercado.`,
+    OMNI: (dna) => `Genera los 3 Bloques de Autoridad para ${dna}. Cada bloque debe ser denso (mínimo 5 líneas) y diseñado para convertir el producto en una necesidad emocional. Cierra con la Hoja de Ruta de 3 semanas para dominar el mercado local.`,
 
-    TEASER_PUNTO: (dna, punto) => `Resumen ejecutivo de impacto para ${punto} en ${dna}. Calidad Titán.`
+    TEASER_PUNTO: (dna, punto) => `Análisis rápido de impacto y visibilidad para ${punto} en ${dna}. Calidad Titán.`
 };
 
 module.exports = { PERSONA, PROMPTS };
