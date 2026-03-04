@@ -57,20 +57,16 @@ function getHTML() {
                 output.innerText = "Iniciando protocolos de disección...";
 
                 try {
-                    // Paso 1: ADN
                     const resDna = await fetch('/get-dna', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ targetData: url })
                     });
                     const { dna } = await resDna.json();
-                    
                     output.innerText = "ADN obtenido. Procesando Inteligencia...";
 
-                    // Paso 2: Ciclo de Etapas
                     for (const etapa of etapas) {
                         btn.innerText = "GENERANDO: " + etapa;
-                        output.innerText = "Solicitando análisis para " + etapa + "...";
                         
                         const section = document.createElement('div');
                         section.className = "terminal-box p-8 rounded-lg animate-pulse border-l-4 border-emerald-900";
@@ -84,7 +80,6 @@ function getHTML() {
                         });
 
                         const data = await res.json();
-                        
                         if(data.error) throw new Error(data.error);
 
                         section.classList.remove('animate-pulse', 'border-emerald-900');
@@ -94,10 +89,10 @@ function getHTML() {
                     }
 
                     btn.innerText = "ANÁLISIS COMPLETADO";
-                    output.innerText = "Misión cumplida. Datos listos.";
+                    output.innerText = "Misión cumplida.";
+                    btn.disabled = false;
 
                 } catch (e) {
-                    console.error(e);
                     output.innerText = "ERROR: " + e.message;
                     btn.disabled = false;
                     btn.innerText = "REINTENTAR";
@@ -108,9 +103,4 @@ function getHTML() {
     </html>`;
 }
 
-module.exports = { getHTML };                } catch(e) { alert("Error de conexión."); }
-                finally { document.getElementById('loader').classList.add('hidden'); }
-            }
-        </script></body></html>`;
-}
 module.exports = { getHTML };
