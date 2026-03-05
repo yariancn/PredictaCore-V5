@@ -1,5 +1,4 @@
 const express = require('express');
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { PERSONA, PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
 
@@ -8,35 +7,46 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// CONFIGURACIÓN DE MOTOR ÚNICO
-const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-// Usamos el alias 'latest' para asegurar que encuentre la versión activa en 2026
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-
 app.get('/', (req, res) => {
     res.send(getHTML());
 });
 
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
-    
-    if (!dna || !etapaId) {
-        return res.status(400).json({ content: "Error: Faltan parámetros." });
+    const api_key = process.env.API_KEY;
+
+    if (!api_key) {
+        return res.status(500).json({ content: "Error: No se detectó la API_KEY en Railway." });
     }
 
-    const promptFinal = `${PERSONA}\n\nACTIVO BAJO ANÁLISIS: ${dna}\n\nFASE ESPECÍFICA: ${PROMPTS[etapaId](dna)}`;
+    const promptFinal = `${PERSONA}\n\nACTIVO BAJO ANÁLISIS: ${dna}\n\nFASE: ${PROMPTS[etapaId](dna)}`;
 
     try {
-        const result = await model.generateContent(promptFinal);
-        const response = await result.response;
-        const text = response.text();
-        res.json({ content: text });
+        // Llamada DIRECTA a la API de Google (Saltando el SDK problemático)
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${api_key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: promptFinal }] }]
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+            throw new Error(data.error.message);
+        }
+
+        // Extraemos el texto del Oro Molido
+        const textOutput = data.candidates[0].content.parts[0].text;
+        res.json({ content: textOutput });
+
     } catch (error) {
-        console.error("FALLO CRÍTICO EN " + etapaId + ":", error.message);
+        console.error(`FALLO FORENSE EN ${etapaId}:`, error.message);
         res.status(500).json({ content: "Error de comunicación con el núcleo técnico. El sistema continúa..." });
     }
 });
 
 app.listen(port, () => {
-    console.log("PredictaCore Titán v33.6 activo en puerto " + port);
+    console.log(`PredictaCore Titán v33.7 [DIRECT-CORE] activo en puerto ${port}`);
 });
