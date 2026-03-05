@@ -5,7 +5,7 @@ function getHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PredictaCore Titán v23.5</title>
+        <title>PredictaCore Titán v24.0</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
         <style>
@@ -16,43 +16,43 @@ function getHTML() {
             .font-mono { font-family: 'JetBrains Mono', monospace; }
         </style>
     </head>
-    <body class="p-4 md:p-8">
+    <body class="p-4 md:p-12">
         <div class="max-w-6xl mx-auto">
-            <header class="mb-12 border-b border-zinc-800 pb-6 flex justify-between items-end">
+            <header class="mb-16 border-b border-zinc-800 pb-8 flex justify-between items-end">
                 <div>
-                    <h1 class="text-4xl font-bold tracking-tighter text-white">PREDICTACORE <span class="gold-text italic">TITÁN</span></h1>
-                    <p class="text-zinc-500 text-[10px] mt-2 uppercase tracking-[0.3em] text-emerald-500 font-bold italic text-glow">Estatus: Escaneo Externo Activo</p>
+                    <h1 class="text-4xl font-bold tracking-tighter text-white">PREDICTACORE <span class="gold-text italic text-3xl">TITÁN</span></h1>
+                    <p class="text-zinc-500 text-[10px] mt-2 uppercase tracking-[0.4em] font-bold">Unidad de Auditoría Forense Estratégica</p>
                 </div>
-                <div class="text-right text-[10px] text-zinc-600 font-mono uppercase tracking-widest text-emerald-500">v23.5_GLOBAL_SEARCH_ENABLED</div>
+                <div class="text-right text-[10px] text-zinc-600 font-mono uppercase tracking-widest text-emerald-600">v24.0_SYSTEM_SECURE</div>
             </header>
 
-            <section class="terminal-box p-8 rounded-xl mb-12 shadow-2xl">
+            <section class="terminal-box p-10 rounded-xl mb-16 shadow-2xl">
                 <div class="flex flex-col gap-6">
-                    <label class="text-[10px] text-zinc-500 uppercase tracking-widest ml-1 font-bold">DNA del Activo (Realizaremos un escaneo de visibilidad en Google)</label>
-                    <textarea id="targetData" placeholder="Ej: oxygengdl.com" 
-                              class="bg-zinc-900 border border-zinc-800 rounded-lg p-5 w-full text-white focus:outline-none focus:border-gold h-24 transition-all text-lg"></textarea>
-                    <button onclick="iniciar()" id="btnRun" class="bg-emerald-600 hover:bg-emerald-400 text-black font-black py-5 px-8 rounded-lg transition-all text-sm tracking-[0.2em] uppercase shadow-lg shadow-emerald-900/40">
-                        EJECUTAR DISECCIÓN Y BÚSQUEDA
+                    <label class="text-[10px] text-zinc-500 uppercase tracking-[0.2em] font-bold ml-1">DNA DEL ACTIVO (URL O CONCEPTO DE NEGOCIO)</label>
+                    <textarea id="targetData" placeholder="Ingrese el activo para iniciar la disección..." 
+                              class="bg-zinc-900 border border-zinc-800 rounded-lg p-6 w-full text-white focus:outline-none focus:border-gold h-28 transition-all text-lg"></textarea>
+                    <button onclick="iniciar()" id="btnRun" class="bg-zinc-100 hover:bg-white text-black font-black py-5 px-8 rounded-lg transition-all text-sm tracking-[0.3em] uppercase shadow-lg">
+                        EJECUTAR DISECCIÓN DE CAPITAL
                     </button>
                 </div>
             </section>
 
-            <div id="status" class="text-[10px] font-mono text-zinc-500 mb-8 px-2 text-center uppercase tracking-[0.4em]"></div>
-            <div id="contenedorReporte" class="space-y-12"></div>
+            <div id="status" class="text-[10px] font-mono text-zinc-500 mb-12 px-2 text-center uppercase tracking-[0.5em]"></div>
+            <div id="contenedorReporte" class="space-y-16"></div>
         </div>
 
         <script>
             const etapas = [
-                { id: 'INTRO', title: '1. MANIFIESTO Y VISIBILIDAD' },
-                { id: 'GEMELOS', title: '2. PERFILES PSICOLÓGICOS' },
-                { id: 'SCORECARD', title: '3. SCORECARD DE DESEMPEÑO REAL' },
-                { id: 'BENCHMARK', title: '4. ANÁLISIS DE COMPETENCIA LOCAL' },
-                { id: 'SWOT', title: '5. MAPA DE GUERRA (FODA)' },
-                { id: 'WISHLIST', title: '6. LO QUE EL CLIENTE EXIGE ENCONTRAR' },
-                { id: 'FUGAS', title: '7. LAS 15 FUGAS DE DINERO (WEB + GOOGLE)' },
-                { id: 'ACCIONES', title: '8. LAS 15 ACCIONES TÁCTICAS' },
-                { id: 'HERRAMIENTAS', title: '9. HERRAMIENTAS DE ESCALA' },
-                { id: 'OMNI', title: '10. BLOQUES DE AUTORIDAD Y RUTA' }
+                { id: 'INTRO', title: 'I. DIAGNÓSTICO DE VISIBILIDAD' },
+                { id: 'GEMELOS', title: 'II. PERFILES PSICOLÓGICOS (GEMELOS)' },
+                { id: 'SCORECARD', title: 'III. SCORECARD DE RENDIMIENTO' },
+                { id: 'BENCHMARK', title: 'IV. ANÁLISIS DE COMPETENCIA' },
+                { id: 'SWOT', title: 'V. MATRIZ DE ESTRATEGIA (FODA)' },
+                { id: 'WISHLIST', title: 'VI. LISTA DE DESEOS DEL CLIENTE' },
+                { id: 'FUGAS', title: 'VII. 15 FUGAS DE CAPITAL DETECTADAS' },
+                { id: 'ACCIONES', title: 'VIII. 15 ACCIONES DE EJECUCIÓN INMEDIATA' },
+                { id: 'HERRAMIENTAS', title: 'IX. HERRAMIENTAS DE ESCALAMIENTO' },
+                { id: 'OMNI', title: 'X. BLOQUES DE AUTORIDAD Y HOJA DE RUTA' }
             ];
 
             async function iniciar() {
@@ -65,7 +65,7 @@ function getHTML() {
                 
                 btn.disabled = true;
                 contenedor.innerHTML = "";
-                status.innerText = "SALIENDO A GOOGLE PARA ESCANEAR REPUTACIÓN...";
+                status.innerText = "ACCEDIENDO A GOOGLE SEARCH PARA VALIDACIÓN EXTERNA...";
 
                 try {
                     const resDna = await fetch('/get-dna', {
@@ -76,10 +76,10 @@ function getHTML() {
                     const { dna } = await resDna.json();
                     
                     for (const etapa of etapas) {
-                        status.innerText = "DISECCIONANDO: " + etapa.title;
+                        status.innerText = "PROCESANDO SECCIÓN: " + etapa.id;
                         const div = document.createElement('div');
-                        div.className = "terminal-box p-10 rounded-xl border-l-4 border-zinc-800 animate-pulse mb-10 shadow-xl";
-                        div.innerHTML = "<h3 class='gold-text font-bold mb-6 uppercase text-xs tracking-widest'>" + etapa.title + "</h3><div class='text-zinc-700 text-sm italic font-mono'>Consultando fuentes externas y datos forenses...</div>";
+                        div.className = "terminal-box p-12 rounded-xl border-l-2 border-zinc-800 mb-12 shadow-2xl";
+                        div.innerHTML = "<h3 class='gold-text font-bold mb-6 uppercase text-xs tracking-[0.4em]'>" + etapa.title + "</h3><div class='text-zinc-700 text-sm italic font-mono'>Analizando activos y reputación externa...</div>";
                         contenedor.appendChild(div);
 
                         const res = await fetch('/diseccion', {
@@ -89,18 +89,18 @@ function getHTML() {
                         });
                         const data = await res.json();
                         
-                        div.classList.remove('animate-pulse', 'border-zinc-800');
+                        div.classList.remove('border-zinc-800');
                         div.classList.add('border-gold');
-                        div.innerHTML = "<h3 class='gold-text font-bold mb-8 uppercase text-xs tracking-[0.3em]'>" + etapa.title + "</h3>" + 
+                        div.innerHTML = "<h3 class='gold-text font-bold mb-10 uppercase text-xs tracking-[0.4em]'>" + etapa.title + "</h3>" + 
                                        "<div class='prose prose-invert max-w-none text-zinc-300 leading-relaxed whitespace-pre-wrap text-[16px]'>" + data.content + "</div>";
                         
                         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                     }
-                    status.innerText = "AUDITORÍA COMPLETADA CON DATOS DE GOOGLE.";
-                    status.className = "text-[10px] font-mono text-emerald-500 mb-8 px-2 text-center uppercase tracking-[0.4em]";
+                    status.innerText = "DISECCIÓN FINALIZADA. ACTIVO AUDITADO.";
+                    status.className = "text-[10px] font-mono text-emerald-500 mb-12 px-2 text-center uppercase tracking-[0.5em]";
                     btn.disabled = false;
                 } catch (e) {
-                    status.innerText = "FALLO EN EL ESCANEO EXTERNO: " + e.message;
+                    status.innerText = "ERROR EN PROTOCOLO: " + e.message;
                     btn.disabled = false;
                 }
             }
