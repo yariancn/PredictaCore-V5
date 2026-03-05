@@ -12,63 +12,64 @@ app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
 
-    // 1. INVESTIGACIÓN DE HECHOS (JINA AI) - Los datos no mienten
-    let hechos = "Investigando activos...";
     try {
-        const jinaRes = await fetch(`https://r.jina.ai/${dna}`, {
-            headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
-        });
-        if (jinaRes.ok) hechos = (await jinaRes.text()).substring(0, 4500);
-    } catch (e) { console.error("Fallo Jina:", e.message); }
-
-    const promptFinal = `${PERSONA}
-    
-    [CONTEXTO FORENSE]:
-    ${hechos}
-
-    [ACTIVO]: ${dna}
-    [FASE]: ${PROMPTS[etapaId](dna)}
-    
-    REGLA: Máximo 5 líneas, tono clínico, asertividad absoluta.`;
-
-    // 2. ORQUESTACIÓN DE MOTOR (Prioridad: Gemini Estable)
-    // Probamos con los nombres de modelos confirmados para 2026
-    const endpoints = [
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
-        `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`
-    ];
-
-    for (const url of endpoints) {
-        try {
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
+        // 1. OBTENCIÓN DE HECHOS (JINA AI)
+        let hechos = "No se pudo extraer data. Usar lógica forense.";
+        if (JINA_API_KEY) {
+            const jinaRes = await fetch(`https://r.jina.ai/${dna}`, {
+                headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
             });
-            const data = await res.json();
-            if (data.candidates && data.candidates[0].content) {
-                return res.json({ content: data.candidates[0].content.parts[0].text });
-            }
-        } catch (e) { console.error("Error en endpoint:", e.message); }
-    }
+            if (jinaRes.ok) hechos = (await jinaRes.text()).substring(0, 4000);
+        }
 
-    // 3. FALLBACK DE EMERGENCIA (Misma Personalidad)
-    if (XAI_API_KEY) {
-        try {
-            const xaiRes = await fetch("https://api.x.ai/v1/chat/completions", {
+        const promptFinal = `${PERSONA}\n\n[CONTEXTO REAL]:\n${hechos}\n\n[ACTIVO]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
+
+        // 2. INTENTO CON GOOGLE GEMINI (Ruta de Producción 2026)
+        const googleUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        const resGoogle = await fetch(googleUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
+        });
+
+        const dataGoogle = await resGoogle.json();
+
+        // VALIDACIÓN QUIRÚRGICA DE GOOGLE
+        if (dataGoogle.candidates && dataGoogle.candidates[0]?.content?.parts?.[0]?.text) {
+            return res.json({ content: dataGoogle.candidates[0].content.parts[0].text });
+        }
+
+        // 3. SI GOOGLE FALLA -> INTENTO CON X.AI (GROK)
+        if (XAI_API_KEY) {
+            console.log(`Google falló en ${etapaId}. Activando Grok...`);
+            const resXai = await fetch("https://api.x.ai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
                 body: JSON.stringify({
                     model: "grok-beta",
-                    messages: [{ role: "system", content: PERSONA }, { role: "user", content: promptFinal }]
+                    messages: [
+                        { role: "system", content: PERSONA },
+                        { role: "user", content: promptFinal }
+                    ]
                 })
             });
-            const xaiData = await xaiRes.json();
-            return res.json({ content: xaiData.choices[0].message.content });
-        } catch (e) { console.error("Fallo Respaldo:", e.message); }
-    }
 
-    res.status(500).json({ content: "Error de sincronización con el núcleo técnico." });
+            const dataXai = await resXai.json();
+            
+            // VALIDACIÓN QUIRÚRGICA DE X.AI
+            if (dataXai.choices && dataXai.choices[0]?.message?.content) {
+                return res.json({ content: dataXai.choices[0].message.content });
+            }
+        }
+
+        // Si ambos fallan, devolvemos el error real para diagnóstico
+        const errorFinal = dataGoogle.error?.message || "Fallo multicanal de IA.";
+        throw new Error(errorFinal);
+
+    } catch (error) {
+        console.error(`DETALLE DEL FALLO EN ${etapaId}:`, error.message);
+        res.status(500).json({ content: `[ERROR TÉCNICO]: ${error.message}. Verifica tu API_KEY y Cuota en Google Cloud.` });
+    }
 });
 
-app.listen(port, () => console.log(`PredictaCore v39.0 [SINGLE-IDENTITY] activo.`));
+app.listen(port, () => console.log(`PredictaCore v40.0 activo en puerto ${port}`));
