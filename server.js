@@ -13,38 +13,55 @@ app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { API_KEY, JINA_API_KEY } = process.env;
 
-    if (!API_KEY) return res.status(500).json({ content: "Error: API_KEY no configurada." });
+    if (!API_KEY || !JINA_API_KEY) {
+        return res.status(500).json({ content: "Error: Faltan llaves (Google o Jina) en Railway." });
+    }
 
-    // 10 PASOS ADELANTE: Lógica de Motor Dinámico
-    // Intentamos Gemini 3 Flash (2026) -> Gemini 2.0 -> Gemini 1.5
-    const MODELOS = ["gemini-3-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
-    let textOutput = "";
+    let contextoReal = "";
 
-    for (const model of MODELOS) {
+    // ACCIÓN FORENSE: Si la etapa requiere hechos (Benchmark, Visibilidad, SWOT)
+    // Jina entra a investigar primero.
+    if (["INTRO", "VISIBILIDAD", "BENCHMARK", "SWOT"].includes(etapaId)) {
         try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: `${PERSONA}\n\nACTIVO: ${dna}\n\nFASE: ${PROMPTS[etapaId](dna)}` }] }] })
+            const jinaRes = await fetch(`https://r.jina.ai/${dna}`, {
+                headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
             });
-
-            const data = await response.json();
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                textOutput = data.candidates[0].content.parts[0].text;
-                break; // Éxito, salimos del bucle
-            }
+            contextoReal = await jinaRes.text();
+            // Recortamos para no saturar el prompt, manteniendo lo esencial
+            contextoReal = contextoReal.substring(0, 5000); 
         } catch (e) {
-            console.error(`Fallo con ${model}, probando siguiente...`);
+            console.error("Jina no pudo leer el sitio, procediendo con base de datos interna.");
         }
     }
 
-    if (!textOutput) {
-        return res.status(500).json({ content: "Error: Los núcleos de IA no responden. Reintenta en 5 segundos." });
-    }
+    const promptFinal = `${PERSONA}
+    
+    CONTEXTO REAL EXTRAÍDO (HECHOS):
+    ${contextoReal || "No se pudo extraer data en tiempo real. Usa análisis forense deductivo."}
 
-    res.json({ content: textOutput });
+    ACTIVO BAJO ANÁLISIS: ${dna}
+    FASE ESPECÍFICA: ${PROMPTS[etapaId](dna)}`;
+
+    // Motor de Generación (Gemini 1.5 Flash - Estándar estable 2026)
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: promptFinal }] }]
+            })
+        });
+
+        const data = await response.json();
+        const textOutput = data.candidates[0].content.parts[0].text;
+        res.json({ content: textOutput });
+
+    } catch (error) {
+        console.error(`FALLO EN ${etapaId}:`, error.message);
+        res.status(500).json({ content: "Error de comunicación con el núcleo técnico." });
+    }
 });
 
 app.listen(port, () => {
-    console.log(`PredictaCore v34.0 [NEXT-GEN] activo en puerto ${port}`);
+    console.log(`PredictaCore v35.0 [JINA-REAL-TIME] activo en puerto ${port}`);
 });
