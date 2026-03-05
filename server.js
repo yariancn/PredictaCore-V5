@@ -13,52 +13,63 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
 
     try {
-        // 1. INVESTIGACIÓN REAL (JINA AI)
-        let hechos = "Analizando DNA...";
+        // 1. ESCÁNER DE HECHOS (JINA AI) - Truncado para no saturar la llave
+        let hechosData = "Sin acceso a web. Análisis forense por ADN.";
         if (JINA_API_KEY) {
-            const jRes = await fetch(`https://r.jina.ai/${dna}`, { headers: { "Authorization": `Bearer ${JINA_API_KEY}` } });
-            if (jRes.ok) hechos = (await jRes.text()).substring(0, 3500);
+            try {
+                const jinaRes = await fetch(`https://r.jina.ai/${dna}`, { headers: { "Authorization": `Bearer ${JINA_API_KEY}` } });
+                if (jinaRes.ok) {
+                    const texto = await jinaRes.text();
+                    hechosData = texto.substring(0, 2500); // Reducimos a 2500 para asegurar paso por la API
+                }
+            } catch (e) { console.log("Jina Offline."); }
         }
 
-        const promptFinal = `${PERSONA}\n\nHECHOS: ${hechos}\n\nACTIVO: ${dna}\nFASE: ${PROMPTS[etapaId](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[CONTEXTO REAL]:\n${hechosData}\n\n[ACTIVO]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
 
-        // 2. MOTOR GOOGLE (Sincronizado a 2026)
-        // Probamos con la serie 2.0 y el alias 'latest'
-        const modelosGoogle = ["gemini-2.0-flash", "gemini-1.5-flash-latest"];
-        for (const m of modelosGoogle) {
-            const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
-            });
-            const gData = await gRes.json();
-            if (gData.candidates?.[0]?.content?.parts?.[0]?.text) {
-                return res.json({ content: gData.candidates[0].content.parts[0].text });
-            }
+        // 2. MOTOR PRINCIPAL: GOOGLE (Ruta Estándar v1)
+        // Usamos el endpoint v1 (producción) y el alias estable.
+        const googleRes = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
+        });
+
+        const dataG = await googleRes.json();
+        
+        if (dataG.candidates?.[0]?.content?.parts?.[0]?.text) {
+            return res.json({ content: dataG.candidates[0].content.parts[0].text });
         }
 
-        // 3. MOTOR X.AI (Actualizado a Grok-2)
+        // 3. RESPALDO: XAI (GROK-2)
         if (XAI_API_KEY) {
-            const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
+            console.log(`Google rechazó ${etapaId}. Activando Grok-2...`);
+            const xaiRes = await fetch("https://api.x.ai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
                 body: JSON.stringify({
-                    model: "grok-2", // Actualizado de grok-beta
-                    messages: [{ role: "system", content: PERSONA }, { role: "user", content: promptFinal }]
+                    model: "grok-2", 
+                    messages: [
+                        { role: "system", content: PERSONA },
+                        { role: "user", content: promptFinal }
+                    ]
                 })
             });
-            const xData = await xRes.json();
-            if (xData.choices?.[0]?.message?.content) {
-                return res.json({ content: xData.choices[0].message.content });
+
+            const dataX = await xaiRes.json();
+            if (dataX.choices?.[0]?.message?.content) {
+                return res.json({ content: dataX.choices[0].message.content });
             }
         }
 
-        throw new Error("Ningún modelo (Gemini 2.0 o Grok 2) reconoció la petición.");
+        // Si llegamos aquí, ambos fallaron. Devolvemos el error real para leerlo.
+        const msgError = dataG.error?.message || "Error desconocido en ambos núcleos.";
+        throw new Error(msgError);
 
     } catch (error) {
-        console.error("LOG FINAL:", error.message);
-        res.status(500).json({ content: `[ERROR]: ${error.message}. Intenta con un DNA más corto.` });
+        console.error("ERROR CRÍTICO:", error.message);
+        res.status(500).json({ content: `[FALLO]: ${error.message}` });
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v45.0 [MODERN-CORE] activo.`));
+app.listen(port, () => console.log(`PredictaCore v46.0 [STABLE] activo.`));
