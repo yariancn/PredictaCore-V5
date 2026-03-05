@@ -1,54 +1,46 @@
 const express = require('express');
-const path = require('path');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { PERSONA, PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware para entender JSON (Vital para recibir el DNA)
+// Configuración de la IA (Usa tu API Key de Google AI Studio)
+const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
 app.use(express.json());
 
-// RUTA 1: Servir la interfaz visual (visual.js)
 app.get('/', (req, res) => {
     res.send(getHTML());
 });
 
-// RUTA 2: El Corazón de la Disección (v32.0)
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
 
     if (!dna || !etapaId) {
-        return res.status(400).json({ content: "Falta DNA o etapaId" });
+        return res.status(400).json({ content: "Error: Falta DNA o Identificador de Etapa." });
     }
 
     try {
-        // Construcción del Prompt con Aislamiento Total
-        const promptFinal = `${PERSONA}\n\nACTIVO A ANALIZAR: ${dna}\n\nINSTRUCCIÓN DE ETAPA: ${PROMPTS[etapaId](dna)}`;
+        // Construcción del Prompt con el estándar PredictaCore
+        const promptFinal = `${PERSONA}\n\nACTIVO BAJO ANÁLISIS: ${dna}\n\nFASE ESPECÍFICA: ${PROMPTS[etapaId](dna)}`;
 
-        // --- AQUÍ CONECTA CON TU IA (Ejemplo genérico, ajusta según tu modelo) ---
-        // Si usas OpenAI: const completion = await openai.chat.completions.create({...})
-        // Si usas Gemini: const result = await model.generateContent(promptFinal);
-        
-        // Simulación de respuesta para que el flujo no se detenga mientras configuras tu API Key
-        // Reemplaza esto con tu llamada real a la IA
-        const respuestaIA = await llamarALaIA(promptFinal); 
+        // Llamada Real a la IA
+        const result = await model.generateContent(promptFinal);
+        const response = await result.response;
+        const text = response.text();
 
-        res.json({ content: respuestaIA });
+        // Enviamos el Oro Molido de regreso al visual.js
+        res.json({ content: text });
 
     } catch (error) {
-        console.error(`Error en fase ${etapaId}:`, error);
-        res.status(500).json({ content: "Error de procesamiento en esta fase. El motor sigue intentando..." });
+        console.error(`Error Crítico en Fase ${etapaId}:`, error);
+        res.status(500).json({ content: "Fallo de conexión con el núcleo de inteligencia. Reintentando fase..." });
     }
 });
 
-// Función placeholder para tu IA
-async function llamarALaIA(prompt) {
-    // Aquí es donde pegas tu lógica de OpenAI o Gemini
-    // Por ahora, devolvemos un texto para validar que el sistema corre
-    return "Analizando datos forenses..."; 
-}
-
 app.listen(port, () => {
-    console.log(`PredictaCore Titán corriendo en puerto ${port}`);
+    console.log(`PredictaCore Titán v32.0 activo en puerto ${port}`);
 });
