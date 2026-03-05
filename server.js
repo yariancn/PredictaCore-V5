@@ -6,12 +6,12 @@ const { getHTML } = require('./visual');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Inicialización con Reintento Automático
-const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-// Probamos la versión estable más reciente
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
 app.use(express.json());
+
+// CONFIGURACIÓN DE MOTOR ÚNICO (PredictaCore Standard)
+// Usamos la versión v1 estable para eliminar errores de 'modelo no encontrado'
+const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: 'v1' });
 
 app.get('/', (req, res) => {
     res.send(getHTML());
@@ -19,29 +19,25 @@ app.get('/', (req, res) => {
 
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
-    
-    // Verificación de Seguridad
-    if (!process.env.API_KEY) {
-        return res.status(500).json({ content: "ERROR: No hay API_KEY configurada en Railway." });
-    }
+    const promptFinal = `${PERSONA}\n\nACTIVO BAJO ANÁLISIS: ${dna}\n\nFASE ESPECÍFICA: ${PROMPTS[etapaId](dna)}`;
 
     try {
-        const promptFinal = `${PERSONA}\n\nACTIVO: ${dna}\n\nFASE: ${PROMPTS[etapaId](dna)}`;
-        
-        // Ejecución de la IA
+        // Ejecución única y pura con Gemini
         const result = await model.generateContent(promptFinal);
         const response = await result.response;
         const text = response.text();
 
-        res.json({ content: text });
+        return res.json({ content: text });
+
     } catch (error) {
-        console.error(`FALLO EN ${etapaId}:`, error.message);
+        // Log forense para el dueño en Railway
+        console.error(`FALLO CRÍTICO EN ${etapaId}:`, error.message);
         
-        // Si falla el modelo Flash, PredictaCore no se detiene.
-        res.status(500).json({ content: "Fase en mantenimiento técnico. Saltando al siguiente bloque de valor..." });
+        // Respuesta de seguridad si la API de Google tiene un micro-corte
+        res.status(500).json({ content: "Error de comunicación con el núcleo. Reintentando sección..." });
     }
 });
 
 app.listen(port, () => {
-    console.log(`PredictaCore Titán v33.2 rugiendo en el puerto ${port}`);
+    console.log(`PredictaCore Titán v33.4 (Motor Único) activo en puerto ${port}`);
 });
