@@ -50,3 +50,4 @@ async function iniciarAuditoria() {
         }
     }
 }
+module.exports = { getHTML };
