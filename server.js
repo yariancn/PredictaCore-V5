@@ -21,47 +21,40 @@ app.post('/diseccion', async (req, res) => {
 
     const promptFinal = `${PERSONA}\n\nACTIVO BAJO ANÁLISIS: ${dna}\n\nFASE: ${PROMPTS[etapaId](dna)}`;
 
-    try {
-        // Probamos con el endpoint v1beta y el modelo flash estándar
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${api_key}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: promptFinal }] }]
-            })
-        });
+    // Lista de modelos actualizada a estándares de 2026
+    const MODELOS = ["gemini-3-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
 
-        const data = await response.json();
-
-        // Si el modelo Flash falla por nombre, intentamos con Gemini Pro como respaldo instantáneo
-        if (data.error && data.error.code === 404) {
-            console.log(`Flash no encontrado en v1beta, intentando con Gemini Pro...`);
-            const fallback = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${api_key}`, {
+    for (const modelName of MODELOS) {
+        try {
+            // Intentamos por la vía estable v1 primero
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${api_key}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: promptFinal }] }]
                 })
             });
-            const fallbackData = await fallback.json();
-            
-            if (fallbackData.error) throw new Error(fallbackData.error.message);
-            
-            return res.json({ content: fallbackData.candidates[0].content.parts[0].text });
+
+            const data = await response.json();
+
+            if (data.error) {
+                console.log(`Modelo ${modelName} no respondió bien, intentando siguiente...`);
+                continue; // Salta al siguiente modelo si hay error
+            }
+
+            // Si llegamos aquí, tenemos ORO MOLIDO
+            const textOutput = data.candidates[0].content.parts[0].text;
+            return res.json({ content: textOutput });
+
+        } catch (err) {
+            console.error(`Error con ${modelName}:`, err.message);
         }
-
-        if (data.error) {
-            throw new Error(data.error.message);
-        }
-
-        res.json({ content: data.candidates[0].content.parts[0].text });
-
-    } catch (error) {
-        console.error(`FALLO EN ${etapaId}:`, error.message);
-        res.status(500).json({ content: "Error de conexión con el núcleo. Reintentando..." });
     }
+
+    // Si después de recorrer todos los modelos nada funciona:
+    res.status(500).json({ content: "Error de sincronización con el núcleo. Reintentando..." });
 });
 
 app.listen(port, () => {
-    console.log(`PredictaCore Titán v33.8 [ULTRA-RESILIENT] activo en puerto ${port}`);
+    console.log(`PredictaCore Titán v33.9 [Sincronización 2026] activo en puerto ${port}`);
 });
