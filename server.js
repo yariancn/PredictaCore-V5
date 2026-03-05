@@ -12,57 +12,50 @@ app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
 
-    if (!API_KEY) return res.status(500).json({ content: "[ERROR]: API_KEY de Google no encontrada en Railway." });
-
     try {
-        // 1. INVESTIGACIÓN EN TIEMPO REAL (JINA AI)
-        // Usamos el Reader de Jina para alimentar el reporte con HECHOS.
-        let hechos = "Data local no disponible. Usar análisis forense de ADN.";
+        // 1. ESCÁNER FORENSE (JINA AI)
+        let hechosReales = "Data no disponible. Aplicar lógica forense PredictaCore.";
         if (JINA_API_KEY) {
             try {
-                const jinaRes = await fetch(`https://r.jina.ai/${dna}`, {
+                const jinaFetch = await fetch(`https://r.jina.ai/${dna}`, {
                     headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
                 });
-                if (jinaRes.ok) hechos = (await jinaRes.text()).substring(0, 5000);
-            } catch (e) { console.log("Jina inalcanzable."); }
+                if (jinaFetch.ok) hechosReales = (await jinaFetch.text()).substring(0, 4500);
+            } catch (e) { console.log("Fallo en escáner Jina."); }
         }
 
         const promptFinal = `${PERSONA}
-        
-        [EVIDENCIA REAL EXTRAÍDA]:
-        ${hechos}
-
-        [ACTIVO ANALIZADO]: ${dna}
+        [EVIDENCIA]: ${hechosReales}
+        [ACTIVO]: ${dna}
         [FASE]: ${PROMPTS[etapaId](dna)}
-        
-        REGLA DE ORO: 3 a 5 líneas máximo por punto. Asertividad quirúrgica.`;
+        REGLA: 3 a 5 líneas de alto valor estratégico.`;
 
-        // 2. ADAPTACIÓN A INFRAESTRUCTURA 2026 (GOOGLE)
-        // Intentamos con Gemini 3 Flash (El más avanzado hoy) y Gemini 2.5 (La nueva estabilidad)
-        const modelos2026 = [
-            { ver: "v1beta", mod: "gemini-3-flash-preview" },
-            { ver: "v1beta", mod: "gemini-2.5-flash" }
+        // 2. MOTOR DE INTELIGENCIA (GOOGLE)
+        const modelos = [
+            { v: "v1beta", m: "gemini-1.5-flash" },
+            { v: "v1", m: "gemini-1.5-flash" },
+            { v: "v1beta", m: "gemini-pro" }
         ];
 
-        for (const i of modelos2026) {
+        for (const i of modelos) {
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/${i.ver}/models/${i.mod}:generateContent?key=${API_KEY}`, {
+                const googleFetch = await fetch(`https://generativelanguage.googleapis.com/${i.v}/models/${i.m}:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
                 });
-                
-                const data = await res.json();
+
+                const data = await googleFetch.json();
                 if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    // AQUÍ ESTABA EL ERROR: Usamos 'res' (Express) para responderte a ti
                     return res.json({ content: data.candidates[0].content.parts[0].text });
                 }
             } catch (e) { continue; }
         }
 
-        // 3. RESPALDO BALÍSTICO (XAI - GROK)
-        // Si Google falla en su migración, Grok 4 entrega el resultado.
+        // 3. RESPALDO DE SEGURIDAD (XAI)
         if (XAI_API_KEY) {
-            const resXai = await fetch("https://api.x.ai/v1/chat/completions", {
+            const xaiFetch = await fetch("https://api.x.ai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
                 body: JSON.stringify({
@@ -70,20 +63,18 @@ app.post('/diseccion', async (req, res) => {
                     messages: [{ role: "system", content: PERSONA }, { role: "user", content: promptFinal }]
                 })
             });
-            const dataXai = await resXai.json();
+            const dataXai = await xaiFetch.json();
             if (dataXai.choices?.[0]?.message?.content) {
                 return res.json({ content: dataXai.choices[0].message.content });
             }
         }
 
-        throw new Error("Ningún núcleo de IA respondió. Revisa la vigencia de tus API Keys.");
+        throw new Error("Sin respuesta de núcleos IA.");
 
     } catch (error) {
-        console.error("FALLO EN ETAPA:", error.message);
-        res.status(500).json({ content: `[FALLO DE NÚCLEO]: ${error.message}` });
+        console.error("ERROR:", error.message);
+        res.status(500).json({ content: `[FALLO]: ${error.message}` });
     }
 });
 
-app.listen(port, () => {
-    console.log(`PredictaCore v42.0 [2026-READY] activo en puerto ${port}`);
-});
+app.listen(port, () => console.log(`PredictaCore v43.0 rugiendo en puerto ${port}`));
