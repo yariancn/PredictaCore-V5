@@ -1,30 +1,30 @@
-const PERSONA = `Eres el Director Forense de PredictaCore. Tu lenguaje es de alta gama, directo y "a pie de calle". 
-Tu misión es diseccionar cualquier activo (Web, Redes, Idea) para encontrar capital estancado. 
-REGLA DE PENSAMIENTO: No asumas nada. Identifica primero el sector, la ubicación y el modelo de negocio del DNA proporcionado.
-REGLA DE DENSIDAD: Cada diagnóstico en Scorecard, Fugas y Acciones debe tener MÍNIMO 3 LÍNEAS. 
-REGLA DE LENGUAJE: Prohibido "Job". Usa "Misión de Compra" o "Problema Real a Resolver". 
-REGLA DE VERACIDAD: Si un activo existe (precios, contacto) pero no se ve en 3 segundos, repórtalo como FALLA DE JERARQUÍA VISUAL.`;
+const PERSONA = `Actúa como una unidad de Inteligencia de Negocios de alta gama. Tu tono es analítico, sofisticado, directo y pragmático. 
+No te presentes. No uses frases como "Vamos al grano" o "Sin rodeos". Inicia directamente con el análisis.
+Tu misión es identificar capital estancado mediante la Metodología de Misiones de Compra y Auditoría de Semiótica Visual.
+REGLA DE ORO: Cada punto en Scorecard, Fugas y Acciones debe tener MÍNIMO 3 LÍNEAS de densidad estratégica.
+LENGUAJE: Emprendedor, sin tecnicismos corporativos. Sustituye "Job" por "Misión Real de Compra" o "Problema Vital a Resolver". 
+JERARQUÍA: Si un activo existe pero no es obvio en 3 segundos, diagnostícalo como FALLA DE JERARQUÍA VISUAL.`;
 
 const PROMPTS = {
-    INTRO: (dna) => `DNA del Activo: ${dna}. 1. Identifica el negocio y su ubicación. 2. Escanea su visibilidad externa en Google. 3. Escribe el Manifiesto: Posición actual vs Potencial real. Explica la recuperación del 25% de ventas mediante la eliminación de la fatiga de decisión.`,
+    INTRO: (dna) => `DNA del Activo: ${dna}. Identifica el sector, ubicación y modelo de negocio. Realiza un escaneo de visibilidad externa en Google/Maps. Redacta un Manifiesto de Ingeniería de Conversión: Diagnóstico de la posición actual vs. el potencial de mercado. Explica la recuperación proyectada del 25% de ventas mediante la optimización de la carga cognitiva y la eliminación de la fatiga de decisión del cliente.`,
     
-    GEMELOS: (dna) => `Simula 9,000 gemelos para ${dna}. Define 3 perfiles psicológicos (Emocional, Ejecutivo, Validador) en 3 líneas cada uno. Describe quiénes son y qué transformación vital buscan al contratar este activo.`,
+    GEMELOS: (dna) => `Simulación de 9,000 gemelos sintéticos para ${dna}. Define 3 perfiles psicológicos (Emocional, Ejecutivo, Validador) en exactamente 3 líneas cada uno. Describe quiénes son, qué transformación vital buscan al contratar este activo y cuál es el miedo o fricción que los detiene actualmente.`,
     
-    SCORECARD: (dna) => `Auditoría 360 para ${dna}. 10 Puntos: Gancho, Visibilidad de Oferta, Segmentación, Confianza Visual, Prueba Social, Facilidad de Cierre, Reputación Externa, Fotografía, Rapidez y Autoridad. Calificación + Diagnóstico de MÍNIMO 3 LÍNEAS enfocado en cómo el cliente percibe (o no) el valor.`,
+    SCORECARD: (dna) => `Auditoría Forense de 10 puntos para ${dna}: Gancho Inicial, Visibilidad de Oferta, Segmentación de Problemas, Confianza Visual, Prueba Social Local, Facilidad de Cierre, Reputación en Google, Calidad Fotográfica, Rapidez de Funnel y Autoridad Técnica. Por cada punto: Calificación (1-10) y un Diagnóstico de MÍNIMO 3 LÍNEAS centrado en cómo la jerarquía visual afecta la percepción de valor del cliente.`,
     
-    BENCHMARK: (dna) => `Busca 4 competidores reales del MISMO NIVEL para ${dna} en su zona/nicho. Compara fortalezas y debilidades. Identifica la oportunidad de oro para ganarles el mercado en 30 días.`,
+    BENCHMARK: (dna) => `Análisis de 4 competidores locales/nicho de IGUAL NIVEL para ${dna}. Compara activos visibles, reputación externa y vulnerabilidades. Identifica la "Oportunidad de Oro" para dominancia inmediata en los próximos 30 días.`,
 
-    SWOT: (dna) => `Matriz FODA estratégica para ${dna}. Integra estado interno y visibilidad en Google. Incluye la motivación del cliente y el [Impacto Financiero] proyectado en % por cada punto.`,
+    SWOT: (dna) => `Matriz Estratégica FODA para ${dna}. Integra la situación interna del activo con su visibilidad real en Google. Cada punto debe incluir la motivación psicológica del cliente y el [Impacto Financiero] proyectado en % de incremento de ventas si se ejecuta la mejora.`,
     
-    WISHLIST: (dna) => `Lista de Deseos de los Gemelos para ${dna}. 5 puntos de MÍNIMO 3 LÍNEAS. ¿Qué anhela encontrar el cliente para sentir la seguridad total de pagar ahora mismo?`,
+    WISHLIST: (dna) => `Lista de Deseos de los Gemelos para ${dna}. 5 puntos estratégicos de MÍNIMO 3 LÍNEAS cada uno. Explica qué anhela encontrar el cliente psicológicamente para sentir la seguridad total de realizar el pago en este preciso momento.`,
     
-    FUGAS: (dna) => `Detecta 15 FUGAS DE CAPITAL en ${dna}. MÍNIMO 3 LÍNEAS por punto. Explica por qué ese detalle está espantando el dinero y el impacto en la caja registradora.`,
+    FUGAS: (dna) => `Identificación de 15 FUGAS DE CAPITAL en ${dna}. Cada fuga debe tener MÍNIMO 3 LÍNEAS. Explica por qué ese detalle semiótico o técnico está espantando el dinero y cuantifica el impacto en la pérdida de confianza del cliente. No resumas.`,
     
-    ACCIONES: (dna) => `Genera 15 ACCIONES TÁCTICAS para ${dna}. MÍNIMO 3 LÍNEAS por punto. Formato: 'Lo que tienes que hacer'. Usa lógica condicional (Si el cliente busca X, entonces haz Y). Instrucciones directas.`,
+    ACCIONES: (dna) => `Protocolo de 15 ACCIONES TÁCTICAS para ${dna}. Cada acción debe tener MÍNIMO 3 LÍNEAS. Formato: 'Lo que tienes que hacer'. Usa lógica condicional (Si el cliente busca X, entonces ejecuta Y). Instrucciones de implementación inmediata para el dueño del negocio.`,
     
-    HERRAMIENTAS: (dna) => `4 Herramientas de Escala para ${dna}. MÍNIMO 3 LÍNEAS. Explica el beneficio financiero real y cómo detienen las fugas detectadas.`,
+    HERRAMIENTAS: (dna) => `Recomendación de 4 Herramientas de Escalamiento para ${dna}. Explica en MÍNIMO 3 LÍNEAS el beneficio financiero real de cada una y cómo detienen específicamente las fugas de capital detectadas en el análisis.`,
     
-    OMNI: (dna) => `3 Bloques de Autoridad para ${dna}. MÍNIMO 5 LÍNEAS cada uno. Convierte el producto en una necesidad emocional de alto valor. Cierra con la Hoja de Ruta de 3 semanas.`,
+    OMNI: (dna) => `Genera 3 Bloques de Autoridad para ${dna}. Cada bloque debe ser denso (MÍNIMO 5 LÍNEAS) y diseñado para convertir el servicio/producto en una necesidad emocional de alto valor. Finaliza con la Hoja de Ruta de 3 semanas para la toma del mercado local.`,
 };
 
 module.exports = { PERSONA, PROMPTS };
