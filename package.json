@@ -1,7 +1,7 @@
 {
-  "name": "predictacore-v5",
-  "version": "5.0.0",
-  "description": "Unidad de Inteligencia PredictaCore Titán",
+  "name": "predictacore-titan",
+  "version": "32.0.0",
+  "description": "Unidad de Inteligencia Forense PredictaCore",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
