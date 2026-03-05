@@ -6,7 +6,7 @@ const { getHTML } = require('./visual');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Configuración IA
+// Configuración de Gemini
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -24,8 +24,8 @@ app.post('/diseccion', async (req, res) => {
         const response = await result.response;
         res.json({ content: response.text() });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ content: "Error en esta fase. Reintentando..." });
+        console.error("Error en etapa " + etapaId + ":", error);
+        res.status(500).json({ content: "Error en esta fase. El sistema continúa con la siguiente..." });
     }
 });
 
