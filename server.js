@@ -13,11 +13,11 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY } = process.env;
 
     try {
-        // Redirección de seguridad: Mapeamos OMNI o AUTORIDAD al prompt de la Hoja de Ruta
-        const idReal = (etapaId === 'OMNI' || etapaId === 'AUTORIDAD') ? 'OMNI' : etapaId;
+        // Redirección de seguridad: Cualquier ID desconocido al final dispara OMNI
+        const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
 
-        if (!PROMPTS[idReal]) {
-            throw new Error(`Etapa [${etapaId}] no encontrada en el cerebro.`);
+        if (!PROMPTS[idFinal]) {
+            throw new Error(`Etapa [${etapaId}] no encontrada en cerebro.js`);
         }
 
         let hechos = "DNA base: " + dna;
@@ -30,10 +30,10 @@ app.post('/diseccion', async (req, res) => {
             } catch (e) { console.log("Lector Offline"); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idReal](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
 
-        // REGRESO A v1beta (La conexión que funcionaba)
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        // RUTA DE PRODUCCIÓN ESTABLE v1 (Certificada Marzo 2026)
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
         
         const gRes = await fetch(url, {
             method: 'POST',
@@ -45,15 +45,16 @@ app.post('/diseccion', async (req, res) => {
         
         const gData = await gRes.json();
 
+        // Manejo de errores de la API de Google
         if (gData.error) {
-            throw new Error(`Google API: ${gData.error.message}`);
+            throw new Error(`Google API: ${gData.error.message} (Status: ${gData.error.status})`);
         }
 
         if (gData.candidates && gData.candidates[0].content) {
             return res.json({ content: gData.candidates[0].content.parts[0].text });
         }
 
-        throw new Error("La IA no devolvió contenido.");
+        throw new Error("La IA no devolvió contenido útil.");
 
     } catch (error) {
         console.error("LOG:", error.message);
