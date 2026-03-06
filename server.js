@@ -13,7 +13,7 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY } = process.env;
 
     try {
-        // Validación de ID: Si no existe, usamos OMNI para el Punto XI
+        // Si el frontend manda OMNI o cualquier otro ID, lo validamos con el cerebro
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
 
         let hechos = "DNA base: " + dna;
@@ -22,13 +22,12 @@ app.post('/diseccion', async (req, res) => {
                 const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
                     headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
                 });
-                if (jRes.ok) hechos = (await jRes.text()).substring(0, 4000);
-            } catch (e) { console.log("Jina Offline"); }
+                if (jRes.ok) hechos = (await jRes.text()).substring(0, 4500);
+            } catch (e) { console.log("Lector Jina no disponible."); }
         }
 
         const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
 
-        // LLAMADA A GEMINI 1.5 FLASH (La que te dio el reporte de 30k caracteres)
         const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -41,12 +40,12 @@ app.post('/diseccion', async (req, res) => {
             return res.json({ content: gData.candidates[0].content.parts[0].text });
         }
 
-        throw new Error("La IA no devolvió contenido. Revisa tu API KEY en Google Cloud.");
+        throw new Error("La API de Google no devolvió contenido.");
 
     } catch (error) {
-        console.error("LOG:", error.message);
+        console.error("ERROR CRÍTICO:", error.message);
         res.status(500).json({ content: `[ERROR]: ${error.message}` });
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v75.0 [FIX FINAL] activo en puerto ${port}`));
+app.listen(port, () => console.log(`PredictaCore v75.5 activo en puerto ${port}`));
