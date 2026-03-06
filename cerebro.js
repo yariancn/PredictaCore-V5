@@ -1,18 +1,21 @@
-const PERSONA = `Eres el Gerente de PredictaCore. Tu lenguaje es emprendedor, directo y sin tecnicismos vacíos. Priorizas el contenido y el análisis estratégico. En las acciones tácticas siempre usas el formato 'Lo que tienes que hacer' con lógica condicional.`;
+const PERSONA = `Eres el Gerente de PredictaCore. Tu lenguaje es corporativo-emprendedor: serio, técnico, analítico y directo. 
+PROHIBICIÓN: No te presentes en las secciones. No uses frases de relleno ni "Hola". 
+REGLA DE ORO: Cada punto de análisis debe tener entre 3 y 5 líneas de profundidad técnica. 
+Identifica los activos críticos omitidos según el giro del negocio y denúncialo como falla de ingeniería.`;
 
 const PROMPTS = {
-    INTRO: (dna) => `Genera la Introducción de PredictaCore para el activo ${dna}. Explica quiénes somos y qué hacemos (Metodología JTBD y Gemelos Sintéticos).`,
-    DNA: (dna) => `Realiza el Diagnóstico de Ingeniería para ${dna}. Analiza la arquitectura visual y facilidad de encontrar botones y activos críticos.`,
-    GEMELOS: (dna) => `Describe a los 2 Gemelos Sintéticos para ${dna}: ANA (Madre primeriza) y ROBERTO (Padrino/Estatus). Define sus perfiles psicológicos.`,
-    SCORECARD: (dna) => `Genera el SCORECARD PREDICTACORE de 10 puntos para ${dna}. Califica del 1 al 10 y da un análisis técnico por cada punto.`,
-    VISIBILIDAD: (dna) => `Realiza la Auditoría de Visibilidad Externa en Google y Maps para ${dna}.`,
-    BENCHMARK: (dna) => `Realiza el Benchmarking Local para ${dna} comparando contra la competencia directa del sector.`,
-    SWOT: (dna) => `Genera la Matriz Estratégica (FODA) para ${dna} con análisis de impacto financiero.`,
-    WISHLIST: (dna) => `Lista de Deseos Estratégica para ${dna}. Qué activos faltan en el sitio para que el cliente compre de inmediato.`,
-    FUGAS: (dna) => `Identifica 15 FUGAS DE CAPITAL para ${dna}. Explica dónde se pierde dinero y por qué. Mínimo 3 líneas por fuga.`,
-    ACCIONES: (dna) => `Genera 15 ACCIONES TÁCTICAS para ${dna}. Usa el formato 'Lo que tienes que hacer' con lógica condicional.`,
-    HERRAMIENTAS: (dna) => `Lista 5 HERRAMIENTAS DE ESCALA (Software real) para ${dna} y su beneficio financiero directo.`,
-    OMNI: (dna) => `Genera la Autoridad y Hoja de Ruta de 21 días para ${dna}. Divide el plan en 3 semanas de ejecución.`
+    INTRO: (dna) => `Genera la INTRODUCCIÓN CORPORATIVA de PredictaCore para ${dna}. Explica quiénes somos y nuestra metodología forense.`,
+    DNA: (dna) => `Realiza el DIAGNÓSTICO DE INGENIERÍA de 5 PUNTOS para ${dna}: 1. Arquitectura de Navegación, 2. Transparencia Técnica, 3. Semiótica Visual, 4. Visión de Google (SEO), 5. Percepción de los Gemelos.`,
+    GEMELOS: (dna) => `Define el PERFIL PSICOLÓGICO de 2 Gemelos Sintéticos para ${dna}: ANA (Seguridad/Emoción) y ROBERTO (Estatus/Eficiencia). Solo identidad psicológica.`,
+    SCORECARD: (dna) => `Genera el SCORECARD DE 10 PUNTOS para ${dna}. Califica de 1 a 10 y da 5 líneas de análisis forense por cada uno.`,
+    VISIBILIDAD: (dna) => `AUDITORÍA DE VISIBILIDAD EXTERNA para ${dna}. Analiza SEO local, Maps y competencia en buscadores.`,
+    BENCHMARK: (dna) => `BENCHMARKING DE NICHO para ${dna}. Compara contra los 3 líderes del sector e identifica qué activos técnicos tienen ellos que este sitio omite.`,
+    SWOT: (dna) => `MATRIZ ESTRATÉGICA PROFUNDA para ${dna}. Analiza Fortalezas, Oportunidades, Debilidades y Amenazas con enfoque financiero.`,
+    WISHLIST: (dna) => `LISTA DE DESEOS ESTRATÉGICA para ${dna}. Enumera 5 activos de alta gama que el sitio NO tiene y que el cliente desea.`,
+    FUGAS: (dna) => `Identifica 15 FUGAS DE CAPITAL para ${dna}. Explica el error técnico y su impacto en el dinero perdido. 5 líneas por punto.`,
+    ACCIONES: (dna) => `Genera 15 ACCIONES TÁCTICAS para ${dna}. Formato: 'Lo que tienes que hacer: [Acción]'. Usa lógica condicional.`,
+    HERRAMIENTAS: (dna) => `5 HERRAMIENTAS DE ESCALA para ${dna}. Software real y su beneficio financiero directo en la conversión.`,
+    OMNI: (dna) => `AUTORIDAD Y HOJA DE RUTA DE 21 DÍAS para ${dna}. Plan semanal detallado para profesionalizar la web y cerrar ventas.`
 };
 
 module.exports = { PERSONA, PROMPTS };
