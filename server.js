@@ -8,41 +8,48 @@ app.use(express.json());
 
 app.get('/', (req, res) => res.send(getHTML()));
 
+// FUNCIÓN DE PRUEBA DE CONEXIÓN (Startup Check)
+const testNucleo = async () => {
+    const API_KEY = process.env.API_KEY;
+    if (!API_KEY) return console.log("⚠️ ALERTA: No hay API_KEY configurada.");
+    try {
+        const testRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: "Hola" }] }] })
+        });
+        const data = await testRes.json();
+        if (data.candidates) console.log("✅ CONEXIÓN EXITOSA: El núcleo Gemini 3 está activo.");
+        else console.log("❌ FALLO DE NÚCLEO: Google respondió pero no hay candidatos. Revisa cuota.");
+    } catch (e) { console.log("❌ ERROR CRÍTICO: No se pudo contactar a Google."); }
+};
+
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
 
     try {
-        // 1. ESCÁNER DE HECHOS (JINA AI) - Optimizado para velocidad
-        let hechos = "DNA: " + dna;
+        // 1. ESCÁNER DE HECHOS (JINA AI) - Con Timeout agresivo
+        let hechos = "DNA base: " + dna;
         if (JINA_API_KEY) {
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 segundos max
                 const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
                     headers: { "Authorization": `Bearer ${JINA_API_KEY}` },
-                    signal: controller.signal
+                    signal: AbortSignal.timeout(7000) // 7 seg max para Jina
                 });
-                clearTimeout(timeoutId);
                 if (jRes.ok) hechos = (await jRes.text()).substring(0, 3000);
-            } catch (e) { console.log("Jina omitido por tiempo."); }
+            } catch (e) { console.log("Jina omitido."); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[CONTEXTO]: ${hechos}\n\n[ACTIVO]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[HECHOS]: ${hechos}\n\n[ADN]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
 
-        // 2. CARRUSEL DE MODELOS 2026 (Nombres Actualizados)
-        // Probamos los 3 'caballos de batalla' que Google tiene activos HOY
-        const intentos = [
-            { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}` },
-            { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}` },
-            { url: `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}` }
-        ];
-
+        // 2. MOTOR DE INTELIGENCIA 2026 (CARRUSEL)
+        const modelos2026 = ["gemini-3-flash-preview", "gemini-3.1-flash-lite-preview"];
         let respuesta = null;
 
-        for (const i of intentos) {
+        for (const modelName of modelos2026) {
             try {
-                const gFetch = await fetch(i.url, {
+                const gFetch = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
@@ -55,18 +62,14 @@ app.post('/diseccion', async (req, res) => {
             } catch (e) { continue; }
         }
 
-        // 3. RESPALDO XAI (GROK-2) - Con tus 20 USD de saldo
+        // 3. RESPALDO XAI (GROK-2)
         if (!respuesta && XAI_API_KEY) {
-            console.log("Google falló. Usando saldo de Grok...");
+            console.log("Activando saldo de Grok...");
             const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
                 method: "POST",
-                headers: { 
-                    "Content-Type": "application/json", 
-                    "Authorization": `Bearer ${XAI_API_KEY}`,
-                    "User-Agent": "PredictaCore/1.0" 
-                },
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
                 body: JSON.stringify({
-                    model: "grok-2", // Modelo estable marzo 2026
+                    model: "grok-2", 
                     messages: [{ role: "system", content: PERSONA }, { role: "user", content: promptFinal }]
                 })
             });
@@ -75,12 +78,14 @@ app.post('/diseccion', async (req, res) => {
         }
 
         if (respuesta) return res.json({ content: respuesta });
-        
-        throw new Error("Ningún núcleo respondió. Verifica que tus llaves no tengan espacios extras en Railway.");
+        throw new Error("Ningún núcleo respondió. Posible bloqueo de IP en Railway o cuota agotada.");
 
     } catch (error) {
         res.status(500).json({ content: `[ESTADO]: ${error.message}` });
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v54.0 [TITÁN] activo.`));
+app.listen(port, () => {
+    console.log(`PredictaCore v55.0 [TITÁN 2026] activo en puerto ${port}`);
+    testNucleo(); // Prueba automática al arrancar
+});
