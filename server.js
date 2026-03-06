@@ -91,6 +91,63 @@ app.post('/diseccion', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`PredictaCore Titán v48.0 rugiendo en el puerto ${port}`);
+});
+        // 2. MOTOR DE INTELIGENCIA (GOOGLE)
+        // Probamos el modelo estándar y el más avanzado de 2026.
+        const modelos = ["gemini-1.5-flash", "gemini-2.0-flash"];
+        let respuestaIA = null;
+
+        for (const m of modelos) {
+            try {
+                const gFetch = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
+                });
+                
+                const gData = await gFetch.json();
+                if (gData.candidates && gData.candidates[0]?.content?.parts[0]?.text) {
+                    respuestaIA = gData.candidates[0].content.parts[0].text;
+                    break; 
+                }
+            } catch (e) { console.log(`Fallo con ${m}, probando siguiente...`); }
+        }
+
+        // 3. RESPALDO DE IDENTIDAD ÚNICA (XAI)
+        // Si Google falla, Grok-2 mantiene el mismo tono y rigor.
+        if (!respuestaIA && XAI_API_KEY) {
+            const xaiRes = await fetch("https://api.x.ai/v1/chat/completions", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json", 
+                    "Authorization": `Bearer ${XAI_API_KEY}` 
+                },
+                body: JSON.stringify({
+                    model: "grok-2",
+                    messages: [
+                        { role: "system", content: PERSONA },
+                        { role: "user", content: promptFinal }
+                    ]
+                })
+            });
+            const xData = await xaiRes.json();
+            respuestaIA = xData.choices?.[0]?.message?.content;
+        }
+
+        if (respuestaIA) {
+            return res.json({ content: respuestaIA });
+        } else {
+            throw new Error("Ningún núcleo de IA respondió correctamente.");
+        }
+
+    } catch (error) {
+        console.error("ERROR CRÍTICO:", error.message);
+        res.status(500).json({ content: `[FALLO]: ${error.message}. Revisa tus API Keys.` });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`PredictaCore Titán v48.0 rugiendo en el puerto ${port}`);
 });        ];
 
         let ultimoErrorGoogle = "";
