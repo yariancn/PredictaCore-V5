@@ -13,9 +13,9 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
 
     try {
-        // Validación de ID: Si el frontend manda OMNI, el cerebro lo tiene.
+        // Validación de etapa: Si el frontend manda OMNI, el cerebro responde OMNI.
         if (!PROMPTS[etapaId]) {
-            throw new Error(`La etapa [${etapaId}] no existe en cerebro.js`);
+            throw new Error(`Etapa [${etapaId}] no reconocida en cerebro.js`);
         }
 
         let hechos = "DNA: " + dna;
@@ -26,57 +26,10 @@ app.post('/diseccion', async (req, res) => {
                     signal: AbortSignal.timeout(12000) 
                 });
                 if (jRes.ok) hechos = (await jRes.text()).substring(0, 4500);
-            } catch (e) { console.log("Jina omitido."); }
+            } catch (e) { console.log("Lector omitido."); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[etapaId](dna)}`;
-
-        // LLAMADA ESTABLE A GEMINI
-        const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
-        });
-        
-        const gData = await gRes.json();
-
-        if (gData.candidates?.[0]?.content?.parts?.[0]?.text) {
-            return res.json({ content: gData.candidates[0].content.parts[0].text });
-        }
-
-        // RESPALDO GROK (Solo si Google falla)
-        if (XAI_API_KEY) {
-            const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
-                body: JSON.stringify({
-                    model: "grok-2",
-                    messages: [{ role: "system", content: PERSONA }, { role: "user", content: promptFinal }]
-                })
-            });
-            const xData = await xRes.json();
-            if (xData.choices?.[0]?.message?.content) return res.json({ content: xData.choices[0].message.content });
-        }
-
-        throw new Error("Sin respuesta de IA.");
-
-    } catch (error) {
-        console.error("ERROR:", error.message);
-        res.status(500).json({ content: `[ERROR]: ${error.message}` });
-    }
-});
-
-app.listen(port, () => console.log(`PredictaCore v66.0 rugiendo en puerto ${port}`));        if (JINA_API_KEY) {
-            try {
-                const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
-                    headers: { "Authorization": `Bearer ${JINA_API_KEY}` },
-                    signal: AbortSignal.timeout(15000) 
-                });
-                if (jRes.ok) hechos = (await jRes.text()).substring(0, 5000);
-            } catch (e) { console.log("Jina Offline"); }
-        }
-
-        const promptFinal = `${PERSONA}\n\n[CONTEXTO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idReal](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[CONTEXTO]: ${hechos}\n\n[TAREA]: ${PROMPTS[etapaId](dna)}`;
 
         const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`, {
             method: 'POST',
@@ -102,11 +55,12 @@ app.listen(port, () => console.log(`PredictaCore v66.0 rugiendo en puerto ${port
             if (xData.choices?.[0]?.message?.content) return res.json({ content: xData.choices[0].message.content });
         }
 
-        throw new Error("Sin respuesta de IA.");
+        throw new Error("Sin respuesta de los núcleos de IA.");
 
     } catch (error) {
+        console.error("LOG:", error.message);
         res.status(500).json({ content: `[ERROR]: ${error.message}` });
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v65.0 activo.`));
+app.listen(port, () => console.log(`PredictaCore v67.0 activo en puerto ${port}`));
