@@ -13,8 +13,12 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY } = process.env;
 
     try {
-        // Redirección de seguridad: Si el ID no existe en el cerebro, usamos OMNI (Punto XI)
+        // Redirección para que el punto XI (OMNI) nunca falle
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
+
+        if (!PROMPTS[idFinal]) {
+            throw new Error(`Etapa ${etapaId} no definida.`);
+        }
 
         let hechos = "DNA base: " + dna;
         if (JINA_API_KEY) {
@@ -23,12 +27,12 @@ app.post('/diseccion', async (req, res) => {
                     headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
                 });
                 if (jRes.ok) hechos = (await jRes.text()).substring(0, 4500);
-            } catch (e) { console.log("Lector Jina Offline"); }
+            } catch (e) { console.log("Lector Offline"); }
         }
 
         const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
 
-        // LLAMADA ESTÁNDAR REST A GOOGLE GEMINI
+        // URL DE CONEXIÓN CORREGIDA (v1beta + gemini-1.5-flash)
         const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
         
         const gRes = await fetch(url, {
@@ -41,7 +45,7 @@ app.post('/diseccion', async (req, res) => {
         
         const gData = await gRes.json();
 
-        // Error handling de la API de Google
+        // Si la API devuelve error, lo mostramos para saber qué falta
         if (gData.error) {
             throw new Error(`Google API: ${gData.error.message}`);
         }
@@ -58,4 +62,4 @@ app.post('/diseccion', async (req, res) => {
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v83.0 Online en puerto ${port}`));
+app.listen(port, () => console.log(`PredictaCore v84.0 Online.`));
