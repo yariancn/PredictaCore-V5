@@ -1,21 +1,53 @@
-const PERSONA = `Eres la Unidad de Inteligencia PredictaCore. Tu tono es clínico, sofisticado y de altísima gama. 
-No te presentes. No uses frases de relleno. Ve directo al hallazgo financiero y psicológico.
-REGLA DE ORO: Cada diagnóstico en todas las secciones debe tener un mínimo de 3 y un MÁXIMO de 5 líneas.
-LENGUAJE: Emprendedor y pragmático. Sustituye "Job" por "Misión Real de Compra".
-JERARQUÍA: Si un activo existe pero no es obvio, diagnostícalo como FALLA DE JERARQUÍA VISUAL.`;
+const PERSONA = `Eres el Gerente de PredictaCore, una unidad de Ingeniería Forense de Conversión. 
+Tu lenguaje es de consultoría de alta gama pero con "lenguaje a pie de calle": directo, emprendedor, sin tecnicismos vacíos y con una responsabilidad absoluta sobre el valor del reporte.
+ESTÁ PROHIBIDO: Resumir, acortar, usar consejos genéricos o ser "escolástico".
+REGLA DE ORO: Cada punto de análisis debe tener entre 3 y 5 líneas de profundidad técnica y psicológica.
+METODOLOGÍA: Usas Jobs-To-Be-Done (JTBD) y Auditoría de Semiótica Visual.
+CONTEXTO: Analizas el negocio basándote en 9,000 gemelos sintéticos que buscan, compran y se frustran en el activo.`;
 
 const PROMPTS = {
-    INTRO: (dna) => `DNA: ${dna}. Identifica sector, ubicación y modelo. Realiza un escaneo de visibilidad externa. Redacta el Manifiesto de Ingeniería de Conversión: Posición actual vs. Potencial de mercado. Explica la recuperación proyectada del 25% de ventas mediante la eliminación de la fatiga de decisión. (3-5 líneas).`,
-    GEMELOS: (dna) => `Simulación de 9,000 gemelos para ${dna}. Perfiles Ana (Emocional), Roberto (Ejecutivo) y Elena (Validador). Define quiénes son, su problema vital y el miedo que los frena en exactamente 3 líneas por perfil.`,
-    SCORECARD: (dna) => `Auditoría de 10 puntos para ${dna}. Por cada punto (Gancho, Precios, Segmentación, Confianza, Prueba Social, Contacto, Reputación, Fotos, Rapidez, Autoridad): Calificación (1-10) y Diagnóstico de 3 a 5 líneas.`,
-    VISIBILIDAD: (dna) => `Escaneo de visibilidad externa para ${dna}. 1. Posicionamiento en Google/Maps. 2. Reputación percibida por gemelos. 3. Estrategia de Redes (Si aplica). (3-5 líneas por punto).`,
-    BENCHMARK: (dna) => `Usa datos de Google para comparar ${dna} con 4 competidores de su nivel. Analiza: Estrellas/Reseñas, Keywords de dominio y UX de conversión. Identifica la "Oportunidad de Oro" para dominancia inmediata. (3-5 líneas por punto).`,
-    SWOT: (dna) => `Matriz FODA para ${dna}. Cada punto (F, O, D, A) debe incluir la motivación del cliente y el [Impacto Financiero] proyectado en %. (3-5 líneas por punto).`,
-    WISHLIST: (dna) => `Lista de Deseos de los Gemelos para ${dna}. 5 puntos estratégicos de 3 a 5 líneas. ¿Qué anhela encontrar el cliente psicológicamente para pagar ahora mismo?`,
-    FUGAS: (dna) => `Detecta 15 FUGAS DE CAPITAL en ${dna}. 3 a 5 líneas por fuga. Explica el impacto financiero y la desconexión semiótica que espanta el dinero.`,
-    ACCIONES: (dna) => `15 ACCIONES TÁCTICAS para ${dna}. 3 a 5 líneas por acción. Formato: 'Lo que tienes que hacer'. Lógica condicional: 'Si el cliente busca X, entonces haz Y'.`,
-    HERRAMIENTAS: (dna) => `5 Herramientas de Escalamiento para ${dna}. 3 a 5 líneas por herramienta. Explica el beneficio financiero real y qué fuga específica detiene cada una.`,
-    OMNI: (dna) => `Genera 3 Bloques de Autoridad para ${dna}. Mínimo 5 líneas por bloque. Convierte el servicio en una necesidad emocional de alto valor. Finaliza con la Hoja de Ruta de 3 semanas.`,
+    INTRO: (dna) => `Genera la Introducción de PredictaCore para el activo ${dna}. 
+    Explica: ¿Quiénes somos?, ¿Qué hacemos?, ¿Cómo lo hacemos? y ¿Por qué somos mejores que los demás? (Sin mencionar marcas externas como Organic Nails). 
+    Usa un tono de autoridad soberana.`,
+
+    DNA: (dna) => `Realiza el Diagnóstico de Ingeniería (DNA del Activo) para ${dna}. 
+    Analiza la posición de mercado, el entorno digital y la Misión Real de Compra (JTBD). 
+    Aplica Auditoría de Semiótica Visual sobre la paleta de colores y tipografía.`,
+
+    GEMELOS: (dna) => `Describe a los 2 Gemelos Sintéticos principales para ${dna}: 
+    1. ANA (Madre Primeriza/Emocional) y 2. ROBERTO (El Padrino/Estatus). 
+    Define solo su perfil psicológico e identidad. (Sus hallazgos van en otras secciones).`,
+
+    SCORECARD: (dna) => `Genera el SCORECARD PREDICTACORE con exactamente 10 PUNTOS: 
+    1. Gancho, 2. Precios, 3. Misión de Compra, 4. Jerarquía Visual, 5. Confianza, 6. Navegación (UX), 7. Prueba Social, 8. Facilidad de Pago, 9. Autoridad de Marca, 10. Soporte. 
+    Califica de 1 a 10 y da el diagnóstico forense de 3 a 5 líneas por cada uno.`,
+
+    GOOGLE: (dna) => `Realiza la Auditoría de Visibilidad Externa en Google y Maps para ${dna}. 
+    Analiza SEO Local, presencia en Maps y la soberanía del dominio frente a marketplaces como Etsy.`,
+
+    BENCHMARK: (dna) => `Realiza el Benchmarking Local para ${dna}. 
+    Compara contra competidores reales del nicho (Caden Lane, Pottery Barn Kids, Etsy). 
+    Identifica la ventaja de ellos y la debilidad que vamos a atacar.`,
+
+    FODA: (dna) => `Genera la Matriz Estratégica (FODA) para ${dna}. 
+    3 a 5 líneas por cada Fortificación, Oportunidad, Debilidad y Amenaza. Sin rellenos académicos.`,
+
+    DESEOS: (dna) => `Lista de Deseos (La Voz del Cliente) para ${dna}. 
+    Identifica 5 deseos profundos de los gemelos (Control, Certeza, Estatus, Cercanía, Seguridad).`,
+
+    FUGAS: (dna) => `Identifica exactamente 15 FUGAS DE CAPITAL para ${dna}. 
+    Cada fuga debe explicar dónde se pierde el dinero y por qué (incertidumbre, errores técnicos, falta de botones, tallas invisibles, etc.). 
+    Mínimo 3 líneas por fuga.`,
+
+    ACCIONES: (dna) => `Genera 15 ACCIONES TÁCTICAS para ${dna}. 
+    Usa lógica condicional: "Si el cliente busca X, entonces haz Y". 
+    Deben ser acciones inmediatas, desde la higiene técnica hasta la estrategia de ventas.`,
+
+    HERRAMIENTAS: (dna) => `Lista 5 HERRAMIENTAS DE ESCALA (Software real) para ${dna}. 
+    Explica para qué sirve cada una (Zakeke, Loox, Klaviyo, Gorgias, Lucky Orange) y su beneficio financiero.`,
+
+    ROADMAP: (dna) => `Autoridad y Hoja de Ruta de 21 días para ${dna}. 
+    Divide en 3 semanas de implementación técnica y estratégica.`
 };
 
 module.exports = { PERSONA, PROMPTS };
