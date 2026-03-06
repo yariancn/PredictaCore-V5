@@ -3,7 +3,7 @@ const { PERSONA, PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
 
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 app.use(express.json());
 
 app.get('/', (req, res) => res.send(getHTML()));
@@ -13,10 +13,15 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY } = process.env;
 
     try {
-        // Aseguramos que el punto XI (OMNI) nunca falle
-        const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
+        // FIX PUNTO XI: Si el front pide OMNI o AUTORIDAD, usamos el prompt ROADMAP
+        let idReal = etapaId;
+        if (etapaId === 'OMNI' || etapaId === 'AUTORIDAD') idReal = 'ROADMAP';
 
-        let hechos = "DNA: " + dna;
+        if (!PROMPTS[idReal]) {
+            throw new Error(`Etapa [${etapaId}] no encontrada en cerebro.js`);
+        }
+
+        let hechos = "DNA base: " + dna;
         if (JINA_API_KEY) {
             try {
                 const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
@@ -26,8 +31,9 @@ app.post('/diseccion', async (req, res) => {
             } catch (e) { console.log("Jina Offline"); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[INFO REAL DE LA WEB]:\n${hechos}\n\n[TAREA]: ${PROMPTS[idReal](dna)}`;
 
+        // LLAMADA ORIGINAL AL MODELO 1.5 FLASH
         const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -40,11 +46,11 @@ app.post('/diseccion', async (req, res) => {
             return res.json({ content: gData.candidates[0].content.parts[0].text });
         }
 
-        throw new Error("Respuesta de IA vacía.");
+        throw new Error(gData.error?.message || "Sin respuesta de los núcleos de IA.");
 
     } catch (error) {
         res.status(500).json({ content: `[ERROR]: ${error.message}` });
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore Online en puerto ${port}`));
+app.listen(port, () => console.log(`PredictaCore Online.`));
