@@ -13,33 +13,39 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
 
     try {
-        // Validación de ID: Si no existe, usamos OMNI por defecto para el Punto XI
-        const idReal = PROMPTS[etapaId] ? etapaId : 'OMNI';
+        // Redirección de seguridad para el punto 11
+        const idFinal = (etapaId === 'AUTORIDAD' || etapaId === 'ROADMAP') ? 'OMNI' : etapaId;
+
+        if (!PROMPTS[idFinal]) {
+            throw new Error(`La etapa [${etapaId}] no está configurada en cerebro.js`);
+        }
 
         let hechos = "DNA base: " + dna;
         if (JINA_API_KEY) {
             try {
                 const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
-                    headers: { "Authorization": `Bearer ${JINA_API_KEY}` },
-                    signal: AbortSignal.timeout(15000) 
+                    headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
                 });
-                if (jRes.ok) hechos = (await jRes.text()).substring(0, 5000);
-            } catch (e) { console.log("Lector Jina Offline"); }
+                if (jRes.ok) hechos = (await jRes.text()).substring(0, 4000);
+            } catch (e) { console.log("Jina no disponible."); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idReal](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
 
-        const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`, {
+        // CONEXIÓN LIMPIA A GOOGLE
+        const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
         });
+        
         const gData = await gRes.json();
 
         if (gData.candidates?.[0]?.content?.parts?.[0]?.text) {
             return res.json({ content: gData.candidates[0].content.parts[0].text });
         }
 
+        // RESPALDO XAI (GROK) - Solo si Google falla y tienes saldo
         if (XAI_API_KEY) {
             const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
                 method: "POST",
@@ -53,7 +59,7 @@ app.post('/diseccion', async (req, res) => {
             if (xData.choices?.[0]?.message?.content) return res.json({ content: xData.choices[0].message.content });
         }
 
-        throw new Error("Sin respuesta de los núcleos de IA.");
+        throw new Error("La IA no respondió. Revisa la cuota de tu API Key.");
 
     } catch (error) {
         console.error("LOG:", error.message);
@@ -61,4 +67,4 @@ app.post('/diseccion', async (req, res) => {
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v68.0 activo.`));
+app.listen(port, () => console.log(`PredictaCore v74.0 [ESTABLE] activo.`));
