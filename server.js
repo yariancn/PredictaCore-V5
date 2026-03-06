@@ -10,13 +10,13 @@ app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
-    const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
+    const { API_KEY, JINA_API_KEY } = process.env;
 
     try {
-        // CORRECCIÓN PUNTO XI: Si el ID no existe en cerebro, usamos ROADMAP por defecto
-        const idFinal = PROMPTS[etapaId] ? etapaId : 'ROADMAP';
+        // Aseguramos que si el ID no existe o se llama distinto, use OMNI para el Punto XI
+        const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
 
-        let hechos = "Analizando DNA: " + dna;
+        let hechos = "DNA: " + dna;
         if (JINA_API_KEY) {
             try {
                 const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
@@ -29,38 +29,23 @@ app.post('/diseccion', async (req, res) => {
 
         const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
 
-        // LLAMADA ORIGINAL AL MODELO ESTABLE
         const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
         });
+        
         const gData = await gRes.json();
 
         if (gData.candidates?.[0]?.content?.parts?.[0]?.text) {
             return res.json({ content: gData.candidates[0].content.parts[0].text });
         }
 
-        // RESPALDO XAI (USO DE SALDO)
-        if (XAI_API_KEY) {
-            const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
-                body: JSON.stringify({
-                    model: "grok-2",
-                    messages: [{ role: "system", content: PERSONA }, { role: "user", content: promptFinal }]
-                })
-            });
-            const xData = await xRes.json();
-            if (xData.choices?.[0]?.message?.content) return res.json({ content: xData.choices[0].message.content });
-        }
-
         throw new Error("Sin respuesta de los núcleos de IA.");
 
     } catch (error) {
-        console.error("ERROR LOG:", error.message);
         res.status(500).json({ content: `[ERROR]: ${error.message}` });
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v70.0 activo.`));
+app.listen(port, () => console.log(`PredictaCore v71.0 rugiendo.`));
