@@ -14,7 +14,7 @@ app.post('/diseccion', async (req, res) => {
 
     try {
         // 1. ESCÁNER DE HECHOS (JINA AI)
-        let hechos = "DNA base. Análisis deductivo PredictaCore.";
+        let hechos = "DNA base. Análisis PredictaCore.";
         if (JINA_API_KEY) {
             try {
                 const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
@@ -24,46 +24,65 @@ app.post('/diseccion', async (req, res) => {
             } catch (e) { console.log("Jina no disponible."); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[CONTEXTO REAL]:\n${hechos}\n\n[ACTIVO]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[HECHOS]:\n${hechos}\n\n[ADN]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
 
-        // 2. NÚCLEO DE PRODUCCIÓN (GOOGLE v1)
-        // Entramos por la ruta estable 'v1' que es la que tu llave exige
-        const googleRes = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
-        });
+        // 2. CARRUSEL DE GOOGLE (Probamos 3 configuraciones)
+        const configsGoogle = [
+            { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}` },
+            { url: `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}` },
+            { url: `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}` }
+        ];
 
-        const dataG = await googleRes.json();
+        let respuestaFinal = null;
 
-        if (dataG.candidates && dataG.candidates[0]?.content?.parts?.[0]?.text) {
-            return res.json({ content: dataG.candidates[0].content.parts[0].text });
+        for (const config of configsGoogle) {
+            try {
+                const gFetch = await fetch(config.url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
+                });
+                const dataG = await gFetch.json();
+                if (dataG.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    respuestaFinal = dataG.candidates[0].content.parts[0].text;
+                    break; 
+                }
+            } catch (e) { console.log("Ruta de Google fallida, intentando siguiente..."); }
         }
 
-        // 3. RESPALDO XAI (Solo si hay saldo)
-        if (XAI_API_KEY) {
+        // 3. RESPALDO XAI (GROK-2) - Si tienes saldo, este es el seguro de vida
+        if (!respuestaFinal && XAI_API_KEY) {
+            console.log(`Google falló. Activando Grok-2 para ${etapaId}...`);
             const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
+                headers: { 
+                    "Content-Type": "application/json", 
+                    "Authorization": `Bearer ${XAI_API_KEY}` 
+                },
                 body: JSON.stringify({
-                    model: "grok-2",
-                    messages: [{ role: "system", content: PERSONA }, { role: "user", content: promptFinal }]
+                    model: "grok-2", 
+                    messages: [
+                        { role: "system", content: PERSONA },
+                        { role: "user", content: promptFinal }
+                    ]
                 })
             });
             const dataX = await xRes.json();
-            if (dataX.choices && dataX.choices[0]?.message?.content) {
-                return res.json({ content: dataX.choices[0].message.content });
+            if (dataX.choices?.[0]?.message?.content) {
+                respuestaFinal = dataX.choices[0].message.content;
             }
         }
 
-        // Si llegamos aquí, mostramos el error real de producción para no adivinar
-        const errorMsg = dataG.error?.message || "Error de conexión. Verifica el saldo en Grok o cuota en Google.";
-        throw new Error(errorMsg);
+        if (respuestaFinal) {
+            return res.json({ content: respuestaFinal });
+        }
+
+        throw new Error("Ninguna IA respondió. Revisa tus llaves en Railway.");
 
     } catch (error) {
-        console.error("LOG:", error.message);
-        res.status(500).json({ content: `[ESTADO]: ${error.message}` });
+        console.error("ERROR:", error.message);
+        res.status(500).json({ content: `[ERROR]: ${error.message}` });
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v52.0 [PRODUCTION-READY] activo.`));
+app.listen(port, () => console.log(`PredictaCore v53.0 [ULTRA-RESILIENT] activo.`));
