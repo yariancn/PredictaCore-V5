@@ -7,19 +7,21 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Ruta principal para cargar la interfaz
+// Interfaz Principal
 app.get('/', (req, res) => {
     res.send(getHTML());
 });
 
-// NÚCLEO ESTRATÉGICO: Procesamiento de Auditoría
+// NÚCLEO DE INTELIGENCIA (Disección Forense)
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
 
+    // Validación de llaves mínima
+    if (!API_KEY) return res.status(500).json({ content: "[ERROR]: Falta API_KEY en Railway." });
+
     try {
         // 1. ESCÁNER DE HECHOS (JINA AI)
-        // PredictaCore no especula, analiza realidades.
         let hechos = "DNA base. Análisis deductivo activado.";
         if (JINA_API_KEY) {
             try {
@@ -30,11 +32,69 @@ app.post('/diseccion', async (req, res) => {
                     const texto = await jinaRes.text();
                     hechos = texto.substring(0, 3000); 
                 }
-            } catch (e) { console.log("Jina no disponible."); }
+            } catch (e) { console.log("Jina Offline."); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[CONTEXTO REAL]:\n${hechos}\n\n[ACTIVO]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[CONTEXTO REAL]:\n${hechos}\n\n[ADN]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
 
+        // 2. MOTOR PRINCIPAL (GOOGLE)
+        // Probamos rutas v1 y v1beta para asegurar conexión
+        const rutas = [
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`
+        ];
+
+        let respuestaIA = null;
+
+        for (const url of rutas) {
+            try {
+                const gFetch = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
+                });
+                
+                const gData = await gFetch.json();
+                if (gData.candidates && gData.candidates[0]?.content?.parts[0]?.text) {
+                    respuestaIA = gData.candidates[0].content.parts[0].text;
+                    break; 
+                }
+            } catch (e) { console.log("Fallo en una ruta de Google, intentando siguiente..."); }
+        }
+
+        // 3. MOTOR DE RESPALDO (XAI)
+        if (!respuestaIA && XAI_API_KEY) {
+            const xaiRes = await fetch("https://api.x.ai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
+                body: JSON.stringify({
+                    model: "grok-2",
+                    messages: [
+                        { role: "system", content: PERSONA },
+                        { role: "user", content: promptFinal }
+                    ]
+                })
+            });
+            const xData = await xaiRes.json();
+            respuestaIA = xData.choices?.[0]?.message?.content;
+        }
+
+        // RESPUESTA FINAL
+        if (respuestaIA) {
+            res.json({ content: respuestaIA });
+        } else {
+            res.status(500).json({ content: "[FALLO]: Ninguna IA respondió. Revisa cuotas o API_KEY." });
+        }
+
+    } catch (error) {
+        console.error("ERROR:", error.message);
+        res.status(500).json({ content: `[ERROR]: ${error.message}` });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`PredictaCore v49.0 rugiendo en puerto ${port}`);
+});
         // 2. MOTOR DE INTELIGENCIA (GOOGLE)
         // Probamos el modelo estándar y el más avanzado de 2026.
         const modelos = ["gemini-1.5-flash", "gemini-2.0-flash"];
