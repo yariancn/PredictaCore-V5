@@ -13,7 +13,7 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY } = process.env;
 
     try {
-        // SEGURIDAD: Sincronización del Punto XI
+        // Redirección de seguridad: Si el ID no existe en el cerebro, usamos OMNI (Punto XI)
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
 
         let hechos = "DNA base: " + dna;
@@ -23,20 +23,25 @@ app.post('/diseccion', async (req, res) => {
                     headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
                 });
                 if (jRes.ok) hechos = (await jRes.text()).substring(0, 4500);
-            } catch (e) { console.log("Lector omitido."); }
+            } catch (e) { console.log("Lector Jina Offline"); }
         }
 
         const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
 
-        // MODELO ESTABLE v1beta
-        const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`, {
+        // LLAMADA ESTÁNDAR REST A GOOGLE GEMINI
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        
+        const gRes = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: promptFinal }] }]
+            })
         });
         
         const gData = await gRes.json();
 
+        // Error handling de la API de Google
         if (gData.error) {
             throw new Error(`Google API: ${gData.error.message}`);
         }
@@ -45,7 +50,7 @@ app.post('/diseccion', async (req, res) => {
             return res.json({ content: gData.candidates[0].content.parts[0].text });
         }
 
-        throw new Error("La IA no devolvió contenido útil.");
+        throw new Error("Respuesta incompleta de la IA.");
 
     } catch (error) {
         console.error("LOG:", error.message);
@@ -53,4 +58,4 @@ app.post('/diseccion', async (req, res) => {
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v81.0 activo.`));
+app.listen(port, () => console.log(`PredictaCore v83.0 Online en puerto ${port}`));
