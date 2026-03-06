@@ -13,23 +13,21 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
 
     try {
-        // Validación de etapa: Si el frontend manda OMNI, el cerebro responde OMNI.
-        if (!PROMPTS[etapaId]) {
-            throw new Error(`Etapa [${etapaId}] no reconocida en cerebro.js`);
-        }
+        // Validación de ID: Si no existe, usamos OMNI por defecto para el Punto XI
+        const idReal = PROMPTS[etapaId] ? etapaId : 'OMNI';
 
-        let hechos = "DNA: " + dna;
+        let hechos = "DNA base: " + dna;
         if (JINA_API_KEY) {
             try {
                 const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
                     headers: { "Authorization": `Bearer ${JINA_API_KEY}` },
-                    signal: AbortSignal.timeout(12000) 
+                    signal: AbortSignal.timeout(15000) 
                 });
-                if (jRes.ok) hechos = (await jRes.text()).substring(0, 4500);
-            } catch (e) { console.log("Lector omitido."); }
+                if (jRes.ok) hechos = (await jRes.text()).substring(0, 5000);
+            } catch (e) { console.log("Lector Jina Offline"); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[CONTEXTO]: ${hechos}\n\n[TAREA]: ${PROMPTS[etapaId](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idReal](dna)}`;
 
         const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`, {
             method: 'POST',
@@ -63,4 +61,4 @@ app.post('/diseccion', async (req, res) => {
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v67.0 activo en puerto ${port}`));
+app.listen(port, () => console.log(`PredictaCore v68.0 activo.`));
