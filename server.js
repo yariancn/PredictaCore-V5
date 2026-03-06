@@ -12,43 +12,38 @@ app.get('/', (req, res) => {
     res.send(getHTML());
 });
 
-// NÚCLEO DE INTELIGENCIA (Disección Forense)
+// NÚCLEO ESTRATÉGICO: Procesamiento de Auditoría
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { API_KEY, JINA_API_KEY, XAI_API_KEY } = process.env;
 
-    // Validación de llaves mínima
-    if (!API_KEY) return res.status(500).json({ content: "[ERROR]: Falta API_KEY en Railway." });
+    if (!API_KEY) return res.status(500).json({ content: "[ERROR]: API_KEY de Google no encontrada." });
 
     try {
         // 1. ESCÁNER DE HECHOS (JINA AI)
-        let hechos = "DNA base. Análisis deductivo activado.";
+        let hechos = "DNA base. Análisis forense PredictaCore activado.";
         if (JINA_API_KEY) {
             try {
-                const jinaRes = await fetch(`https://r.jina.ai/${dna}`, {
+                const jinaFetch = await fetch(`https://r.jina.ai/${dna}`, {
                     headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
                 });
-                if (jinaRes.ok) {
-                    const texto = await jinaRes.text();
-                    hechos = texto.substring(0, 3000); 
+                if (jinaFetch.ok) {
+                    const textoRaw = await jinaFetch.text();
+                    hechos = textoRaw.substring(0, 3000); 
                 }
-            } catch (e) { console.log("Jina Offline."); }
+            } catch (e) { console.log("Jina no disponible en esta fase."); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[CONTEXTO REAL]:\n${hechos}\n\n[ADN]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
+        const promptFinal = `${PERSONA}\n\n[CONTEXTO REAL]:\n${hechos}\n\n[ACTIVO]: ${dna}\n[FASE]: ${PROMPTS[etapaId](dna)}`;
 
-        // 2. MOTOR PRINCIPAL (GOOGLE)
-        // Probamos rutas v1 y v1beta para asegurar conexión
-        const rutas = [
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`,
-            `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`
-        ];
-
+        // 2. MOTOR DE INTELIGENCIA (GOOGLE)
+        // Probamos las dos rutas de producción más estables de 2026
+        const modelos = ["gemini-1.5-flash", "gemini-1.5-pro"];
         let respuestaIA = null;
 
-        for (const url of rutas) {
+        for (const m of modelos) {
             try {
-                const gFetch = await fetch(url, {
+                const gFetch = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
@@ -57,16 +52,21 @@ app.post('/diseccion', async (req, res) => {
                 const gData = await gFetch.json();
                 if (gData.candidates && gData.candidates[0]?.content?.parts[0]?.text) {
                     respuestaIA = gData.candidates[0].content.parts[0].text;
-                    break; 
+                    break; // Salimos si Google responde
                 }
-            } catch (e) { console.log("Fallo en una ruta de Google, intentando siguiente..."); }
+            } catch (e) { console.log(`Google ${m} rechazó la llamada.`); }
         }
 
-        // 3. MOTOR DE RESPALDO (XAI)
+        // 3. RESPALDO DE IDENTIDAD ÚNICA (XAI)
+        // Si Google falla, Grok-2 mantiene el mismo rigor estratégico
         if (!respuestaIA && XAI_API_KEY) {
-            const xaiRes = await fetch("https://api.x.ai/v1/chat/completions", {
+            console.log("Activando respaldo Grok...");
+            const xaiFetch = await fetch("https://api.x.ai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
+                headers: { 
+                    "Content-Type": "application/json", 
+                    "Authorization": `Bearer ${XAI_API_KEY}` 
+                },
                 body: JSON.stringify({
                     model: "grok-2",
                     messages: [
@@ -75,11 +75,11 @@ app.post('/diseccion', async (req, res) => {
                     ]
                 })
             });
-            const xData = await xaiRes.json();
+            const xData = await xaiFetch.json();
             respuestaIA = xData.choices?.[0]?.message?.content;
         }
 
-        // RESPUESTA FINAL
+        // SALIDA FINAL
         if (respuestaIA) {
             res.json({ content: respuestaIA });
         } else {
@@ -87,219 +87,11 @@ app.post('/diseccion', async (req, res) => {
         }
 
     } catch (error) {
-        console.error("ERROR:", error.message);
-        res.status(500).json({ content: `[ERROR]: ${error.message}` });
-    }
-});
-
-app.listen(port, () => {
-    console.log(`PredictaCore v49.0 rugiendo en puerto ${port}`);
-});
-        // 2. MOTOR DE INTELIGENCIA (GOOGLE)
-        // Probamos el modelo estándar y el más avanzado de 2026.
-        const modelos = ["gemini-1.5-flash", "gemini-2.0-flash"];
-        let respuestaIA = null;
-
-        for (const m of modelos) {
-            try {
-                const gFetch = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
-                });
-                
-                const gData = await gFetch.json();
-                if (gData.candidates && gData.candidates[0]?.content?.parts[0]?.text) {
-                    respuestaIA = gData.candidates[0].content.parts[0].text;
-                    break; 
-                }
-            } catch (e) { console.log(`Fallo con ${m}, probando siguiente...`); }
-        }
-
-        // 3. RESPALDO DE IDENTIDAD ÚNICA (XAI)
-        // Si Google falla, Grok-2 mantiene el mismo tono y rigor.
-        if (!respuestaIA && XAI_API_KEY) {
-            const xaiRes = await fetch("https://api.x.ai/v1/chat/completions", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json", 
-                    "Authorization": `Bearer ${XAI_API_KEY}` 
-                },
-                body: JSON.stringify({
-                    model: "grok-2",
-                    messages: [
-                        { role: "system", content: PERSONA },
-                        { role: "user", content: promptFinal }
-                    ]
-                })
-            });
-            const xData = await xaiRes.json();
-            respuestaIA = xData.choices?.[0]?.message?.content;
-        }
-
-        if (respuestaIA) {
-            return res.json({ content: respuestaIA });
-        } else {
-            throw new Error("Ningún núcleo de IA respondió correctamente.");
-        }
-
-    } catch (error) {
-        console.error("ERROR CRÍTICO:", error.message);
-        res.status(500).json({ content: `[FALLO]: ${error.message}. Revisa tus API Keys.` });
-    }
-});
-
-app.listen(port, () => {
-    console.log(`PredictaCore Titán v48.0 rugiendo en el puerto ${port}`);
-});
-        // 2. MOTOR DE INTELIGENCIA (GOOGLE)
-        // Probamos el modelo estándar y el más avanzado de 2026.
-        const modelos = ["gemini-1.5-flash", "gemini-2.0-flash"];
-        let respuestaIA = null;
-
-        for (const m of modelos) {
-            try {
-                const gFetch = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
-                });
-                
-                const gData = await gFetch.json();
-                if (gData.candidates && gData.candidates[0]?.content?.parts[0]?.text) {
-                    respuestaIA = gData.candidates[0].content.parts[0].text;
-                    break; 
-                }
-            } catch (e) { console.log(`Fallo con ${m}, probando siguiente...`); }
-        }
-
-        // 3. RESPALDO DE IDENTIDAD ÚNICA (XAI)
-        // Si Google falla, Grok-2 mantiene el mismo tono y rigor.
-        if (!respuestaIA && XAI_API_KEY) {
-            const xaiRes = await fetch("https://api.x.ai/v1/chat/completions", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json", 
-                    "Authorization": `Bearer ${XAI_API_KEY}` 
-                },
-                body: JSON.stringify({
-                    model: "grok-2",
-                    messages: [
-                        { role: "system", content: PERSONA },
-                        { role: "user", content: promptFinal }
-                    ]
-                })
-            });
-            const xData = await xaiRes.json();
-            respuestaIA = xData.choices?.[0]?.message?.content;
-        }
-
-        if (respuestaIA) {
-            return res.json({ content: respuestaIA });
-        } else {
-            throw new Error("Ningún núcleo de IA respondió correctamente.");
-        }
-
-    } catch (error) {
-        console.error("ERROR CRÍTICO:", error.message);
-        res.status(500).json({ content: `[FALLO]: ${error.message}. Revisa tus API Keys.` });
-    }
-});
-
-app.listen(port, () => {
-    console.log(`PredictaCore Titán v48.0 rugiendo en el puerto ${port}`);
-});        ];
-
-        let ultimoErrorGoogle = "";
-
-        for (const url of rutasGoogle) {
-            try {
-                const gFetch = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
-                });
-                const gData = await gFetch.json();
-                
-                if (gData.candidates?.[0]?.content?.parts?.[0]?.text) {
-                    return res.json({ content: gData.candidates[0].content.parts[0].text });
-                }
-                ultimoErrorGoogle = gData.error?.message || "Respuesta vacía";
-            } catch (e) { 
-                ultimoErrorGoogle = e.message;
-            }
-        }
-
-        console.log(`Google agotado en ${etapaId}. Razón: ${ultimoErrorGoogle}. Pasando a Grok...`);
-
-        // 3. RESPALDO TITÁN: XAI (GROK)
-        if (XAI_API_KEY) {
-            const xFetch = await fetch("https://api.x.ai/v1/chat/completions", {
-                method: "POST",
-                headers: { 
-                    "Content-Type": "application/json", 
-                    "Authorization": `Bearer ${XAI_API_KEY}` 
-                },
-                body: JSON.stringify({
-                    model: "grok-2", // Modelo estándar estable en 2026
-                    messages: [
-                        { role: "system", content: PERSONA },
-                        { role: "user", content: promptFinal }
-                    ]
-                })
-            });
-            const xData = await xFetch.json();
-            
-            if (xData.choices?.[0]?.message?.content) {
-                return res.json({ content: xData.choices[0].message.content });
-            }
-            throw new Error(`Grok falló: ${xData.error?.message || "Error desconocido"}`);
-        }
-
-        throw new Error(`Fallo multicanal. Google dice: ${ultimoErrorGoogle}`);
-
-    } catch (error) {
         console.error("ERROR CRÍTICO:", error.message);
         res.status(500).json({ content: `[CRÍTICO]: ${error.message}` });
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v47.0 [SOVEREIGN-ENGINE] activo.`));
-        const dataG = await googleRes.json();
-        
-        if (dataG.candidates?.[0]?.content?.parts?.[0]?.text) {
-            return res.json({ content: dataG.candidates[0].content.parts[0].text });
-        }
-
-        // 3. RESPALDO: XAI (GROK-2)
-        if (XAI_API_KEY) {
-            console.log(`Google rechazó ${etapaId}. Activando Grok-2...`);
-            const xaiRes = await fetch("https://api.x.ai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
-                body: JSON.stringify({
-                    model: "grok-2", 
-                    messages: [
-                        { role: "system", content: PERSONA },
-                        { role: "user", content: promptFinal }
-                    ]
-                })
-            });
-
-            const dataX = await xaiRes.json();
-            if (dataX.choices?.[0]?.message?.content) {
-                return res.json({ content: dataX.choices[0].message.content });
-            }
-        }
-
-        // Si llegamos aquí, ambos fallaron. Devolvemos el error real para leerlo.
-        const msgError = dataG.error?.message || "Error desconocido en ambos núcleos.";
-        throw new Error(msgError);
-
-    } catch (error) {
-        console.error("ERROR CRÍTICO:", error.message);
-        res.status(500).json({ content: `[FALLO]: ${error.message}` });
-    }
+app.listen(port, () => {
+    console.log(`PredictaCore Titán v50.0 activo en puerto ${port}`);
 });
-
-app.listen(port, () => console.log(`PredictaCore v46.0 [STABLE] activo.`));
