@@ -1,18 +1,35 @@
-const PERSONA = `Eres el Gerente de PredictaCore. Tu lenguaje es emprendedor, directo y sin tecnicismos vacíos. Priorizas el contenido y el análisis estratégico. Usas metodología JTBD y Auditoría de Semiótica Visual con 9,000 gemelos sintéticos. En las acciones tácticas siempre usas el formato 'Lo que tienes que hacer' con lógica condicional.`;
+const PERSONA = `Eres el sistema de inteligencia estratégica de PredictaCore. Tu lenguaje es corporativo-emprendedor: serio, técnico, analítico y directo. PROHIBICIÓN: No te presentes en las secciones. No uses frases de relleno ni "Hola". REGLA DE ORO: Cada punto de análisis debe tener entre 3 y 5 líneas de profundidad técnica. Identifica activos críticos omitidos según el giro del negocio y denúncialo como falla de ingeniería.`;
 
 const PROMPTS = {
-    INTRO: (dna) => `Genera la Introducción de PredictaCore para el activo ${dna}. Explica quiénes somos y por qué somos mejores.`,
-    DNA: (dna) => `Realiza el Diagnóstico de Ingeniería para ${dna}. Analiza la arquitectura visual y facilidad de encontrar botones y activos críticos.`,
-    GEMELOS: (dna) => `Describe a los 2 Gemelos Sintéticos para ${dna}: ANA (Madre primeriza) y ROBERTO (Padrino/Estatus). Solo su perfil psicológico.`,
-    SCORECARD: (dna) => `Genera el SCORECARD PREDICTACORE de 10 puntos para ${dna}. Califica del 1 al 10 y da un análisis técnico por punto.`,
-    VISIBILIDAD: (dna) => `Realiza la Auditoría de Visibilidad Externa en Google y Maps para ${dna}.`,
-    BENCHMARK: (dna) => `Realiza el Benchmarking Local para ${dna} comparando contra la competencia directa.`,
-    SWOT: (dna) => `Genera la Matriz Estratégica (FODA) para ${dna} con 5 líneas por punto.`,
-    WISHLIST: (dna) => `Lista de Deseos Estratégica para ${dna}. Qué activos faltan en el sitio para que el cliente pague ya.`,
-    FUGAS: (dna) => `Identifica 15 FUGAS DE CAPITAL para ${dna}. Explica dónde se pierde dinero y por qué.`,
+    INTRO: (dna) => `Genera la INTRODUCCIÓN CORPORATIVA de PredictaCore para ${dna}. Define a la empresa como una unidad de ingeniería forense de conversión. Explica brevemente el uso de Gemelos Sintéticos y la metodología JTBD.`,
+    
+    DNA: (dna) => `Realiza el DIAGNÓSTICO DE INGENIERÍA de 5 PUNTOS para ${dna}. 
+    Puntos obligatorios: 
+    1. Arquitectura de Navegación y flujo. 
+    2. Transparencia Técnica (Activos omitidos). 
+    3. Semiótica Visual (Autoridad vs Desconfianza). 
+    4. Visión de Google (SEO local, autoridad de dominio vs marketplaces). 
+    5. Percepción Algorítmica de los Gemelos (Cómo el ranking afecta la confianza inicial).`,
+    
+    GEMELOS: (dna) => `Define el PERFIL PSICOLÓGICO de 2 Gemelos Sintéticos para ${dna}: 1. ANA (Seguridad/Emoción) y 2. ROBERTO (Estatus/Eficiencia). Limítate estrictamente a su identidad y motivaciones psicológicas profundas.`,
+    
+    SCORECARD: (dna) => `Genera el SCORECARD DE 10 PUNTOS para ${dna}. Califica de 1 a 10 y da 5 líneas de análisis forense por punto (Gancho, Pricing, UX, Tallas/Activos, Confianza, etc.).`,
+    
+    VISIBILIDAD: (dna) => `AUDITORÍA DE VISIBILIDAD EXTERNA para ${dna}. Analiza SEO de intención, canibalización de plataformas externas y presencia local desde la autoridad de marca.`,
+    
+    BENCHMARK: (dna) => `BENCHMARKING DE NICHO para ${dna}. Compara contra los líderes del sector e identifica qué activos técnicos tienen ellos que este sitio omite.`,
+    
+    SWOT: (dna) => `MATRIZ ESTRATÉGICA PROFUNDA para ${dna}. Analiza Fortalezas, Oportunidades, Debilidades y Amenazas con enfoque financiero.`,
+    
+    WISHLIST: (dna) => `LISTA DE DESEOS ESTRATÉGICA para ${dna}. Enumera 5 activos de alta gama que el sitio NO tiene y que el cliente desea para pagar ya.`,
+    
+    FUGAS: (dna) => `Identifica 15 FUGAS DE CAPITAL para ${dna}. Explica el error técnico y su impacto financiero. 5 líneas por cada punto.`,
+    
     ACCIONES: (dna) => `Genera 15 ACCIONES TÁCTICAS para ${dna}. Formato: 'Lo que tienes que hacer: [Acción]'. Usa lógica condicional.`,
-    HERRAMIENTAS: (dna) => `Lista 5 HERRAMIENTAS DE ESCALA (Software real) para ${dna} y su beneficio financiero.`,
-    OMNI: (dna) => `Genera la Autoridad y Hoja de Ruta de 21 días para ${dna}.`
+    
+    HERRAMIENTAS: (dna) => `5 HERRAMIENTAS DE ESCALA para ${dna}. Software real y su beneficio financiero directo en la conversión.`,
+    
+    OMNI: (dna) => `AUTORIDAD Y HOJA DE RUTA DE 21 DÍAS para ${dna}. Plan semanal detallado para profesionalizar la web y cerrar ventas.`
 };
 
 module.exports = { PERSONA, PROMPTS };
