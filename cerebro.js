@@ -6,7 +6,7 @@ Identifica los activos críticos omitidos según el giro del negocio y denúncia
 
 const PROMPTS = {
     INTRO: (dna) => `Genera la INTRODUCCIÓN CORPORATIVA de PredictaCore para ${dna}. Explica la metodología forense de Gemelos Sintéticos y JTBD.`,
-    DNA: (dna) => `DIAGNÓSTICO DE INGENIERÍA de 5 PUNTOS para ${dna}: 1. Arquitectura de Navegación. 2. Transparencia Técnica. 3. Semiótica Visual. 4. Visión de Google (SEO). 5. Percepción Algorítmica.`,
+    DNA: (dna) => `DIAGNÓSTICO DE INGENIERÍA de 5 PUNTOS para ${dna}: 1. Arquitectura de Navegación. 2. Transparencia Técnica (Activos omitidos). 3. Semiótica Visual. 4. Visión de Google (SEO). 5. Percepción Algorítmica.`,
     GEMELOS: (dna) => `Define el PERFIL PSICOLÓGICO de 2 Gemelos Sintéticos para ${dna}: 1. ANA (Seguridad) y 2. ROBERTO (Eficiencia). Solo identidad psicológica profunda.`,
     SCORECARD: (dna) => `Genera el SCORECARD DE 10 PUNTOS para ${dna}. Califica y da 5 líneas de análisis forense por punto.`,
     VISIBILIDAD: (dna) => `AUDITORÍA DE VISIBILIDAD EXTERNA para ${dna}. Analiza SEO local, Maps y competencia.`,
