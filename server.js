@@ -13,9 +13,7 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY } = process.env;
 
     try {
-        // Mapeo de seguridad para el punto final
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
-
         if (!PROMPTS[idFinal]) throw new Error(`Etapa [${etapaId}] no definida.`);
 
         let hechos = "DNA base: " + dna;
@@ -24,13 +22,15 @@ app.post('/diseccion', async (req, res) => {
                 const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
                     headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
                 });
-                if (jRes.ok) hechos = (await jRes.text()).substring(0, 4500);
+                if (jRes.ok) {
+                    // Optimizamos a 3500 caracteres para ahorrar tokens en el Free Tier
+                    hechos = (await jRes.text()).substring(0, 3500);
+                }
             } catch (e) { console.log("Lector Offline"); }
         }
 
         const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
 
-        // CONEXIÓN 2026: RUTA v1 + GEMINI 2.0 FLASH
         const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
         
         const gRes = await fetch(url, {
@@ -44,15 +44,15 @@ app.post('/diseccion', async (req, res) => {
         const gData = await gRes.json();
 
         if (gData.error) {
-            // Si el modelo 2.0 no está disponible, el error nos dirá por qué (cuota o región)
-            throw new Error(`Google API: ${gData.error.message}`);
+            // Reporte técnico detallado del error de cuota o plan
+            throw new Error(`Google API (${gData.error.code}): ${gData.error.message}`);
         }
 
         if (gData.candidates && gData.candidates[0].content) {
             return res.json({ content: gData.candidates[0].content.parts[0].text });
         }
 
-        throw new Error("Respuesta incompleta del núcleo de IA.");
+        throw new Error("La IA no devolvió contenido.");
 
     } catch (error) {
         console.error("LOG:", error.message);
@@ -60,4 +60,4 @@ app.post('/diseccion', async (req, res) => {
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore v87.0 Online en puerto ${port}`));
+app.listen(port, () => console.log(`PredictaCore Online puerto ${port}`));
