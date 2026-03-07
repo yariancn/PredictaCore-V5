@@ -10,9 +10,10 @@ app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
-    const { API_KEY, JINA_API_KEY } = process.env;
+    const { XAI_API_KEY, JINA_API_KEY } = process.env;
 
     try {
+        // Redirección de seguridad para el punto final
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
         if (!PROMPTS[idFinal]) throw new Error(`Etapa [${etapaId}] no definida.`);
 
@@ -22,37 +23,41 @@ app.post('/diseccion', async (req, res) => {
                 const jRes = await fetch(`https://r.jina.ai/${dna}`, { 
                     headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
                 });
-                if (jRes.ok) {
-                    // Optimizamos a 3500 caracteres para ahorrar tokens en el Free Tier
-                    hechos = (await jRes.text()).substring(0, 3500);
-                }
+                if (jRes.ok) hechos = (await jRes.text()).substring(0, 5000);
             } catch (e) { console.log("Lector Offline"); }
         }
 
-        const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
+        const promptFinal = PROMPTS[idFinal](dna);
 
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
-        
-        const gRes = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        // CONEXIÓN DIRECTA A X.AI (GROK)
+        const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${XAI_API_KEY}`
+            },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: promptFinal }] }]
+                model: "grok-2-latest",
+                messages: [
+                    { role: "system", content: PERSONA },
+                    { role: "system", content: `CONTEXTO DEL NEGOCIO:\n${hechos}` },
+                    { role: "user", content: promptFinal }
+                ],
+                temperature: 0.3 // Mantenemos precisión forense
             })
         });
-        
-        const gData = await gRes.json();
 
-        if (gData.error) {
-            // Reporte técnico detallado del error de cuota o plan
-            throw new Error(`Google API (${gData.error.code}): ${gData.error.message}`);
+        const xData = await xRes.json();
+
+        if (xData.error) {
+            throw new Error(`xAI Grok Error: ${xData.error.message}`);
         }
 
-        if (gData.candidates && gData.candidates[0].content) {
-            return res.json({ content: gData.candidates[0].content.parts[0].text });
+        if (xData.choices && xData.choices[0].message) {
+            return res.json({ content: xData.choices[0].message.content });
         }
 
-        throw new Error("La IA no devolvió contenido.");
+        throw new Error("Grok no devolvió contenido útil.");
 
     } catch (error) {
         console.error("LOG:", error.message);
@@ -60,4 +65,4 @@ app.post('/diseccion', async (req, res) => {
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore Online puerto ${port}`));
+app.listen(port, () => console.log(`PredictaCore Online con GROK Core en puerto ${port}`));
