@@ -13,12 +13,10 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY } = process.env;
 
     try {
-        // Mapeo de seguridad para que el Punto XI (OMNI) nunca falle
+        // Mapeo de seguridad para el punto final
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
 
-        if (!PROMPTS[idFinal]) {
-            throw new Error(`Etapa [${etapaId}] no encontrada en cerebro.js`);
-        }
+        if (!PROMPTS[idFinal]) throw new Error(`Etapa [${etapaId}] no definida.`);
 
         let hechos = "DNA base: " + dna;
         if (JINA_API_KEY) {
@@ -32,8 +30,8 @@ app.post('/diseccion', async (req, res) => {
 
         const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
 
-        // RUTA DE ALTA COMPATIBILIDAD (v1beta con nombre de modelo base)
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        // CONEXIÓN 2026: RUTA v1 + GEMINI 2.0 FLASH
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
         
         const gRes = await fetch(url, {
             method: 'POST',
@@ -46,6 +44,7 @@ app.post('/diseccion', async (req, res) => {
         const gData = await gRes.json();
 
         if (gData.error) {
+            // Si el modelo 2.0 no está disponible, el error nos dirá por qué (cuota o región)
             throw new Error(`Google API: ${gData.error.message}`);
         }
 
@@ -53,7 +52,7 @@ app.post('/diseccion', async (req, res) => {
             return res.json({ content: gData.candidates[0].content.parts[0].text });
         }
 
-        throw new Error("La IA no devolvió contenido.");
+        throw new Error("Respuesta incompleta del núcleo de IA.");
 
     } catch (error) {
         console.error("LOG:", error.message);
@@ -61,4 +60,4 @@ app.post('/diseccion', async (req, res) => {
     }
 });
 
-app.listen(port, () => console.log(`PredictaCore Online puerto ${port}`));
+app.listen(port, () => console.log(`PredictaCore v87.0 Online en puerto ${port}`));
