@@ -13,11 +13,11 @@ app.post('/diseccion', async (req, res) => {
     const { API_KEY, JINA_API_KEY } = process.env;
 
     try {
-        // Redirección de seguridad: Cualquier ID desconocido al final dispara OMNI
+        // Redirección para el Punto XI (OMNI)
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
 
         if (!PROMPTS[idFinal]) {
-            throw new Error(`Etapa [${etapaId}] no encontrada en cerebro.js`);
+            throw new Error(`Etapa [${etapaId}] no encontrada en el cerebro.`);
         }
 
         let hechos = "DNA base: " + dna;
@@ -32,8 +32,8 @@ app.post('/diseccion', async (req, res) => {
 
         const promptFinal = `${PERSONA}\n\n[INFO]: ${hechos}\n\n[TAREA]: ${PROMPTS[idFinal](dna)}`;
 
-        // RUTA DE PRODUCCIÓN ESTABLE v1 (Certificada Marzo 2026)
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        // RUTA DE CONEXIÓN QUE FUNCIONÓ ESTA MAÑANA
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY.trim()}`;
         
         const gRes = await fetch(url, {
             method: 'POST',
@@ -45,16 +45,16 @@ app.post('/diseccion', async (req, res) => {
         
         const gData = await gRes.json();
 
-        // Manejo de errores de la API de Google
+        // Si hay error, lo mostramos para saber qué pasa con la API Key
         if (gData.error) {
-            throw new Error(`Google API: ${gData.error.message} (Status: ${gData.error.status})`);
+            throw new Error(`Google API: ${gData.error.message}`);
         }
 
         if (gData.candidates && gData.candidates[0].content) {
             return res.json({ content: gData.candidates[0].content.parts[0].text });
         }
 
-        throw new Error("La IA no devolvió contenido útil.");
+        throw new Error("Respuesta vacía de la IA.");
 
     } catch (error) {
         console.error("LOG:", error.message);
