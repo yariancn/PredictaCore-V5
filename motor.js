@@ -1,25 +1,24 @@
 const axios = require('axios');
+const { chromium } = require('playwright');
 
 async function llamarIA(instruccion, prompt) {
     const key = (process.env.XAI_API_KEY || "").trim();
     if (!key) throw new Error("FALTA_LLAVE_XAI: Configura XAI_API_KEY en Railway.");
-
     try {
         const r = await axios.post('https://api.x.ai/v1/chat/completions', {
-            // ESTE ES EL NOMBRE QUE VISTE EN TU CONSOLA
-            model: "grok-4-latest", 
+            model: "grok-4-latest",
             messages: [
                 { role: "system", content: instruccion },
                 { role: "user", content: prompt }
             ],
             temperature: 0.1,
             stream: false
-        }, { 
-            headers: { 
-                'Authorization': `Bearer ${key}`, 
-                'Content-Type': 'application/json' 
-            }, 
-            timeout: 90000 
+        }, {
+            headers: {
+                'Authorization': `Bearer ${key}`,
+                'Content-Type': 'application/json'
+            },
+            timeout: 90000
         });
         return r.data.choices[0].message.content;
     } catch (e) {
@@ -37,4 +36,35 @@ async function extraerDNA(url) {
     } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-module.exports = { llamarIA, extraerDNA };
+async function scrapeDeep(url, maxPages = 5) {
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.goto(url, { timeout: 30000 });
+    
+    let content = await page.content();  // HTML completo
+    const visuals = await page.evaluate(() => {  // Extraer UX/visuals básicos
+        const buttons = Array.from(document.querySelectorAll('button, a.btn, [class*="button"], [class*="btn"]')).map(el => ({
+            text: el.innerText.trim(),
+            color: window.getComputedStyle(el).backgroundColor,
+            position: el.getBoundingClientRect()
+        }));
+        const mainColor = window.getComputedStyle(document.body).backgroundColor;
+        return { buttons, mainColor };
+    });
+    
+    // Crawl subpáginas (solo links internos, limitados)
+    const links = await page.$$eval('a[href^="/"], a[href^="' + new URL(url).origin + '"]', as => 
+        as.map(a => a.href).filter(h => !h.includes('#')).slice(0, maxPages - 1)
+    );
+    for (const link of links) {
+        try {
+            await page.goto(link, { timeout: 20000 });
+            content += `\n--- Subpágina: ${link} ---\n` + await page.content();
+        } catch (e) { console.log("Subpágina falló:", link); }
+    }
+    
+    await browser.close();
+    return { text: content.substring(0, 30000), visuals };
+}
+
+module.exports = { llamarIA, extraerDNA, scrapeDeep };
