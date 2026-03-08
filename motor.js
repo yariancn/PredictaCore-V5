@@ -36,34 +36,42 @@ async function extraerDNA(url) {
     } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-async function scrapeDeep(url, maxPages = 5) {
-    const browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url, { timeout: 30000 });
-    
-    let content = await page.content();
-    const visuals = await page.evaluate(() => {
-        const buttons = Array.from(document.querySelectorAll('button, a.btn, [class*="button"], [class*="btn"]')).map(el => ({
-            text: el.innerText.trim(),
-            color: window.getComputedStyle(el).backgroundColor,
-            position: el.getBoundingClientRect()
-        }));
-        const mainColor = window.getComputedStyle(document.body).backgroundColor;
-        return { buttons, mainColor };
-    });
-    
-    const links = await page.$$eval('a[href^="/"], a[href^="' + new URL(url).origin + '"]', as => 
-        as.map(a => a.href).filter(h => !h.includes('#')).slice(0, maxPages - 1)
-    );
-    for (const link of links) {
-        try {
-            await page.goto(link, { timeout: 20000 });
-            content += `\n--- Subpágina: ${link} ---\n` + await page.content();
-        } catch (e) { console.log("Subpágina falló:", link); }
+async function scrapeDeep(input, maxPages = 8) {
+    const currentDate = new Date().toISOString().slice(0, 10);  // Fecha actual para correcciones
+    if (input.startsWith('http')) {  // Si es URL (web/red)
+        const browser = await chromium.launch({ headless: true });
+        const page = await browser.newPage();
+        await page.goto(input, { timeout: 30000 });
+        
+        let content = await page.content();
+        content = content.replace(/2026/g, currentDate);  // Corregir fechas futuras
+        const visuals = await page.evaluate(() => {
+            const buttons = Array.from(document.querySelectorAll('button, a.btn, [class*="button"], [class*="btn"]')).map(el => ({
+                text: el.innerText.trim(),
+                color: window.getComputedStyle(el).backgroundColor,
+                position: el.getBoundingClientRect()
+            }));
+            const mainColor = window.getComputedStyle(document.body).backgroundColor;
+            return { buttons, mainColor };
+        });
+        
+        const links = await page.$$eval('a[href^="/"], a[href^="' + new URL(input).origin + '"]', as => 
+            as.map(a => a.href).filter(h => !h.includes('#')).slice(0, maxPages - 1)
+        );
+        for (const link of links) {
+            try {
+                await page.goto(link, { timeout: 20000 });
+                let subContent = await page.content();
+                subContent = subContent.replace(/2026/g, currentDate);
+                content += `\n--- Subpágina: ${link} ---\n` + subContent;
+            } catch (e) { console.log("Subpágina falló:", link); }
+        }
+        
+        await browser.close();
+        return { text: content.substring(0, 45000), visuals };
+    } else {  // Si es idea de negocio (texto)
+        return { text: input, visuals: {} };  // Usa la descripción como 'hechos'
     }
-    
-    await browser.close();
-    return { text: content.substring(0, 30000), visuals };
 }
 
 module.exports = { llamarIA, extraerDNA, scrapeDeep };
