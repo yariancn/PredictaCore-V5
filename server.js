@@ -1,7 +1,8 @@
 const express = require('express');
 const { PERSONA, PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
-const { scrapeDeep } = require('./motor');
+const { scrapeDeep } = require('./motor');  // Nueva línea para usar scrapeDeep
+
 const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json());
@@ -17,10 +18,10 @@ app.post('/diseccion', async (req, res) => {
     try {
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
         if (!PROMPTS[idFinal]) throw new Error(`Etapa [${etapaId}] no definida.`);
-        
+
         let hechos = "DNA base: " + dna;
         let visualsData = {};
-        
+
         try {
             const deepData = await scrapeDeep(dna, 5);  // max 5 páginas/subpáginas
             hechos = deepData.text;
@@ -36,9 +37,9 @@ app.post('/diseccion', async (req, res) => {
                 console.log("Jina fallback failed");
             }
         }
-        
+
         const promptFinal = PROMPTS[idFinal](dna);
-        
+
         const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -56,12 +57,12 @@ app.post('/diseccion', async (req, res) => {
                 temperature: 0.2
             })
         });
-        
+
         if (!xRes.ok) {
             const errorData = await xRes.json();
             throw new Error(`xAI Error: ${errorData.error?.message || xRes.statusText}`);
         }
-        
+
         const xData = await xRes.json();
         if (xData.choices && xData.choices[0].message) {
             return res.json({ content: xData.choices[0].message.content });
