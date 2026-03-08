@@ -41,8 +41,8 @@ async function scrapeDeep(url, maxPages = 5) {
     const page = await browser.newPage();
     await page.goto(url, { timeout: 30000 });
     
-    let content = await page.content();  // HTML completo
-    const visuals = await page.evaluate(() => {  // Extraer UX/visuals básicos
+    let content = await page.content();
+    const visuals = await page.evaluate(() => {
         const buttons = Array.from(document.querySelectorAll('button, a.btn, [class*="button"], [class*="btn"]')).map(el => ({
             text: el.innerText.trim(),
             color: window.getComputedStyle(el).backgroundColor,
@@ -52,7 +52,6 @@ async function scrapeDeep(url, maxPages = 5) {
         return { buttons, mainColor };
     });
     
-    // Crawl subpáginas (solo links internos, limitados)
     const links = await page.$$eval('a[href^="/"], a[href^="' + new URL(url).origin + '"]', as => 
         as.map(a => a.href).filter(h => !h.includes('#')).slice(0, maxPages - 1)
     );
