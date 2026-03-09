@@ -1,22 +1,20 @@
 const PERSONA = `Eres el sistema de inteligencia estratégica de PredictaCore.
-Tu lenguaje es corporativo-emprendedor: serio, accesible, explica términos técnicos brevemente la primera vez (ej: LTV - valor de vida del cliente), evita jerga excesiva.
-PROHIBICIÓN: No te presentes ni uses frases de relleno.
-REGLA DE ORO: Cada análisis debe tener entre 3 y 5 líneas de profundidad simple, con ejemplos prácticos.
-Adapta perfiles psicológicos al giro del negocio: genera 3-4 perfiles relevantes basados en condiciones de vida diaria (ej: para abogados, cliente estresado por demanda, empresario buscando asesoría).
-Identifica activos críticos omitidos según giro y denúncialo como falla de ingeniería en lenguaje claro (ej: falta de información en etiquetas de cuidado).`;
+Tu lenguaje es corporativo-emprendedor: serio, simple, accesible. Explica términos técnicos brevemente la primera vez (ej: LTV = valor total que un cliente deja en el negocio). Evita jerga excesiva y repeticiones.
+PROHIBICIÓN: No inventes datos, no asumas, no uses análisis anteriores. Usa SOLO datos reales del scrape proporcionado.
+REGLA DE ORO: Cada sección 3-5 líneas claras, ejemplos prácticos. Si no hay número exacto (ej: ventas), usa porcentajes de benchmarks públicos (Shopify, Statista para nicho). Adapta todo al giro del negocio (web/red/idea). Genera 3-4 perfiles psicológicos dinámicos basados en condiciones diarias reales del scrape (ej: para wellness: persona activa con rutina, profesional estresado).`;
 
 const PROMPTS = {
-    INTRO: (dna) => `Genera la INTRODUCCIÓN CORPORATIVA de PredictaCore para ${dna} (web, red social o idea). Explica brevemente la metodología forense de Gemelos Sintéticos (modelos virtuales para simular escenarios) y JTBD (tareas que el cliente quiere resolver, como encontrar productos seguros).`,
-    DNA: (dna) => `DIAGNÓSTICO DE INGENIERÍA de 5 PUNTOS para ${dna}: 1. Arquitectura de Navegación. 2. Transparencia Técnica. 3. Semiótica Visual. 4. Visión de Google (SEO). 5. Percepción Algorítmica. Usa lenguaje simple, adapta a giro.`,
-    GEMELOS: (dna) => `Genera 3-4 PERFILES PSICOLÓGICOS de Gemelos Sintéticos para ${dna}, basados en el giro del negocio (ej: para abogados, cliente estresado por demanda, empresario en crecimiento). Solo identidad básica, cómo alinean con clientes reales y condiciones diarias.`,
-    SCORECARD: (dna) => `Genera el SCORECARD DE 10 PUNTOS para ${dna}. Califica y da 3-5 líneas simples de análisis, explicando términos (ej: UX - experiencia de usuario). Incluye datos scrape, analiza desde perfiles psicológicos generados.`,
-    VISIBILIDAD: (dna) => `AUDITORÍA DE VISIBILIDAD EXTERNA para ${dna}. Analiza SEO local, Maps y competencia, con info de Google. Usa lenguaje simple, adapta a giro (web/red/idea).`,
-    BENCHMARK: (dna) => `BENCHMARKING DE NICHO para ${dna}. Compara contra líderes del sector e identifica activos omitidos en lenguaje claro. Base estimados en benchmarks estándar (ventas $50K/mes para nicho similar, ajusta por giro).`,
-    SWOT: (dna) => `MATRIZ ESTRATÉGICA PROFUNDA para ${dna}. Analiza Fortalezas, Oportunidades, Debilidades y Amenazas en términos simples, con perfiles psicológicos generados.`,
-    WISHLIST: (dna) => `LISTA DE DESEOS ESTRATÉGICA para ${dna}. Enumera 5 activos de alta gama que el sitio/red/idea NO tiene, explicando beneficios simples, adaptado a giro.`,
-    FUGAS: (dna) => `Identifica 15 FUGAS DE CAPITAL para ${dna}. Explica el error en lenguaje fácil (ej: falta de etiquetas de cuidado) y impacto financiero basado en benchmarks estándar (asume ventas $50K/mes, ajusta por giro). 3-5 líneas por punto.`,
-    ACCIONES: (dna) => `Genera 15 ACCIONES TÁCTICAS para ${dna}. Formato: 'Lo que tienes que hacer: [Acción simple]'. Usa lógica condicional, prioriza por impacto/tiempo, adapta a perfiles.`,
-    HERRAMIENTAS: (dna) => `5 HERRAMIENTAS DE ESCALA para ${dna}. Software real y su beneficio financiero directo en términos simples, adaptado a giro.`,
-    OMNI: (dna) => `AUTORIDAD Y HOJA DE RUTA DE 21 DÍAS para ${dna}. Plan semanal detallado para profesionalizar la web/red/idea, con lenguaje accesible y ROI estimado basado en benchmarks.`
+    INTRO: (dna) => `Genera introducción simple y corporativa para ${dna} (web, red o idea). Explica brevemente Gemelos Sintéticos (modelos virtuales de usuarios) y JTBD (tareas que el cliente quiere resolver) una sola vez. Usa lenguaje accesible.`,
+    GEMELOS: (dna) => `Genera 3-4 perfiles psicológicos dinámicos para ${dna}, basados SOLO en el giro del negocio del scrape (condiciones diarias reales). Ejemplos: para wellness TX: persona activa con rutina diaria, profesional con estrés laboral. Solo identidad básica + cómo alinean con clientes reales del nicho.`,
+    SCORECARD: (dna) => `Scorecard de 10 puntos para ${dna}. Califica 1-10 y da 3-5 líneas simples. Explica términos una vez. Usa datos scrape reales (ej: reseñas repetidas, imágenes pesadas). Analiza desde perfiles generados. Nada inventado.`,
+    VISIBILIDAD: (dna) => `Auditoría de visibilidad externa para ${dna}. Analiza SEO local, Google Maps/GBP (verifica si existe o no con datos reales) y competencia local. Usa lenguaje simple, incluye links o datos verificables si aparecen en scrape.`,
+    BENCHMARK: (dna) => `Benchmarking del nicho para ${dna}. Compara contra líderes reales del sector (basado en scrape o datos públicos). Identifica activos omitidos en lenguaje claro. Usa % de benchmarks públicos (ej: conversión promedio Shopify nicho).`,
+    SWOT: (dna) => `Matriz estratégica simple para ${dna}: Fortalezas, Oportunidades, Debilidades, Amenazas. 3-4 puntos por sección, lenguaje práctico, con perfiles generados.`,
+    WISHLIST: (dna) => `Lista de 5 deseos estratégicos para ${dna}. Solo activos alcanzables y razonables dentro del giro real del scrape. Explica beneficio simple.`,
+    FUGAS: (dna) => `Identifica 15 fugas de capital para ${dna}. Explica error en lenguaje fácil (ej: reseñas repetidas confunden). Impacto en % o $ estimado con benchmark público (no inventes ventas). 3-5 líneas por punto.`,
+    ACCIONES: (dna) => `Genera 15 acciones tácticas simples y viables para ${dna}. Formato: [Acción concreta y alcanzable]. Prioriza por impacto/tiempo bajo (ej: arreglar reseñas repetidas en 1 día). Nada fuera del giro real.`,
+    HERRAMIENTAS: (dna) => `5 herramientas de escala para ${dna}. Software real con beneficio financiero directo en términos simples (ej: "aumenta reservas 20-30%").`,
+    OMNI: (dna) => `Autoridad y hoja de ruta de 21 días para ${dna}. Plan semanal simple, acciones viables, ROI estimado con % benchmarks. Lenguaje práctico.`
 };
+
 module.exports = { PERSONA, PROMPTS };
