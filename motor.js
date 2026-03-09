@@ -35,7 +35,7 @@ async function extraerDNA(url) {
     } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-async function scrapeDeep(input, maxPages = 12) {  // Aumentado para reseñas profundas
+async function scrapeDeep(input, maxPages = 12) {
     const timestamp = new Date().toISOString();  // Timestamp fresco por request
     if (input.startsWith('http')) {
         const browser = await chromium.launch({ headless: true });
@@ -69,7 +69,7 @@ async function scrapeDeep(input, maxPages = 12) {  // Aumentado para reseñas pr
         }
         
         await browser.close();
-        return { text: content.substring(0, 50000), visuals };  // Más límite para profundidad
+        return { text: content.substring(0, 50000), visuals };
     } else {
         return { text: input + `\n(Timestamp fresco: ${timestamp})`, visuals: {} };
     }
