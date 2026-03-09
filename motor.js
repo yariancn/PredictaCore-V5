@@ -3,7 +3,7 @@ const { chromium } = require('playwright');
 
 async function llamarIA(instruccion, prompt) {
     const key = (process.env.XAI_API_KEY || "").trim();
-    if (!key) throw new Error("FALTA_LLAVE_XAI: Configura XAI_API_KEY en Railway.");
+    if (!key) throw new Error("FALTA_LLAVE_XAI");
     try {
         const r = await axios.post('https://api.x.ai/v1/chat/completions', {
             model: "grok-4-latest",
@@ -22,8 +22,7 @@ async function llamarIA(instruccion, prompt) {
         });
         return r.data.choices[0].message.content;
     } catch (e) {
-        const detail = e.response ? JSON.stringify(e.response.data) : e.message;
-        throw new Error("XAI_FAIL: " + detail);
+        throw new Error("XAI_FAIL: " + e.message);
     }
 }
 
@@ -37,14 +36,14 @@ async function extraerDNA(url) {
 }
 
 async function scrapeDeep(input, maxPages = 8) {
-    const currentDate = new Date().toISOString().slice(0, 10);  // Fecha actual para correcciones
-    if (input.startsWith('http')) {  // Si es URL (web/red)
+    const currentDate = new Date().toISOString().slice(0, 10);  // Fecha actual real
+    if (input.startsWith('http')) {
         const browser = await chromium.launch({ headless: true });
         const page = await browser.newPage();
         await page.goto(input, { timeout: 30000 });
         
         let content = await page.content();
-        content = content.replace(/2026/g, currentDate);  // Corregir fechas futuras
+        content = content.replace(/2026/g, currentDate);  // Corregir cualquier fecha futura
         const visuals = await page.evaluate(() => {
             const buttons = Array.from(document.querySelectorAll('button, a.btn, [class*="button"], [class*="btn"]')).map(el => ({
                 text: el.innerText.trim(),
@@ -63,14 +62,14 @@ async function scrapeDeep(input, maxPages = 8) {
                 await page.goto(link, { timeout: 20000 });
                 let subContent = await page.content();
                 subContent = subContent.replace(/2026/g, currentDate);
-                content += `\n--- Subpágina: ${link} ---\n` + subContent;
+                content += `\n--- Subpágina: ${link} (fecha actual: ${currentDate}) ---\n` + subContent;
             } catch (e) { console.log("Subpágina falló:", link); }
         }
         
         await browser.close();
         return { text: content.substring(0, 45000), visuals };
-    } else {  // Si es idea de negocio (texto)
-        return { text: input, visuals: {} };  // Usa la descripción como 'hechos'
+    } else {
+        return { text: input, visuals: {} };
     }
 }
 
