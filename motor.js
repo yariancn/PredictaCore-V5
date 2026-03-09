@@ -35,15 +35,16 @@ async function extraerDNA(url) {
     } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-async function scrapeDeep(input, maxPages = 8) {
-    const currentDate = new Date().toISOString().slice(0, 10);  // Fecha actual real
+async function scrapeDeep(input, maxPages = 12) {  // Aumentado para reseñas profundas
+    const timestamp = new Date().toISOString();  // Timestamp fresco por request
     if (input.startsWith('http')) {
         const browser = await chromium.launch({ headless: true });
         const page = await browser.newPage();
         await page.goto(input, { timeout: 30000 });
         
         let content = await page.content();
-        content = content.replace(/2026/g, currentDate);  // Corregir cualquier fecha futura
+        const currentDate = new Date().toISOString().slice(0, 10);
+        content = content.replace(/2026/g, currentDate);  // Corregir fechas
         const visuals = await page.evaluate(() => {
             const buttons = Array.from(document.querySelectorAll('button, a.btn, [class*="button"], [class*="btn"]')).map(el => ({
                 text: el.innerText.trim(),
@@ -51,25 +52,26 @@ async function scrapeDeep(input, maxPages = 8) {
                 position: el.getBoundingClientRect()
             }));
             const mainColor = window.getComputedStyle(document.body).backgroundColor;
-            return { buttons, mainColor };
+            const location = document.querySelector('[itemprop="address"], .address, footer address')?.innerText || 'No ubicación detectada';
+            return { buttons, mainColor, location };
         });
         
         const links = await page.$$eval('a[href^="/"], a[href^="' + new URL(input).origin + '"]', as => 
-            as.map(a => a.href).filter(h => !h.includes('#')).slice(0, maxPages - 1)
+            as.map(a => a.href).filter(h => !h.includes('#') && !h.includes('login')).slice(0, maxPages - 1)
         );
         for (const link of links) {
             try {
                 await page.goto(link, { timeout: 20000 });
                 let subContent = await page.content();
                 subContent = subContent.replace(/2026/g, currentDate);
-                content += `\n--- Subpágina: ${link} (fecha actual: ${currentDate}) ---\n` + subContent;
+                content += `\n--- Subpágina: ${link} (timestamp: ${timestamp}) ---\n` + subContent;
             } catch (e) { console.log("Subpágina falló:", link); }
         }
         
         await browser.close();
-        return { text: content.substring(0, 45000), visuals };
+        return { text: content.substring(0, 50000), visuals };  // Más límite para profundidad
     } else {
-        return { text: input, visuals: {} };
+        return { text: input + `\n(Timestamp fresco: ${timestamp})`, visuals: {} };
     }
 }
 
