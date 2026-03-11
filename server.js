@@ -13,14 +13,13 @@ app.post('/diseccion', async (req, res) => {
     try {
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
         
-        // 1. OBTENCIÓN DE DATOS REALES (MÁXIMA PROFUNDIDAD)
+        // 1. OBTENCIÓN DE DATOS (Si Jina falla, intentamos pasar el DNA como fallback)
         let hechos = "";
         try {
             const deepData = await scrapeDeep(dna);
-            hechos = deepData.text.substring(0, 10000); // 10k caracteres de verdad
-        } catch (e) { hechos = "URL del activo: " + dna; }
+            hechos = deepData.text && deepData.text.length > 200 ? deepData.text.substring(0, 12000) : "URL: " + dna + ". El sitio no devolvió texto, analiza solo por el dominio y el contexto conocido.";
+        } catch (e) { hechos = "URL: " + dna; }
 
-        // 2. CONSTRUCCIÓN DEL PROMPT CON GROUNDING
         const promptFinal = PROMPTS[idFinal](hechos);
 
         const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -30,12 +29,12 @@ app.post('/diseccion', async (req, res) => {
                 "Authorization": `Bearer ${XAI_API_KEY}`
             },
             body: JSON.stringify({
-                model: "grok-3", // Usamos el motor más potente disponible
+                model: "grok-3", 
                 messages: [
                     { role: "system", content: PERSONA },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.1 // MÁXIMA PRECISIÓN, CERO ALUCINACIÓN
+                temperature: 0.3 // Recuperamos un poco de soul para el análisis estratégico
             })
         });
 
@@ -43,7 +42,7 @@ app.post('/diseccion', async (req, res) => {
         if (xData.choices) {
             return res.json({ content: xData.choices[0].message.content });
         }
-        throw new Error("Grok no respondió. Revisa conexión API.");
+        throw new Error("Grok no respondió.");
 
     } catch (error) {
         res.status(500).json({ content: `[ERROR]: ${error.message}` });
@@ -51,4 +50,4 @@ app.post('/diseccion', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v100.0 [Executive] Online.`));
+app.listen(port, () => console.log(`PredictaCore v101.0 [Full Quality] Online.`));
