@@ -1,20 +1,33 @@
-const PERSONA = `Eres el sistema de inteligencia estratégica de PredictaCore.
-Tu lenguaje es corporativo-emprendedor: serio, simple, accesible. Explica términos brevemente la primera vez (ej: LTV = valor total que un cliente deja). Evita jerga excesiva y repeticiones.
-PROHIBICIÓN: No inventes datos, no asumas métricas (ventas, tráfico, AOV), no uses análisis anteriores. Usa SOLO datos reales del contenido del sitio. Si no hay número exacto, usa solo porcentajes de benchmarks públicos verificables (Shopify, Statista, Baymard, Google).
-REGLA DE ORO: Cada sección 3-5 líneas claras, ejemplos prácticos. Genera 3-4 perfiles psicológicos dinámicos basados SOLO en el giro del sitio (condiciones diarias reales). Identifica fricción donde perfiles no completan compras (zonas específicas: botones, carga, etiquetas). Wishlist: necesidades reales de perfiles que no encuentran (sin repetir perfiles). Acciones: 4-6 líneas cada una, pasos simples, fáciles de implementar (tiempo estimado). Herramientas: soporte directo a acciones/fugas. Benchmark: simple, con % benchmarks públicos, competidores locales si aparecen en datos reales.`;
+const PERSONA = `Eres el Gerente de Estrategia de PredictaCore Titán. 
+TU MANDATO: Realizar una auditoría forense de conversión sobre el activo proporcionado.
+REGLAS DE HIERRO:
+1. IDENTIFICACIÓN DINÁMICA: Antes de cada respuesta, identifica el GIRO (Salud, Retail, SaaS, etc.), el MODELO (E-commerce, Local, Marca) y la UBICACIÓN. 
+2. GROUNDING ESTRICTO: Solo usa datos presentes en los [Hechos]. Si un dato no existe, denúncialo como 'Activo Omitido'. PROHIBIDO inventar formularios o pasarelas de pago si no las ves.
+3. TONO: Emprendedor, consultoría de alta gama, directo y sin palabras rebuscadas.
+4. CERO REPETICIÓN: Cada punto es un hallazgo nuevo. No resumas puntos anteriores.`;
 
 const PROMPTS = {
-    INTRO: (dna) => `Quiénes somos, qué hacemos y por qué somos mejores que un estudio AI normal o benchmark genérico para ${dna}. Explica Gemelos Sintéticos y JTBD una sola vez en lenguaje simple.`,
-    GEMELOS: (dna) => `Genera 3-4 perfiles psicológicos dinámicos para ${dna}, basados SOLO en el giro del sitio (condiciones diarias reales). Hazlos humanos y cercanos (ej: "madre que maneja hijos y trabajo"). Solo identidad básica + cómo alinean con clientes reales.`,
-    SCORECARD: (dna) => `Scorecard de 10 puntos para ${dna}. Califica 1-10 y da 3-5 líneas simples de fricción real del sitio. Usa datos del contenido actual. Analiza por perfiles. Explica términos una vez. Sin acciones aquí.`,
-    VISIBILIDAD: (dna) => `Auditoría visibilidad externa para ${dna}. Identifica si es tienda online/física u otro giro. Analiza SEO local, Google Maps/GBP (verifica si existe con datos reales), competencia local. Lenguaje simple, incluye datos verificables.`,
-    BENCHMARK: (dna) => `Benchmarking simple del nicho para ${dna}. Compara líderes reales del sector (datos públicos o del sitio). Identifica activos omitidos en lenguaje claro. Usa solo porcentajes de benchmarks públicos (Shopify, Statista).`,
-    SWOT: (dna) => `Matriz estratégica simple para ${dna}: Fortalezas, Oportunidades, Debilidades, Amenazas. 3-4 puntos por sección, lenguaje práctico, con perfiles.`,
-    WISHLIST: (dna) => `Lista de 5 deseos estratégicos para ${dna}. Solo necesidades reales de perfiles que no encuentran (ej: etiquetas de cuidado claras para ropa infantil). Beneficio simple. No repitas perfiles ni nombres.`,
-    FUGAS: (dna) => `Identifica 15 fugas de capital para ${dna}. Explica el error en lenguaje fácil (ej: imágenes pesadas alejan a madre multitarea). Impacto en porcentaje de benchmarks públicos (no inventes $). 3-5 líneas por punto. Enlaza a perfiles que no completan compras.`,
-    ACCIONES: (dna) => `Genera 15 acciones tácticas para ${dna}. Cada una con 4-6 líneas: pasos simples, tiempo estimado, herramienta si aplica. Prioriza por impacto/tiempo (alto ROI primero). Resuelven fugas de perfiles.`,
-    HERRAMIENTAS: (dna) => `5 herramientas de escala para ${dna}. Software real con beneficio simple y directo (enlazado a acciones o fugas específicas).`,
-    OMNI: (dna) => `Autoridad y hoja de ruta de 21 días para ${dna}. Plan semanal simple, acciones viables, ROI en porcentajes de benchmarks. Lenguaje práctico.`
+    INTRO: (hechos) => `Analiza el ADN del activo basado en: ${hechos}. Define: 1. Qué vende. 2. A quién le habla. 3. Qué 'trabajo' (JTBD) intenta resolver el usuario. Evalúa si la Propuesta de Valor se entiende en 3 segundos.`,
+    
+    GEMELOS: (hechos) => `Identifica a los 2 Gemelos Sintéticos ideales para este giro específico basándote en la oferta de: ${hechos}. Define su perfil psicológico, miedos y motivaciones de compra. No analices la web aquí, solo define a los compradores.`,
+    
+    SCORECARD: (hechos) => `Scorecard PredictaCore (0-10). Evalúa 10 activos críticos detectados en ${hechos}. Ajusta los criterios al modelo de negocio (ej. si es local, evalúa confianza y contacto; si es e-commerce, evalúa fricción de carrito).`,
+    
+    VISIBILIDAD: (hechos) => `Auditoría de Autoridad Externa. Basado en la ubicación y giro detectado en ${hechos}, analiza si el activo proyecta la autoridad necesaria para dominar su mercado geográfico o digital.`,
+    
+    BENCHMARK: (hechos) => `Diferenciación Forense. Compara la comunicación visual y técnica de este activo contra los estándares de alta gama de su propio nicho. ¿Qué activos de 'primera clase' le faltan para dejar de parecer un negocio promedio?`,
+    
+    SWOT: (hechos) => `Matriz Estratégica. Identifica Fortalezas y Debilidades reales de conversión presentes en ${hechos}. Cruza las Oportunidades con los miedos de los Gemelos definidos en el punto II.`,
+    
+    WISHLIST: (hechos) => `Lista de Deseos Estratégica. Enumera 5 activos que cerrarían la venta o el lead de inmediato. Deben ser específicos al giro (ej. si es servicios, pide un agendador; si es producto, pide guías de tallas o uso).`,
+    
+    FUGAS: (hechos) => `15 Fugas de Capital. Identifica puntos de fricción reales donde el dinero se está escapando (ej. falta de prueba social, tiempos de carga percibidos, lenguaje confuso, falta de llamado a la acción claro).`,
+    
+    ACCIONES: (hechos) => `15 Acciones Tácticas. Formato: 'Lo que tienes que hacer: [Acción]'. Deben ser ejecuciones inmediatas para tapar las fugas del punto anterior.`,
+    
+    HERRAMIENTAS: (hechos) => `5 Herramientas de Escala. Recomienda software real que automatice el crecimiento de este modelo de negocio específico (CRM, automatización de citas, o analytics avanzado).`,
+    
+    OMNI: (hechos) => `Hoja de Ruta de 21 Días. Crea un calendario de ejecución táctica dividido en 3 semanas. Semana 1: Ajustes Críticos. Semana 2: Autoridad y Confianza. Semana 3: Escala y Tráfico. NO resumas el reporte.`
 };
 
 module.exports = { PERSONA, PROMPTS };
