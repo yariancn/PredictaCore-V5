@@ -5,27 +5,42 @@ const { scrapeDeep } = require('./motor');
 
 const app = express();
 const port = process.env.PORT || 8080;
+
 app.use(express.json());
+
+// Headers para evitar remanentes de caché
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    next();
+});
+
+app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { XAI_API_KEY } = process.env;
 
+    if (!XAI_API_KEY) return res.status(500).json({ content: '[ERROR]: Falta XAI_API_KEY.' });
+
     try {
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
         
-        // 1. OBTENCIÓN DE DATOS REALES
+        // 1. Obtención de hechos reales
         let hechos = "";
         try {
             const deepData = await scrapeDeep(dna);
-            hechos = deepData.text && deepData.text.length > 100 
+            hechos = (deepData.text && deepData.text.length > 100) 
                 ? deepData.text.substring(0, 12000) 
-                : "URL: " + dna + ". El sitio no permitió lectura profunda. Analiza por dominio y contexto visual.";
-        } catch (e) { hechos = "URL del activo: " + dna; }
+                : "URL: " + dna + ". El sitio no permitió lectura. Analiza por contexto visual/dominio.";
+        } catch (e) { 
+            hechos = "URL: " + dna; 
+        }
 
         const promptFinal = PROMPTS[idFinal](hechos);
 
-        // 2. CONEXIÓN A GROK CON ALTA TEMPERATURA PARA EL ALMA (0.4)
+        // 2. Conexión a Grok-3 (Temperatura 0.4 para calidad humana)
         const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -36,10 +51,10 @@ app.post('/diseccion', async (req, res) => {
                 model: "grok-3", 
                 messages: [
                     { role: "system", content: PERSONA },
-                    { role: "system", content: `CONTEXTO REAL DEL SITIO (No inventar): \n${hechos}` },
+                    { role: "system", content: `HECHOS REALES DEL SITIO (Prohibido inventar):\n${hechos}` },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.4 // Subimos un poco para recuperar la humanidad de los reportes iniciales
+                temperature: 0.4
             })
         });
 
@@ -50,22 +65,9 @@ app.post('/diseccion', async (req, res) => {
         throw new Error("Grok no respondió.");
 
     } catch (error) {
-        console.error("ERROR:", error.message);
+        console.error("LOG ERROR:", error.message);
         res.status(500).json({ content: `[ERROR]: ${error.message}` });
     }
 });
 
-app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore Online.`));        const xData = await xRes.json();
-        if (xData.choices) {
-            return res.json({ content: xData.choices[0].message.content });
-        }
-        throw new Error("Sin respuesta de Grok.");
-
-    } catch (error) {
-        res.status(500).json({ content: `[ERROR]: ${error.message}` });
-    }
-});
-
-app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v102.0 Polish activo.`));
+app.listen(port, () => console.log(`PredictaCore v103.0 Online.`));
