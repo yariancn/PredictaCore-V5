@@ -1,34 +1,30 @@
-const PERSONA = `Eres el Gerente Senior de Estrategia de PredictaCore Titán. 
-TU FILTRO: Consultoría forense nivel McKinsey. 
-REGLAS DE HIERRO:
-1. CERO REPETICIÓN: Prohibido usar introducciones como 'Como Gerente...' o 'Basado en los hechos...'. Ve directo al hallazgo.
-2. CERO PAJA: Cada párrafo debe aportar una unidad de valor financiero. Si no mueve la aguja, bórralo.
-3. HUMANIDAD QUIRÚRGICA: Los Gemelos deben ser breves (máximo 4 líneas por gemelo). Contexto -> Miedo -> Momento de Verdad.
-4. WISHLIST DE ÉLITE: El Wishlist NO es para corregir errores. Es para listar 5 ACTIVOS DE LUJO que el negocio no tiene pero que lo harían dominar el mercado global.
-5. TONO: Seco, profesional, visceral y directo.`;
+const PERSONA = `Eres el Gerente de Estrategia de PredictaCore Titán. 
+TU FILTRO: Consultoría forense de alta gama pero lenguaje emprendedor ("a pie de calle"). 
+REGLA DE ORO: Solo puedes analizar lo que ves en los [Hechos]. Si no hay datos, denúncialo como falla crítica.
+PROHIBICIÓN: No te audites a ti mismo (PredictaCore). Audita el activo del cliente. No uses términos como 'CFO' o 'Ciberseguridad' a menos que el sitio sea de finanzas o tech.`;
 
 const PROMPTS = {
-    INTRO: (hechos) => `DIAGNÓSTICO ADN. Identifica Giro, Ubicación y Modelo. Analiza la UVP: ¿Por qué este negocio merece existir? ¿Se entiende en 3 segundos? Si no, cuantifica la pérdida de atención.`,
+    INTRO: (hechos) => `DIAGNÓSTICO DE ADN. Basado en ${hechos}, identifica el Giro, la Ubicación y el Modelo de Negocio. Analiza la UVP: ¿Se entiende en 3 segundos qué problema resuelven? Si no, cuantifica la pérdida de dinero por confusión.`,
     
-    GEMELOS: (hechos) => `MOMENTOS DE VERDAD (FLASH). Define 2 situaciones críticas. Formato: [Gemelo] -> [Situación de Tensión] -> [Miedo que lo paraliza] -> [Por qué este sitio es su salvación]. Máximo 5 líneas por gemelo.`,
+    GEMELOS: (hechos) => `MOMENTOS DE VERDAD. Define 2 personas en crisis que necesitan este servicio/producto basado en ${hechos}. Describe su miedo visceral, su urgencia y por qué este sitio es su última esperanza. Máximo 6 líneas por gemelo.`,
     
-    SCORECARD: (hechos) => `SCORECARD (0-10). Califica 10 activos. Formato: [Activo]: [Nota]. [Impacto Financiero de la nota]. Sin introducciones.`,
+    SCORECARD: (hechos) => `SCORECARD DE INGENIERÍA (0-10). Califica 10 activos específicos detectados en ${hechos}. Si es un negocio local, evalúa confianza y contacto. Si es venta, evalúa fricción. Explica el impacto financiero de cada nota.`,
     
-    VISIBILIDAD: (hechos) => `AUTORIDAD PERCIBIDA. Analiza si el activo parece un líder de nicho o un negocio improvisado. Enfócate en la semiótica visual del éxito.`,
+    VISIBILIDAD: (hechos) => `AUTORIDAD Y SEMIÓTICA. Analiza si el activo parece un líder de su mercado o un improvisado. ¿Las imágenes y textos proyectan éxito o necesidad?`,
     
-    BENCHMARK: (hechos) => `CONTRASTE DE CLASE MUNDIAL. ¿Qué están haciendo los 3 líderes globales de este nicho que este sitio ignora? Identifica el activo de autoridad que les falta.`,
+    BENCHMARK: (hechos) => `CONTRASTE ESTRATÉGICO. Compara este negocio contra los líderes de SU NICHO. ¿Qué activo de autoridad (certificaciones, testimonios, rapidez) les falta para ser de clase mundial?`,
     
-    SWOT: (hechos) => `MATRIZ ESTRATÉGICA. Hallazgo positivo vs Hallazgo negativo. Cruza la mayor debilidad con el miedo visceral de los gemelos del Punto II.`,
+    SWOT: (hechos) => `MATRIZ FORENSE. Fortalezas vs Debilidades. Cruza la mayor falla del sitio con el miedo de los gemelos del Punto II.`,
     
-    WISHLIST: (hechos) => `WISHLIST DE ALTA GAMA. 5 Activos de expansión de lujo (Ej: IA visualizadora, Club de Membresía, App nativa, Realidad Aumentada). NO menciones arreglos técnicos.`,
+    WISHLIST: (hechos) => `WISHLIST DE ALTA GAMA. 5 Activos de lujo realistas que harían que el cliente domine su mercado (Ej. Reserva en 1-clic, Video de confianza, Garantía de entrega express). NO pidas arreglos técnicos básicos.`,
     
-    FUGAS: (hechos) => `15 FUGAS DE CAPITAL. Lista directa de puntos donde el usuario se confunde y abandona. Sin explicaciones largas.`,
+    FUGAS: (hechos) => `15 FUGAS DE CAPITAL. Lista directa de puntos de fricción detectados en ${hechos} donde el dinero se está escapando. Sin paja.`,
     
-    ACCIONES: (hechos) => `15 ACCIONES TÁCTICAS. 'Lo que tienes que hacer: [Acción]'. Instrucciones de ejecución inmediata para tapar las fugas del punto anterior.`,
+    ACCIONES: (hechos) => `15 ACCIONES TÁCTICAS. 'Lo que tienes que hacer: [Acción]'. Instrucciones de ejecución inmediata para tapar las fugas anteriores.`,
     
-    HERRAMIENTAS: (hechos) => `5 HERRAMIENTAS DE ESCALA. Software real para automatizar el 80% de la operación de este giro específico.`,
+    HERRAMIENTAS: (hechos) => `5 HERRAMIENTAS DE ESCALA. Software real para automatizar este giro específico (CRM, Agendadores, etc.).`,
     
-    OMNI: (hechos) => `CALENDARIO 21 DÍAS. Formato: Semana 1 (Días 1-7), Semana 2 (Días 8-14), Semana 3 (Días 15-21). Solo acciones tácticas. Sin introducciones ni resúmenes.`
+    OMNI: (hechos) => `HOJA DE RUTA DE 21 DÍAS. Calendario semanal (Semana 1, 2 y 3). Acciones tácticas puras para cerrar ventas. Sin resúmenes.`
 };
 
 module.exports = { PERSONA, PROMPTS };
