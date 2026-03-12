@@ -30,26 +30,31 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `AUDITORÍA PARA: ${dna}. 
-                        REGLA DE HIERRO: Prohibido usar introducciones o repetir el Wishlist fuera de su sección. 
-                        Analiza la estética y semiótica visual de este contenido:\n${hechos}` 
+                        content: `MISIÓN CRÍTICA: Actúa como un Inspector de Valor. 
+                        Si el texto tiene relleno, bórralo. 
+                        Si no analizas las imágenes de ${dna}, fallas la misión. 
+                        Contexto real:\n${hechos}` 
                     },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.3 // Rigor forense
+                temperature: 0.2 // Rigor absoluto para evitar 'creatividad' innecesaria
             })
         });
 
         const xData = await xRes.json();
-        if (xData.choices) {
-            return res.json({ content: xData.choices[0].message.content });
+        if (xData.choices && xData.choices[0].message) {
+            // Limpieza final de posibles escapes de la IA (frases amigables)
+            let content = xData.choices[0].message.content;
+            content = content.replace(/^(Claro|Aquí tienes|Entendido|Directo a|Vamos a).*/gi, '').trim();
+            
+            return res.json({ content: content });
         }
-        throw new Error("Grok no respondió.");
+        throw new Error("Grok falló el estándar de calidad.");
 
     } catch (error) {
-        res.status(500).json({ content: `[ERROR]: ${error.message}` });
+        res.status(500).json({ content: `[ERROR ESTRATÉGICO]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v109.0 Titan online.`));
+app.listen(port, () => console.log(`PredictaCore v111.0 Sovereign active.`));
