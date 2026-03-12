@@ -30,31 +30,36 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `MISIÓN CRÍTICA: Actúa como un Inspector de Valor. 
-                        Si el texto tiene relleno, bórralo. 
-                        Si no analizas las imágenes de ${dna}, fallas la misión. 
-                        Contexto real:\n${hechos}` 
+                        content: `AUDITORÍA CRÍTICA: ${dna}. 
+                        NO TE PRESENTES. NO USES RELLENO. 
+                        Analiza las imágenes y el texto con rigor científico:\n${hechos}` 
                     },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.2 // Rigor absoluto para evitar 'creatividad' innecesaria
+                temperature: 0.2 // Rigor absoluto
             })
         });
 
         const xData = await xRes.json();
         if (xData.choices && xData.choices[0].message) {
-            // Limpieza final de posibles escapes de la IA (frases amigables)
             let content = xData.choices[0].message.content;
-            content = content.replace(/^(Claro|Aquí tienes|Entendido|Directo a|Vamos a).*/gi, '').trim();
             
-            return res.json({ content: content });
+            // EL FILTRO DEL MAGO: Limpieza profunda de basura conversacional
+            const basura = [
+                /^Claro.*/gi, /^Aquí tienes.*/gi, /^Entendido.*/gi, 
+                /^Vamos al grano.*/gi, /^Como gerente.*/gi, 
+                /^Basado en.*/gi, /^Directo a.*/gi, /^Perfecto.*/gi
+            ];
+            basura.forEach(regex => { content = content.replace(regex, ''); });
+
+            return res.json({ content: content.trim() });
         }
         throw new Error("Grok falló el estándar de calidad.");
 
     } catch (error) {
-        res.status(500).json({ content: `[ERROR ESTRATÉGICO]: ${error.message}` });
+        res.status(500).json({ content: `[FALLA FORENSE]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v111.0 Sovereign active.`));
+app.listen(port, () => console.log(`PredictaCore v112.0 Master active.`));
