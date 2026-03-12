@@ -14,8 +14,6 @@ app.post('/diseccion', async (req, res) => {
     try {
         const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
         const deepData = await scrapeDeep(dna);
-        
-        // Enviamos un bloque robusto de datos (15k caracteres)
         const hechos = deepData.text.substring(0, 15000); 
 
         const promptFinal = PROMPTS[idFinal](hechos);
@@ -33,13 +31,13 @@ app.post('/diseccion', async (req, res) => {
                     { 
                         role: "system", 
                         content: `AUDITORÍA PARA EL ACTIVO: ${dna}. 
-                        INSTRUCCIÓN CRÍTICA: Analiza descripciones de imágenes y logos. 
-                        Si ves un logo de certificación en el texto alternativo o banners, úsalo como prueba de autoridad. 
-                        No ignores la semiótica visual reportada en este contenido:\n${hechos}` 
+                        REGLA DE VISIÓN: Analiza las imágenes descritas en el texto (banners, logos, insignias). 
+                        Evalúa la facilidad de navegación y la estética percibida. 
+                        Este es el único contexto real:\n${hechos}` 
                     },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.3 
+                temperature: 0.4 // Recuperamos la intuición estratégica de los primeros reportes
             })
         });
 
@@ -50,10 +48,9 @@ app.post('/diseccion', async (req, res) => {
         throw new Error("Grok no respondió. Revisa logs de API.");
 
     } catch (error) {
-        console.error("ERROR CRÍTICO:", error.message);
         res.status(500).json({ content: `[ERROR]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v107.0 Visionary Engine online.`));
+app.listen(port, () => console.log(`PredictaCore v108.0 Boutique Vision online.`));
