@@ -30,22 +30,21 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `AUDITORÍA PARA EL ACTIVO: ${dna}. 
-                        REGLA DE VISIÓN: Analiza las imágenes descritas en el texto (banners, logos, insignias). 
-                        Evalúa la facilidad de navegación y la estética percibida. 
-                        Este es el único contexto real:\n${hechos}` 
+                        content: `AUDITORÍA PARA: ${dna}. 
+                        REGLA DE HIERRO: Prohibido usar introducciones o repetir el Wishlist fuera de su sección. 
+                        Analiza la estética y semiótica visual de este contenido:\n${hechos}` 
                     },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.4 // Recuperamos la intuición estratégica de los primeros reportes
+                temperature: 0.3 // Rigor forense
             })
         });
 
         const xData = await xRes.json();
-        if (xData.choices && xData.choices[0].message) {
+        if (xData.choices) {
             return res.json({ content: xData.choices[0].message.content });
         }
-        throw new Error("Grok no respondió. Revisa logs de API.");
+        throw new Error("Grok no respondió.");
 
     } catch (error) {
         res.status(500).json({ content: `[ERROR]: ${error.message}` });
@@ -53,4 +52,4 @@ app.post('/diseccion', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v108.0 Boutique Vision online.`));
+app.listen(port, () => console.log(`PredictaCore v109.0 Titan online.`));
