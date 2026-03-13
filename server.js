@@ -31,10 +31,10 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `AUDITORÍA CRÍTICA: ${dna}. FECHA ACTUAL: ${fechaActual}. 
-                        MISIÓN: Encuentra los activos de pago y soporte (PayPal, Chat, WhatsApp). 
-                        Si no son OBVIOS en el texto, el hallazgo es que son INVISIBLES para el usuario. 
-                        No asumas giros por el nombre; lee la evidencia. 15 fugas obligatorias, 3-5 líneas cada una.` 
+                        content: `HOY ES: ${fechaActual}. ANALIZA: ${dna}. 
+                        REGLA DE ORO: No seas un asistente, sé un PERITO. 
+                        BÚSQUEDA SEMÁNTICA: Antes de negar un activo (Pagos/Soporte), rastrea sinónimos en el texto. Si no es obvio, acusa su INVISIBILIDAD. 
+                        15 fugas obligatorias de 3-5 líneas cada una.` 
                     },
                     { role: "user", content: promptFinal }
                 ],
@@ -47,7 +47,7 @@ app.post('/diseccion', async (req, res) => {
             let content = xData.choices[0].message.content;
             
             // EL FILTRO DEL MAGO: Limpiamos la basura conversacional
-            content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo|Excelente|En este reporte).*/gi, '').trim();
+            content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo|Excelente).*/gi, '').trim();
             
             return res.json({ content: content });
         }
@@ -59,4 +59,4 @@ app.post('/diseccion', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v125.0 Sovereign active.`));
+app.listen(port, () => console.log(`PredictaCore v127.0 Sovereignty active.`));
