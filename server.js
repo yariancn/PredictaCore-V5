@@ -12,16 +12,12 @@ app.post('/diseccion', async (req, res) => {
     const { XAI_API_KEY } = process.env;
 
     try {
-        // Validación de llaves para evitar el error 'undefined'
-        if (!PROMPTS[etapaId]) {
-            console.error(`Etapa no encontrada: ${etapaId}`);
-            return res.status(400).json({ content: `[ERROR]: El Cerebro no reconoce la etapa '${etapaId}'.` });
-        }
+        if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' inválida.`);
 
         const deepData = await scrapeDeep(dna);
         const hechos = deepData.text.substring(0, 15000); 
         const promptFinal = PROMPTS[etapaId](hechos);
-        const fechaActual = "Viernes, 13 de Marzo de 2026";
+        const fechaActual = "Marzo de 2026";
 
         const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
             method: "POST",
@@ -36,8 +32,8 @@ app.post('/diseccion', async (req, res) => {
                     { 
                         role: "system", 
                         content: `AUDITORÍA CRÍTICA: ${dna}. FECHA: ${fechaActual}. 
-                        REGLA DE ORO: No saludes. No te presentes. Sé factual y agresivo. 
-                        Las 15 fugas deben ser de 3 a 5 líneas cada una obligatoriamente.` 
+                        PROTOCOLO DE VERDAD: Si un activo (PayPal, Chat, Precios) no es obvio, búscalos semánticamente. No digas 'no hay' si están ocultos; di que son invisibles. 
+                        REGLA DE LAS 15 FUGAS: Cada punto debe ser de 3 a 5 líneas. PROHIBIDO REPETIR Hallazgos de otros puntos.` 
                     },
                     { role: "user", content: promptFinal }
                 ],
@@ -45,24 +41,21 @@ app.post('/diseccion', async (req, res) => {
             })
         });
 
-        if (!xRes.ok) throw new Error(`Falla en API xAI: ${xRes.statusText}`);
-
         const xData = await xRes.json();
         if (xData.choices && xData.choices[0].message) {
             let content = xData.choices[0].message.content;
             
-            // FILTRO FORENSE: Limpieza de frases de relleno
+            // EL FILTRO DEL MAGO: Limpieza de basura conversacional
             content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo|Excelente|En este reporte).*/gi, '').trim();
             
             return res.json({ content: content });
         }
-        throw new Error("Grok no generó contenido.");
+        throw new Error("Calidad insuficiente en el motor PredictaCore.");
 
     } catch (error) {
-        console.error("Error en proceso:", error.message);
-        res.status(500).json({ content: `[ERROR FORENSE]: ${error.message}` });
+        res.status(500).json({ content: `[FALLA FORENSE]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v121.0 Titan Active.`));
+app.listen(port, () => console.log(`PredictaCore v123.0 Sovereign online.`));
