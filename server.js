@@ -11,19 +11,10 @@ app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { XAI_API_KEY } = process.env;
 
-    try {
-        // Validación de existencia de PROMPTS para evitar el error 'undefined'
-        if (!PROMPTS[etapaId]) {
-            throw new Error(`Etapa '${etapaId}' no definida en el cerebro.`);
-        }
+    const fechaHoy = "Marzo de 2026"; // Forzado para consistencia total
 
-        const deepData = await scrapeDeep(dna);
-        const hechos = deepData.text.substring(0, 15000); 
-
-        const promptFinal = PROMPTS[etapaId](hechos);
-        const fechaHoy = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-
-        const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
+    const ejecutarGrok = async (prompt, retry = false) => {
+        return await fetch("https://api.x.ai/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -35,37 +26,43 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `HOY ES: ${fechaHoy}. ESTÁS AUDITANDO: ${dna}. 
-                        REGLA DE ORO: Si el reporte no es denso, factual y agresivo, fallas la misión. 
-                        No te presentes. No uses preámbulos. 
-                        Contexto real detectado:\n${hechos}` 
+                        content: `AUDITORÍA CRÍTICA: ${dna}. TIEMPO: ${fechaHoy}. 
+                        REGLA DE ORO: Cero poesía. Cero redundancia. Si el análisis es descriptivo y no acusatorio, bórralo.` 
                     },
-                    { role: "user", content: promptFinal }
+                    { role: "user", content: prompt }
                 ],
-                temperature: 0.3 
+                temperature: retry ? 0.2 : 0.3 
             })
         });
+    };
+
+    try {
+        if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' inválida.`);
+
+        const deepData = await scrapeDeep(dna);
+        const hechos = deepData.text.substring(0, 15000); 
+        const promptFinal = PROMPTS[etapaId](hechos);
+
+        let xRes = await ejecutarGrok(promptFinal);
+
+        // REINTENTO AUTOMÁTICO SI EL FETCH FALLA (Cura para Punto XI)
+        if (!xRes.ok) {
+            console.log("Reintentando conexión para etapa:", etapaId);
+            xRes = await ejecutarGrok(promptFinal, true);
+        }
 
         const xData = await xRes.json();
         if (xData.choices && xData.choices[0].message) {
             let content = xData.choices[0].message.content;
-            
-            // EL POLICÍA DE AI: Limpieza de escapes conversacionales
-            const basura = [
-                /^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo).*/gi,
-                /En este reporte.*/gi, /Como gerente.*/gi
-            ];
-            basura.forEach(regex => { content = content.replace(regex, ''); });
-
-            return res.json({ content: content.trim() });
+            content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo).*/gi, '').trim();
+            return res.json({ content: content });
         }
-        throw new Error("Grok no alcanzó el estándar de calidad PredictaCore.");
+        throw new Error("Grok no respondió al estándar.");
 
     } catch (error) {
-        console.error("ERROR:", error.message);
-        res.status(500).json({ content: `[ERROR ESTRATÉGICO]: ${error.message}` });
+        res.status(500).json({ content: `[ERROR FORENSE]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v117.0 Sovereign online.`));
+app.listen(port, () => console.log(`PredictaCore v119.0 Titanium Sovereign Online.`));
