@@ -18,6 +18,9 @@ app.post('/diseccion', async (req, res) => {
 
         const promptFinal = PROMPTS[idFinal](hechos);
 
+        // OBTENEMOS FECHA REAL PARA EVITAR Hallucinaciones de "Fechas Futuras"
+        const fechaActual = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+
         const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -30,32 +33,30 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `AUDITORÍA DE CALIDAD: Estás analizando ${dna}. 
-                        ELIMINA cualquier rastro de tono asistencial, saludos o puentes sociales. 
-                        TODA pérdida se mide en % de probabilidad de abandono por fricción. 
-                        Contexto real detectado:\n${hechos}` 
+                        content: `HOY ES: ${fechaActual}. 
+                        ESTÁS AUDITANDO: ${dna}. 
+                        REGLA SUPREMA: Ignora datos técnicos de imágenes (px, formatos). 
+                        Concéntrate en la PSICOLOGÍA y el PRODUCTO. 
+                        Contexto:\n${hechos}` 
                     },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.3 
+                temperature: 0.4 
             })
         });
 
         const xData = await xRes.json();
         if (xData.choices && xData.choices[0].message) {
             let content = xData.choices[0].message.content;
-            
-            // EL FILTRO DEL MAGO: Limpiamos cualquier "escape" de IA conversacional
             content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo).*/gi, '').trim();
-            
             return res.json({ content: content });
         }
-        throw new Error("Calidad insuficiente en la respuesta.");
+        throw new Error("Grok no alcanzó el estándar.");
 
     } catch (error) {
-        res.status(500).json({ content: `[FALLA FORENSE]: ${error.message}` });
+        res.status(500).json({ content: `[FALLA ESTRATÉGICA]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v114.0 Sovereign online.`));
+app.listen(port, () => console.log(`PredictaCore v115.0 Sovereign active.`));
