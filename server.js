@@ -1,5 +1,4 @@
 // ... (imports igual)
-
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { XAI_API_KEY } = process.env;
@@ -24,10 +23,11 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `HOY ES: ${fechaActual}. ANALIZA: ${dna}.
-                        MANDATO DE ORO MOLIDO: Analiza la 'presentación' a través de los metadatos de las imágenes y la jerarquía de los links. 
-                        REGLA DE HIERRO: Si el dueño dice que los envíos están en el banner, búscalos en el texto de cabecera. No mientas. 
-                        ESTRUCTURA: Un párrafo por hallazgo. Sin introducciones. Sé un perito de alta gama, seco y denso.` 
+                        content: `AUDITORÍA CRÍTICA: ${dna}. FECHA: ${fechaActual}.
+                        MANDATO JUDICIAL: El dueño afirma que los activos críticos (Envíos, Chat, PayPal) son visibles. 
+                        REGLA DE VERDAD: Busca en las primeras 50 líneas del texto. Si están ahí, NO digas que faltan; acusa su 'Fuga de Jerarquía Visual'.
+                        REGLA DE HIERRO: Cada hallazgo debe ser ÚNICO. Si repites, el reporte pierde su valor de $1,000 USD. 
+                        Sé un perito agresivo, seco y táctico.` 
                     },
                     { role: "user", content: promptFinal }
                 ],
@@ -38,13 +38,13 @@ app.post('/diseccion', async (req, res) => {
         const xData = await xRes.json();
         if (xData.choices && xData.choices[0].message) {
             let content = xData.choices[0].message.content;
+            // FILTRO DE BASURA: Dejamos solo la sentencia
             content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo|Excelente|En este reporte).*/gi, '').trim();
             return res.json({ content: content });
         }
-        throw new Error("Grok falló el estándar de oro molido.");
+        throw new Error("Grok falló el estándar de oro.");
     } catch (error) {
         res.status(500).json({ content: `[FALLA FORENSE]: ${error.message}` });
     }
 });
-
 // ...
