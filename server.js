@@ -30,13 +30,14 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `AUDITORÍA CRÍTICA: ${dna}. 
-                        NO TE PRESENTES. NO USES RELLENO. 
-                        Analiza las imágenes y el texto con rigor científico:\n${hechos}` 
+                        content: `AUDITORÍA DE CALIDAD: Estás analizando ${dna}. 
+                        ELIMINA cualquier rastro de tono asistencial, saludos o puentes sociales. 
+                        TODA pérdida se mide en % de probabilidad de abandono por fricción. 
+                        Contexto real detectado:\n${hechos}` 
                     },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.2 // Rigor absoluto
+                temperature: 0.3 
             })
         });
 
@@ -44,17 +45,12 @@ app.post('/diseccion', async (req, res) => {
         if (xData.choices && xData.choices[0].message) {
             let content = xData.choices[0].message.content;
             
-            // EL FILTRO DEL MAGO: Limpieza profunda de basura conversacional
-            const basura = [
-                /^Claro.*/gi, /^Aquí tienes.*/gi, /^Entendido.*/gi, 
-                /^Vamos al grano.*/gi, /^Como gerente.*/gi, 
-                /^Basado en.*/gi, /^Directo a.*/gi, /^Perfecto.*/gi
-            ];
-            basura.forEach(regex => { content = content.replace(regex, ''); });
-
-            return res.json({ content: content.trim() });
+            // EL FILTRO DEL MAGO: Limpiamos cualquier "escape" de IA conversacional
+            content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo).*/gi, '').trim();
+            
+            return res.json({ content: content });
         }
-        throw new Error("Grok falló el estándar de calidad.");
+        throw new Error("Calidad insuficiente en la respuesta.");
 
     } catch (error) {
         res.status(500).json({ content: `[FALLA FORENSE]: ${error.message}` });
@@ -62,4 +58,4 @@ app.post('/diseccion', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v112.0 Master active.`));
+app.listen(port, () => console.log(`PredictaCore v114.0 Sovereign online.`));
