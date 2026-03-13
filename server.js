@@ -1,16 +1,4 @@
-const express = require('express');
-const { PERSONA, PROMPTS } = require('./cerebro');
-const { getHTML } = require('./visual');
-const { scrapeDeep } = require('./motor');
-
-const app = express();
-const port = process.env.PORT || 8080;
-app.use(express.json());
-
-app.post('/diseccion', async (req, res) => {
-    const { dna, etapaId } = req.body;
-    const { XAI_API_KEY } = process.env;
-
+// ... (inicio igual)
     try {
         if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' inválida.`);
 
@@ -31,32 +19,15 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `HOY ES: ${fechaActual}. ANALIZA: ${dna}. 
-                        REGLA DE ORO: No seas un asistente, sé un PERITO. 
-                        BÚSQUEDA SEMÁNTICA: Antes de negar un activo (Pagos/Soporte), rastrea sinónimos en el texto. Si no es obvio, acusa su INVISIBILIDAD. 
-                        15 fugas obligatorias de 3-5 líneas cada una.` 
+                        content: `AUDITORÍA CRÍTICA: ${dna}. FECHA: ${fechaActual}. 
+                        MANDATO DE VERACIDAD: Si el texto menciona 'Envío gratis', 'PayPal' o 'Chat', PROHIBIDO decir que no están. 
+                        Si son difíciles de hallar, acusa 'Opacidad de Diseño'. 
+                        REGLA DE LAS 15 FUGAS: Obligatorio 3 a 5 líneas por punto. 
+                        No seas un asistente amigable, sé un PERITO FORENSE.` 
                     },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.3 
+                temperature: 0.2 // Rigor absoluto para evitar 'cuentos'
             })
         });
-
-        const xData = await xRes.json();
-        if (xData.choices && xData.choices[0].message) {
-            let content = xData.choices[0].message.content;
-            
-            // EL FILTRO DEL MAGO: Limpiamos la basura conversacional
-            content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo|Excelente).*/gi, '').trim();
-            
-            return res.json({ content: content });
-        }
-        throw new Error("Calidad insuficiente en el motor forense.");
-
-    } catch (error) {
-        res.status(500).json({ content: `[ERROR ESTRATÉGICO]: ${error.message}` });
-    }
-});
-
-app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v127.0 Sovereignty active.`));
+// ... (limpieza final igual)
