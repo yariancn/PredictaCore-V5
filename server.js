@@ -17,9 +17,7 @@ app.post('/diseccion', async (req, res) => {
         const hechos = deepData.text.substring(0, 15000); 
 
         const promptFinal = PROMPTS[idFinal](hechos);
-
-        // OBTENEMOS FECHA REAL PARA EVITAR Hallucinaciones de "Fechas Futuras"
-        const fechaActual = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+        const fechaHoy = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
         const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
             method: "POST",
@@ -33,30 +31,36 @@ app.post('/diseccion', async (req, res) => {
                     { role: "system", content: PERSONA },
                     { 
                         role: "system", 
-                        content: `HOY ES: ${fechaActual}. 
-                        ESTÁS AUDITANDO: ${dna}. 
-                        REGLA SUPREMA: Ignora datos técnicos de imágenes (px, formatos). 
-                        Concéntrate en la PSICOLOGÍA y el PRODUCTO. 
-                        Contexto:\n${hechos}` 
+                        content: `FECHA ACTUAL: ${fechaHoy}. ESTÁS AUDITANDO: ${dna}. 
+                        MISIÓN: Detectar fugas de dinero. 
+                        PROHIBIDO: Usar lenguaje poético o soñador. Sé factual. 
+                        REGLA DE LAS 15 FUGAS: Cada fuga debe tener entre 3 y 5 líneas de análisis.` 
                     },
                     { role: "user", content: promptFinal }
                 ],
-                temperature: 0.4 
+                temperature: 0.3 
             })
         });
 
         const xData = await xRes.json();
         if (xData.choices && xData.choices[0].message) {
             let content = xData.choices[0].message.content;
-            content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo).*/gi, '').trim();
-            return res.json({ content: content });
+            
+            // EL POLICÍA DE IA: Limpieza de preámbulos y poesía barata
+            const basura = [
+                /^Claro.*/gi, /^Aquí tienes.*/gi, /^Analizando.*/gi, /^Vamos a.*/gi,
+                /refugio emocional/gi, /catálogo de caricias/gi, /abrazo textil/gi
+            ];
+            basura.forEach(regex => { content = content.replace(regex, ''); });
+
+            return res.json({ content: content.trim() });
         }
-        throw new Error("Grok no alcanzó el estándar.");
+        throw new Error("Calidad de reporte rechazada.");
 
     } catch (error) {
-        res.status(500).json({ content: `[FALLA ESTRATÉGICA]: ${error.message}` });
+        res.status(500).json({ content: `[ERROR ESTRATÉGICO]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v115.0 Sovereign active.`));
+app.listen(port, () => console.log(`PredictaCore v116.0 Sovereign online.`));
