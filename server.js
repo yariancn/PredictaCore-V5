@@ -1,12 +1,4 @@
-const express = require('express');
-const { PERSONA, PROMPTS } = require('./cerebro');
-const { getHTML } = require('./visual');
-const { scrapeDeep } = require('./motor');
-
-const app = express();
-const port = process.env.PORT || 8080;
-app.use(express.json());
-
+// ... (imports igual)
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     const { XAI_API_KEY } = process.env;
@@ -32,9 +24,33 @@ app.post('/diseccion', async (req, res) => {
                     { 
                         role: "system", 
                         content: `AUDITORÍA CRÍTICA: ${dna}. FECHA: ${fechaActual}.
-                        MANDATO DE VERDAD: Si el texto menciona Pagos, Envíos o WhatsApp, PROHIBIDO decir que no están. Acusa su invisibilidad.
-                        MANDATO DE PROFUNDIDAD: Tienes prohibido repetir temas. Si ya hablaste de PayPal, bórralo de tu memoria para esta sección.
-                        MANDATO DE ESTILO: Un párrafo por punto, seco, denso, sin amabilidades. 15 fugas obligatorias de 3 a 5 líneas.` 
+                        MANDATO DE CALIDAD: Evita la palabrería genérica. Ve directo a la herida económica. 
+                        REGLA DE LOS GEMELOS: Tu reporte es el resultado de 9,000 simulaciones. Habla con esa autoridad.
+                        VERACIDAD: Si el texto menciona Pagos o Envíos, no digas que faltan; acusa su INVISIBILIDAD. 
+                        ESTRUCTURA: Un punto por párrafo. 3 a 5 líneas de pura carne forense.` 
+                    },
+                    { role: "user", content: promptFinal }
+                ],
+                temperature: 0.1 
+            })
+        });
+
+        const xData = await xRes.json();
+        if (xData.choices && xData.choices[0].message) {
+            let content = xData.choices[0].message.content;
+            
+            // EL FILTRO DEL MAGO: Limpia la paja
+            content = content.replace(/^(Claro|Aquí tienes|Entendido|Analizando|Vamos a|Perfecto|Directo|Excelente|En este reporte).*/gi, '').trim();
+            
+            return res.json({ content: content });
+        }
+        throw new Error("Grok no alcanzó el estándar de PredictaCore.");
+
+    } catch (error) {
+        res.status(500).json({ content: `[FALLA CRÍTICA]: ${error.message}` });
+    }
+});
+// ...                        MANDATO DE ESTILO: Un párrafo por punto, seco, denso, sin amabilidades. 15 fugas obligatorias de 3 a 5 líneas.` 
                     },
                     { role: "user", content: promptFinal }
                 ],
