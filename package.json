@@ -1,16 +1,15 @@
 {
   "name": "predictacore-titan",
   "version": "32.0.0",
-  "description": "Unidad de Inteligencia Forense PredictaCore",
+  "description": "PredictaCore Titán - Ingeniería Forense Multimodal",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "@google-cloud/vertexai": "^1.1.0",
     "express": "^4.18.2",
-    "@google/generative-ai": "^0.21.0",
-    "playwright": "^1.45.0",
-    "axios": "^1.7.2"
+    "puppeteer": "^22.6.0"
   },
   "engines": {
     "node": "18.x"
