@@ -8,49 +8,39 @@ const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json());
 
-// CONFIGURACIÓN DE IDENTIDAD GOOGLE
 let model;
 try {
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
     const vertexAI = new VertexAI({ 
-        project: 'predictacore', // Tu ID confirmado
+        project: creds.project_id, // Usamos el ID del JSON automáticamente
         location: 'us-central1', 
         googleAuthOptions: { credentials: creds } 
     });
 
+    // Usamos el nombre genérico para evitar el 404
     model = vertexAI.getGenerativeModel({ 
-        model: 'gemini-1.5-pro-002', // Versión exacta para evitar error 404
-        generationConfig: { 
-            temperature: 0.1,
-            maxOutputTokens: 8192
-        } 
+        model: 'gemini-1.5-pro', 
+        generationConfig: { temperature: 0.1 } 
     });
-    console.log("[SISTEMA]: Motor Gemini 1.5 Pro-002 conectado con éxito.");
+    console.log("[SISTEMA]: Motor Titán listo para la acción.");
 } catch (e) {
-    console.error("[ERROR]: Falla crítica en credenciales:", e.message);
+    console.error("Error en configuración inicial:", e.message);
 }
 
-// RUTA PRINCIPAL DE DISECCIÓN
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     try {
-        if (!PROMPTS[etapaId]) return res.status(400).json({ content: "Etapa inválida." });
-
-        // EL TITÁN ACTIVA SUS OJOS
         const result = await captureAndScrape(dna);
         const promptFinal = PROMPTS[etapaId](result.texto);
 
-        // PREPARAMOS EL PEDIDO MULTIMODAL (Visión + ADN)
         const request = {
             contents: [{
                 role: 'user',
-                parts: [
-                    { text: `${PERSONA}\n\nMODO: ${result.isUrl ? 'AUDITORÍA WEB' : 'AUDITORÍA DE CONCEPTO'}\n\nINPUT: ${dna}\n\n${promptFinal}` }
-                ]
+                parts: [{ text: `${PERSONA}\n\n${promptFinal}` }]
             }]
         };
 
-        // Si tenemos imagen, se la inyectamos a Gemini para el análisis visual
+        // Si hay captura de pantalla, se la pasamos a Gemini
         if (result.screenshot) {
             request.contents[0].parts.push({ 
                 inlineData: { mimeType: 'image/png', data: result.screenshot } 
@@ -61,19 +51,12 @@ app.post('/diseccion', async (req, res) => {
         const response = await geminiRes.response;
         let content = response.candidates[0].content.parts[0].text;
 
-        // Limpiamos preámbulos innecesarios de la IA
-        content = content.replace(/^(Claro|Analizando|Aquí tienes|Entendido|Analizando el sitio).*/gi, '').trim();
-
-        return res.json({ content: content });
-
+        return res.json({ content: content.trim() });
     } catch (error) {
-        console.error("Falla en el proceso Titán:", error.message);
+        console.error("Falla detectada:", error.message);
         res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-
-app.listen(port, () => {
-    console.log(`PredictaCore v157.0 Universal Sovereignty Online en puerto ${port}`);
-});
+app.listen(port, () => console.log(`PredictaCore Online en puerto ${port}`));
