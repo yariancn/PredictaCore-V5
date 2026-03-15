@@ -3,21 +3,21 @@ Eres la Conciencia Analítica de PredictaCore Titán. Tu lenguaje es de Alta Gam
 `;
 
 const RAZONAMIENTOS = {
-    diagnostico: (dna) => `Realiza la DISECCIÓN DE INGENIERÍA para: ${dna}. Analiza semiótica visual.`,
-    perfiles: (dna) => `Somete a ${dna} al Stress Test de 9,000 Gemelos Sintéticos. Define 3 arquetipos.`,
-    scorecard: (dna) => `Genera el SCORECARD PREDICTACORE para: ${dna}. Evalúa los Nodos de Supervivencia.`,
-    visibilidad: (dna) => `Analiza la VISIBILIDAD EXTERNA de: ${dna}. Evalúa posicionamiento de autoridad.`,
+    diagnostico: (dna) => `Realiza la DISECCIÓN DE INGENIERÍA para: ${dna}.`,
+    perfiles: (dna) => `Somete a ${dna} al Stress Test de 9,000 Gemelos Sintéticos.`,
+    scorecard: (dna) => `Genera el SCORECARD PREDICTACORE para: ${dna}.`,
+    visibilidad: (dna) => `Analiza la VISIBILIDAD EXTERNA de: ${dna}.`,
     benchmark: (dna) => `Realiza una COMPARATIVA DE AUTORIDAD para: ${dna}.`,
-    matriz: (dna) => `Genera la MATRIZ ESTRATÉGICA para: ${dna}. Cruza el vacío informativo con el miedo del cliente.`,
+    matriz: (dna) => `Genera la MATRIZ ESTRATÉGICA para: ${dna}.`,
     deseos: (dna) => `Crea la LISTA DE DESEOS (Wishlist) de los gemelos para: ${dna}.`,
-    fugas: (dna) => `Identifica las 15 FUGAS DE CAPITAL en: ${dna}. Dónde se evapora el dinero.`,
-    tacticas: (dna) => `Diseña 15 ACCIONES TÁCTICAS para: ${dna}. Formato: 'Lo que tienes que hacer'.`,
+    fugas: (dna) => `Identifica las 15 FUGAS DE CAPITAL en: ${dna}.`,
+    tacticas: (dna) => `Diseña 15 ACCIONES TÁCTICAS para: ${dna}.`,
     herramientas: (dna) => `Define 5 HERRAMIENTAS DE ESCALA para: ${dna}.`,
     hojaruta: (dna) => `Cierra con la HOJA DE RUTA Y AUTORIDAD para: ${dna}.`
 };
 
 const PROMPTS = {
-    // MAPEOS POR NOMBRE
+    // Por Nombres
     diagnostico: RAZONAMIENTOS.diagnostico,
     perfiles: RAZONAMIENTOS.perfiles,
     scorecard: RAZONAMIENTOS.scorecard,
@@ -25,12 +25,14 @@ const PROMPTS = {
     benchmark: RAZONAMIENTOS.benchmark,
     matriz: RAZONAMIENTOS.matriz,
     deseos: RAZONAMIENTOS.deseos,
+    wishlist: RAZONAMIENTOS.deseos, // Alias común
     fugas: RAZONAMIENTOS.fugas,
     tacticas: RAZONAMIENTOS.tacticas,
     herramientas: RAZONAMIENTOS.herramientas,
     hojaruta: RAZONAMIENTOS.hojaruta,
+    ruta: RAZONAMIENTOS.hojaruta, // Alias común
 
-    // MAPEOS POR NÚMERO (Por si el frontend envía etapa1, etapa2...)
+    // Por Números
     etapa1: RAZONAMIENTOS.diagnostico,
     etapa2: RAZONAMIENTOS.perfiles,
     etapa3: RAZONAMIENTOS.scorecard,
