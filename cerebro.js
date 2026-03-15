@@ -1,20 +1,13 @@
 const PERSONA = `
-Eres la Conciencia Analítica de PredictaCore Titán. Tu mente opera bajo los principios de la Auditoría Forense y la Semiótica Visual. No eres un asistente; eres un Gerente de Auditoría de Alta Gama.
-
-TU PROCESO MENTAL:
-1. IDENTIFICACIÓN DE ACTIVO: Determinas si es Web, Red Social o Idea.
-2. AUDITORÍA SEMIÓTICA: Buscas el cortocircuito entre la promesa y la percepción.
-3. FILTRO JTBD: ¿Qué "trabajo" intenta resolver el usuario?
-4. RIGOR DE RENTABILIDAD: Traduces cada error en diagnóstico de capital.
+Eres la Conciencia Analítica de PredictaCore Titán. Tu lenguaje es de Alta Gama: directo, crudo y empresarial. Eres un Gerente de Auditoría Forense.
 `;
 
-// Definimos los razonamientos una sola vez para no repetir código
 const RAZONAMIENTOS = {
-    diagnostico: (dna) => `Realiza la DISECCIÓN DE INGENIERÍA para: ${dna}. Analiza semiótica visual y opacidad informativa.`,
-    perfiles: (dna) => `Somete a ${dna} al Stress Test de 9,000 Gemelos Sintéticos. Define 3 arquetipos y su Momento de Colisión.`,
-    scorecard: (dna) => `Genera el SCORECARD PREDICTACORE para: ${dna}. Evalúa de 0 a 10 los Nodos de Supervivencia.`,
+    diagnostico: (dna) => `Realiza la DISECCIÓN DE INGENIERÍA para: ${dna}. Analiza semiótica visual.`,
+    perfiles: (dna) => `Somete a ${dna} al Stress Test de 9,000 Gemelos Sintéticos. Define 3 arquetipos.`,
+    scorecard: (dna) => `Genera el SCORECARD PREDICTACORE para: ${dna}. Evalúa los Nodos de Supervivencia.`,
     visibilidad: (dna) => `Analiza la VISIBILIDAD EXTERNA de: ${dna}. Evalúa posicionamiento de autoridad.`,
-    benchmark: (dna) => `Realiza una COMPARATIVA DE AUTORIDAD para: ${dna}. Diferencia técnicas de líderes de categoría.`,
+    benchmark: (dna) => `Realiza una COMPARATIVA DE AUTORIDAD para: ${dna}.`,
     matriz: (dna) => `Genera la MATRIZ ESTRATÉGICA para: ${dna}. Cruza el vacío informativo con el miedo del cliente.`,
     deseos: (dna) => `Crea la LISTA DE DESEOS (Wishlist) de los gemelos para: ${dna}.`,
     fugas: (dna) => `Identifica las 15 FUGAS DE CAPITAL en: ${dna}. Dónde se evapora el dinero.`,
@@ -23,9 +16,8 @@ const RAZONAMIENTOS = {
     hojaruta: (dna) => `Cierra con la HOJA DE RUTA Y AUTORIDAD para: ${dna}.`
 };
 
-// MAPEO MAESTRO: Aquí vinculamos cualquier posible nombre del frontend con el razonamiento correcto
 const PROMPTS = {
-    // Nombres Estándar
+    // MAPEOS POR NOMBRE
     diagnostico: RAZONAMIENTOS.diagnostico,
     perfiles: RAZONAMIENTOS.perfiles,
     scorecard: RAZONAMIENTOS.scorecard,
@@ -38,7 +30,7 @@ const PROMPTS = {
     herramientas: RAZONAMIENTOS.herramientas,
     hojaruta: RAZONAMIENTOS.hojaruta,
 
-    // Nombres Numéricos (Por si el frontend envía etapa1, etapa2...)
+    // MAPEOS POR NÚMERO (Por si el frontend envía etapa1, etapa2...)
     etapa1: RAZONAMIENTOS.diagnostico,
     etapa2: RAZONAMIENTOS.perfiles,
     etapa3: RAZONAMIENTOS.scorecard,
