@@ -1,31 +1,37 @@
 const puppeteer = require('puppeteer');
 
 async function captureAndScrape(url) {
-    console.log(`[VISIÓN]: Entrando a las entrañas de ${url}`);
+    console.log(`[VISIÓN]: Escaneando ${url}...`);
     
-    // Configuración para Railway (necesita estos flags)
     const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || null,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--disable-gpu'
+        ]
     });
     
     const page = await browser.newPage();
-    await page.setViewport({ width: 1280, height: 1000 }); // Resolución de laptop
-    
+    await page.setViewport({ width: 1280, height: 1000 });
+
     try {
         await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
         
-        // CAPTURA VISUAL (La prueba irrefutable)
+        // FOTO REAL (Lo que Gemini usará para no mentir)
         const screenshot = await page.screenshot({ encoding: 'base64' });
         
-        // CAPTURA DE TEXTO (El ADN técnico)
+        // ADN TEXTUAL
         const texto = await page.evaluate(() => document.body.innerText);
         
         await browser.close();
-        return { screenshot, texto: texto.substring(0, 12000) };
+        return { screenshot, texto: texto.substring(0, 10000) };
         
     } catch (error) {
         await browser.close();
-        throw new Error(`Error de Visión: ${error.message}`);
+        throw new Error(`Falla de visión en Puppeteer: ${error.message}`);
     }
 }
 
