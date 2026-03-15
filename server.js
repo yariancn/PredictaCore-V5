@@ -1,40 +1,64 @@
 const express = require('express');
+const { VertexAI } = require('@google-cloud/vertexai');
 const { PERSONA, PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
-const { scrapeDeep } = require('./motor');
+const { captureAndScrape } = require('./motor');
 
 const app = express();
 const port = process.env.PORT || 8080;
-
 app.use(express.json());
 
-// RUTA MAESTRA: DISECCIÓN PREDICTACORE v151.0
+// CONFIGURACIÓN DE IDENTIDAD GOOGLE
+const credentials = JSON.parse(process.env.GOOGLE_CREDS);
+const vertex_ai = new VertexAI({
+    project: 'predictacore', // Tu Project ID
+    location: 'us-central1',
+    googleAuthOptions: { credentials }
+});
+
+const model = vertex_ai.getGenerativeModel({
+    model: 'gemini-1.5-pro',
+    generationConfig: { temperature: 0.1 } // Rigor máximo
+});
+
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
-    const { XAI_API_KEY } = process.env;
 
     try {
-        if (!PROMPTS[etapaId]) return res.status(400).json({ content: `[ERROR]: Etapa '${etapaId}' no reconocida.` });
+        if (!PROMPTS[etapaId]) return res.status(400).json({ content: `Etapa inválida.` });
 
-        // 1. Scraping del ADN del sitio
-        const deepData = await scrapeDeep(dna);
-        const hechos = deepData.text.substring(0, 15000); 
-        const promptFinal = PROMPTS[etapaId](hechos);
-        const fechaActual = "Domingo, 15 de Marzo de 2026";
+        // 1. EL TITÁN MIRA EL SITIO
+        const { screenshot, texto } = await captureAndScrape(dna);
+        const promptFinal = PROMPTS[etapaId](texto);
 
-        // 2. Llamada al motor de Grok con el "Espejo de Criterio"
-        const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${XAI_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "grok-3", 
-                messages: [
-                    { role: "system", content: PERSONA },
-                    { 
-                        role: "system", 
+        // 2. LA DISECCIÓN MULTIMODAL (Visión + Texto)
+        const request = {
+            contents: [{
+                role: 'user',
+                parts: [
+                    { text: `${PERSONA}\n\nAUDITORÍA: ${dna}\n\n${promptFinal}` },
+                    { inlineData: { mimeType: 'image/png', data: screenshot } }
+                ]
+            }]
+        };
+
+        const result = await model.generateContent(request);
+        const response = await result.response;
+        let content = response.candidates[0].content.parts[0].text;
+
+        // Limpieza de paja de IA
+        content = content.replace(/^(Claro|Analizando|Aquí tienes|Entendido).*/gi, '').trim();
+
+        return res.json({ content });
+
+    } catch (error) {
+        console.error("Falla Crítica:", error.message);
+        res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
+    }
+});
+
+app.get('/', (req, res) => res.send(getHTML()));
+app.listen(port, () => console.log(`PredictaCore v152.0 Visionary Online.`));                        role: "system", 
                         content: `AUDITORÍA DE ÉLITE: Analiza ${dna}. 
                         - No eres un redactor, eres un PERITO judicial de rentabilidad.
                         - Prohibido el lenguaje de profesor ("Bajo la ley de..."). Habla de tú a tú al dueño.
