@@ -27,10 +27,18 @@ try {
 }
 
 app.post('/diseccion', async (req, res) => {
-    const { dna, etapaId } = req.body;
+    // Normalizamos la etapa para que no haya errores de dedo
+    const dna = req.body.dna;
+    const etapaIdRaw = req.body.etapaId || "";
+    const etapaId = etapaIdRaw.trim().toLowerCase();
+
+    console.log(`[RECIBIDO]: Analizando etapa: "${etapaId}" para el DNA: ${dna}`);
+
     try {
-        // Aquí es donde ocurría el error: si la etapa no existe en cerebro.js, falla.
-        if (!PROMPTS[etapaId]) return res.json({ content: "Etapa inválida." });
+        if (!PROMPTS[etapaId]) {
+            console.error(`[FALLA]: La etapa "${etapaId}" no existe en cerebro.js`);
+            return res.json({ content: `Etapa inválida: ${etapaId}. Revisa la vinculación.` });
+        }
 
         const result = await captureAndScrape(dna);
         const promptFinal = PROMPTS[etapaId](result.texto);
@@ -50,15 +58,13 @@ app.post('/diseccion', async (req, res) => {
 
         const geminiRes = await model.generateContent(request);
         const response = await geminiRes.response;
-        let content = response.candidates[0].content.parts[0].text;
-        
-        return res.json({ content: content.trim() });
+        return res.json({ content: response.candidates[0].content.parts[0].text.trim() });
 
     } catch (error) {
+        console.error(`[ERROR]: Falla en ${etapaId}:`, error.message);
         res.status(500).json({ content: `[ERROR]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-// Actualizamos el log para confirmar la versión
-app.listen(port, () => console.log(`PredictaCore v171.0 Sovereignty Online`));
+app.listen(port, () => console.log(`PredictaCore v173.0 Sovereignty Online`));
