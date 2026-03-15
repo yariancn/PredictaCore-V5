@@ -21,15 +21,16 @@ try {
         model: 'gemini-2.5-flash', 
         generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } 
     });
-    console.log(`[SISTEMA]: Motor Titán 2.5 Flash conectado con éxito.`);
+    console.log(`[SISTEMA]: Motor Titán 2.5 Flash conectado.`);
 } catch (e) {
-    console.error("[ERROR]: Falla en conexión inicial:", e.message);
+    console.error("[ERROR]:", e.message);
 }
 
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     try {
-        if (!PROMPTS[etapaId]) return res.status(400).json({ content: "Etapa inválida." });
+        // Aquí es donde ocurría el error: si la etapa no existe en cerebro.js, falla.
+        if (!PROMPTS[etapaId]) return res.json({ content: "Etapa inválida." });
 
         const result = await captureAndScrape(dna);
         const promptFinal = PROMPTS[etapaId](result.texto);
@@ -51,14 +52,13 @@ app.post('/diseccion', async (req, res) => {
         const response = await geminiRes.response;
         let content = response.candidates[0].content.parts[0].text;
         
-        content = content.replace(/^(Claro|Analizando|Aquí tienes|Entendido).*/gi, '').trim();
-        return res.json({ content: content });
+        return res.json({ content: content.trim() });
 
     } catch (error) {
-        console.error("Falla en Auditoría:", error.message);
-        res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
+        res.status(500).json({ content: `[ERROR]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore v170.0 Sovereignty Online`));
+// Actualizamos el log para confirmar la versión
+app.listen(port, () => console.log(`PredictaCore v171.0 Sovereignty Online`));
