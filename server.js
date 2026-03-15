@@ -8,23 +8,28 @@ const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json());
 
+// CONFIGURACIÓN DINÁMICA DE GOOGLE
 let model;
 try {
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
+    
+    // El sistema lee el ID directamente de tu llave para evitar errores de dedo
     const vertexAI = new VertexAI({ 
-        project: creds.project_id, // Usamos el ID del JSON automáticamente
+        project: creds.project_id, 
         location: 'us-central1', 
         googleAuthOptions: { credentials: creds } 
     });
 
-    // Usamos el nombre genérico para evitar el 404
+    // Usamos el nombre técnico completo de Vertex AI
     model = vertexAI.getGenerativeModel({ 
-        model: 'gemini-1.5-pro', 
+        model: 'gemini-1.5-pro-002', 
         generationConfig: { temperature: 0.1 } 
     });
-    console.log("[SISTEMA]: Motor Titán listo para la acción.");
+    
+    console.log(`[SISTEMA]: Conectado a Proyecto: ${creds.project_id}`);
+    console.log("[SISTEMA]: Motor Titán v.002 listo.");
 } catch (e) {
-    console.error("Error en configuración inicial:", e.message);
+    console.error("[ERROR]: Falla en configuración:", e.message);
 }
 
 app.post('/diseccion', async (req, res) => {
@@ -40,7 +45,6 @@ app.post('/diseccion', async (req, res) => {
             }]
         };
 
-        // Si hay captura de pantalla, se la pasamos a Gemini
         if (result.screenshot) {
             request.contents[0].parts.push({ 
                 inlineData: { mimeType: 'image/png', data: result.screenshot } 
@@ -53,10 +57,11 @@ app.post('/diseccion', async (req, res) => {
 
         return res.json({ content: content.trim() });
     } catch (error) {
-        console.error("Falla detectada:", error.message);
+        console.error("Falla en Auditoría:", error.message);
+        // Si sigue dando 404, este mensaje nos dirá exactamente por qué
         res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(port, () => console.log(`PredictaCore Online en puerto ${port}`));
+app.listen(port, () => console.log(`PredictaCore v159.0 Online`));
