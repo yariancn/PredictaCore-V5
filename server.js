@@ -8,33 +8,71 @@ const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json());
 
-// CONFIGURACIÓN DE IDENTIDAD GOOGLE
-const credentials = JSON.parse(process.env.GOOGLE_CREDS);
-const vertex_ai = new VertexAI({
-    project: 'predictacore', // Tu Project ID
-    location: 'us-central1',
-    googleAuthOptions: { credentials }
-});
+// 1. CONFIGURACIÓN DE IDENTIDAD GOOGLE (USANDO TU VARIABLE DE RAILWAY)
+let model;
+try {
+    const credentials = JSON.parse(process.env.GOOGLE_CREDS);
+    const vertex_ai = new VertexAI({
+        project: 'predictacore', // Tu Project ID confirmado
+        location: 'us-central1',
+        googleAuthOptions: { credentials }
+    });
 
-const model = vertex_ai.getGenerativeModel({
-    model: 'gemini-1.5-pro',
-    generationConfig: { temperature: 0.1 } // Rigor máximo
-});
+    model = vertex_ai.getGenerativeModel({
+        model: 'gemini-1.5-pro',
+        generationConfig: { 
+            temperature: 0.1,
+            maxOutputTokens: 8192 
+        }
+    });
+} catch (e) {
+    console.error("Error cargando credenciales de Google:", e.message);
+}
 
+// 2. RUTA DE DISECCIÓN MULTIMODAL
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
 
     try {
-        if (!PROMPTS[etapaId]) return res.status(400).json({ content: `Etapa inválida.` });
+        if (!PROMPTS[etapaId]) {
+            return res.status(400).json({ content: "Etapa no válida." });
+        }
 
-        // 1. EL TITÁN MIRA EL SITIO
+        // EL TITÁN TRABAJA: Captura imagen y extrae texto simultáneamente
         const { screenshot, texto } = await captureAndScrape(dna);
         const promptFinal = PROMPTS[etapaId](texto);
 
-        // 2. LA DISECCIÓN MULTIMODAL (Visión + Texto)
+        // CONFIGURACIÓN DE LA LLAMADA A GEMINI (Ojos + Cerebro)
         const request = {
             contents: [{
                 role: 'user',
+                parts: [
+                    { text: `${PERSONA}\n\nAUDITORÍA SOBRE: ${dna}\n\n${promptFinal}` },
+                    { inlineData: { mimeType: 'image/png', data: screenshot } }
+                ]
+            }]
+        };
+
+        const result = await model.generateContent(request);
+        const response = await result.response;
+        let content = response.candidates[0].content.parts[0].text;
+
+        // Limpieza de cortesía de IA
+        content = content.replace(/^(Claro|Analizando|Aquí tienes|Entendido|Excelente|Perfecto).*/gi, '').trim();
+
+        return res.json({ content: content });
+
+    } catch (error) {
+        console.error("Falla en el motor Titán:", error.message);
+        res.status(500).json({ content: `[ERROR CRÍTICO]: ${error.message}` });
+    }
+});
+
+app.get('/', (req, res) => res.send(getHTML()));
+
+app.listen(port, () => {
+    console.log(`PredictaCore v152.0 Visionary Online en puerto ${port}`);
+});                role: 'user',
                 parts: [
                     { text: `${PERSONA}\n\nAUDITORÍA: ${dna}\n\n${promptFinal}` },
                     { inlineData: { mimeType: 'image/png', data: screenshot } }
