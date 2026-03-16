@@ -29,19 +29,39 @@ REGLA DE ORO: Entras al activo con el dinero en la mano. Tu misión es gastarlo.
 
 const RAZONAMIENTOS = {
     intro: (dna) => `EJECUTA ASENTAMIENTO PARA: ${dna}. Calibra Escala y UMCT. Justifica el 98% de asertividad simulando los 9,000 gemelos.`,
+    
     diagnostico: (dna) => `DISECCIÓN TRANSACCIONAL. Aplica las 5 Leyes. Identifica la UMCT faltante. Denuncia la Opacidad Informativa que bloquea el cierre.`,
-    gemelos: (dna, h) => `ARQUETIPOS DE FRUSTRACIÓN (3 líneas máx). 4 identidades de los 9,000 gemelos que se fueron por falta de Certeza Técnica.`,
+    
+    gemelos: (dna, h) => `
+        CRÓNICA DE COLISIÓN HUMANA (Extrae 4 perfiles de los 9,000).
+        INSTRUCCIÓN: No nombres errores genéricos. Describe PERSONAS con contexto vital (Nombre, JTBD, Punto de Ruptura y Sentencia Emocional). ¿Qué dato técnico o miedo de status los hizo cerrar la pestaña? (Máximo 3 líneas por gemelo).
+    `,
+    
     scorecard: (dna, h) => `FORMATO TABLA MARKDOWN OBLIGATORIO:
 | Nodo | Nota (0-10) | Justificación Financiera |
-Evalúa: Status, Densidad de Prueba, Rastreabilidad, Antojo y Certeza de Cierre. Justifica según: ${h}.`,
-    visibilidad: (dna, h) => `AUDITORÍA ALGORÍTMICA. ¿Google encuentra Autoridad Técnica o un Cascarón Vacío? Evalúa la Toxicidad Técnica.`,
-    benchmark: (dna, h) => `BENCHMARK DE STATUS. Identifica al líder real por nombre. ¿Qué UMCT entrega el líder que aquí es invisible?`,
+Evalúa: Status, Densidad de Prueba, Rastreabilidad, Antojo y Certeza de Cierre. Justifica basándote en el expediente acumulado.`,
+    
+    visibilidad: (dna, h) => `
+        AUDITORÍA DE ESTATUS Y AUTORIDAD (El activo frente al mundo).
+        INSTRUCCIÓN: Audita la PERCEPCIÓN. ¿Rango de Respeto (Líder o vendedor ambulante)? ¿Disonancia de Prestigio? ¿Por qué Google lo enviaría a la página 2 si el contenido es solo estético y no entrega UMCT?
+    `,
+    
+    benchmark: (dna, h) => `BENCHMARK DE STATUS. Identifica al líder real por nombre. ¿Qué evidencia de UMCT entrega el líder que aquí es invisible?`,
+    
     swot: (dna, h) => `MATRIZ DE TENSIÓN. Cruza el "Vacío de UMCT" más costoso con el "Miedo al Error" del cliente.`,
-    wishlist: (dna, h) => `WISHLIST DE ALTO NIVEL. 5 activos de valor (Estatus, Confort, Validación) que harían el precio irrelevante.`,
-    fugas: (dna, h) => `15 FUGAS DE CAPITAL (EL BOSQUE Y LOS ÁRBOLES). Analiza Fugas de Confianza, de Decisión y de Retención.`,
-    acciones: (dna, h) => `15 ÓRDENES DE MANDO. 'Lo que tienes que hacer' + Lógica Condicional. Órdenes para inyectar Certeza.`,
-    herramientas: (dna, h) => `5 SOLUCIONES DE ESCALA. Nombre + Para qué sirve + Beneficio económico. Cero filosofía.`,
-    omni: (dna, h) => `HOJA DE RUTA Y VICTORIA. Plan de 21 días (Urgencia, Estructura, Escala). Sentencia de éxito final.`
+    
+    wishlist: (dna, h) => `WISHLIST DE ALTO NIVEL. 5 activos de valor (Estatus, Confort, Validación) que harían el precio irrelevante para los 9,000 gemelos.`,
+    
+    fugas: (dna, h) => `
+        15 FUGAS DE CAPITAL (EL BOSQUE Y LOS ÁRBOLES). 
+        Analiza Capa 1 (Confianza/Checkout), Capa 2 (Decisión/UMCT) e identifica la ausencia de Capa 3 (Retención/Leads).
+    `,
+    
+    acciones: (dna, h) => `15 ÓRDENES DE MANDO. 'Lo que tienes que hacer' + Lógica Condicional. Órdenes directas para inyectar Certeza y Densidad de Prueba.`,
+    
+    herramientas: (dna, h) => `5 SOLUCIONES DE ESCALA. Nombre de la herramienta + Para qué sirve + Beneficio económico estimado (ROI). Sin rodeos filosóficos.`,
+    
+    omni: (dna, h) => `HOJA DE RUTA Y VICTORIA. Plan de 21 días (Urgencia, Estructura, Escala). Sentencia de éxito final tras la cirugía.`
 };
 
 const PROMPTS = {
