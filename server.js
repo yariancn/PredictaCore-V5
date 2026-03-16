@@ -15,7 +15,7 @@ try {
         model: 'gemini-2.5-flash', 
         generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } 
     });
-} catch (e) { console.error("Error de conexión:", e.message); }
+} catch (e) { console.error("Error crítico:", e.message); }
 
 let auditoriaContexto = {};
 
@@ -46,7 +46,7 @@ app.post('/diseccion', async (req, res) => {
         const response = await geminiRes.response;
         const content = response.candidates[0].content.parts[0].text.trim();
 
-        auditoriaContexto[dna].push(`- [${etapaId.toUpperCase()}]: ${content.substring(0, 500)}`);
+        auditoriaContexto[dna].push(`- [${etapaId.toUpperCase()}]: ${content.substring(0, 400)}`);
 
         return res.json({ content });
     } catch (error) {
@@ -55,4 +55,4 @@ app.post('/diseccion', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v2.2.1: Intelligence Synchronized"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v2.2.2: Universal Intelligence Secured"));
