@@ -1,5 +1,23 @@
-// ... (mismos imports y credenciales)
+const express = require('express');
+const { VertexAI } = require('@google-cloud/vertexai');
+const { PERSONA, PROMPTS } = require('./cerebro');
+const { captureAndScrape } = require('./motor');
+const { getHTML } = require('./visual');
 
+const app = express(); // Línea restaurada indispensable
+app.use(express.json()); // Línea restaurada indispensable
+
+let model;
+try {
+    const creds = JSON.parse(process.env.GOOGLE_CREDS);
+    const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-south1', googleAuthOptions: { credentials: creds } });
+    model = vertexAI.getGenerativeModel({ 
+        model: 'gemini-2.5-flash', 
+        generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } 
+    });
+} catch (e) { console.error("Error de conexión Vertex:", e.message); }
+
+// MEMORIA DINÁMICA DE LA AUDITORÍA
 let auditoriaContexto = {};
 
 app.post('/diseccion', async (req, res) => {
@@ -7,20 +25,21 @@ app.post('/diseccion', async (req, res) => {
     const etapaId = (req.body.etapaId || "").toLowerCase();
     
     try {
-        // Inicialización y limpieza de memoria por sesión
         if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
 
         const result = await captureAndScrape(dna);
         
-        // El historial ahora es el "EXPEDIENTE FORENSE"
-        const expedienteForense = auditoriaContexto[dna].join("\n");
+        // Mantenemos el historial compacto para no saturar al modelo
+        const resumenForense = auditoriaContexto[dna].slice(-3).join("\n"); 
         
-        const promptFinal = PROMPTS[etapaId](result.texto, expedienteForense);
+        const promptFinal = PROMPTS[etapaId] ? PROMPTS[etapaId](result.texto, resumenForense) : null;
+
+        if (!promptFinal) return res.status(400).json({ content: "Etapa inválida." });
 
         const request = {
             contents: [{
                 role: 'user',
-                parts: [{ text: `${PERSONA}\n\nEXPEDIENTE ACUMULADO:\n${expedienteForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
+                parts: [{ text: `${PERSONA}\n\nRESUMEN FORENSE ACUMULADO:\n${resumenForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
             }]
         };
 
@@ -32,11 +51,15 @@ app.post('/diseccion', async (req, res) => {
         const response = await geminiRes.response;
         const content = response.candidates[0].content.parts[0].text.trim();
 
-        // Guardamos el veredicto para que la siguiente etapa construya sobre él
-        auditoriaContexto[dna].push(`[DICTAMEN ${etapaId.toUpperCase()}]: ${content.substring(0, 1000)}`);
+        // Guardamos el hallazgo clave para que la siguiente etapa tenga contexto
+        auditoriaContexto[dna].push(`- Hallazgo en ${etapaId}: ${content.substring(0, 300)}...`);
 
         return res.json({ content });
     } catch (error) {
-        res.status(500).json({ content: `[FALLA DE SISTEMA]: El Titán requiere un momento para procesar la magnitud del activo. Reintenta en 3 segundos.` });
+        console.error(`Falla en ${etapaId}:`, error.message);
+        res.status(500).json({ content: `[ERROR TITÁN]: Saturación de motor o tiempo de espera agotado.` });
     }
 });
+
+app.get('/', (req, res) => res.send(getHTML()));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v2.2: Universal Forensic System Ready"));
