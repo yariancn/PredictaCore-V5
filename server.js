@@ -13,34 +13,32 @@ try {
     const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-south1', googleAuthOptions: { credentials: creds } });
     model = vertexAI.getGenerativeModel({ 
         model: 'gemini-2.5-flash', 
-        generationConfig: { temperature: 0.2, maxOutputTokens: 8192 } 
+        generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } 
     });
 } catch (e) { console.error("Error de conexión:", e.message); }
 
+// MEMORIA DINÁMICA POR SESIÓN
 let auditoriaContexto = {};
 
 app.post('/diseccion', async (req, res) => {
     const { dna } = req.body;
-    const etapaId = (req.body.etapaId || "").toLowerCase(); // Normalización
+    const etapaId = (req.body.etapaId || "").toLowerCase();
     
     try {
-        // Reiniciamos memoria si es una nueva auditoría
         if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
 
-        if (typeof PROMPTS[etapaId] !== 'function') {
-            console.error(`Etapa no encontrada: ${etapaId}`);
-            return res.status(400).json({ content: `[ERROR]: La etapa "${etapaId}" no está configurada.` });
-        }
-
         const result = await captureAndScrape(dna);
-        const historialPrevio = auditoriaContexto[dna].join("\n\n");
+        // Extraemos solo la esencia de hallazgos previos para no saturar
+        const resumenForense = auditoriaContexto[dna].slice(-3).join("\n"); 
         
-        const promptFinal = PROMPTS[etapaId](result.texto, historialPrevio);
+        const promptFinal = PROMPTS[etapaId] ? PROMPTS[etapaId](result.texto, resumenForense) : null;
+
+        if (!promptFinal) return res.status(400).json({ content: "Etapa inválida." });
 
         const request = {
             contents: [{
                 role: 'user',
-                parts: [{ text: `${PERSONA}\n\nCONTEXTO ACUMULADO:\n${historialPrevio}\n\nORDEN ACTUAL:\n${promptFinal}` }]
+                parts: [{ text: `${PERSONA}\n\nRESUMEN FORENSE ACUMULADO:\n${resumenForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
             }]
         };
 
@@ -52,15 +50,15 @@ app.post('/diseccion', async (req, res) => {
         const response = await geminiRes.response;
         const content = response.candidates[0].content.parts[0].text.trim();
 
-        // Alimentamos la hebra de memoria
-        auditoriaContexto[dna].push(`[LOGRO ${etapaId.toUpperCase()}]: ${content}`);
+        // Guardamos un extracto clave para la memoria del sistema
+        auditoriaContexto[dna].push(`- Hallazgo en ${etapaId}: ${content.substring(0, 300)}...`);
 
         return res.json({ content });
     } catch (error) {
-        console.error("Falla en etapa:", etapaId, error.message);
-        res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
+        console.error(`Falla en ${etapaId}:`, error.message);
+        res.status(500).json({ content: `[ERROR TITÁN]: El motor se ha saturado. Reintentando sección...` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v2.1: Contextual Intelligence Ready"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v2.2: Universal Forensic System Ready"));
