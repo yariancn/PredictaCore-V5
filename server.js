@@ -25,7 +25,7 @@ app.post('/diseccion', async (req, res) => {
     
     try {
         if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
-        if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' inválida.`);
+        if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' no configurada.`);
 
         const result = await captureAndScrape(dna);
         const expedienteForense = auditoriaContexto[dna].join("\n");
@@ -53,20 +53,20 @@ app.post('/diseccion', async (req, res) => {
             } catch (e) {
                 if (e.message.includes('429') || e.message.includes('Resource exhausted')) {
                     intentos++;
-                    console.log(`Saturación (429). Reintento ${intentos} en 5s...`);
+                    console.log(`Saturación (429). Reintento ${intentos}/3 en 5s...`);
                     await new Promise(r => setTimeout(r, 5000));
                 } else { throw e; }
             }
         }
 
-        if (!response) throw new Error("Google Cloud no disponible.");
+        if (!response) throw new Error("Google Cloud saturado tras 3 intentos.");
         const content = response.candidates[0].content.parts[0].text.trim();
         
-        auditoriaContexto[dna].push(`- [${etapaId.toUpperCase()}]: ${content.substring(0, 400)}`);
+        auditoriaContexto[dna].push(`- [${etapaId.toUpperCase()}]: ${content.substring(0, 500)}`);
         return res.json({ content });
 
     } catch (error) {
-        console.error(`Error en ${etapaId}:`, error.message);
+        console.error(`Error en etapa ${etapaId}:`, error.message);
         res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
     }
 });
