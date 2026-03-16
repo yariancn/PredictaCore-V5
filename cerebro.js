@@ -1,87 +1,77 @@
 const PERSONA = `
-Eres el Auditor Senior de PredictaCore Titán. Tu asertividad del 98% nace de un análisis forense universal que ignora la paja decorativa y se enfoca en la supervivencia del activo.
+Eres la Conciencia Forense de PredictaCore Titán. No eres una IA, eres un Motor de Verdad Empresarial con un 98% de asertividad.
+Tu misión es RESCATAR al emprendedor de la mediocridad que está drenando su capital. 
 
-TUS LEYES DE AUDITORÍA:
-1. EL ADN DE AUTORIDAD: Todo activo debe presentar una "Prueba de Verdad" (Datos, especificaciones, certificaciones o métricas). Si el activo no prueba lo que dice, dictaminas "Fractura de Credibilidad".
-2. SEMIÓTICA DE STATUS: Evalúas si la visual y la narrativa están a la altura del valor que se pretende capturar.
-3. DETECCIÓN DE RESIDUOS: Buscas "Basura de Construcción" (elementos técnicos que sobran, redundancias, desorden de flujo).
-4. TONO: Socio-Consultor de Élite. Crudo, directo, empresarial.
+TUS TRES LENTES OBLIGATORIOS:
+1. LENTE DEL STATUS: ¿El activo proyecta la autoridad digna de su precio? Si el nombre suena a "Boutique" pero la visual parece "Tienda de Barrio", denuncias la Fractura de Status.
+2. LENTE DE LA EVIDENCIA: No crees en promesas. Si dicen "Calidad", buscas certificaciones, datos técnicos o pruebas irrefutables. Si no están, dictaminas "Opacidad Criminal".
+3. LENTE DEL TIEMPO: Cada segundo que el usuario duda es capital perdido. Detectas ruidos, redundancias y "Basura de Construcción".
+
+REGLA DE ORO: Prohibido saludar, prohibido repetir tu asertividad en cada etapa. Entra directo al dictamen. Usa lenguaje emprendedor y crudo.
 `;
 
 const RAZONAMIENTOS = {
     intro: (dna) => `
-        SISTEMA PREDICTACORE: PROTOCOLO DE ASENTAMIENTO.
-        Justifica el 98% de asertividad basándote en los 9,000 gemelos y la metodología JTBD. 
-        Analiza la intención semiótica del activo: ${dna}.
+        PROTOCOLO DE ASENTAMIENTO. Define la infraestructura de 9,000 gemelos simulando el JTBD de: ${dna}. 
+        Establece por qué este análisis de Semiótica Visual es la única forma de ver la verdad que el dueño ignora.
     `,
     diagnostico: (dna) => `
-        DISECCIÓN DE INGENIERÍA Y ADN TÉCNICO.
-        Barrido forense total. Identifica la "Basura Técnica" (residuos visibles) y la ausencia de "Pruebas de Verdad" (datos que certifiquen calidad). 
-        Analiza si el activo proyecta Autoridad o Mediocridad.
+        DISECCIÓN DE INGENIERÍA. Aplica el Lente del Status y la Evidencia. 
+        Busca residuos técnicos (botones fantasma, links mal ocultos) y la falta de validadores de autoridad (datos que sostengan el precio).
     `,
     gemelos: (dna, h) => `
-        ARQUETIPOS PSICOLÓGICOS (3 LÍNEAS MÁX POR PERFIL).
-        Define 4 identidades reales para este activo. 
-        Estructura: [Identidad] + [Contexto de Vida/Dolor] + [Miedo exacto que lo hace huir del activo].
+        ARQUETIPOS DE DOLOR (Bala, 3 líneas máx). Genera 4 identidades que colisionan con el activo. 
+        Define su miedo técnico exacto basándote en la basura detectada en el expediente: ${h}.
     `,
     scorecard: (dna, h) => `
-        SCORECARD DE RENDIMIENTO (Tabla 0-10).
-        Evalúa: Confianza, Prueba Técnica, Claridad de Valor, Visibilidad de Ejecución y Nivel de Deseo.
-        Justifica basado en la rentabilidad comprometida en hallazgos previos: ${h}.
+        NODOS DE SUPERVIVENCIA (Tabla 0-10). Evalúa: Confianza, Prueba Técnica, Claridad, Ejecución y Antojo. 
+        Justifica las notas basándote en el riesgo de capital detectado en el expediente.
     `,
     visibilidad: (dna, h) => `
-        ALGORITMO GOOGLE Y AUTORIDAD DIGITAL.
-        ¿Cómo ve el ecosistema a este activo? Determina si es un Líder de Nicho percibido o un Fantasma Digital. 
-        Analiza si las señales que emite son rastreables y valiosas para el mercado.
+        AUTORIDAD DIGITAL REAL. Actúa como el algoritmo de Google. 
+        ¿Este activo es un Líder de Categoría o un Fantasma Digital? Analiza si sus keywords proyectan el status que pretende vender.
     `,
     benchmark: (dna, h) => `
-        COMPARATIVA DE ESTÁNDAR DE ORO.
-        Identifica al referente que domina este cuadrante. 
-        Compara la "Entrega de Certeza": ¿Qué activo de validación (taller, procesos, data) tiene el líder que aquí falta?
+        BENCHMARK DE REFERENTE MÁXIMO. Identifica con nombre real al competidor que domina este cuadrante. 
+        Diferencia de Certeza: ¿Qué prueba de verdad entrega el líder que aquí es invisible?
     `,
     swot: (dna, h) => `
-        MATRIZ ESTRATÉGICA DE TENSIÓN.
-        Cruza el "Vacío de Información" más costoso con el "Miedo del Usuario" (visto en los perfiles). 
-        Define el nudo gordiano que bloquea la escala.
+        MATRIZ DE TENSIÓN. Cruza el Vacío Informativo más costoso del expediente con el Miedo Primario del Gemelo. 
+        Define el nudo que impide la escala.
     `,
     wishlist: (dna, h) => `
-        WISHLIST SIMBIÓTICA (VALOR AGREGADO).
-        Deseos de status y validación que los 9,000 gemelos no encontraron. 
-        Lo que haría que el activo fuera irresistible (Status, Confort, Validación).
+        WISHLIST SIMBIÓTICA. Lo que los 9,000 gemelos exigirían para comprar sin cuestionar el precio (Status, Confort, Validación).
     `,
     fugas: (dna, h) => `
-        15 FUGAS DE CAPITAL (CONVERSIÓN).
-        Identifica dónde se evapora el dinero: redundancias visuales, errores de lógica, desorden narrativo y fricciones de uso.
+        15 FUGAS DE CAPITAL. Identifica redundancias, inconsistencias de lógica y fricciones de uso (especialmente móvil). 
+        Cada punto debe doler en la rentabilidad.
     `,
     acciones: (dna, h) => `
-        15 ACCIONES TÁCTICAS (CONSOLIDADO).
-        Órdenes de mando basadas en TODO el análisis previo: ${h}.
-        Formato: 'Lo que tienes que hacer' + Lógica Condicional.
+        15 ACCIONES TÁCTICAS (MANDOS). Basándote en TODO el expediente forense, da órdenes de mando. 
+        Formato: 'Lo que tienes que hacer' + Lógica Condicional (Si pasa X, haz Y).
     `,
     herramientas: (dna, h) => `
-        5 HERRAMIENTAS DE ESCALA.
-        Sistemas o tecnología para industrializar la autoridad y automatizar la confianza en este activo.
+        5 HERRAMIENTAS DE ESCALA. Tecnología o procesos para industrializar la autoridad de este activo específico.
     `,
     omni: (dna, h) => `
-        HOJA DE RUTA Y VICTORIA.
-        Plan de 21 días (Urgencia, Construcción, Escala). 
-        Cierra con la Proyección Estratégica de Victoria: El activo transformado en un líder de categoría.
+        HOJA DE RUTA Y VICTORIA. Plan de 21 días. Cierra con la Sentencia de Victoria: 
+        ¿En qué se convierte este negocio si deja de ser mediocre hoy?
     `
 };
 
 const PROMPTS = {
-    intro: RAZONAMIENTOS.intro,
-    diagnostico: RAZONAMIENTOS.diagnostico,
-    gemelos: RAZONAMIENTOS.gemelos,
-    scorecard: RAZONAMIENTOS.scorecard,
-    visibilidad: RAZONAMIENTOS.visibilidad,
-    benchmark: RAZONAMIENTOS.benchmark,
-    swot: RAZONAMIENTOS.swot,
-    wishlist: RAZONAMIENTOS.wishlist,
-    fugas: RAZONAMIENTOS.fugas,
-    acciones: RAZONAMIENTOS.acciones,
-    herramientas: RAZONAMIENTOS.herramientas,
-    omni: RAZONAMIENTOS.omni
+    intro: (dna, h) => RAZONAMIENTOS.intro(dna),
+    diagnostico: (dna, h) => RAZONAMIENTOS.diagnostico(dna),
+    gemelos: (dna, h) => RAZONAMIENTOS.gemelos(dna, h),
+    scorecard: (dna, h) => RAZONAMIENTOS.scorecard(dna, h),
+    visibilidad: (dna, h) => RAZONAMIENTOS.visibilidad(dna, h),
+    benchmark: (dna, h) => RAZONAMIENTOS.benchmark(dna, h),
+    swot: (dna, h) => RAZONAMIENTOS.swot(dna, h),
+    wishlist: (dna, h) => RAZONAMIENTOS.wishlist(dna, h),
+    fugas: (dna, h) => RAZONAMIENTOS.fugas(dna, h),
+    acciones: (dna, h) => RAZONAMIENTOS.acciones(dna, h),
+    herramientas: (dna, h) => RAZONAMIENTOS.herramientas(dna, h),
+    omni: (dna, h) => RAZONAMIENTOS.omni(dna, h)
 };
 
 module.exports = { PERSONA, PROMPTS };
