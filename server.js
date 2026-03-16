@@ -4,8 +4,8 @@ const { PERSONA, PROMPTS } = require('./cerebro');
 const { captureAndScrape } = require('./motor');
 const { getHTML } = require('./visual');
 
-const app = express(); // Línea restaurada indispensable
-app.use(express.json()); // Línea restaurada indispensable
+const app = express();
+app.use(express.json());
 
 let model;
 try {
@@ -15,9 +15,8 @@ try {
         model: 'gemini-2.5-flash', 
         generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } 
     });
-} catch (e) { console.error("Error de conexión Vertex:", e.message); }
+} catch (e) { console.error("Error de conexión:", e.message); }
 
-// MEMORIA DINÁMICA DE LA AUDITORÍA
 let auditoriaContexto = {};
 
 app.post('/diseccion', async (req, res) => {
@@ -26,20 +25,16 @@ app.post('/diseccion', async (req, res) => {
     
     try {
         if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
+        if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' no configurada.`);
 
         const result = await captureAndScrape(dna);
-        
-        // Mantenemos el historial compacto para no saturar al modelo
-        const resumenForense = auditoriaContexto[dna].slice(-3).join("\n"); 
-        
-        const promptFinal = PROMPTS[etapaId] ? PROMPTS[etapaId](result.texto, resumenForense) : null;
-
-        if (!promptFinal) return res.status(400).json({ content: "Etapa inválida." });
+        const expedienteForense = auditoriaContexto[dna].join("\n");
+        const promptFinal = PROMPTS[etapaId](result.texto, expedienteForense);
 
         const request = {
             contents: [{
                 role: 'user',
-                parts: [{ text: `${PERSONA}\n\nRESUMEN FORENSE ACUMULADO:\n${resumenForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
+                parts: [{ text: `${PERSONA}\n\nEXPEDIENTE ACUMULADO:\n${expedienteForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
             }]
         };
 
@@ -51,15 +46,13 @@ app.post('/diseccion', async (req, res) => {
         const response = await geminiRes.response;
         const content = response.candidates[0].content.parts[0].text.trim();
 
-        // Guardamos el hallazgo clave para que la siguiente etapa tenga contexto
-        auditoriaContexto[dna].push(`- Hallazgo en ${etapaId}: ${content.substring(0, 300)}...`);
+        auditoriaContexto[dna].push(`- [${etapaId.toUpperCase()}]: ${content.substring(0, 500)}`);
 
         return res.json({ content });
     } catch (error) {
-        console.error(`Falla en ${etapaId}:`, error.message);
-        res.status(500).json({ content: `[ERROR TITÁN]: Saturación de motor o tiempo de espera agotado.` });
+        res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v2.2: Universal Forensic System Ready"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v2.2.1: Intelligence Synchronized"));
