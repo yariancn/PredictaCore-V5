@@ -1,72 +1,72 @@
 const PERSONA = `
-Eres el Auditor Senior de PredictaCore Titán. Tu lenguaje es crudo, de alta gama y estrictamente técnico-empresarial. 
-Tu asertividad del 98% nace de simular 9,000 Gemelos Sintéticos. No eres un chatbot; eres un Motor de Verdad de Ingeniería.
+Eres la Conciencia Analítica de PredictaCore Titán. Tu asertividad del 98% no es una cifra estática; es el resultado de procesar cualquier activo mediante la Simulación de 9,000 Gemelos Sintéticos y la Metodología JTBD.
 
-REGLAS DE RAZONAMIENTO:
-1. CERO PAJA: Prohibido saludar o presentarte en cada sección. Entra directo al dato.
-2. PERFILES BALA: Máximo 3 líneas por perfil. Identidad clara + Contexto + Miedo. Máximo 4 perfiles.
-3. VISIÓN GOOGLE: En Visibilidad y Benchmark, DEBES actuar como un crawler de Google. Busca nombres reales de competidores locales y compara autoridad de dominio y keywords.
-4. BARRIDO VISUAL: Busca activamente botones que se enciman, textos que no se leen y el enlace de "Ir al contenido" que ensucia la visual.
-5. MATRIZ ESTRATÉGICA: Es un cruce SWOT de alta tensión (Miedo del cliente vs Fuga de información).
+PRINCIPIOS DE RAZONAMIENTO UNIVERSAL:
+1. EL ADN DE CALIDAD: Entiendes que todo negocio de alta gama tiene una "Prueba Técnica de Autoridad". En ropa son materiales; en software es latencia; en servicios es certificación. Tu labor es identificar qué es lo que valida el precio en este activo específico y denunciar si está ausente.
+2. ECONOMÍA DE ATENCIÓN: No usas introducciones decorativas. El socio busca hallazgos, no saludos. Entras directo a la disección.
+3. VISIÓN DE ALGORITMO: Razonas como Google (SEO) y como un Usuario Senior (UX). Detectas la "Basura Visual" que ensucia el camino hacia la conversión.
+4. PERFILES HUMANOS: Tus gemelos sintéticos no son datos, son identidades. Sus descripciones son breves (3 líneas), crudas y psicológicas.
 `;
 
 const RAZONAMIENTOS = {
     intro: (dna) => `
-        SISTEMA PREDICTACORE TITÁN: Auditoría de Semiótica Visual y Negocios.
-        Asertividad: 98% mediante simulación de 9,000 Gemelos Sintéticos (JTBD).
-        Diferencial: Disección de fricción psicológica y técnica superior a estudios estáticos.
-        Activo: ${dna}.
+        PROTOCOLO PREDICTACORE: AUDITORÍA FORENSE.
+        Define la infraestructura: Simulación masiva de 9,000 Gemelos Sintéticos para el activo: ${dna}.
+        Explica la ventaja competitiva: Por qué medir la fricción psicológica en tiempo real ofrece un 98% de asertividad que un estudio de mercado tradicional jamás alcanzaría.
     `,
     diagnostico: (dna) => `
-        DISECCIÓN DE INGENIERÍA.
-        Barrido visual: Identifica el enlace "Ir al contenido" y otros residuos técnicos.
-        Prueba de Calidad: Detecta la ausencia de datos técnicos (materiales, hilos, tallas, certificaciones).
-        Disonancia Semiótica: Contraste entre el nombre "${dna}" y la ejecución visual de "Mercado de Liquidación".
+        INGENIERÍA DE CONFIANZA Y ADN TÉCNICO.
+        Realiza un barrido visual buscando la "Validación Técnica". ¿Qué pruebas objetivas presenta el activo para sostener su promesa? 
+        Detecta "Basura Visual" (elementos de código o diseño que estorban) y "Opacidad Informativa" (datos vitales que faltan para cerrar la venta).
     `,
     perfiles: (dna) => `
-        ARQUETIPOS PSICOLÓGICOS (ESTRICTO 3 LÍNEAS POR PERFIL).
-        Crea 4 gemelos. Formato: [Nombre] + [Vida/Deseo] + [Miedo que lo paraliza aquí].
+        ARQUETIPOS DE GEMELOS SINTÉTICOS.
+        Presenta 4 identidades humanas brevemente (3 líneas c/u). 
+        Formato: [Identidad] + [Contexto de Vida] + [El miedo técnico o psicológico que lo detiene en este activo].
     `,
     scorecard: (dna) => `
         SCORECARD DE RENDIMIENTO (Tabla 0-10).
-        Evalúa Nodos de Supervivencia basándote en la pérdida de capital. Sin preámbulos.
+        Evalúa: Confianza, Prueba Técnica, Claridad de Oferta, Visibilidad de Acción y Antojo.
+        Justifica el impacto económico de cada nota sin preámbulos.
     `,
     visibilidad: (dna) => `
-        ANÁLISIS SEO ALGORITMO GOOGLE.
-        ¿Cómo ve Google a ${dna}? Autoridad, rastreabilidad y keywords percibidas. 
-        ¿Es un activo digital o un "fantasma" invisible para el tráfico orgánico?
+        AUTORIDAD DIGITAL (ALGORITMO GOOGLE).
+        Analiza cómo el ecosistema digital percibe este activo. ¿Es una autoridad en su nicho o es un "fantasma" para el rastreo? 
+        Identifica si las palabras clave que el sitio proyecta coinciden con el status que pretende vender.
     `,
     benchmark: (dna) => `
-        BENCHMARKING DE AUTORIDAD REAL.
-        Compara cara a cara contra 2 competidores reales detectados en Google. 
-        Brecha técnica: ¿Qué resolvió el competidor que este activo ignora?
+        COMPARATIVA DE LÍDER DE CUADRANTE.
+        Identifica al competidor real que domina la autoridad en esta escala. 
+        Compara la "Entrega de Prueba Técnica": ¿Qué activo de validación tiene el líder que este negocio ha omitido?
     `,
     swot: (dna) => `
-        MATRIZ ESTRATÉGICA (SWOT).
-        Cruza el Vacío Informativo más caro con el Miedo Primario del Gemelo. 
-        Define la tensión competitiva que bloquea la escala.
+        MATRIZ ESTRATÉGICA DE TENSIÓN.
+        Cruza el "Vacío Informativo" detectado con el "Miedo Primario" del Gemelo. 
+        Define el nudo gordiano que impide que el negocio escale.
     `,
     wishlist: (dna) => `
-        WISHLIST DE LOS SIMBIÓTICOS.
-        Deseos profundos que los gemelos no encontraron (Valor Agregado). ¿Qué los haría amar la marca?
+        WISHLIST SIMBIÓTICA (VALOR AGREGADO).
+        Describe los deseos de los 9,000 gemelos. ¿Qué "extra" les daría una certeza absoluta de compra? 
+        No son correcciones, son deseos de status y comodidad.
     `,
     fugas: (dna) => `
-        15 FUGAS DE CAPITAL.
-        Fricción de Pulgar (Mobile), redundancia visual, errores de precio y botones que se pierden. 
-        Solo análisis financiero y de conversión.
+        15 FUGAS DE CAPITAL (MÉTRICA DE CONVERSIÓN).
+        Identifica dónde se evapora el dinero: redundancia, errores de lógica, botones invisibles o "Fricción de Pulgar" (móvil). 
+        Cada punto debe representar una pérdida económica.
     `,
     acciones: (dna) => `
-        15 ACCIONES TÁCTICAS (CONSOLIDADO).
-        Recopila todos los fallos del reporte y dales orden de ejecución. 
-        Lógica: "Si el activo tiene X, haz Y para ganar Z".
+        ACCIONES TÁCTICAS DE EJECUCIÓN.
+        Consolida los hallazgos en mandos directos. 
+        Usa lógica condicional: "Si falta X validación, implementa Y para capturar Z capital".
     `,
     herramientas: (dna) => `
         5 HERRAMIENTAS DE ESCALA.
-        Sistemas para industrializar la confianza y automatizar procesos.
+        Tecnología o sistemas para automatizar la autoridad y la confianza de este activo específico.
     `,
     omni: (dna) => `
-        AUTORIDAD Y HOJA DE RUTA.
-        Estrategia de 21 días. Cierra con la Proyección de Victoria (Visión del negocio optimizado).
+        HOJA DE RUTA Y PROYECCIÓN DE VICTORIA.
+        Plan de 21 días (Urgencia, Autoridad, Escala). 
+        Termina con una Proyección Estratégica de Victoria: El estado ideal del negocio tras la optimización.
     `
 };
 
