@@ -13,31 +13,34 @@ try {
     const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-south1', googleAuthOptions: { credentials: creds } });
     model = vertexAI.getGenerativeModel({ 
         model: 'gemini-2.5-flash', 
-        generationConfig: { temperature: 0.2, maxOutputTokens: 8192, topP: 0.95 } 
+        generationConfig: { temperature: 0.2, maxOutputTokens: 8192 } 
     });
 } catch (e) { console.error("Error de conexión:", e.message); }
 
-// MEMORIA VIVA: Objeto para almacenar los hallazgos de cada etapa durante la sesión
 let auditoriaContexto = {};
 
 app.post('/diseccion', async (req, res) => {
-    const { dna, etapaId } = req.body;
+    const { dna } = req.body;
+    const etapaId = (req.body.etapaId || "").toLowerCase(); // Normalización
     
     try {
-        if (!auditoriaContexto[dna]) auditoriaContexto[dna] = [];
+        // Reiniciamos memoria si es una nueva auditoría
+        if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
+
+        if (typeof PROMPTS[etapaId] !== 'function') {
+            console.error(`Etapa no encontrada: ${etapaId}`);
+            return res.status(400).json({ content: `[ERROR]: La etapa "${etapaId}" no está configurada.` });
+        }
 
         const result = await captureAndScrape(dna);
-        
-        // Construimos el historial para que Gemini no sufra amnesia
         const historialPrevio = auditoriaContexto[dna].join("\n\n");
+        
         const promptFinal = PROMPTS[etapaId](result.texto, historialPrevio);
 
         const request = {
             contents: [{
                 role: 'user',
-                parts: [
-                    { text: `${PERSONA}\n\nREPORTE ACUMULADO HASTA EL MOMENTO:\n${historialPrevio}\n\nINSTRUCCIÓN DE ETAPA ACTUAL:\n${promptFinal}` }
-                ]
+                parts: [{ text: `${PERSONA}\n\nCONTEXTO ACUMULADO:\n${historialPrevio}\n\nORDEN ACTUAL:\n${promptFinal}` }]
             }]
         };
 
@@ -49,14 +52,15 @@ app.post('/diseccion', async (req, res) => {
         const response = await geminiRes.response;
         const content = response.candidates[0].content.parts[0].text.trim();
 
-        // GUARDAMOS EN MEMORIA PARA LA SIGUIENTE ETAPA
-        auditoriaContexto[dna].push(`[${etapaId.toUpperCase()}]: ${content}`);
+        // Alimentamos la hebra de memoria
+        auditoriaContexto[dna].push(`[LOGRO ${etapaId.toUpperCase()}]: ${content}`);
 
         return res.json({ content });
     } catch (error) {
+        console.error("Falla en etapa:", etapaId, error.message);
         res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v2.0: Sovereignty Intelligence Online"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v2.1: Contextual Intelligence Ready"));
