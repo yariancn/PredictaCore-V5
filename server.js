@@ -10,18 +10,12 @@ app.use(express.json());
 let model;
 try {
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
-    const vertexAI = new VertexAI({ 
-        project: creds.project_id, 
-        location: 'us-south1', 
-        googleAuthOptions: { credentials: creds } 
-    });
+    const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-south1', googleAuthOptions: { credentials: creds } });
     model = vertexAI.getGenerativeModel({ 
         model: 'gemini-2.5-flash', 
         generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } 
     });
-} catch (e) { 
-    console.error("Error en inicialización VertexAI:", e.message); 
-}
+} catch (e) { console.error("Error inicialización:", e.message); }
 
 let auditoriaContexto = {};
 
@@ -31,7 +25,7 @@ app.post('/diseccion', async (req, res) => {
     
     try {
         if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
-        if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' no configurada en el cerebro.`);
+        if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' inválida.`);
 
         const result = await captureAndScrape(dna);
         const expedienteForense = auditoriaContexto[dna].join("\n");
@@ -45,17 +39,13 @@ app.post('/diseccion', async (req, res) => {
         };
 
         if (result.screenshot) {
-            request.contents[0].parts.push({ 
-                inlineData: { mimeType: 'image/png', data: result.screenshot } 
-            });
+            request.contents[0].parts.push({ inlineData: { mimeType: 'image/png', data: result.screenshot } });
         }
 
-        // --- LÓGICA DE REINTENTO PARA EVITAR EL ERROR 429 ---
+        // --- SISTEMA DE REINTENTO PARA ERROR 429 ---
         let response;
         let intentos = 0;
-        const maxIntentos = 3;
-
-        while (intentos < maxIntentos) {
+        while (intentos < 3) {
             try {
                 const geminiRes = await model.generateContent(request);
                 response = await geminiRes.response;
@@ -63,32 +53,23 @@ app.post('/diseccion', async (req, res) => {
             } catch (e) {
                 if (e.message.includes('429') || e.message.includes('Resource exhausted')) {
                     intentos++;
-                    console.log(`[SATURACIÓN]: Reintento ${intentos}/${maxIntentos} en 4 segundos...`);
-                    await new Promise(r => setTimeout(r, 4000));
-                } else {
-                    throw e;
-                }
+                    console.log(`Saturación (429). Reintento ${intentos} en 5s...`);
+                    await new Promise(r => setTimeout(r, 5000));
+                } else { throw e; }
             }
         }
 
-        if (!response) throw new Error("Google Cloud no respondió tras los reintentos.");
-        
+        if (!response) throw new Error("Google Cloud no disponible.");
         const content = response.candidates[0].content.parts[0].text.trim();
         
-        // Memoria estratégica: Guardamos el dictamen para la siguiente etapa
         auditoriaContexto[dna].push(`- [${etapaId.toUpperCase()}]: ${content.substring(0, 400)}`);
-
         return res.json({ content });
 
     } catch (error) {
-        console.error(`Fallo en etapa ${etapaId}:`, error.message);
+        console.error(`Error en ${etapaId}:`, error.message);
         res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`PredictaCore Titán v32.0.0: Puerto ${PORT} Online`);
-});
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v32.0.0 Online"));
