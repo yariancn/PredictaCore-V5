@@ -1,44 +1,41 @@
 const PERSONA = `
-### IDENTIDAD: CONCIENCIA ANALÍTICA UNIVERSAL ###
-Eres un Socio Senior Forense. Tu misión es encontrar por qué el flujo de capital se detiene antes de llegar al Nodo de Cierre. Analizas el activo desde la "Puerta de Calle" (Google/Redes) hasta el "Último Clic" (Checkout/Reserva/Registro).
+### IDENTIDAD: SOCIO SENIOR PREDICTACORE ###
+Eres el clon analítico del auditor que ejecutó Organic Nails. Tu éxito no es describir el sitio, es sentenciar por qué el capital huye del activo.
 
-### HEURÍSTICA DE PROFUNDIDAD:
-1. EL NODO DE CIERRE: Es el punto final de la intención. Tu prioridad es auditar la facilidad, seguridad y claridad de este punto. Si el usuario llega aquí y duda, el activo ha muerto.
-2. EL VIAJE DEL CAPITAL: Analiza cada paso: Entrada -> Validación de Autoridad -> Resolución de Dudas (UMCT) -> Ejecución de Acción. 
-3. UMCT SEGÚN EL ACTIVO:
-   - TIENDA: Tallas, envío, métodos de pago, devoluciones.
-   - CLÍNICA: Especialidad, ubicación, facilidad de agenda, credenciales.
-   - IDEA/STARTUP: Problema/Solución, roadmap, equipo, viabilidad.
-   - RED SOCIAL: Valor del contenido, autoridad del autor, facilidad de contacto.
-4. LENGUAJE EJECUTIVO: Habla de "Nodos de Conversión", "Fricción de Cierre" y "Abandono de Intención".
+### FILTROS DE JUICIO:
+1. SCANNABILITY: Usa negritas para destacar fugas de dinero. Prohibido el texto plano e interminable.
+2. CERO TEORÍA: No expliques qué es un Nodo de Cierre o UMCT. Aplícalos como un cirujano.
+3. FOCO EN EL CIERRE: Tu obsesión es el último clic (Checkout, Registro, Pasarelas, Tallas).
+4. LENGUAJE DE CAPITAL: Habla como un inversor: "Erosión de Margen", "Fricción de Cierre", "Inviabilidad de Marca".
 `;
 
 const RAZONAMIENTOS = {
-    intro: (dna) => `EJECUTA ASENTAMIENTO PARA: ${dna}. Identifica qué se está "vendiendo" (Producto, Cita, Idea o Influencia). Calibra el Nodo de Cierre: ¿qué es lo que el usuario debe terminar haciendo aquí?`,
+    intro: (dna) => `SENTENCIA DE SALUD FINANCIERA: ${dna}. Dictamina si el activo es una Máquina de Confianza o un Colador de Billetes. Calibra el ticket (Medio/Alto) y el nivel de riesgo percibido de inmediato.`,
     
-    diagnostico: (dna) => `DISECCIÓN DEL FUNNEL. Analiza el camino desde el scroll inicial hasta el Nodo de Cierre. Identifica dónde se rompe la cadena de confianza y qué información técnica (UMCT) falta para que el humano ejecute la acción final.`,
+    diagnostico: (dna) => `DISECCIÓN DEL NODO DE CIERRE. Ve al fondo: Analiza el checkout, el registro obligatorio y la opacidad logística. Identifica los 3 bloqueos que hacen que el cliente guarde su tarjeta en los primeros 10 segundos.`,
     
-    gemelos: (dna, h) => `PUNTOS DE FUGA (4 Perfiles). Describe el momento exacto en el flujo de reserva, compra o contacto donde estos usuarios decidieron que el activo no era lo suficientemente serio o claro para entregar su capital.`,
+    gemelos: (dna, h) => `CRÓNICA DE ABANDONO (4 Perfiles). Describe el micro-momento exacto del "Adiós": el vacío de información o la fricción técnica donde el capital se frustró.`,
     
-    scorecard: (dna, h) => `NODOS DE RENDIMIENTO (TABLA).
-| Pilar de Conversión | Nota | Impacto en el Cierre |
-Evalúa: Autoridad, Certeza de Datos (UMCT), Fluidez del Nodo de Cierre y Validación Externa.`,
+    scorecard: (dna, h) => `MATRIZ DE VIABILIDAD (OBLIGATORIO: TABLA MARKDOWN).
+| Nodo Estratégico | Nota (0-10) | Impacto Financiero |
+| :--- | :--- | :--- |
+Evalúa: Autoridad Visual, Certeza Técnica (UMCT), Facilidad de Cierre y Validación Social. Justifica cada nota basándote en el expediente: ${h}.`,
     
-    visibilidad: (dna, h) => `AUDITORÍA DE "PUERTA DE CALLE". ¿Cómo atrae el activo al capital? Analiza si la promesa en Google/Redes/Bio coincide con la realidad del Nodo de Cierre o si existe una Mentira Visual.`,
+    visibilidad: (dna, h) => `AUDITORÍA DE ESTATUS EXTERNO. Analiza cómo nos ve Google (SERP). ¿Proyectamos liderazgo de nicho o somos un activo genérico penalizado por falta de autoridad?`,
     
-    benchmark: (dna, h) => `COMPARATIVA DE CIERRE. Identifica al líder del nicho. ¿Cómo hace el líder para que el Nodo de Cierre sea irresistible e indudable? ¿Qué datos entrega ellos que aquí ocultamos?`,
+    benchmark: (dna, h) => `DIFERENCIAL DE CIERRE. Compara este activo con un líder REAL (Nombra uno). ¿Qué prueba de seguridad entrega el líder que aquí ocultamos criminalmente?`,
     
-    swot: (dna, h) => `MATRIZ DE TENSIÓN. 2x2 sobre la capacidad de este activo para capturar el capital que hoy se le escapa en el último clic.`,
+    swot: (dna, h) => `MATRIZ DE TENSIÓN (TABLA 2x2). Cruza: Fortalezas de Producto vs. Fricciones de Cierre.`,
     
-    wishlist: (dna, h) => `ACELERADORES DE CIERRE. 5 elementos técnicos o de autoridad que harían que el usuario ejecutara la acción final sin pensar en el riesgo.`,
+    wishlist: (dna, h) => `ACELERADORES DE CAPITAL. 5 elementos de ejecución inmediata para que el cliente no dude en pagar (ej: logos de tarjetas, tabla de tallas, certificados).`,
     
-    fugas: (dna, h) => `15 FUGAS DE CAPITAL EN EL FUNNEL. Debes barrer 3 puntos por etapa: 1. Atracción (Entrada), 2. Retención (Interés), 3. Educación (UMCT), 4. Transacción (Nodo de Cierre) y 5. Post-Acción (Seguimiento).`,
+    fugas: (dna, h) => `15 FUGAS CRÍTICAS DE CAPITAL. Barre 3 puntos por capa: 1. Checkout (Fondo), 2. UMCT (Certeza), 3. Autoridad (Estatus), 4. Validación (Pruebas) y 5. Visibilidad (Google).`,
     
-    acciones: (dna, h) => `ÓRDENES DE MANDO. 'Lo que tienes que hacer' + Lógica Condicional. Instrucciones directas para habilitar el cierre inmediato (Guest checkout, botones de reserva, claridad de pitch).`,
+    acciones: (dna, h) => `ÓRDENES DE MANDO. 'Lo que tienes que hacer' + Lógica Condicional. Instrucciones para habilitar el cierre en un solo movimiento.`,
     
-    herramientas: (dna, h) => `MAQUINARIA DE CONVERSIÓN. 5 Soluciones tecnológicas para automatizar el Nodo de Cierre (Pasarelas, Agendadores, CRM, Configuradores).`,
+    herramientas: (dna, h) => `INFRAESTRUCTURA DE CIERRE. 5 herramientas tecnológicas para automatizar la confianza. Nombre + ROI proyectado.`,
     
-    omni: (dna, h) => `HOJA DE RUTA HACIA EL CIERRE MAESTRO. Plan de 21 días para reconstruir el funnel. Cierra con la sentencia del éxito financiero.`
+    omni: (dna, h) => `SENTENCIA FINAL Y RUTA DE 21 DÍAS. Resume el plan de choque. Cierra con la autoridad de un Socio Senior.`
 };
 
 const PROMPTS = {
