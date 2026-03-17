@@ -1,41 +1,41 @@
 const PERSONA = `
-### IDENTIDAD: SOCIO SENIOR PREDICTACORE ###
-Eres el clon analítico del auditor de Organic Nails. Tu éxito se mide por la capacidad de sentenciar por qué el capital no fluye. No eres un asistente; eres el cirujano del negocio.
+### CONCIENCIA ANALÍTICA PREDICTACORE ###
+Eres un Socio Senior. Tu éxito no es listar errores, es dictar sentencias financieras. 
 
-### REGLAS DE ORO:
-1. SCANNABILITY: Usa negritas para resaltar fugas de dinero. Prohibido el texto plano y aburrido.
-2. CERO TEORÍA: No expliques qué es UMCT o Nodo de Cierre. Ve directo al juicio del activo.
-3. TAXONOMÍA DE BARRIDO: Debes auditar: 1) Checkout/Cierre, 2) Certidumbre (UMCT), 3) Autoridad Visual, 4) Validación Social y 5) Visibilidad en Buscadores.
-4. LENGUAJE: Eres asertivo y pragmático. Habla de "Inversión", "Fricción" y "Fuga de Capital".
+### MANDATOS DE FORMATO EJECUTIVO (CRÍTICO):
+1. PROHIBIDO REPETIR PREÁMBULOS: No incluyas tu identidad, ni "Identidad: Socio Senior", ni reglas en el reporte. Empieza directo con el hallazgo.
+2. NARRATIVA DE PODER: Sustituye las listas de guiones por párrafos densos. Usa negritas para resaltar fugas de capital y datos técnicos.
+3. TABLAS REALES: El Scorecard y el SWOT DEBEN ser tablas Markdown limpias.
+4. SIN PAJA: Si pido 15 fugas, agrúpalas en 5 párrafos potentes (uno por dimensión). No quiero 15 bullets huérfanos.
 `;
 
 const RAZONAMIENTOS = {
-    intro: (dna) => `SENTENCIA DE SALUD FINANCIERA: ${dna}. Dictamina de inmediato si el activo es una Máquina de Confianza o un Colador de Billetes. Calibra el ticket (Bajo/Medio/Alto).`,
+    intro: (dna) => `SENTENCIA INICIAL. En dos párrafos de alto nivel, dictamina la viabilidad del capital en ${dna}. Calibra el ticket y el riesgo percibido de inmediato. Sin introducciones cordiales.`,
     
-    diagnostico: (dna) => `DISECCIÓN DEL NODO DE CIERRE. Analiza el checkout, la facilidad de pago y la transparencia de costos. Identifica los 3 bloqueos que matan la venta en los primeros segundos.`,
+    diagnostico: (dna) => `DISECCIÓN ESTRATÉGICA. Analiza el Nodo de Cierre (checkout y confianza). Identifica los 3 bloqueos que ejecutan la venta. Usa párrafos narrativos, no listas.`,
     
-    gemelos: (dna, h) => `PUNTOS DE INFLEXIÓN (4 Perfiles). Describe el micro-momento exacto del abandono técnico o emocional de usuarios reales.`,
+    gemelos: (dna, h) => `CRÓNICA DE ABANDONO. Narra 4 historias de fricción donde el cliente real decidió no entregar su capital. Enfócate en el micro-momento del desengaño.`,
     
-    scorecard: (dna, h) => `SCORECARD DE VIABILIDAD (MATRIZ OBLIGATORIA).
-| Pilar Estratégico | Nota (0-10) | Impacto en Facturación |
+    scorecard: (dna, h) => `MATRIZ DE RENDIMIENTO (TABLA). 
+| Nodo Estratégico | Nota (0-10) | Impacto en Facturación |
 | :--- | :--- | :--- |
-Evalúa: Autoridad, UMCT, Fluidez de Cierre y Validación. Basado en el expediente: ${h}.`,
+Justifica cada nota basándote en la evidencia técnica acumulada.`,
     
-    visibilidad: (dna, h) => `AUDITORÍA DE ESTATUS EXTERNO. Analiza cómo nos ve Google. ¿Proyectamos liderazgo o somos un activo genérico ignorado por el algoritmo?`,
+    visibilidad: (dna, h) => `ESTATUS EN EL ECOSISTEMA. Analiza la autoridad de la marca en Google y redes. ¿Somos un referente o un fantasma digital?`,
     
-    benchmark: (dna, h) => `CONTRASTE DE LIDERAZGO. Compara contra un líder REAL del nicho. ¿Qué "Certidumbre" entrega el líder que aquí es invisible?`,
+    benchmark: (dna, h) => `EL ABISMO DE LA CERTIDUMBRE. Compara con un líder real. ¿Qué prueba de verdad entrega el líder que nosotros ocultamos?`,
     
-    swot: (dna, h) => `MATRIZ DE TENSIÓN DE CAPITAL. Un análisis cruzado: ¿Cómo nuestras debilidades de certidumbre anulan nuestras fortalezas?`,
+    swot: (dna, h) => `TENSIÓN ESTRATÉGICA (TABLA 2x2). Cruza fortalezas vs. bloqueos de cierre.`,
     
-    wishlist: (dna, h) => `ACELERADORES DE CIERRE. 5 elementos de autoridad inmediata para que el precio sea irrelevante (Certificaciones, Pasarelas, Logística).`,
+    wishlist: (dna, h) => `ACELERADORES DE CAPITAL. 5 inyecciones de estatus para anular la resistencia al precio.`,
     
-    fugas: (dna, h) => `15 FUGAS CRÍTICAS DE CAPITAL. Barre 3 puntos por dimensión: 1. Checkout (Fondo), 2. UMCT (Datos técnicos), 3. Autoridad (Estatus), 4. Validación (Pruebas) y 5. Visibilidad (SERP).`,
+    fugas: (dna, h) => `ANÁLISIS DE LA HEMORRAGIA (15 Puntos en 5 Bloques). Redacta 5 párrafos narrativos (Checkout, UMCT, Autoridad, Validación, Visibilidad). Cada párrafo debe contener 3 hallazgos integrados.`,
     
-    acciones: (dna, h) => `ÓRDENES DE MANDO QUIRÚRGICO. 'Lo que tienes que hacer' para habilitar el cierre en un clic y rescatar el capital fugado.`,
+    acciones: (dna, h) => `ÓRDENES DE MANDO. 'Lo que tienes que hacer' para capturar el capital hoy mismo. Instrucciones quirúrgicas.`,
     
-    herramientas: (dna, h) => `MAQUINARIA DE ESCALA. 5 herramientas tecnológicas para automatizar la confianza. Nombre + ROI proyectado.`,
+    herramientas: (dna, h) => `INFRAESTRUCTURA DE ESCALA. 5 soluciones tecnológicas (Nombre + ROI).`,
     
-    omni: (dna, h) => `SENTENCIA FINAL Y RUTA DE 21 DÍAS. Resume el plan de choque. Cierra con la autoridad de un Socio Senior.`
+    omni: (dna, h) => `SENTENCIA DE ÉXITO FINAL. Plan de 21 días. Describe cómo se verá la caja fuerte una vez operado el activo. Cierra con autoridad.`
 };
 
 const PROMPTS = {
