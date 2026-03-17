@@ -10,10 +10,10 @@ app.use(express.json());
 let model;
 try {
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
-    // CAMBIO A us-central1 PARA GARANTIZAR ACCESO AL MODELO PRO
+    // Cambiamos a us-central1 para asegurar disponibilidad del modelo PRO
     const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-central1', googleAuthOptions: { credentials: creds } });
     model = vertexAI.getGenerativeModel({ 
-        model: 'gemini-1.5-pro-002', // VERSIÓN ESTABLE DE ALTA GAMA
+        model: 'gemini-1.5-pro-002', 
         generationConfig: { temperature: 0.4, maxOutputTokens: 8192 } 
     });
 } catch (e) { console.error("Error inicialización:", e.message); }
@@ -29,6 +29,7 @@ app.post('/diseccion', async (req, res) => {
         if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' no configurada.`);
 
         const result = await captureAndScrape(dna);
+        // UNIFICAMOS EL EXPEDIENTE SIN RECORTES
         const expedienteForense = auditoriaContexto[dna].join("\n\n");
         const promptFinal = PROMPTS[etapaId](result.texto, expedienteForense);
 
@@ -47,7 +48,8 @@ app.post('/diseccion', async (req, res) => {
         const response = await geminiRes.response;
         const content = response.candidates[0].content.parts[0].text.trim();
         
-        auditoriaContexto[dna].push(`### SECCIÓN ${etapaId.toUpperCase()} ###\n${content}`);
+        // GUARDAMOS EL HALLAZGO COMPLETO PARA LA SIGUIENTE ETAPA
+        auditoriaContexto[dna].push(`### HALLAZGO ${etapaId.toUpperCase()} ###\n${content}`);
         return res.json({ content });
 
     } catch (error) {
