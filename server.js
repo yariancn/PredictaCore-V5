@@ -17,7 +17,7 @@ try {
     });
     
     model = vertexAI.getGenerativeModel({ 
-        model: 'gemini-1.5-pro', // Alias estable para evitar errores 404
+        model: 'gemini-1.5-pro', 
         generationConfig: { temperature: 0.5, maxOutputTokens: 8192 } 
     });
 } catch (e) { console.error("Error inicialización:", e.message); }
@@ -30,8 +30,8 @@ app.post('/diseccion', async (req, res) => {
     
     try {
         if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
-        
-        // Ejecutamos el motor con capacidad de 50,000 caracteres
+        if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' no configurada.`);
+
         const result = await captureAndScrape(dna);
         const expedienteForense = auditoriaContexto[dna].join("\n\n");
         const today = new Date().toLocaleDateString('es-ES', { 
