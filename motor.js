@@ -2,8 +2,6 @@ const puppeteer = require('puppeteer');
 
 async function captureAndScrape(url) {
     let input = url.trim();
-    
-    // Si tiene espacios o no tiene puntos, es una IDEA, no una WEB
     const isUrl = input.includes('.') && !input.includes(' ');
 
     if (!isUrl) {
@@ -11,8 +9,7 @@ async function captureAndScrape(url) {
     }
 
     let finalUrl = input.startsWith('http') ? input : `https://${input}`;
-
-    console.log(`[VISIÓN]: Intentando abrir ${finalUrl}...`);
+    console.log(`[BARRIDO 360]: Escaneando ecosistema en ${finalUrl}...`);
     
     const browser = await puppeteer.launch({
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
@@ -20,21 +17,28 @@ async function captureAndScrape(url) {
 
     try {
         const page = await browser.newPage();
-        await page.setViewport({ width: 1280, height: 800 });
+        // Viewport amplio para capturar la jerarquía visual completa
+        await page.setViewport({ width: 1440, height: 2000 }); 
         
-        // Esperamos 45 segundos para que carguen sitios pesados
-        await page.goto(finalUrl, { waitUntil: 'networkidle2', timeout: 45000 });
+        // Esperamos a que la red esté inactiva para capturar scripts de pago y SEO
+        await page.goto(finalUrl, { waitUntil: 'networkidle2', timeout: 50000 });
         
-        const screenshot = await page.screenshot({ encoding: 'base64' });
+        const screenshot = await page.screenshot({ encoding: 'base64', fullPage: false });
         const texto = await page.evaluate(() => document.body.innerText);
         
         await browser.close();
-        return { screenshot, texto: texto.substring(0, 10000), isUrl: true };
+        
+        // EXPANSIÓN A 50,000: Capturamos Bosque, Árboles y Flora (SEO/Footer/Scripts)
+        return { screenshot, texto: texto.substring(0, 50000), isUrl: true };
         
     } catch (e) {
-        console.log(`[AVISO]: No se pudo navegar. Error: ${e.message}`);
+        console.log(`[AVISO]: Error en el escaneo: ${e.message}`);
         await browser.close();
         return { screenshot: null, texto: input, isUrl: false };
+    }
+}
+
+module.exports = { captureAndScrape };        return { screenshot: null, texto: input, isUrl: false };
     }
 }
 
