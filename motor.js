@@ -19,6 +19,7 @@ async function captureAndScrape(url) {
         const page = await browser.newPage();
         await page.setViewport({ width: 1440, height: 2000 }); 
         
+        // Timeout de 60s para asegurar carga de flora y fauna (scripts/SEO)
         await page.goto(finalUrl, { waitUntil: 'networkidle2', timeout: 60000 });
         
         const screenshot = await page.screenshot({ encoding: 'base64', fullPage: false });
@@ -26,7 +27,7 @@ async function captureAndScrape(url) {
         
         await browser.close();
         
-        // CAPACIDAD 50K: Para ver bosque, árboles y fauna (SEO/Footer/Scripts)
+        // CAPACIDAD 50K: Captura total de cabecera a footer
         return { screenshot, texto: texto.substring(0, 50000), isUrl: true };
         
     } catch (e) {
