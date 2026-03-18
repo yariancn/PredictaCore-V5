@@ -10,6 +10,7 @@ app.use(express.json());
 let model;
 try {
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
+    // Configuración alineada con tu endpoint de Vertex AI
     const vertexAI = new VertexAI({ 
         project: creds.project_id, 
         location: 'us-central1', 
@@ -17,7 +18,8 @@ try {
     });
     
     model = vertexAI.getGenerativeModel({ 
-        model: 'gemini-1.5-pro', 
+        // CAMBIO MAESTRO: Activamos el motor Gemini 2.5 Pro
+        model: 'gemini-2.5-pro', 
         generationConfig: { temperature: 0.5, maxOutputTokens: 8192 } 
     });
 } catch (e) { console.error("Error inicialización:", e.message); }
@@ -40,12 +42,13 @@ app.post('/diseccion', async (req, res) => {
             year: 'numeric' 
         });
         
+        // Pasamos Texto del Scraping, Expediente Maestro y Fecha Actual
         const promptFinal = PROMPTS[etapaId](result.texto, expedienteForense, today);
 
         const request = {
             contents: [{
                 role: 'user',
-                parts: [{ text: `${PERSONA}\n\nEXPEDIENTE MAESTRO:\n${expedienteForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
+                parts: [{ text: `${PERSONA}\n\nEXPEDIENTE MAESTRO ACUMULADO:\n${expedienteForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
             }]
         };
 
@@ -64,9 +67,9 @@ app.post('/diseccion', async (req, res) => {
 
     } catch (error) {
         console.error(`Error en etapa ${etapaId}:`, error.message);
-        res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
+        res.status(500).json({ content: `[ERROR CRÍTICO TITÁN]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v40.2 Online - Full Vision Mode"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v40.4 Online - Motor Gemini 2.5 Pro Activado"));
