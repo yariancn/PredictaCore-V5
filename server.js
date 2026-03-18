@@ -10,10 +10,9 @@ app.use(express.json());
 let model;
 try {
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
-    // Usamos us-central1 para garantizar acceso a las versiones Pro más recientes
     const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-central1', googleAuthOptions: { credentials: creds } });
     model = vertexAI.getGenerativeModel({ 
-        model: 'gemini-2.5-pro', // ACTUALIZADO A 2.5 PRO
+        model: 'gemini-1.5-pro-002', 
         generationConfig: { temperature: 0.4, maxOutputTokens: 8192 } 
     });
 } catch (e) { console.error("Error inicialización:", e.message); }
@@ -29,9 +28,13 @@ app.post('/diseccion', async (req, res) => {
         if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' no configurada.`);
 
         const result = await captureAndScrape(dna);
-        // UNIFICACIÓN DE EXPEDIENTE SIN LÍMITE DE CARACTERES
         const expedienteForense = auditoriaContexto[dna].join("\n\n");
-        const promptFinal = PROMPTS[etapaId](result.texto, expedienteForense);
+        
+        // CAPTURA DE FECHA ACTUAL DINÁMICA
+        const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+        
+        // PASO DE LOS 3 ARGUMENTOS AL CEREBRO
+        const promptFinal = PROMPTS[etapaId](result.texto, expedienteForense, today);
 
         const request = {
             contents: [{
@@ -48,7 +51,6 @@ app.post('/diseccion', async (req, res) => {
         const response = await geminiRes.response;
         const content = response.candidates[0].content.parts[0].text.trim();
         
-        // El expediente crece con cada hallazgo para dar contexto al siguiente paso
         auditoriaContexto[dna].push(`### RESULTADO ${etapaId.toUpperCase()} ###\n${content}`);
         return res.json({ content });
 
@@ -59,4 +61,4 @@ app.post('/diseccion', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v34.0 Online - Engine: 2.5 Pro"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v40.0 Online - Dynamic Engine"));
