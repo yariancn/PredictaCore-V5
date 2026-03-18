@@ -10,7 +10,6 @@ app.use(express.json());
 let model;
 try {
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
-    // Configuración en us-central1 para máxima compatibilidad
     const vertexAI = new VertexAI({ 
         project: creds.project_id, 
         location: 'us-central1', 
@@ -18,8 +17,8 @@ try {
     });
     
     model = vertexAI.getGenerativeModel({ 
-        model: 'gemini-1.5-pro', // Alias estable para evitar error 404
-        generationConfig: { temperature: 0.4, maxOutputTokens: 8192 } 
+        model: 'gemini-1.5-pro', // Alias estable para evitar errores 404
+        generationConfig: { temperature: 0.5, maxOutputTokens: 8192 } 
     });
 } catch (e) { console.error("Error inicialización:", e.message); }
 
@@ -31,25 +30,22 @@ app.post('/diseccion', async (req, res) => {
     
     try {
         if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
-        if (!PROMPTS[etapaId]) throw new Error(`Etapa '${etapaId}' no configurada.`);
-
+        
+        // Ejecutamos el motor con capacidad de 50,000 caracteres
         const result = await captureAndScrape(dna);
         const expedienteForense = auditoriaContexto[dna].join("\n\n");
-        
-        // CAPTURA DE FECHA ACTUAL DINÁMICA
         const today = new Date().toLocaleDateString('es-ES', { 
             day: '2-digit', 
             month: 'long', 
             year: 'numeric' 
         });
         
-        // PASO DE LOS 3 ARGUMENTOS: TEXTO, HISTORIAL Y FECHA
         const promptFinal = PROMPTS[etapaId](result.texto, expedienteForense, today);
 
         const request = {
             contents: [{
                 role: 'user',
-                parts: [{ text: `${PERSONA}\n\nEXPEDIENTE ACUMULADO:\n${expedienteForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
+                parts: [{ text: `${PERSONA}\n\nEXPEDIENTE MAESTRO:\n${expedienteForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
             }]
         };
 
@@ -73,4 +69,4 @@ app.post('/diseccion', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v40.1 Online - Estabilidad Pro"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v40.2 Online - Full Vision Mode"));
