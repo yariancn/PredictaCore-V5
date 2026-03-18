@@ -11,15 +11,17 @@ async function captureAndScrape(url) {
     let finalUrl = input.startsWith('http') ? input : `https://${input}`;
     console.log(`[BARRIDO 360]: Escaneando ecosistema en ${finalUrl}...`);
     
-    const browser = await puppeteer.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-    });
-
+    let browser;
     try {
+        browser = await puppeteer.launch({
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+        });
+
         const page = await browser.newPage();
+        // Viewport extendido para capturar la flora y fauna del sitio
         await page.setViewport({ width: 1440, height: 2000 }); 
         
-        // Timeout de 60s para asegurar carga de flora y fauna (scripts/SEO)
+        // Espera de 60s para asegurar carga de scripts de pago y SEO
         await page.goto(finalUrl, { waitUntil: 'networkidle2', timeout: 60000 });
         
         const screenshot = await page.screenshot({ encoding: 'base64', fullPage: false });
@@ -27,7 +29,7 @@ async function captureAndScrape(url) {
         
         await browser.close();
         
-        // CAPACIDAD 50K: Captura total de cabecera a footer
+        // CAPACIDAD 50K: Para no perder ni un logo del footer ni rastro de SEO
         return { screenshot, texto: texto.substring(0, 50000), isUrl: true };
         
     } catch (e) {
