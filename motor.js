@@ -1,7 +1,8 @@
+const puppeteer = require('puppeteer');
+
 async function captureAndScrape(url) {
     let browser;
     try {
-        // SELLO DE CERTIDUMBRE: Auto-completar protocolo si falta
         let targetUrl = url.trim();
         if (!targetUrl.startsWith('http')) {
             targetUrl = 'https://' + targetUrl;
@@ -11,13 +12,17 @@ async function captureAndScrape(url) {
         
         browser = await puppeteer.launch({
             headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']
+            args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox', 
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
         });
 
         const page = await browser.newPage();
         await page.setViewport({ width: 1280, height: 800 });
 
-        // Navegación con la URL reparada
         await page.goto(targetUrl, { waitUntil: 'networkidle2', timeout: 60000 });
 
         const texto = await page.evaluate(() => {
@@ -43,3 +48,6 @@ async function captureAndScrape(url) {
         throw new Error(`[FALLA DE MOTOR]: ${error.message}`);
     }
 }
+
+// LÍNEA CRÍTICA DE CAPITAL: Sin esto, el servidor no puede llamar a la función
+module.exports = { captureAndScrape };
