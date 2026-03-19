@@ -1,4 +1,5 @@
 const express = require('express');
+const { GoogleGenerativeAI } = require("@google-cloud/generative-ai");
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor');
 const { PROMPTS } = require('./cerebro');
@@ -7,29 +8,55 @@ const { PROTOCOLOS_IA } = require('./protocolos');
 const app = express();
 app.use(express.json());
 
-// NODO DE ENTRADA: Railway servirá tu página aquí
+// CONFIGURACIÓN DE AUTORIDAD (API KEY)
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+
+// RUTA RAÍZ: Panel de Control Visual
 app.get('/', (req, res) => {
     res.send(getHTML());
 });
 
-// NODO DE DISECCIÓN: Procesa la auditoría
+// RUTA DE DISECCIÓN: El Nodo de Cierre
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
+    
     try {
-        const dataActivo = await captureAndScrape(dna);
-        const promptTemplate = PROMPTS[etapaId.toLowerCase()];
+        let contextoForense = "";
         
-        // Aquí se generará la sentencia de capital
-        res.json({ 
-            content: `[SISTEMA OPERATIVO]\n\nAnalizando: ${dna}\nFase: ${etapaId}\nProtocolo: UMCT-32` 
-        });
+        // 1. DETECCIÓN CAMALEÓNICA: ¿Es URL o es Idea/Red Social?
+        if (dna.includes('.') && (dna.startsWith('http') || dna.length < 50)) {
+            console.log(`[MOTOR]: Ejecutando disección web en ${dna}`);
+            const dataWeb = await captureAndScrape(dna);
+            contextoForense = dataWeb.texto;
+        } else {
+            console.log(`[CEREBRO]: Analizando DNA de Idea o Red Social`);
+            contextoForense = dna;
+        }
+
+        // 2. CONSTRUCCIÓN DEL PROMPT DE CAPITAL
+        const promptTemplate = PROMPTS[etapaId.toLowerCase()];
+        const instruccionFinal = `${PROTOCOLOS_IA}\n\nActúa como Socio Senior de PredictaCore. Mi estándar son 'Organic Nails' y 'La Fortuna'. Dicta sentencias de capital. No expliques conceptos.\n\n${promptTemplate(contextoForense)}`;
+
+        // 3. GENERACIÓN DE SENTENCIA (LLAMADA A GEMINI)
+        const result = await model.generateContent(instruccionFinal);
+        const response = await result.response;
+        const textoSentencia = response.text();
+
+        res.json({ content: textoSentencia });
+
     } catch (error) {
-        res.status(500).json({ content: "ERROR DE DISECCIÓN: El activo digital tiene bloqueos de capital." });
+        console.error(`[FALLA CRÍTICA]: ${error.message}`);
+        res.status(500).json({ 
+            content: `### ERROR DE AUDITORÍA\nEl activo presenta bloqueos de capital o fallas de DNA.\nDetalle: ${error.message}` 
+        });
     }
 });
 
-// CERTIDUMBRE TÉCNICA: Railway inyecta el puerto aquí
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-    console.log(`PREDICTACORE TITÁN V32.0 DESPLEGADO EN PUERTO ${PORT}`);
+    console.log(`-------------------------------------------`);
+    console.log(`PREDICTACORE TITÁN v32.0 - ESTATUS: ONLINE`);
+    console.log(`PUERTO OPERATIVO: ${PORT}`);
+    console.log(`-------------------------------------------`);
 });
