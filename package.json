@@ -1,13 +1,15 @@
 {
   "name": "predictacore-titan",
   "version": "32.0.0",
-  "dependencies": {
-    "@google-cloud/vertexai": "^1.1.0",
-    "express": "^4.18.2",
-    "puppeteer": "^22.6.0"
-  },
+  "description": "PredictaCore Titán - Análisis Forense de Conversión",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "puppeteer": "^22.6.0",
+    "axios": "^1.7.2"  // ← AGREGADO AQUÍ
   },
   "engines": {
     "node": "18.x"
