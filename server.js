@@ -8,37 +8,54 @@ const { PROTOCOLOS_IA } = require('./protocolos');
 const app = express();
 app.use(express.json());
 
-// CONFIGURACIÓN DE AUTORIDAD (API KEY)
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+// 1. SELLADO DE LLAVE: Detecta cualquier nombre de variable en Railway
+const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY || process.env.GOOGLE_API_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
 
-// RUTA RAÍZ: Panel de Control Visual
+// Usamos 1.5-flash para asegurar velocidad y compatibilidad total de llave
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+// 2. NODO DE ENTRADA: Panel Visual PredictaCore
 app.get('/', (req, res) => {
     res.send(getHTML());
 });
 
-// RUTA DE DISECCIÓN: El Nodo de Cierre
+// 3. NODO DE CIERRE: Ejecución de Auditoría Forense
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
     
     try {
         let contextoForense = "";
         
-        // 1. DETECCIÓN CAMALEÓNICA: ¿Es URL o es Idea/Red Social?
-        if (dna.includes('.') && (dna.startsWith('http') || dna.length < 50)) {
+        // DETECCIÓN CAMALEÓNICA: ¿Es una URL o una Idea de Negocio/Red Social?
+        const esURL = dna.trim().includes('.') && !dna.includes(' ');
+        
+        if (esURL) {
             console.log(`[MOTOR]: Ejecutando disección web en ${dna}`);
             const dataWeb = await captureAndScrape(dna);
             contextoForense = dataWeb.texto;
         } else {
-            console.log(`[CEREBRO]: Analizando DNA de Idea o Red Social`);
+            console.log(`[CEREBRO]: Analizando DNA de Idea o Contenido Directo`);
             contextoForense = dna;
         }
 
-        // 2. CONSTRUCCIÓN DEL PROMPT DE CAPITAL
+        // CONSTRUCCIÓN DE SENTENCIA CON ESTÁNDAR 'ORGANIC NAILS'
         const promptTemplate = PROMPTS[etapaId.toLowerCase()];
-        const instruccionFinal = `${PROTOCOLOS_IA}\n\nActúa como Socio Senior de PredictaCore. Mi estándar son 'Organic Nails' y 'La Fortuna'. Dicta sentencias de capital. No expliques conceptos.\n\n${promptTemplate(contextoForense)}`;
+        const instruccionFinal = `
+            ${PROTOCOLOS_IA}
+            INSTRUCCIÓN DE SOCIO SENIOR:
+            Actúa como Auditor Forense de PredictaCore. 
+            Tu estándar de calidad son los reportes de 'Organic Nails' y 'La Fortuna'.
+            No expliques conceptos, dicta sentencias financieras. 
+            Tu prioridad es el Nodo de Cierre y la Certidumbre Técnica.
+            Tu juicio debe ser asertivo, pragmático y quirúrgico. 
+            Prohibido el relleno. 
+            Analiza el siguiente dossier y emite el veredicto para la fase: ${etapaId}.
+            
+            DOSSIER:
+            ${contextoForense}
+        `;
 
-        // 3. GENERACIÓN DE SENTENCIA (LLAMADA A GEMINI)
         const result = await model.generateContent(instruccionFinal);
         const response = await result.response;
         const textoSentencia = response.text();
@@ -48,11 +65,12 @@ app.post('/diseccion', async (req, res) => {
     } catch (error) {
         console.error(`[FALLA CRÍTICA]: ${error.message}`);
         res.status(500).json({ 
-            content: `### ERROR DE AUDITORÍA\nEl activo presenta bloqueos de capital o fallas de DNA.\nDetalle: ${error.message}` 
+            content: `### FALLA EN EL NODO DE CIERRE\nHubo un error al procesar el capital de información.\nDetalle: ${error.message}` 
         });
     }
 });
 
+// 4. CERTIDUMBRE DE PUERTO: Compatible con Railway (8080)
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
     console.log(`-------------------------------------------`);
