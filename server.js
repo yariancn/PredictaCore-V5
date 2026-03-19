@@ -1,49 +1,42 @@
 const express = require('express');
-const path = require('path');
-const { VertexAI } = require('@google-cloud/vertexai');
-const { SYSTEM_INSTRUCTIONS } = require('./instrucciones');
-const { PROTOCOLOS_IA } = require('./protocolos');
-const { PROMPTS } = require('./cerebro');
+const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor');
+const { PROMPTS } = require('./cerebro');
+const { PROTOCOLOS_IA } = require('./protocolos');
 
 const app = express();
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json());
 
-// --- ESTO ES LO QUE ARREGLA EL 404 ---
-app.use(express.static(__dirname)); 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+// RUTA 1: Entrega el panel de control (Visual)
+app.get('/', (req, res) => {
+    res.send(getHTML());
+});
 
-let model;
-const initModel = () => {
-    try {
-        const creds = JSON.parse(process.env.GOOGLE_CREDS);
-        const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-central1' });
-        model = vertexAI.getGenerativeModel({ 
-            model: 'gemini-1.5-pro',
-            systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTIONS + "\n" + PROTOCOLOS_IA }] }
-        });
-        console.log("--- PREDICTACORE ONLINE: ADN CARGADO ---");
-    } catch (e) { console.error("Error en modelo:", e.message); }
-};
-initModel();
-
+// RUTA 2: Ejecuta la disección por etapas
 app.post('/diseccion', async (req, res) => {
     const { dna, etapaId } = req.body;
+    
     try {
-        const dossier = await captureAndScrape(dna);
-        const promptFinal = PROMPTS[etapaId.toLowerCase()](dossier.texto);
+        // 1. El Motor extrae el DNA del activo
+        const dataActivo = await captureAndScrape(dna);
+        
+        // 2. Aquí es donde Gemini (o tu IA) procesaría el prompt
+        // Para esta versión, simulamos la respuesta basada en el prompt del Cerebro
+        const promptTemplate = PROMPTS[etapaId.toLowerCase()];
+        const instruccionForense = promptTemplate(dataActivo.texto);
 
-        const request = { contents: [{ role: 'user', parts: [{ text: promptFinal }] }] };
-        if (dossier.screenshot && etapaId.toLowerCase() === 'intro') {
-            request.contents[0].parts.push({ inlineData: { mimeType: 'image/png', data: dossier.screenshot } });
-        }
+        // NOTA: Aquí deberías llamar a Vertex AI o Gemini API 
+        // Por ahora, devolvemos un mensaje de éxito para confirmar que el puente funciona
+        res.json({ 
+            content: `[AUDITORÍA EN CURSO]\n\nSe ha recibido el DNA de: ${dna}\nProtocolo aplicado: ${etapaId}\n\n*Simulación de análisis PredictaCore basada en ${dataActivo.texto.substring(0, 100)}...*` 
+        });
 
-        const result = await model.generateContent(request);
-        res.json({ content: result.response.candidates[0].content.parts[0].text });
-    } catch (e) {
-        res.status(500).json({ content: "[ERROR TITÁN]: Fallo en la disección." });
+    } catch (error) {
+        res.status(500).json({ content: "ERROR DE DISECCIÓN: El activo bloqueó el acceso." });
     }
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log(`PredictaCore v70.0 en Puerto ${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`PREDICTACORE TITÁN V32.0 OPERATIVO EN PUERTO ${PORT}`);
+});
