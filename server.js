@@ -1,78 +1,70 @@
 const express = require('express');
 const { VertexAI } = require('@google-cloud/vertexai');
-const { SYSTEM_INSTRUCTIONS } = require('./instrucciones'); // IMPORTAMOS EL ADN
+const { SYSTEM_INSTRUCTIONS } = require('./instrucciones');
 const { PROMPTS } = require('./cerebro');
 const { captureAndScrape } = require('./motor');
-const { getHTML } = require('./visual');
 
 const app = express();
 app.use(express.json());
 
 let model;
-try {
+const initModel = () => {
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
-    const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-central1', googleAuthOptions: { credentials: creds } });
-    
-    // INYECCIÓN DEL SALTO CUÁNTICO:
+    const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-central1' });
     model = vertexAI.getGenerativeModel({ 
         model: 'gemini-2.5-pro',
-        // Aquí grabamos el ADN de Socio Senior en el sistema límbico de la IA
-        systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTIONS }] },
-        generationConfig: { temperature: 0.5, maxOutputTokens: 8192 } 
+        systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTIONS }] }
     });
-} catch (e) { console.error("Error inicialización:", e.message); }
+};
+initModel();
 
-let auditoriaContexto = {};
-let masterDossier = {};
-let lockEscaneo = {};
+let cacheDossier = {}; // Aquí guardamos el barrido profundo
+let lockEscaneo = {}; // Para que no escanee 11 veces a la vez
 
 app.post('/diseccion', async (req, res) => {
     const { dna } = req.body;
     const etapaId = (req.body.etapaId || "").toLowerCase();
     
     try {
-        if (!masterDossier[dna]) {
-            if (!lockEscaneo[dna]) lockEscaneo[dna] = captureAndScrape(dna);
-            masterDossier[dna] = await lockEscaneo[dna];
+        // --- BARRIDO ÚNICO SIMBIÓTICO ---
+        if (!cacheDossier[dna]) {
+            if (!lockEscaneo[dna]) {
+                console.log(`[BARRIDO PROFUNDO]: Entrando a las entrañas de ${dna}...`);
+                lockEscaneo[dna] = captureAndScrape(dna);
+            }
+            cacheDossier[dna] = await lockEscaneo[dna];
             delete lockEscaneo[dna];
         }
 
-        if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
-
-        const result = masterDossier[dna];
-        const historial = auditoriaContexto[dna].join("\n\n");
+        const dossier = cacheDossier[dna];
         const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
         
-        const promptFinal = PROMPTS[etapaId](result.texto, historial, today);
+        // Verificamos que la etapa exista en cerebro.js
+        if (!PROMPTS[etapaId]) {
+            throw new Error(`La etapa ${etapaId} no está definida en el cerebro.`);
+        }
 
-        // El prompt del usuario ahora es limpio: solo datos y órdenes
+        const promptFinal = PROMPTS[etapaId](dossier.texto, "", today);
+
         const request = {
-            contents: [{
-                role: 'user',
-                parts: [{ text: `
-                [EVIDENCIA DEL ACTIVO]: ${result.texto}
-                [EXPEDIENTE ACUMULADO]: ${historial}
-                [ORDEN ACTUAL]: ${promptFinal}
-                `.trim() }]
-            }]
+            contents: [{ role: 'user', parts: [{ text: promptFinal }] }]
         };
 
-        if (result.screenshot && etapaId === 'intro') {
-            request.contents[0].parts.push({ inlineData: { mimeType: 'image/png', data: result.screenshot } });
+        // Solo mandamos la imagen en la intro para ahorrar memoria
+        if (dossier.screenshot && etapaId === 'intro') {
+            request.contents[0].parts.push({ inlineData: { mimeType: 'image/png', data: dossier.screenshot } });
         }
 
         const geminiRes = await model.generateContent(request);
         const response = await geminiRes.response;
         const content = response.candidates[0].content.parts[0].text.trim();
         
-        auditoriaContexto[dna].push(`### RESULTADO ${etapaId.toUpperCase()} ###\n${content}`);
         return res.json({ content });
 
     } catch (error) {
         console.error(`Error en etapa ${etapaId}:`, error.message);
-        res.status(500).json({ content: `[ERROR TITÁN]: Fallo en la inyección de evidencia.` });
+        res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
     }
 });
 
-app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v60.0 - System Instructions Active"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v67.0 - Symbiotic Engine Active"));
