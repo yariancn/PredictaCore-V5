@@ -1,6 +1,7 @@
 const express = require('express');
 const { VertexAI } = require('@google-cloud/vertexai');
 const { SYSTEM_INSTRUCTIONS } = require('./instrucciones');
+const { PROTOCOLOS_IA } = require('./protocolos');
 const { PROMPTS } = require('./cerebro');
 const { captureAndScrape } = require('./motor');
 
@@ -13,58 +14,37 @@ const initModel = () => {
     const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-central1' });
     model = vertexAI.getGenerativeModel({ 
         model: 'gemini-2.5-pro',
-        systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTIONS }] }
+        // AQUÍ UNIMOS EL ALMA Y LA LUPA
+        systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTIONS + "\n" + PROTOCOLOS_IA }] }
     });
 };
 initModel();
 
-let cacheDossier = {}; // Aquí guardamos el barrido profundo
-let lockEscaneo = {}; // Para que no escanee 11 veces a la vez
+let cacheDossier = {};
 
 app.post('/diseccion', async (req, res) => {
-    const { dna } = req.body;
-    const etapaId = (req.body.etapaId || "").toLowerCase();
-    
+    const { dna, etapaId } = req.body;
     try {
-        // --- BARRIDO ÚNICO SIMBIÓTICO ---
         if (!cacheDossier[dna]) {
-            if (!lockEscaneo[dna]) {
-                console.log(`[BARRIDO PROFUNDO]: Entrando a las entrañas de ${dna}...`);
-                lockEscaneo[dna] = captureAndScrape(dna);
-            }
-            cacheDossier[dna] = await lockEscaneo[dna];
-            delete lockEscaneo[dna];
+            cacheDossier[dna] = await captureAndScrape(dna);
         }
-
-        const dossier = cacheDossier[dna];
-        const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
         
-        // Verificamos que la etapa exista en cerebro.js
-        if (!PROMPTS[etapaId]) {
-            throw new Error(`La etapa ${etapaId} no está definida en el cerebro.`);
-        }
-
-        const promptFinal = PROMPTS[etapaId](dossier.texto, "", today);
+        const dossier = cacheDossier[dna];
+        const prompt = PROMPTS[etapaId.toLowerCase()](dossier.texto);
 
         const request = {
-            contents: [{ role: 'user', parts: [{ text: promptFinal }] }]
+            contents: [{ role: 'user', parts: [{ text: prompt }] }]
         };
 
-        // Solo mandamos la imagen en la intro para ahorrar memoria
-        if (dossier.screenshot && etapaId === 'intro') {
+        if (dossier.screenshot && etapaId.toLowerCase() === 'intro') {
             request.contents[0].parts.push({ inlineData: { mimeType: 'image/png', data: dossier.screenshot } });
         }
 
-        const geminiRes = await model.generateContent(request);
-        const response = await geminiRes.response;
-        const content = response.candidates[0].content.parts[0].text.trim();
-        
-        return res.json({ content });
-
-    } catch (error) {
-        console.error(`Error en etapa ${etapaId}:`, error.message);
-        res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
+        const result = await model.generateContent(request);
+        res.json({ content: result.response.candidates[0].content.parts[0].text });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
     }
 });
 
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v67.0 - Symbiotic Engine Active"));
+app.listen(process.env.PORT || 8080);
