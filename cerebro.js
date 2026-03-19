@@ -1,25 +1,22 @@
-const RAZONAMIENTOS = {
-    // PUNTO I: SENTENCIA ESTRATÉGICA (UNIVERSAL)
-    intro: (dna, h, today) => `FECHA: ${today}. ACTIVO: ${dna}. 
-    Emite una SENTENCIA DE CAPITAL profesional. Analiza la Arquitectura de Autoridad (diseño y estatus), la Hemorragia de Flujo (estorbos y navegación) y el Contrato Técnico (evidencias reales). 
-    REGLA: Escribe 3 párrafos densos de juicio puro. Enfócate en el riesgo del dinero y la experiencia del cliente. Prohibido usar listas.`,
+const UNIFIED_PROMPT = (dossier, today) => `
+FECHA DE AUDITORÍA: ${today}.
+[DOSSIER DE ENTRAÑAS DEL ACTIVO]: 
+${dossier}
 
-    // PUNTO II: RETRATO HUMANO (CONCISO)
-    gemelos: (dna, h, today) => `CRÓNICA DE ABANDONO (4 PERFILES) AL ${today}.
-    Identifica 4 personas reales (clientes ideales) que entrarían a este activo. Describe en 3 líneas: quién es, su estado emocional (prisa, duda, emoción) y su objetivo inmediato. 
-    REGLA: Sin etiquetas técnicas. Solo la esencia humana del comprador.`,
-    
-    // PUNTO III: SCORECARD DE SALUD
-    scorecard: (dna, h, today) => `SCORECARD DE RIESGO AL ${today}. 
-    Crea una tabla: "Obstáculo (Lo que estorba)", "Diagnóstico (Lo que el ojo ve)", "Impacto Financiero" y "Acción de Socio". Aplica las 6 leyes de oro.`,
+ORDEN DE MANDO: Los 9,000 simbióticos deben devorar esta información y entregar el REPORTE MAESTRO PREDICTACORE con la esencia y profundidad de los reportes originales:
 
-    // PUNTO IX: 15 ÓRDENES DE MANDO
-    acciones: (dna, h, today) => `15 ACCIONES TÁCTICAS AL ${today}. 
-    Instrucciones directas usando la lógica "SI [falla detectada]... ENTONCES [acción inmediata]". Enfócate en diseño, visibilidad de botones, limpieza de estorbos y claridad de precios.`,
+I. DIAGNÓSTICO DE INGENIERÍA (SENTENCIA DE CAPITAL): 3 párrafos de juicio denso sobre Autoridad, Flujo y Contrato Técnico. Sin guiones.
+II. PERFILES PSICOLÓGICOS (CRÓNICA DE ABANDONO): 4 bocetos humanos de 3 líneas. Captura su emoción y su prisa.
+III. SCORECARD PREDICTACORE: Tabla con Obstáculo, Diagnóstico Visual, Dinero Perdido e Impacto.
+IV. VISIBILIDAD EXTERNA: Diagnóstico de autoridad en Google y redes. ¿Líder o fantasma?
+V. BENCHMARKING LOCAL (EL ABISMO DE CERTEZA): Qué seguridad entrega el líder que tú callas.
+VI. MATRIZ ESTRATÉGICA (TENSIÓN DE CAPITAL): Fortalezas de producto vs. Bloqueos de plataforma.
+VII. LISTA DE DESEOS (ACELERADORES DE ESTATUS): 5 elementos técnicos para que el precio no se cuestione.
+VIII. 15 FUGAS DE CAPITAL: Identifica los 15 puntos exactos de fuga (Checkout, UMCT, Autoridad...).
+IX. 15 ACCIONES TÁCTICAS: Instrucciones directas (SI pasa esto... ENTONCES haz aquello).
+X. 5 HERRAMIENTAS DE ESCALA (MAQUINARIA): Tecnología para automatizar tu confianza.
+XI. AUTORIDAD Y HOJA DE RUTA: Plan de 21 días para el éxito. Cierre profesional y de mando.
 
-    // PUNTO XI: RUTA DE ÉXITO
-    omni: (dna, h, today) => `HOJA DE RUTA DE 21 DÍAS AL ${today}. 
-    Plan de 3 fases: 1. Limpieza de Estorbos, 2. Blindaje de Confianza, 3. Escala. Termina con un cierre motivador y profesional que comande a la acción.`
-};
-
-module.exports = { PROMPTS: RAZONAMIENTOS };
+REGLA DE ORO: Conecta la falla técnica con la frustración del cliente. Mantén la universalidad pero sé quirúrgico.
+`;
+module.exports = { UNIFIED_PROMPT };
