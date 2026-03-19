@@ -1,22 +1,25 @@
 const RAZONAMIENTOS = {
-    // PUNTO I: SENTENCIA DE NEGOCIO
+    // PUNTO I: SENTENCIA ESTRATÉGICA (UNIVERSAL)
     intro: (dna, h, today) => `FECHA: ${today}. ACTIVO: ${dna}. 
-    Analiza el sitio como si fueras el socio del dueño. Dictamina la salud del negocio enfocándote en la Confianza, la Facilidad de Compra y la Seguridad Técnica. Explica dónde están los bloqueos que impiden que el dinero fluya. 
-    REGLA: Escribe 3 párrafos de prosa clara y profesional. Sé directo pero siempre respetuoso con el trabajo del cliente.`,
+    Emite una SENTENCIA DE CAPITAL profesional. Analiza la Arquitectura de Autoridad (diseño y estatus), la Hemorragia de Flujo (estorbos y navegación) y el Contrato Técnico (evidencias reales). 
+    REGLA: Escribe 3 párrafos densos de juicio puro. Enfócate en el riesgo del dinero y la experiencia del cliente. Prohibido usar listas.`,
 
-    // PUNTO II: QUIÉN ES TU CLIENTE (ORGÁNICO)
+    // PUNTO II: RETRATO HUMANO (CONCISO)
     gemelos: (dna, h, today) => `CRÓNICA DE ABANDONO (4 PERFILES) AL ${today}.
-    Describe a 4 personas reales que entrarían a este sitio. Cuéntame en 3 o 4 líneas quiénes son, cómo se sienten hoy (cansados, emocionados, con prisa) y qué es lo que más les urge comprar. 
-    REGLA: Usa lenguaje natural. No menciones fallas del sitio aquí, solo retrata al ser humano.`,
+    Identifica 4 personas reales (clientes ideales) que entrarían a este activo. Describe en 3 líneas: quién es, su estado emocional (prisa, duda, emoción) y su objetivo inmediato. 
+    REGLA: Sin etiquetas técnicas. Solo la esencia humana del comprador.`,
     
-    // PUNTO IX: PLAN DE RESCATE (15 ÓRDENES)
-    acciones: (dna, h, today) => `15 ACCIONES PARA RESCATAR VENTAS AL ${today}.
-    Entrega 15 instrucciones sencillas para mejorar el sitio. Enfócate en la navegación, la visibilidad de los botones (que nada estorbe) y la claridad de las ofertas. 
-    REGLA: Usa la lógica "SI pasa esto... ENTONCES haz aquello". Usa un lenguaje que un emprendedor pueda entender y ejecutar mañana mismo.`,
+    // PUNTO III: SCORECARD DE SALUD
+    scorecard: (dna, h, today) => `SCORECARD DE RIESGO AL ${today}. 
+    Crea una tabla: "Obstáculo (Lo que estorba)", "Diagnóstico (Lo que el ojo ve)", "Impacto Financiero" y "Acción de Socio". Aplica las 6 leyes de oro.`,
 
-    // ... los demás puntos se mantienen con esta misma tónica de lenguaje sencillo y directo ...
-    scorecard: (dna, h, today) => `TABLA DE SALUD DEL NEGOCIO AL ${today}. Explica el impacto en dinero de cada punto de forma sencilla.`,
-    omni: (dna, h, today) => `HOJA DE RUTA DE 21 DÍAS. Un cierre motivador con los pasos exactos para que el negocio despegue.`
+    // PUNTO IX: 15 ÓRDENES DE MANDO
+    acciones: (dna, h, today) => `15 ACCIONES TÁCTICAS AL ${today}. 
+    Instrucciones directas usando la lógica "SI [falla detectada]... ENTONCES [acción inmediata]". Enfócate en diseño, visibilidad de botones, limpieza de estorbos y claridad de precios.`,
+
+    // PUNTO XI: RUTA DE ÉXITO
+    omni: (dna, h, today) => `HOJA DE RUTA DE 21 DÍAS AL ${today}. 
+    Plan de 3 fases: 1. Limpieza de Estorbos, 2. Blindaje de Confianza, 3. Escala. Termina con un cierre motivador y profesional que comande a la acción.`
 };
 
-module.exports = { PERSONA: "", PROMPTS: RAZONAMIENTOS }; // La PERSONA ya está en System Instructions
+module.exports = { PROMPTS: RAZONAMIENTOS };
