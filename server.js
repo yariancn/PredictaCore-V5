@@ -1,5 +1,5 @@
 const express = require('express');
-const { GoogleGenerativeAI } = require("@google-cloud/generative-ai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor');
 const { PROMPTS } = require('./cerebro');
