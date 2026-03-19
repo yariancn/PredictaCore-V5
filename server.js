@@ -18,35 +18,39 @@ try {
 } catch (e) { console.error("Error inicialización:", e.message); }
 
 let auditoriaContexto = {};
-let cacheScraping = {}; // CACHÉ PARA EVITAR SCRAPING REPETITIVO
+let masterDossier = {}; // El expediente compartido
+let lockEscaneo = {}; // El semáforo
 
 app.post('/diseccion', async (req, res) => {
     const { dna } = req.body;
     const etapaId = (req.body.etapaId || "").toLowerCase();
     
     try {
-        // Inicializamos contexto si es la intro
-        if (etapaId === 'intro' || !auditoriaContexto[dna]) {
-            auditoriaContexto[dna] = [];
-            console.log(`[LOG]: Iniciando escaneo maestro para ${dna}...`);
-            // Escaneamos UNA SOLA VEZ y guardamos en caché
-            cacheScraping[dna] = await captureAndScrape(dna);
+        // PROCESO SIMBIÓTICO: Solo un escaneo para alimentar a todos
+        if (!masterDossier[dna]) {
+            if (!lockEscaneo[dna]) {
+                lockEscaneo[dna] = captureAndScrape(dna);
+            }
+            masterDossier[dna] = await lockEscaneo[dna];
+            delete lockEscaneo[dna];
         }
 
-        const result = cacheScraping[dna];
-        const expedienteForense = auditoriaContexto[dna].join("\n\n");
+        if (etapaId === 'intro' || !auditoriaContexto[dna]) auditoriaContexto[dna] = [];
+
+        const result = masterDossier[dna];
+        const historial = auditoriaContexto[dna].join("\n\n");
         const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
         
-        const promptFinal = PROMPTS[etapaId](result.texto, expedienteForense, today);
+        // Enviamos el Dossier de Entrañas al Cerebro
+        const promptFinal = PROMPTS[etapaId](result.texto, historial, today);
 
         const request = {
             contents: [{
                 role: 'user',
-                parts: [{ text: `${PERSONA}\n\nORDEN ESTRICTA: VE DIRECTO AL GRANO. PROHIBIDO REPETIR TU IDENTIDAD O LAS REGLAS EN TU RESPUESTA.\n\nEXPEDIENTE MAESTRO:\n${expedienteForense}\n\nORDEN ACTUAL:\n${promptFinal}` }]
+                parts: [{ text: `${PERSONA}\n\nDOSSIER COMPARTIDO POR LOS 9000 SIMBIÓTICOS:\n${result.texto}\n\nEXPEDIENTE MAESTRO ACUMULADO:\n${historial}\n\nORDEN ACTUAL:\n${promptFinal}` }]
             }]
         };
 
-        // Solo enviamos la imagen en la intro para no saturar el contexto en cada paso
         if (result.screenshot && etapaId === 'intro') {
             request.contents[0].parts.push({ inlineData: { mimeType: 'image/png', data: result.screenshot } });
         }
@@ -60,9 +64,9 @@ app.post('/diseccion', async (req, res) => {
 
     } catch (error) {
         console.error(`Error en etapa ${etapaId}:`, error.message);
-        res.status(500).json({ content: `[ERROR TITÁN]: ${error.message}` });
+        res.status(500).json({ content: `[ERROR CRÍTICO]: ${error.message}` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v56.0 - High Performance Engine"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v58.0 - Centralized Symbiotic Intelligence"));
