@@ -1,6 +1,7 @@
 const express = require('express');
 const { VertexAI } = require('@google-cloud/vertexai');
-const { PERSONA, PROMPTS } = require('./cerebro');
+const { SYSTEM_INSTRUCTIONS } = require('./instrucciones'); // IMPORTAMOS EL ADN
+const { PROMPTS } = require('./cerebro');
 const { captureAndScrape } = require('./motor');
 const { getHTML } = require('./visual');
 
@@ -11,26 +12,27 @@ let model;
 try {
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
     const vertexAI = new VertexAI({ project: creds.project_id, location: 'us-central1', googleAuthOptions: { credentials: creds } });
+    
+    // INYECCIÓN DEL SALTO CUÁNTICO:
     model = vertexAI.getGenerativeModel({ 
-        model: 'gemini-2.5-pro', 
+        model: 'gemini-2.5-pro',
+        // Aquí grabamos el ADN de Socio Senior en el sistema límbico de la IA
+        systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTIONS }] },
         generationConfig: { temperature: 0.5, maxOutputTokens: 8192 } 
     });
 } catch (e) { console.error("Error inicialización:", e.message); }
 
 let auditoriaContexto = {};
-let masterDossier = {}; // El expediente compartido
-let lockEscaneo = {}; // El semáforo
+let masterDossier = {};
+let lockEscaneo = {};
 
 app.post('/diseccion', async (req, res) => {
     const { dna } = req.body;
     const etapaId = (req.body.etapaId || "").toLowerCase();
     
     try {
-        // PROCESO SIMBIÓTICO: Solo un escaneo para alimentar a todos
         if (!masterDossier[dna]) {
-            if (!lockEscaneo[dna]) {
-                lockEscaneo[dna] = captureAndScrape(dna);
-            }
+            if (!lockEscaneo[dna]) lockEscaneo[dna] = captureAndScrape(dna);
             masterDossier[dna] = await lockEscaneo[dna];
             delete lockEscaneo[dna];
         }
@@ -41,13 +43,17 @@ app.post('/diseccion', async (req, res) => {
         const historial = auditoriaContexto[dna].join("\n\n");
         const today = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
         
-        // Enviamos el Dossier de Entrañas al Cerebro
         const promptFinal = PROMPTS[etapaId](result.texto, historial, today);
 
+        // El prompt del usuario ahora es limpio: solo datos y órdenes
         const request = {
             contents: [{
                 role: 'user',
-                parts: [{ text: `${PERSONA}\n\nDOSSIER COMPARTIDO POR LOS 9000 SIMBIÓTICOS:\n${result.texto}\n\nEXPEDIENTE MAESTRO ACUMULADO:\n${historial}\n\nORDEN ACTUAL:\n${promptFinal}` }]
+                parts: [{ text: `
+                [EVIDENCIA DEL ACTIVO]: ${result.texto}
+                [EXPEDIENTE ACUMULADO]: ${historial}
+                [ORDEN ACTUAL]: ${promptFinal}
+                `.trim() }]
             }]
         };
 
@@ -64,9 +70,9 @@ app.post('/diseccion', async (req, res) => {
 
     } catch (error) {
         console.error(`Error en etapa ${etapaId}:`, error.message);
-        res.status(500).json({ content: `[ERROR CRÍTICO]: ${error.message}` });
+        res.status(500).json({ content: `[ERROR TITÁN]: Fallo en la inyección de evidencia.` });
     }
 });
 
 app.get('/', (req, res) => res.send(getHTML()));
-app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v58.0 - Centralized Symbiotic Intelligence"));
+app.listen(process.env.PORT || 8080, () => console.log("PredictaCore v60.0 - System Instructions Active"));
