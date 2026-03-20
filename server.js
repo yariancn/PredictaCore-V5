@@ -23,8 +23,14 @@ app.post('/diseccion', async (req, res) => {
     return res.status(500).json({ content: '[ERROR]: XAI_API_KEY no configurada.' });
   }
   try {
-    const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
-    if (!PROMPTS[idFinal]) throw new Error(`Etapa [${etapaId}] no definida.`);
+    // Corrección acordada: normalizamos la etapa a mayúsculas para coincidir con el frontend
+    const etapaNormalizada = etapaId.toUpperCase();
+    const idFinal = PROMPTS[etapaNormalizada] ? etapaNormalizada : 'OMNI';
+
+    if (!PROMPTS[idFinal]) {
+      throw new Error(`Etapa [${etapaId}] no definida.`);
+    }
+
     let hechos = "Contenido base del sitio: " + dna + " (request fresco: " + new Date().toISOString() + ")";
     let visualsData = {};
     try {
