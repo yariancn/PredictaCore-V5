@@ -34,7 +34,7 @@ async function extraerDNA(url) {
   } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-// Versión estable: solo Jina para barrido profundo (texto + links)
+// Versión mínima que funcionaba: solo Jina
 async function scrapeDeep(input) {
   if (input.startsWith('http')) {
     return { text: await extraerDNA(input), visuals: {} };
