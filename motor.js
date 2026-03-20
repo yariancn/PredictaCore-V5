@@ -35,7 +35,7 @@ async function extraerDNA(url) {
   } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-// HYBRID: Jina para texto profundo + Playwright SOLO para visuals (rápido, sin timeout)
+// HYBRID: Jina para texto profundo + Playwright solo para visuals (rápido, sin timeout)
 async function scrapeDeep(input, maxPages = 12) {
   const timestamp = new Date().toISOString();
   let text = "";
