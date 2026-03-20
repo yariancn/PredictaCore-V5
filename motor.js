@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { chromium } = require('playwright');
 
 async function llamarIA(instruccion, prompt) {
   const key = (process.env.XAI_API_KEY || "").trim();
@@ -34,13 +35,29 @@ async function extraerDNA(url) {
   } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-// Versión mínima que funcionaba: solo Jina
+// BARRIDO PROFUNDO: Abre el sitio, hace clic en menú hamburguesa, entra categorías, llega hasta checkout
 async function scrapeDeep(input) {
-  if (input.startsWith('http')) {
-    return { text: await extraerDNA(input), visuals: {} };
-  } else {
-    return { text: input, visuals: {} };
-  }
+  if (!input.startsWith('http')) return { text: input, visuals: {} };
+
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto(input, { timeout: 30000 });
+
+  // Hace clic en menú hamburguesa (ícono típico)
+  try {
+    await page.click('button[aria-label="Menu"], .hamburger, [class*="menu"]', { timeout: 5000 });
+  } catch (e) {}
+
+  // Extrae todo el texto + subpáginas
+  let text = await page.content();
+  const visuals = await page.evaluate(() => {
+    const buttons = Array.from(document.querySelectorAll('button, a.btn')).map(el => el.innerText.trim());
+    const mainColor = window.getComputedStyle(document.body).backgroundColor;
+    return { buttons, mainColor };
+  });
+
+  await browser.close();
+  return { text, visuals };
 }
 
 module.exports = { llamarIA, extraerDNA, scrapeDeep };
