@@ -1,6 +1,7 @@
 const axios = require('axios');
-const { chromium } = require('playwright');
 
+// Temporal: DESACTIVADO Playwright para que el servidor arranque en Railway
+// Usamos solo Jina (texto completo + links) hasta que configuremos build correcto
 async function llamarIA(instruccion, prompt) {
   const key = (process.env.XAI_API_KEY || "").trim();
   if (!key) throw new Error("FALTA_LLAVE_XAI");
@@ -35,46 +36,13 @@ async function extraerDNA(url) {
   } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-// Hybrid ligero: Jina para texto profundo + Playwright solo para visuals rápidos
-async function scrapeDeep(input, maxPages = 12) {
-  const timestamp = new Date().toISOString();
-  let text = "";
-  let visuals = {};
-
+// Temporal: solo Jina para evitar crash en require
+async function scrapeDeep(input) {
   if (input.startsWith('http')) {
-    // 1. Texto profundo y subpáginas con Jina (rápido y estable)
-    text = await extraerDNA(input);
-
-    // 2. Visuals rápidos con Playwright (solo homepage, sin subpáginas pesadas)
-    try {
-      const browser = await chromium.launch({ headless: true, timeout: 10000 });
-      const page = await browser.newPage();
-      await page.goto(input, { timeout: 10000, waitUntil: 'domcontentloaded' });
-
-      visuals = await page.evaluate(() => {
-        const buttons = Array.from(document.querySelectorAll('button, a.btn, [class*="button"], [class*="btn"]')).map(el => ({
-          text: el.innerText.trim(),
-          color: window.getComputedStyle(el).backgroundColor,
-          position: el.getBoundingClientRect()
-        }));
-        const mainColor = window.getComputedStyle(document.body).backgroundColor;
-        const location = document.querySelector('[itemprop="address"], .address, footer address')?.innerText || 'No ubicación detectada';
-        return { buttons, mainColor, location };
-      });
-
-      await browser.close();
-    } catch (e) {
-      console.log("Visuals fallback:", e.message);
-      visuals = {};
-    }
+    return { text: await extraerDNA(input), visuals: {} };
   } else {
-    text = input;
+    return { text: input, visuals: {} };
   }
-
-  return { 
-    text: text + `\n(Timestamp fresco: ${timestamp})`, 
-    visuals 
-  };
 }
 
 module.exports = { llamarIA, extraerDNA, scrapeDeep };
