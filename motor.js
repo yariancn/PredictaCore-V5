@@ -42,10 +42,10 @@ async function scrapeDeep(input, maxPages = 12) {
   let visuals = {};
 
   if (input.startsWith('http')) {
-    // 1. Texto profundo con Jina (rápido)
+    // 1. Texto profundo con Jina (rápido y estable)
     text = await extraerDNA(input);
 
-    // 2. Visuals + subpáginas con Playwright (solo lo necesario)
+    // 2. Visuals + ubicación con Playwright (solo lo necesario, <2s)
     try {
       const browser = await chromium.launch({ headless: true, timeout: 15000 });
       const page = await browser.newPage();
