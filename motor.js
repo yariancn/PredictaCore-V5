@@ -35,21 +35,21 @@ async function extraerDNA(url) {
   } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-// HYBRID: Jina para texto profundo + Playwright solo para visuals (rápido, sin timeout)
+// Hybrid ligero: Jina para texto profundo + Playwright solo para visuals rápidos
 async function scrapeDeep(input, maxPages = 12) {
   const timestamp = new Date().toISOString();
   let text = "";
   let visuals = {};
 
   if (input.startsWith('http')) {
-    // 1. Texto profundo con Jina (rápido y estable)
+    // 1. Texto profundo y subpáginas con Jina (rápido y estable)
     text = await extraerDNA(input);
 
-    // 2. Visuals + ubicación con Playwright (solo lo necesario, <2s)
+    // 2. Visuals rápidos con Playwright (solo homepage, sin subpáginas pesadas)
     try {
-      const browser = await chromium.launch({ headless: true, timeout: 15000 });
+      const browser = await chromium.launch({ headless: true, timeout: 10000 });
       const page = await browser.newPage();
-      await page.goto(input, { timeout: 15000 });
+      await page.goto(input, { timeout: 10000, waitUntil: 'domcontentloaded' });
 
       visuals = await page.evaluate(() => {
         const buttons = Array.from(document.querySelectorAll('button, a.btn, [class*="button"], [class*="btn"]')).map(el => ({
