@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ['nodejs_18', 'chromium', 'nss', 'atk', 'atk-bridge', 'cups', 'libdrm', 'libxkbcommon', 'pango', 'cairo', 'libgbm', 'libasound2', 'libxcomposite', 'libxdamage', 'libxext', 'libxfixes', 'libxrandr', 'libxrender', 'libxtst', 'libx11-xcb', 'libxcb', 'libx11']
+nixPkgs = ['nodejs_18', 'chromium', 'nss', 'atk', 'cups', 'libdrm', 'libxkbcommon', 'pango', 'cairo', 'libgbm', 'libasound2']
 
 [phases.build]
 cmds = ["npm install", "npx playwright install-deps chromium"]
