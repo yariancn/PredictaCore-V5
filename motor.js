@@ -1,7 +1,5 @@
 const axios = require('axios');
 
-// Temporal: DESACTIVADO Playwright para que el servidor arranque en Railway
-// Usamos solo Jina (texto completo + links) hasta que configuremos build correcto
 async function llamarIA(instruccion, prompt) {
   const key = (process.env.XAI_API_KEY || "").trim();
   if (!key) throw new Error("FALTA_LLAVE_XAI");
@@ -36,7 +34,7 @@ async function extraerDNA(url) {
   } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-// Temporal: solo Jina para evitar crash en require
+// Versión estable: solo Jina para barrido profundo (texto + links)
 async function scrapeDeep(input) {
   if (input.startsWith('http')) {
     return { text: await extraerDNA(input), visuals: {} };
