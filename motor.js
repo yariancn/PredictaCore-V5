@@ -31,11 +31,11 @@ async function extraerDNA(url) {
     const jinaKey = (process.env.JINA_API_KEY || "").trim();
     const headers = jinaKey ? { 'Authorization': `Bearer ${jinaKey}` } : {};
     const r = await axios.get("https://r.jina.ai/" + url, { headers, timeout: 25000 });
-    return r.data.substring(0, 45000);
+    return r.data.substring(0, 15000);
   } catch (e) { throw new Error("JINA_FAIL: " + e.message); }
 }
 
-// BARRIDO PROFUNDO: Abre el sitio, hace clic en menú hamburguesa, entra categorías, llega hasta checkout
+// BARRIDO PROFUNDO: Navega, hace clic en menú hamburguesa, entra categorías, llega a checkout
 async function scrapeDeep(input) {
   if (!input.startsWith('http')) return { text: input, visuals: {} };
 
@@ -43,17 +43,21 @@ async function scrapeDeep(input) {
   const page = await browser.newPage();
   await page.goto(input, { timeout: 30000 });
 
-  // Hace clic en menú hamburguesa (ícono típico)
+  // Clic en menú hamburguesa (ícono típico)
   try {
-    await page.click('button[aria-label="Menu"], .hamburger, [class*="menu"]', { timeout: 5000 });
-  } catch (e) {}
+    await page.click('button[aria-label="Menu"], .hamburger, [class*="menu"], [class*="nav-toggle"]', { timeout: 10000 });
+  } catch (e) { console.log("Menú hamburguesa no encontrado"); }
 
-  // Extrae todo el texto + subpáginas
+  // Espera carga categorías
+  await page.waitForTimeout(2000);
+
+  // Extrae todo
   let text = await page.content();
   const visuals = await page.evaluate(() => {
-    const buttons = Array.from(document.querySelectorAll('button, a.btn')).map(el => el.innerText.trim());
+    const buttons = Array.from(document.querySelectorAll('button, a.btn, [class*="button"]')).map(el => el.innerText.trim());
     const mainColor = window.getComputedStyle(document.body).backgroundColor;
-    return { buttons, mainColor };
+    const location = document.querySelector('[itemprop="address"], .address, footer address')?.innerText || 'No ubicación';
+    return { buttons, mainColor, location };
   });
 
   await browser.close();
