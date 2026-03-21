@@ -6,30 +6,30 @@ async function scrapeDeep(input) {
 
   let browser;
   try {
-    console.log("[MOTOR] Barrido profundo iniciado en: " + input);
-    browser = await chromium.launch({ 
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] 
-    });
-    
+    console.log("[MOTOR] Barrido profundo 360 iniciado: " + input);
+    browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
       viewport: { width: 1280, height: 800 }
     });
-    
     const page = await context.newPage();
-    
-    // CAMBIO CRÍTICO: Usamos 'load' en lugar de 'networkidle' para evitar timeouts en Shopify
-    await page.goto(input, { waitUntil: 'load', timeout: 45000 });
-    // Espera táctica para que carguen elementos dinámicos
-    await page.waitForTimeout(5000);
 
-    // Clic en menús
+    // SENSOR DE ERRORES NO VISUALES (Console & Page Errors)
+    let technicalErrors = [];
+    page.on('console', msg => { if (msg.type() === 'error') technicalErrors.push(msg.text()); });
+    page.on('pageerror', err => { technicalErrors.push(err.message); });
+
+    // MEDIDOR DE CARGA REAL
+    const startTime = Date.now();
+    await page.goto(input, { waitUntil: 'load', timeout: 45000 });
+    const loadTime = (Date.now() - startTime) / 1000;
+
+    // ABRIR MENÚS (Navegación Profunda)
     const menuSelectors = ['button[aria-label*="menu"]', '.hamburger', '.menu-toggle', 'nav button', '[class*="hamburger"]'];
     for (const sel of menuSelectors) {
       try {
         const btn = await page.$(sel);
-        if (btn && await btn.isVisible()) {
+        if (btn) {
           await btn.click();
           await page.waitForTimeout(1000);
           break; 
@@ -37,21 +37,29 @@ async function scrapeDeep(input) {
       } catch (e) {}
     }
 
-    // Scroll profundo
+    // SCROLL PROFUNDO 360
     await page.evaluate(async () => {
-      window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, document.body.scrollHeight);
     });
     await page.waitForTimeout(2000);
 
+    // MÉTRICAS DE RENDIMIENTO TÉCNICO
+    const perfMetrics = await page.evaluate(() => {
+      const t = performance.timing;
+      return {
+        dns: t.domainLookupEnd - t.domainLookupStart,
+        tcp: t.connectEnd - t.connectStart,
+        dom: t.domContentLoadedEventEnd - t.navigationStart
+      };
+    });
+
     const fullText = await page.evaluate(() => document.body.innerText);
     const visuals = {
-      images: await page.$$eval('img', imgs => imgs.map(img => ({ 
-        src: img.src, 
-        alt: img.alt || 'fuga de SEO' 
-      })).filter(i => i.src.startsWith('http')).slice(0, 25)),
-      buttons: await page.$$eval('button, .btn, a.button', els => 
-        els.map(el => el.textContent.trim()).filter(t => t.length > 2)
-      )
+      images: await page.$$eval('img', imgs => imgs.map(img => ({ src: img.src, alt: img.alt || 'sin alt' })).slice(0, 20)),
+      buttons: await page.$$eval('button, .btn, a.button', els => els.map(el => el.textContent.trim())),
+      loadTime,
+      perfMetrics,
+      technicalErrors: technicalErrors.slice(0, 5)
     };
 
     await browser.close();
@@ -59,19 +67,9 @@ async function scrapeDeep(input) {
 
   } catch (e) {
     if (browser) await browser.close();
-    console.error(`[MOTOR] Playwright neutralizado. Activando Visión de Emergencia Jina.`);
-    
+    console.error(`[MOTOR] Falla 360: ${e.message}`);
     const res = await axios.get(`https://r.jina.ai/${input}`);
-    const markdown = res.data;
-
-    // REPARACIÓN MAESTRA: Extraemos imágenes del markdown para que la IA no esté "ciega"
-    const imageMatches = [...markdown.matchAll(/\!\[.*?\]\((https:\/\/.*?)\)/g)];
-    const fallbackImages = imageMatches.map(m => ({ src: m[1], alt: 'detectado vía sensor de emergencia' })).slice(0, 15);
-
-    return { 
-      text: markdown, 
-      visuals: { images: fallbackImages, buttons: [] } 
-    };
+    return { text: res.data, visuals: { loadTime: 'N/A', technicalErrors: ['Timeout en Playwright'] } };
   }
 }
 
