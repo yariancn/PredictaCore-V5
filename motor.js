@@ -7,16 +7,11 @@ async function scrapeDeep(input) {
   let browser;
   try {
     console.log("[MOTOR] Barrido profundo 360 iniciado: " + input);
-    browser = await chromium.launch({ 
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] 
-    });
-    
+    browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
-      userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1',
-      viewport: { width: 390, height: 844 }
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+      viewport: { width: 1280, height: 800 }
     });
-    
     const page = await context.newPage();
 
     // SENSOR DE ERRORES NO VISUALES
@@ -28,9 +23,9 @@ async function scrapeDeep(input) {
     const startTime = Date.now();
     await page.goto(input, { waitUntil: 'load', timeout: 45000 });
     const loadTime = (Date.now() - startTime) / 1000;
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(3000); // Espera para que carguen apps de Shopify
 
-    // BARRIDO 360: Menús
+    // BARRIDO 360: Menús y Hamburguesas
     const menuSelectors = ['button[aria-label*="menu"]', '.hamburger', '.menu-toggle', 'nav button', '[class*="hamburger"]'];
     for (const sel of menuSelectors) {
       try {
@@ -47,7 +42,7 @@ async function scrapeDeep(input) {
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(2000);
 
-    // MÉTRICAS DE RENDIMIENTO
+    // MÉTRICAS DE RENDIMIENTO TÉCNICO
     const perfMetrics = await page.evaluate(() => {
       const t = performance.timing;
       return {
@@ -59,35 +54,23 @@ async function scrapeDeep(input) {
 
     const fullText = await page.evaluate(() => document.body.innerText);
     const visuals = {
-      images: await page.$$eval('img', imgs => imgs.map(img => ({ src: img.src, alt: img.alt || 'sin alt' })).filter(i => i.src.startsWith('http')).slice(0, 20)),
-      buttons: await page.$$eval('button, .btn, a.button', els => els.map(el => el.textContent.trim())),
+      images: await page.$$eval('img', imgs => imgs.map(img => ({ src: img.src, alt: img.alt || 'sin alt' })).filter(i => i.src.startsWith('http')).slice(0, 25)),
+      buttons: await page.$$eval('button, .btn, a.button', els => els.map(el => el.textContent.trim()).filter(t => t.length > 2)),
       loadTime,
       perfMetrics,
       technicalErrors: technicalErrors.slice(0, 5)
     };
 
     await browser.close();
-    return { text: fullText.substring(0, 40000), visuals };
+    return { text: fullText.substring(0, 45000), visuals };
 
   } catch (e) {
     if (browser) await browser.close();
-    console.error(`[MOTOR] Falla técnica. Activando Jina Fallback.`);
-    
+    console.error(`[MOTOR] Error técnico: ${e.message}. Activando Fallback Jina.`);
     const res = await axios.get(`https://r.jina.ai/${input}`);
-    const markdown = res.data;
-
-    // REPARACIÓN MAESTRA: Extraemos imágenes del fallback para no estar ciegos
-    const imageMatches = [...markdown.matchAll(/\!\[.*?\]\((https:\/\/.*?)\)/g)];
-    const fallbackImages = imageMatches.map(m => ({ src: m[1], alt: 'detectado vía sensor de emergencia' })).slice(0, 15);
-
     return { 
-      text: markdown, 
-      visuals: { 
-        images: fallbackImages, 
-        buttons: [], 
-        loadTime: 'N/A', 
-        technicalErrors: [e.message] 
-      } 
+      text: res.data, 
+      visuals: { loadTime: 'N/A', technicalErrors: [e.message] } 
     };
   }
 }
