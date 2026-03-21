@@ -13,22 +13,30 @@ app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/diseccion', async (req, res) => {
   const { dna, etapaId } = req.body;
-  const { XAI_API_KEY } = process.env;
+  const { XAI_API_KEY, JINA_API_KEY } = process.env;
 
   try {
     const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
     let hechos = "";
     let visualsData = {};
 
-    if (dna.startsWith('http')) {
+    // NODO IV: Visibilidad Externa (Google/Social)
+    if (idFinal === 'VISIBILIDAD' && dna.startsWith('http')) {
+      const query = `site:${dna} OR "${dna}" seguidores instagram tiktok comments authority`;
+      const searchRes = await fetch(`https://s.jina.ai/${encodeURIComponent(query)}`, {
+        headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
+      });
+      hechos = await searchRes.text();
+    } else if (dna.startsWith('http')) {
+      // BARRIDO NORMAL
       const deepData = await scrapeDeep(dna);
-      hechos = deepData.text; // CONTENIDO REAL
-      visualsData = deepData.visuals; // VISUALES REALES
+      hechos = deepData.text;
+      visualsData = deepData.visuals;
     } else {
-      hechos = dna;
+      hechos = dna; // Es una idea o concepto
     }
 
-    // REPARACIÓN MAESTRA: Ahora pasamos 'hechos' al prompt, no el 'dna'
+    // RECONEXIÓN CRÍTICA: La IA recibe HECHOS, no el enlace.
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -38,11 +46,12 @@ app.post('/diseccion', async (req, res) => {
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `EVIDENCIA TÉCNICA (Visuales/Métricas): ${JSON.stringify(visualsData)}` },
-          { role: "system", content: `DOSSIER LITERAL DEL ACTIVO:\n${hechos}` },
+          { role: "system", content: `IDENTIFICA EL NICHO: Primero identifica qué vende el sitio. PROHIBIDO usar productos de los ejemplos (uñas, joyas) si no están en el dossier.` },
+          { role: "system", content: `AUDITORÍA TÉCNICA 360:\n- Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores: ${JSON.stringify(visualsData.technicalErrors || [])}` },
+          { role: "system", content: `DOSSIER LITERAL (EVIDENCIA):\n${hechos}\n\nVISUALES:\n${JSON.stringify(visualsData.images || [])}` },
           { role: "user", content: promptFinal }
         ],
-        temperature: 0.2
+        temperature: 0.1 // Máxima precisión, mínima creatividad
       })
     });
 
@@ -55,4 +64,4 @@ app.post('/diseccion', async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN - ADN RESTAURADO - ONLINE`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ORO MOLIDO - ONLINE`));
