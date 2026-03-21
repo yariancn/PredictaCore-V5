@@ -16,56 +16,66 @@ app.post('/diseccion', async (req, res) => {
   const { dna, etapaId } = req.body;
   const { XAI_API_KEY, JINA_API_KEY } = process.env;
 
+  if (!XAI_API_KEY) {
+    return res.status(500).json({ content: "Error: API Key de xAI no configurada." });
+  }
+
   try {
     const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
     let facts = "";
     let visualsData = {};
 
+    // Ejecución del NODO IV (Visibilidad Externa) o del Scrape Principal
     if (dna.startsWith('http')) {
       if (idFinal === 'VISIBILIDAD') {
-        const query = `site:${dna} OR "${dna}" instagram tiktok followers`;
-        const searchRes = await axios.get(`https://s.jina.ai/${encodeURIComponent(query)}`, {
-          headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
-        });
-        facts = searchRes.data;
+        const query = `site:${dna} OR "${dna}" instagram tiktok followers engagement seo`;
+        try {
+          const searchRes = await axios.get(`https://s.jina.ai/${encodeURIComponent(query)}`, {
+            headers: { "Authorization": `Bearer ${JINA_API_KEY}` }, timeout: 10000
+          });
+          facts = searchRes.data;
+        } catch (e) {
+          facts = "No se encontraron datos externos o el motor de búsqueda bloqueó la consulta.";
+        }
       } else {
-        const scrapeResult = await scrapeDeep(dna);
-        facts = scrapeResult.text;
-        visualsData = scrapeResult.visuals;
+        const scrapeData = await scrapeDeep(dna);
+        facts = scrapeData.text;
+        visualsData = scrapeData.visuals;
       }
     } else {
       facts = dna;
     }
 
-    // Evaluación de la calidad del Dossier
-    const calidadDossier = facts.length > 500 ? "ÓPTIMA" : "CRÍTICA (DATOS INSUFICIENTES)";
+    // Análisis de Integridad del Dossier
+    const calidadDossier = facts.length > 800 ? "COMPLETO" : "DEFICIENTE_O_BLOQUEADO";
 
     const promptFinal = PROMPTS[idFinal](facts);
 
-    const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
+    const response = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `ESTADO DEL DOSSIER: ${calidadDossier}. Si es CRÍTICA, enfoca el análisis en cómo la falta de visibilidad/acceso arruina la conversión, pero NO repitas 'Insolvencia de datos' en cada párrafo. Sé constructivo con lo poco que tengas.` },
-          { role: "system", content: `IDENTIFICACIÓN DE NICHO: ¿De qué trata el negocio según el texto? Si es Pam and Ander, asume Moda Infantil.` },
-          { role: "system", content: `EVIDENCIA VISUAL/TÉCNICA: ${JSON.stringify(visualsData)}` },
-          { role: "system", content: `TEXTO EXTRAÍDO:\n${facts}` },
+          { role: "system", content: `DIRECTRIZ DE INTEGRIDAD: El estado del dossier es ${calidadDossier}. Si es DEFICIENTE, tu diagnóstico debe centrarse estrictamente en el impacto financiero de tener una arquitectura web bloqueada, lenta o vacía (Ej: "Un sitio que no puede ser leído por bots, no puede ser indexado por Google"). PROHIBIDO inventar inventarios, precios o nichos si no aparecen en el texto.` },
+          { role: "system", content: `EVIDENCIA TÉCNICA EXTRAÍDA:\n- Tiempo de Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores de Consola (Fricción Técnica): ${JSON.stringify(visualsData.technicalErrors || [])}\n- Imágenes y CTAs: ${JSON.stringify(visualsData)}` },
+          { role: "system", content: `DOSSIER FORENSE (Texto Base):\n${facts}` },
           { role: "user", content: promptFinal }
         ],
-        temperature: 0.2 // Un poco de temperatura para evitar bucles repetitivos
+        temperature: 0.1 // Máximo rigor analítico
       })
     });
 
-    const xData = await xRes.json();
+    if (!response.ok) throw new Error(`Error de API xAI: ${response.statusText}`);
+    
+    const xData = await response.json();
     res.json({ content: xData.choices[0].message.content });
 
   } catch (error) {
-    console.error("Falla en Servidor:", error.message);
-    res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
+    console.error("[CRÍTICO] Colapso del Nodo de Procesamiento:", error.message);
+    res.status(500).json({ content: `### HEMORRAGIA TÉCNICA DETECTADA\nEl sistema no pudo completar la disección. Detalle forense: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN v40.0 - INICIADO`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN v40 - ARQUITECTURA LIMPIA - ONLINE`));
