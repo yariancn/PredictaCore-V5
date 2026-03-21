@@ -18,25 +18,26 @@ app.post('/diseccion', async (req, res) => {
 
   try {
     const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
-    let hechos = "";
+    let facts = "";
     let visualsData = {};
 
-    // NODO IV: VISIBILIDAD (Búsqueda en Google/Social)
-    if (idFinal === 'VISIBILIDAD' && dna.startsWith('http')) {
-      const query = `site:${dna} OR "${dna}" instagram tiktok seguidores comentarios engagement`;
-      const searchRes = await axios.get(`https://s.jina.ai/${encodeURIComponent(query)}`, {
-        headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
-      });
-      hechos = searchRes.data;
-    } else if (dna.startsWith('http')) {
-      const deepData = await scrapeDeep(dna);
-      hechos = deepData.text;
-      visualsData = deepData.visuals;
+    if (dna.startsWith('http')) {
+      if (idFinal === 'VISIBILIDAD') {
+        const query = `site:${dna} OR "${dna}" instagram tiktok followers engagement`;
+        const searchRes = await axios.get(`https://s.jina.ai/${encodeURIComponent(query)}`, {
+          headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
+        });
+        facts = searchRes.data;
+      } else {
+        const scrape = await scrapeDeep(dna);
+        facts = scrape.text;
+        visualsData = scrape.visuals;
+      }
     } else {
-      hechos = dna; // Es una idea o concepto manual
+      facts = dna;
     }
 
-    const promptFinal = PROMPTS[idFinal](hechos);
+    const promptFinal = PROMPTS[idFinal](facts);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
@@ -45,12 +46,12 @@ app.post('/diseccion', async (req, res) => {
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `IDENTIFICACIÓN OBLIGATORIA: Analiza el dossier y detecta el nicho real. PROHIBIDO hablar de joyas o uñas si no aparecen en los datos.` },
-          { role: "system", content: `EVIDENCIA TÉCNICA: Carga: ${visualsData.loadTime || 'N/A'}s | Errores: ${JSON.stringify(visualsData.technicalErrors || [])} | Visuales: ${JSON.stringify(visualsData.images || [])}` },
-          { role: "system", content: `CONTENIDO DEL ACTIVO:\n${hechos || "ACTIVO INVISIBLE"}` },
+          { role: "system", content: `REGLA DE INTEGRIDAD: Si el dossier es escaso, sentencia la INVISIBILIDAD como una falla de capital. Identifica el nicho por el dominio o metadatos. No inventes productos si no hay evidencia.` },
+          { role: "system", content: `DATOS VISUALES EXTRAÍDOS: ${JSON.stringify(visualsData)}` },
+          { role: "system", content: `DOSSIER LITERAL DEL ACTIVO:\n${facts}` },
           { role: "user", content: promptFinal }
         ],
-        temperature: 0.1
+        temperature: 0.1 // Rigor absoluto
       })
     });
 
@@ -58,9 +59,9 @@ app.post('/diseccion', async (req, res) => {
     res.json({ content: xData.choices[0].message.content });
 
   } catch (error) {
-    console.error("Falla de Nodo:", error.message);
-    res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
+    console.error("Falla en Nodo:", error.message);
+    res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nEl sistema ha detectado una hemorragia técnica: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ORO MOLIDO - ONLINE`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN v33.0 - ORO MOLIDO ONLINE`));
