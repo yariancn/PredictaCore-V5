@@ -28,6 +28,7 @@ app.post('/diseccion', async (req, res) => {
       hechos = dna;
     }
 
+    // CORRECCIÓN MAESTRA: Ahora pasamos 'hechos' (la data real) al prompt
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -40,8 +41,8 @@ app.post('/diseccion', async (req, res) => {
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `AUDITORÍA TÉCNICA 360:\n- Tiempo de Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores de Consola Detectados: ${JSON.stringify(visualsData.technicalErrors || [])}\n- Métricas Perf: ${JSON.stringify(visualsData.perfMetrics || {})}` },
-          { role: "system", content: `DATA LITERAL EXTRAÍDA DEL SITIO:\n${hechos}` },
+          { role: "system", content: `AUDITORÍA TÉCNICA 360:\n- Tiempo de Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores de Consola: ${JSON.stringify(visualsData.technicalErrors || [])}\n- Métricas Perf: ${JSON.stringify(visualsData.perfMetrics || {})}` },
+          { role: "system", content: `DATA LITERAL EXTRAÍDA DEL ACTIVO:\n${hechos}` },
           { role: "system", content: `VISUALES DETECTADOS (Botones/Imágenes):\n${JSON.stringify(visualsData)}` },
           { role: "user", content: promptFinal }
         ],
@@ -53,7 +54,7 @@ app.post('/diseccion', async (req, res) => {
     res.json({ content: xData.choices[0].message.content });
 
   } catch (error) {
-    console.error("Falla de Nodo:", error.message);
+    console.error("Falla en Nodo:", error.message);
     res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
   }
 });
