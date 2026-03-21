@@ -20,35 +20,38 @@ app.post('/diseccion', async (req, res) => {
     let hechos = "";
     let visualsData = {};
 
-    // NODO IV: Visibilidad Externa (Google/Redes)
+    // NODO IV: Visibilidad (Búsqueda externa)
     if (idFinal === 'VISIBILIDAD' && dna.startsWith('http')) {
-      const query = `site:${dna} OR "${dna}" seguidores instagram tiktok comments`;
+      const query = `site:${dna} OR "${dna}" seguidores instagram tiktok engagement`;
       const searchRes = await fetch(`https://s.jina.ai/${encodeURIComponent(query)}`, {
         headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
       });
       hechos = await searchRes.text();
     } else if (dna.startsWith('http')) {
-      // BARRIDO NORMAL
+      // BARRIDO PROFUNDO
       const deepData = await scrapeDeep(dna);
       hechos = deepData.text;
       visualsData = deepData.visuals;
     } else {
-      hechos = dna; // Concepto manual
+      hechos = dna;
     }
 
-    // CONEXIÓN ORO: Pasamos la "carne" (hechos) al cerebro
+    // INYECCIÓN DE VERDAD: Si no hay hechos, informamos a la IA para que no alucine
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${XAI_API_KEY}`
+      },
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `REGLA DE ORO: Identifica el nicho real en el dossier. PROHIBIDO hablar de joyas o uñas si no están en el texto.` },
-          { role: "system", content: `EVIDENCIA TÉCNICA 360:\n- Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores: ${JSON.stringify(visualsData.technicalErrors || [])}\n- Visuales: ${JSON.stringify(visualsData.images || [])}` },
-          { role: "system", content: `CONTENIDO LITERAL:\n${hechos}` },
+          { role: "system", content: `CONTEXTO TÉCNICO: Carga: ${visualsData.loadTime || 'N/A'}s | Errores: ${JSON.stringify(visualsData.technicalErrors || [])}` },
+          { role: "system", content: `EVIDENCIA VISUAL: ${JSON.stringify(visualsData.images || [])}` },
+          { role: "system", content: `DOSSIER LITERAL DEL ACTIVO:\n${hechos || "NO DETECTADO: El activo no entregó datos literales."}` },
           { role: "user", content: promptFinal }
         ],
         temperature: 0.1
@@ -59,7 +62,7 @@ app.post('/diseccion', async (req, res) => {
     res.json({ content: xData.choices[0].message.content });
 
   } catch (error) {
-    console.error("Falla en Nodo:", error.message);
+    console.error("Falla de Nodo:", error.message);
     res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
   }
 });
