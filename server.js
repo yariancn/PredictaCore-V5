@@ -13,21 +13,14 @@ app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/diseccion', async (req, res) => {
   const { dna, etapaId } = req.body;
-  const { XAI_API_KEY, JINA_API_KEY } = process.env;
+  const { XAI_API_KEY } = process.env;
 
   try {
     const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
     let hechos = "";
     let visualsData = {};
 
-    // LÓGICA DE BÚSQUEDA PARA VISIBILIDAD (Redes Sociales, Seguidores, Engagement)
-    if (idFinal === 'VISIBILIDAD' && dna.startsWith('http')) {
-      const query = `site:${dna} OR "${dna}" seguidores instagram tiktok comments engagement`;
-      const searchUrl = `https://s.jina.ai/${encodeURIComponent(query)}`;
-      const searchRes = await fetch(searchUrl, { headers: { "Authorization": `Bearer ${JINA_API_KEY}` } });
-      hechos = await searchRes.text();
-    } else if (dna.startsWith('http')) {
-      // BARRIDO NORMAL
+    if (dna.startsWith('http')) {
       const deepData = await scrapeDeep(dna);
       hechos = deepData.text;
       visualsData = deepData.visuals;
@@ -35,7 +28,7 @@ app.post('/diseccion', async (req, res) => {
       hechos = dna;
     }
 
-    // CORRECCIÓN CRÍTICA: Se inyectan los 'hechos' (la data real) en el prompt, NO la URL
+    // CORRECCIÓN MAESTRA: Ahora pasamos 'hechos' (la data real) al prompt
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -47,10 +40,9 @@ app.post('/diseccion', async (req, res) => {
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning",
         messages: [
-          // Inyección de Leyes, Identidad y Protocolos Forenses
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `Dossier real del activo:\n${hechos}` },
-          { role: "system", content: `Visuales detectados: ${JSON.stringify(visualsData)}` },
+          { role: "system", content: `DATA LITERAL EXTRAÍDA DEL SITIO:\n${hechos}` },
+          { role: "system", content: `VISUALES DETECTADOS (Botones/Imágenes):\n${JSON.stringify(visualsData)}` },
           { role: "user", content: promptFinal }
         ],
         temperature: 0.2
@@ -59,10 +51,10 @@ app.post('/diseccion', async (req, res) => {
 
     const xData = await xRes.json();
     res.json({ content: xData.choices[0].message.content });
+
   } catch (error) {
-    console.error("Falla crítica:", error.message);
     res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ESTATUS: ONLINE`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN - ESTATUS: ONLINE`));
