@@ -6,53 +6,36 @@ async function scrapeDeep(input) {
 
   let browser;
   try {
-    console.log("[MOTOR] Iniciando Barrido 360 en: " + input);
-    browser = await chromium.launch({ 
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    
+    browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
       viewport: { width: 1280, height: 800 }
     });
-    
     const page = await context.newPage();
-
-    // Sensores de Errores No Visuales
-    let technicalErrors = [];
-    page.on('console', msg => { if (msg.type() === 'error') technicalErrors.push(msg.text()); });
-    page.on('pageerror', err => { technicalErrors.push(err.message); });
-
-    // Medición de Carga y Bypass de Latencia
-    const startTime = Date.now();
+    
+    // Bypass de latencia: usamos 'load' + espera táctica
     await page.goto(input, { waitUntil: 'load', timeout: 45000 });
-    const loadTime = (Date.now() - startTime) / 1000;
-    await page.waitForTimeout(4000); // Ventana para carga de scripts dinámicos
+    await page.waitForTimeout(4000); 
 
-    // Apertura de Menús (Hamburguesas)
+    // BARRIDO 360: Abrir menús de hamburguesa
     const menuSelectors = ['button[aria-label*="menu"]', '.hamburger', '.menu-toggle', 'nav button', '[class*="hamburger"]'];
     for (const sel of menuSelectors) {
-      try {
-        const btn = await page.$(sel);
-        if (btn && await btn.isVisible()) {
-          await btn.click();
-          await page.waitForTimeout(1500);
-          break; 
-        }
-      } catch (e) {}
+      const btn = await page.$(sel);
+      if (btn && await btn.isVisible()) {
+        await btn.click();
+        await page.waitForTimeout(1500);
+        break; 
+      }
     }
 
-    // Scroll Profundo para detectar fallas en el Nodo de Cierre
+    // BARRIDO 360: Scroll hasta el fondo para activar Lazy Loading
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(2000);
 
     const fullText = await page.evaluate(() => document.body.innerText);
     const visuals = {
-      images: await page.$$eval('img', imgs => imgs.map(img => ({ src: img.src, alt: img.alt || 'sin alt' })).filter(i => i.src.startsWith('http')).slice(0, 20)),
-      buttons: await page.$$eval('button, .btn, a.button', els => els.map(el => el.textContent.trim())),
-      loadTime,
-      technicalErrors: technicalErrors.slice(0, 5)
+      images: await page.$$eval('img', imgs => imgs.map(img => ({ src: img.src, alt: img.alt || 'fuga de SEO' })).slice(0, 25)),
+      buttons: await page.$$eval('button, .btn, a.button', els => els.map(el => el.textContent.trim()).filter(t => t.length > 2))
     };
 
     await browser.close();
@@ -60,18 +43,9 @@ async function scrapeDeep(input) {
 
   } catch (e) {
     if (browser) await browser.close();
-    console.error(`[MOTOR] Falla detectada. Activando Visión de Emergencia.`);
-    
-    // Fallback Jina con extracción manual de imágenes del markdown
+    console.error(`[MOTOR] Error técnico: ${e.message}. Activando Fallback.`);
     const res = await axios.get(`https://r.jina.ai/${input}`);
-    const markdown = res.data;
-    const imageMatches = [...markdown.matchAll(/\!\[.*?\]\((https:\/\/.*?)\)/g)];
-    const fallbackImages = imageMatches.map(m => ({ src: m[1], alt: 'emergencia' })).slice(0, 10);
-
-    return { 
-      text: markdown, 
-      visuals: { images: fallbackImages, buttons: [], loadTime: 'N/A' } 
-    };
+    return { text: res.data, visuals: {} };
   }
 }
 
