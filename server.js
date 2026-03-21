@@ -1,4 +1,3 @@
-// server.js - ACTUALIZADO
 const express = require('express');
 const { PERSONA, PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
@@ -21,13 +20,15 @@ app.post('/diseccion', async (req, res) => {
     let hechos = "";
     let visualsData = {};
 
-    // NODO DE VISIBILIDAD: Realiza búsqueda en Google vía Jina Search
+    // Lógica para VISIBILIDAD: Búsqueda externa en Google/Redes
     if (idFinal === 'VISIBILIDAD' && dna.startsWith('http')) {
-      const searchUrl = `https://s.jina.ai/${dna}`;
-      const searchRes = await fetch(searchUrl, { headers: { "Authorization": `Bearer ${JINA_API_KEY}` } });
+      const searchUrl = `https://s.jina.ai/${dna} instagram followers tiktok comments`;
+      const searchRes = await fetch(searchUrl, { 
+        headers: { "Authorization": `Bearer ${JINA_API_KEY}` } 
+      });
       hechos = await searchRes.text();
     } else if (dna.startsWith('http')) {
-      // BARRIDO NORMAL DEL SITIO
+      // Barrido normal del sitio
       const deepData = await scrapeDeep(dna);
       hechos = deepData.text;
       visualsData = deepData.visuals;
@@ -35,7 +36,7 @@ app.post('/diseccion', async (req, res) => {
       hechos = dna;
     }
 
-    // CORRECCIÓN CRÍTICA: Se pasa 'hechos' (la data real) al prompt, no solo el 'dna' (la URL)
+    // CORRECCIÓN CRÍTICA: Ahora enviamos 'hechos' (el contenido) y no solo la URL
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -47,8 +48,14 @@ app.post('/diseccion', async (req, res) => {
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning",
         messages: [
-          { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `Visuales extraídos del activo: ${JSON.stringify(visualsData)}` },
+          { 
+            role: "system", 
+            content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` 
+          },
+          { 
+            role: "system", 
+            content: `DATOS REALES DEL ACTIVO:\n${hechos}\n\nVISUALES DETECTADOS:\n${JSON.stringify(visualsData)}` 
+          },
           { role: "user", content: promptFinal }
         ],
         temperature: 0.2
@@ -59,9 +66,9 @@ app.post('/diseccion', async (req, res) => {
     res.json({ content: xData.choices[0].message.content });
 
   } catch (error) {
-    console.error("Falla en Nodo:", error.message);
+    console.error(`[FALLA]: ${error.message}`);
     res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ESTATUS: ONLINE`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ONLINE`));
