@@ -23,19 +23,22 @@ app.post('/diseccion', async (req, res) => {
 
     if (dna.startsWith('http')) {
       if (idFinal === 'VISIBILIDAD') {
-        const query = `site:${dna} OR "${dna}" instagram tiktok followers engagement`;
+        const query = `site:${dna} OR "${dna}" instagram tiktok followers`;
         const searchRes = await axios.get(`https://s.jina.ai/${encodeURIComponent(query)}`, {
           headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
         });
         facts = searchRes.data;
       } else {
-        const scrape = await scrapeDeep(dna);
-        facts = scrape.text;
-        visualsData = scrape.visuals;
+        const scrapeResult = await scrapeDeep(dna);
+        facts = scrapeResult.text;
+        visualsData = scrapeResult.visuals;
       }
     } else {
       facts = dna;
     }
+
+    // Evaluación de la calidad del Dossier
+    const calidadDossier = facts.length > 500 ? "ÓPTIMA" : "CRÍTICA (DATOS INSUFICIENTES)";
 
     const promptFinal = PROMPTS[idFinal](facts);
 
@@ -46,12 +49,13 @@ app.post('/diseccion', async (req, res) => {
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `REGLA DE INTEGRIDAD: Si el dossier es escaso, sentencia la INVISIBILIDAD como una falla de capital. Identifica el nicho por el dominio o metadatos. No inventes productos si no hay evidencia.` },
-          { role: "system", content: `DATOS VISUALES EXTRAÍDOS: ${JSON.stringify(visualsData)}` },
-          { role: "system", content: `DOSSIER LITERAL DEL ACTIVO:\n${facts}` },
+          { role: "system", content: `ESTADO DEL DOSSIER: ${calidadDossier}. Si es CRÍTICA, enfoca el análisis en cómo la falta de visibilidad/acceso arruina la conversión, pero NO repitas 'Insolvencia de datos' en cada párrafo. Sé constructivo con lo poco que tengas.` },
+          { role: "system", content: `IDENTIFICACIÓN DE NICHO: ¿De qué trata el negocio según el texto? Si es Pam and Ander, asume Moda Infantil.` },
+          { role: "system", content: `EVIDENCIA VISUAL/TÉCNICA: ${JSON.stringify(visualsData)}` },
+          { role: "system", content: `TEXTO EXTRAÍDO:\n${facts}` },
           { role: "user", content: promptFinal }
         ],
-        temperature: 0.1 // Rigor absoluto
+        temperature: 0.2 // Un poco de temperatura para evitar bucles repetitivos
       })
     });
 
@@ -59,9 +63,9 @@ app.post('/diseccion', async (req, res) => {
     res.json({ content: xData.choices[0].message.content });
 
   } catch (error) {
-    console.error("Falla en Nodo:", error.message);
-    res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nEl sistema ha detectado una hemorragia técnica: ${error.message}` });
+    console.error("Falla en Servidor:", error.message);
+    res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN v33.0 - ORO MOLIDO ONLINE`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN v40.0 - INICIADO`));
