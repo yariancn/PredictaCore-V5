@@ -1,46 +1,68 @@
-// motor.js - Evolución Titán
-const { chromium } = require('playwright'); 
-// Sugerencia técnica: Instalar 'playwright-extra' y 'puppeteer-extra-plugin-stealth'
+const axios = require('axios');
+const { chromium } = require('playwright');
 
 async function scrapeDeep(input) {
   if (!input.startsWith('http')) return { text: input, visuals: {} };
+
   let browser;
   try {
-    // 1. Lanzamiento con Stealth (Simulado aquí con headers y contexto)
+    console.log("[MOTOR] Iniciando disección profunda en: " + input);
+    
+    // Lanzamiento con configuración de sigilo para evitar bloqueos
     browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-      viewport: { width: 1280, height: 800 },
-      deviceScaleFactor: 1,
+      viewport: { width: 1280, height: 800 }
     });
     
     const page = await context.newPage();
     
-    // 2. Bypass de Intersticiales (Cloudflare/Shopify)
+    // Espera de red inactiva para asegurar carga de scripts y texturas
     await page.goto(input, { waitUntil: 'networkidle', timeout: 60000 });
-    
-    // Si es Red Social, necesitamos scroll específico para disparar carga de comentarios
-    if (input.includes('instagram.com') || input.includes('tiktok.com')) {
-        await page.waitForTimeout(5000); // Espera de renderizado dinámico
-        await page.evaluate(() => window.scrollBy(0, 1000));
+
+    // Clic en menús para exponer navegación oculta (autoridad visual)
+    const menuSelectors = ['button[aria-label*="menu"]', '.hamburger', '.menu-toggle', 'nav button'];
+    for (const sel of menuSelectors) {
+      try {
+        const btn = await page.$(sel);
+        if (btn) {
+          await btn.click();
+          await page.waitForTimeout(2000);
+          break;
+        }
+      } catch (e) {}
     }
 
-    // 3. Extracción Multimodal
+    // Scroll para activar lazy loading de imágenes y certidumbre técnica
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(2000);
+
     const fullText = await page.evaluate(() => document.body.innerText);
     const visuals = {
-      images: await page.$$eval('img', imgs => imgs.map(img => ({ src: img.src, alt: img.alt })).slice(0, 15)),
-      // Capturamos el "snapshot" visual si el texto falla
-      screenshot: await page.screenshot({ encoding: "base64" }) 
+      images: await page.$$eval('img', imgs => imgs.map(img => ({ 
+        src: img.src, 
+        alt: img.alt || 'sin descripción técnica' 
+      })).slice(0, 20)),
+      buttons: await page.$$eval('button, .btn, a.button, [role="button"]', els => 
+        els.map(el => el.textContent.trim()).filter(t => t.length > 2)
+      )
     };
 
     await browser.close();
-    return { text: fullText.substring(0, 50000), visuals };
+    return { text: fullText.substring(0, 45000), visuals };
+
   } catch (e) {
+    console.error(`[MOTOR] Falla en Playwright: ${e.message}`);
     if (browser) await browser.close();
-    // Fallback a Jina con Headers de Autoridad
-    const res = await axios.get(`https://r.jina.ai/${input}`, {
-        headers: { "X-Return-Format": "markdown", "Authorization": `Bearer ${process.env.JINA_API_KEY}` }
-    });
-    return { text: res.data, visuals: {} };
+    
+    // Fallback a Jina Reader si el sitio bloquea el navegador
+    try {
+      const res = await axios.get(`https://r.jina.ai/${input}`);
+      return { text: res.data, visuals: {} };
+    } catch (err) {
+      return { text: "Error de acceso: El activo bloqueó la disección.", visuals: {} };
+    }
   }
 }
+
+module.exports = { scrapeDeep };
