@@ -20,16 +20,14 @@ app.post('/diseccion', async (req, res) => {
     let hechos = "";
     let visualsData = {};
 
-    // NODO DE VISIBILIDAD: Búsqueda profunda en Google/Redes (Seguidores, comentarios, SEO)
+    // LÓGICA DE BÚSQUEDA PARA VISIBILIDAD (Redes Sociales, Seguidores, Engagement)
     if (idFinal === 'VISIBILIDAD' && dna.startsWith('http')) {
-      const query = `site:${dna} OR "${dna}" seguidores instagram tiktok comentarios seo authority`;
+      const query = `site:${dna} OR "${dna}" seguidores instagram tiktok comments engagement`;
       const searchUrl = `https://s.jina.ai/${encodeURIComponent(query)}`;
-      const searchRes = await fetch(searchUrl, { 
-        headers: { "Authorization": `Bearer ${JINA_API_KEY}` } 
-      });
+      const searchRes = await fetch(searchUrl, { headers: { "Authorization": `Bearer ${JINA_API_KEY}` } });
       hechos = await searchRes.text();
     } else if (dna.startsWith('http')) {
-      // Barrido normal del activo
+      // BARRIDO NORMAL
       const deepData = await scrapeDeep(dna);
       hechos = deepData.text;
       visualsData = deepData.visuals;
@@ -49,14 +47,10 @@ app.post('/diseccion', async (req, res) => {
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning",
         messages: [
-          { 
-            role: "system", 
-            content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` 
-          },
-          { 
-            role: "system", 
-            content: `DATOS REALES DEL ACTIVO:\n${hechos}\n\nVISUALES DETECTADOS:\n${JSON.stringify(visualsData)}` 
-          },
+          // Inyección de Leyes, Identidad y Protocolos Forenses
+          { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
+          { role: "system", content: `Dossier real del activo:\n${hechos}` },
+          { role: "system", content: `Visuales detectados: ${JSON.stringify(visualsData)}` },
           { role: "user", content: promptFinal }
         ],
         temperature: 0.2
@@ -64,14 +58,9 @@ app.post('/diseccion', async (req, res) => {
     });
 
     const xData = await xRes.json();
-    if (xData.choices && xData.choices[0].message) {
-      res.json({ content: xData.choices[0].message.content });
-    } else {
-      throw new Error("Respuesta de IA vacía.");
-    }
-
+    res.json({ content: xData.choices[0].message.content });
   } catch (error) {
-    console.error(`[FALLA CRÍTICA]: ${error.message}`);
+    console.error("Falla crítica:", error.message);
     res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
   }
 });
