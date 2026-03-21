@@ -28,7 +28,7 @@ app.post('/diseccion', async (req, res) => {
       hechos = dna;
     }
 
-    // CORRECCIÓN CRÍTICA: Se inyectan los 'hechos' (la data real) en el prompt
+    // RECONEXIÓN CRÍTICA: La IA ahora recibe la "carne" (hechos), no el enlace.
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -41,9 +41,9 @@ app.post('/diseccion', async (req, res) => {
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `AUDITORÍA TÉCNICA 360:\n- Tiempo de Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores de Consola: ${JSON.stringify(visualsData.technicalErrors || [])}\n- Métricas Perf: ${JSON.stringify(visualsData.perfMetrics || {})}` },
-          { role: "system", content: `DATA LITERAL EXTRAÍDA DEL SITIO:\n${hechos}` },
-          { role: "system", content: `VISUALES DETECTADOS:\n${JSON.stringify(visualsData)}` },
+          { role: "system", content: `AUDITORÍA TÉCNICA 360:\n- Velocidad de Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores No Visuales: ${JSON.stringify(visualsData.technicalErrors || [])}\n- Performance: ${JSON.stringify(visualsData.perfMetrics || {})}` },
+          { role: "system", content: `VISUALES DETECTADOS: ${JSON.stringify(visualsData)}` },
+          { role: "system", content: `DOSSIER LITERAL DEL ACTIVO:\n${hechos}` },
           { role: "user", content: promptFinal }
         ],
         temperature: 0.2
