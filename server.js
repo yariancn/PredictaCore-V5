@@ -22,27 +22,23 @@ app.post('/diseccion', async (req, res) => {
 
     if (dna.startsWith('http')) {
       const deepData = await scrapeDeep(dna);
-      hechos = deepData.text;
-      visualsData = deepData.visuals;
+      hechos = deepData.text; // CONTENIDO REAL
+      visualsData = deepData.visuals; // VISUALES REALES
     } else {
       hechos = dna;
     }
 
-    // RECONEXIÓN CRÍTICA: La IA ahora recibe la "carne" (hechos), no el enlace.
+    // REPARACIÓN MAESTRA: Ahora pasamos 'hechos' al prompt, no el 'dna'
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${XAI_API_KEY}`
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `AUDITORÍA TÉCNICA 360:\n- Velocidad de Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores No Visuales: ${JSON.stringify(visualsData.technicalErrors || [])}\n- Performance: ${JSON.stringify(visualsData.perfMetrics || {})}` },
-          { role: "system", content: `VISUALES DETECTADOS: ${JSON.stringify(visualsData)}` },
+          { role: "system", content: `EVIDENCIA TÉCNICA (Visuales/Métricas): ${JSON.stringify(visualsData)}` },
           { role: "system", content: `DOSSIER LITERAL DEL ACTIVO:\n${hechos}` },
           { role: "user", content: promptFinal }
         ],
@@ -59,4 +55,4 @@ app.post('/diseccion', async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ESTATUS: ONLINE`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN - ADN RESTAURADO - ONLINE`));
