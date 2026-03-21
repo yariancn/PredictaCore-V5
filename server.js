@@ -20,15 +20,16 @@ app.post('/diseccion', async (req, res) => {
     let hechos = "";
     let visualsData = {};
 
-    // Lógica para VISIBILIDAD: Búsqueda externa en Google/Redes
+    // NODO DE VISIBILIDAD: Búsqueda profunda en Google/Redes (Seguidores, comentarios, SEO)
     if (idFinal === 'VISIBILIDAD' && dna.startsWith('http')) {
-      const searchUrl = `https://s.jina.ai/${dna} instagram followers tiktok comments`;
+      const query = `site:${dna} OR "${dna}" seguidores instagram tiktok comentarios seo authority`;
+      const searchUrl = `https://s.jina.ai/${encodeURIComponent(query)}`;
       const searchRes = await fetch(searchUrl, { 
         headers: { "Authorization": `Bearer ${JINA_API_KEY}` } 
       });
       hechos = await searchRes.text();
     } else if (dna.startsWith('http')) {
-      // Barrido normal del sitio
+      // Barrido normal del activo
       const deepData = await scrapeDeep(dna);
       hechos = deepData.text;
       visualsData = deepData.visuals;
@@ -36,7 +37,7 @@ app.post('/diseccion', async (req, res) => {
       hechos = dna;
     }
 
-    // CORRECCIÓN CRÍTICA: Ahora enviamos 'hechos' (el contenido) y no solo la URL
+    // CORRECCIÓN CRÍTICA: Se inyectan los 'hechos' (la data real) en el prompt, NO la URL
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -63,12 +64,16 @@ app.post('/diseccion', async (req, res) => {
     });
 
     const xData = await xRes.json();
-    res.json({ content: xData.choices[0].message.content });
+    if (xData.choices && xData.choices[0].message) {
+      res.json({ content: xData.choices[0].message.content });
+    } else {
+      throw new Error("Respuesta de IA vacía.");
+    }
 
   } catch (error) {
-    console.error(`[FALLA]: ${error.message}`);
+    console.error(`[FALLA CRÍTICA]: ${error.message}`);
     res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ONLINE`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ESTATUS: ONLINE`));
