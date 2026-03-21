@@ -20,9 +20,9 @@ app.post('/diseccion', async (req, res) => {
     let hechos = "";
     let visualsData = {};
 
-    // NODO IV: Visibilidad Externa (Google/Social)
+    // NODO IV: Visibilidad Externa (Google/Redes)
     if (idFinal === 'VISIBILIDAD' && dna.startsWith('http')) {
-      const query = `site:${dna} OR "${dna}" seguidores instagram tiktok comments authority`;
+      const query = `site:${dna} OR "${dna}" seguidores instagram tiktok comments`;
       const searchRes = await fetch(`https://s.jina.ai/${encodeURIComponent(query)}`, {
         headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
       });
@@ -33,10 +33,10 @@ app.post('/diseccion', async (req, res) => {
       hechos = deepData.text;
       visualsData = deepData.visuals;
     } else {
-      hechos = dna; // Es una idea o concepto
+      hechos = dna; // Concepto manual
     }
 
-    // RECONEXIÓN CRÍTICA: La IA recibe HECHOS, no el enlace.
+    // CONEXIÓN ORO: Pasamos la "carne" (hechos) al cerebro
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -46,12 +46,12 @@ app.post('/diseccion', async (req, res) => {
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `IDENTIFICA EL NICHO: Primero identifica qué vende el sitio. PROHIBIDO usar productos de los ejemplos (uñas, joyas) si no están en el dossier.` },
-          { role: "system", content: `AUDITORÍA TÉCNICA 360:\n- Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores: ${JSON.stringify(visualsData.technicalErrors || [])}` },
-          { role: "system", content: `DOSSIER LITERAL (EVIDENCIA):\n${hechos}\n\nVISUALES:\n${JSON.stringify(visualsData.images || [])}` },
+          { role: "system", content: `REGLA DE ORO: Identifica el nicho real en el dossier. PROHIBIDO hablar de joyas o uñas si no están en el texto.` },
+          { role: "system", content: `EVIDENCIA TÉCNICA 360:\n- Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores: ${JSON.stringify(visualsData.technicalErrors || [])}\n- Visuales: ${JSON.stringify(visualsData.images || [])}` },
+          { role: "system", content: `CONTENIDO LITERAL:\n${hechos}` },
           { role: "user", content: promptFinal }
         ],
-        temperature: 0.1 // Máxima precisión, mínima creatividad
+        temperature: 0.1
       })
     });
 
