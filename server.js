@@ -19,42 +19,35 @@ app.post('/diseccion', async (req, res) => {
   try {
     const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
     let hechos = "";
-    let visualsData = { images: [], buttons: [], loadTime: 'N/A', technicalErrors: [] };
+    let visualsData = {};
 
-    if (dna.startsWith('http')) {
-      if (idFinal === 'VISIBILIDAD') {
-        // Búsqueda de autoridad externa
-        const query = `site:${dna} OR "${dna}" seguidores instagram tiktok engagement`;
-        const searchRes = await axios.get(`https://s.jina.ai/${encodeURIComponent(query)}`, {
-          headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
-        });
-        hechos = searchRes.data;
-      } else {
-        // Scrape profundo del activo
-        const deepData = await scrapeDeep(dna);
-        hechos = deepData.text;
-        visualsData = deepData.visuals;
-      }
+    // NODO IV: VISIBILIDAD (Búsqueda en Google/Social)
+    if (idFinal === 'VISIBILIDAD' && dna.startsWith('http')) {
+      const query = `site:${dna} OR "${dna}" instagram tiktok seguidores comentarios engagement`;
+      const searchRes = await axios.get(`https://s.jina.ai/${encodeURIComponent(query)}`, {
+        headers: { "Authorization": `Bearer ${JINA_API_KEY}` }
+      });
+      hechos = searchRes.data;
+    } else if (dna.startsWith('http')) {
+      const deepData = await scrapeDeep(dna);
+      hechos = deepData.text;
+      visualsData = deepData.visuals;
     } else {
       hechos = dna; // Es una idea o concepto manual
     }
 
-    // RECONEXIÓN: La IA recibe los HECHOS, no el enlace
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${XAI_API_KEY}`
-      },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning",
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `IDENTIFICACIÓN DE NICHO: Antes de analizar, detecta el producto/servicio real en el dossier. PROHIBIDO usar ejemplos de joyería o uñas si no aparecen en los datos.` },
-          { role: "system", content: `EVIDENCIA TÉCNICA 360:\n- Carga: ${visualsData.loadTime}s\n- Errores de Consola: ${JSON.stringify(visualsData.technicalErrors)}\n- Visuales: ${JSON.stringify(visualsData.images)}` },
-          { role: "system", content: `DOSSIER LITERAL EXTRAÍDO:\n${hechos || "ACTIVO NO DETECTADO"}` },
+          { role: "system", content: `IDENTIFICACIÓN OBLIGATORIA: Analiza el dossier y detecta el nicho real. PROHIBIDO hablar de joyas o uñas si no aparecen en los datos.` },
+          { role: "system", content: `EVIDENCIA TÉCNICA: Carga: ${visualsData.loadTime || 'N/A'}s | Errores: ${JSON.stringify(visualsData.technicalErrors || [])} | Visuales: ${JSON.stringify(visualsData.images || [])}` },
+          { role: "system", content: `CONTENIDO DEL ACTIVO:\n${hechos || "ACTIVO INVISIBLE"}` },
           { role: "user", content: promptFinal }
         ],
         temperature: 0.1
@@ -65,9 +58,9 @@ app.post('/diseccion', async (req, res) => {
     res.json({ content: xData.choices[0].message.content });
 
   } catch (error) {
-    console.error("Falla en Nodo:", error.message);
+    console.error("Falla de Nodo:", error.message);
     res.status(500).json({ content: `### FALLA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ORO MOLIDO ONLINE`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN v32.0 - ORO MOLIDO - ONLINE`));
