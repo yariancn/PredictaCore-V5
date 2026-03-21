@@ -28,7 +28,7 @@ app.post('/diseccion', async (req, res) => {
       hechos = dna;
     }
 
-    // CORRECCIÓN MAESTRA: Ahora pasamos 'hechos' (la data real) al prompt
+    // CORRECCIÓN CRÍTICA: Se inyectan los 'hechos' (la data real) en el prompt
     const promptFinal = PROMPTS[idFinal](hechos);
 
     const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -42,8 +42,8 @@ app.post('/diseccion', async (req, res) => {
         messages: [
           { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
           { role: "system", content: `AUDITORÍA TÉCNICA 360:\n- Tiempo de Carga: ${visualsData.loadTime || 'N/A'}s\n- Errores de Consola: ${JSON.stringify(visualsData.technicalErrors || [])}\n- Métricas Perf: ${JSON.stringify(visualsData.perfMetrics || {})}` },
-          { role: "system", content: `DATA LITERAL EXTRAÍDA DEL ACTIVO:\n${hechos}` },
-          { role: "system", content: `VISUALES DETECTADOS (Botones/Imágenes):\n${JSON.stringify(visualsData)}` },
+          { role: "system", content: `DATA LITERAL EXTRAÍDA DEL SITIO:\n${hechos}` },
+          { role: "system", content: `VISUALES DETECTADOS:\n${JSON.stringify(visualsData)}` },
           { role: "user", content: promptFinal }
         ],
         temperature: 0.2
