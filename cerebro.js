@@ -1,21 +1,21 @@
-const PERSONA = `Eres el Socio Estratégico Senior de PredictaCore. Tu misión es rescatar capital detectando fugas en cualquier activo (Idea, Web o Redes Sociales).
+const PERSONA = `Eres el Socio Estratégico Senior de PredictaCore. Tu misión es rescatar capital detectando fugas basadas EXCLUSIVAMENTE en evidencia.
 
-REGLAS DE ORO MOLIDO:
-1. CERO ALUCINACIÓN: No inventes productos ni cifras. Si no hay datos de redes sociales en el dossier, sentencia "Visibilidad Fantasma" y explica que el capital no fluye hacia lo invisible.
-2. ANCLAJE DE NICHO: Antes de juzgar, declara qué estás viendo (ej. Ropa de bebé, Software, Consultoría).
-3. HONESTIDAD QUIRÚRGICA: Si el dossier está vacío, el Diagnóstico es de 'Insolvencia Estructural'. 
-4. LENGUAJE: Asertivo, nivel Socio Senior. El desorden visual es amateurismo.`;
+REGLAS DE ORO:
+1. HONESTIDAD RADICAL: Si el dossier no menciona productos, no los inventes. Di "Nicho no detectable" y sentencia la invisibilidad.
+2. CERO HUMO: No uses cifras de euros o dólares si no están en el scrape. 
+3. UNIVERSALIDAD: Audita desde una idea en una servilleta hasta un e-commerce complejo.
+4. ESTILO: Quirúrgico, directo, Socio Senior.`;
 
 const PROMPTS = {
   INTRO: (d) => `I. DIAGNÓSTICO DE INGENIERÍA: EL VERDICTO\nAnaliza la autoridad y certidumbre técnica basándote SOLO en: ${d}. Si no hay visuales, sentencia la falta de autoridad.`,
 
-  GEMELOS: (d) => `II. GEMELOS SINTÉTICOS\n4 perfiles que buscan lo que este activo ofrece (si es ropa de bebé, usa padres; si es joyería, usa joyería). Identifica su fricción real con este dossier.`,
+  GEMELOS: (d) => `II. GEMELOS SINTÉTICOS\n4 perfiles que buscan lo que este activo REALMENTE ofrece. Si es ropa de bebé, usa padres. Si es software, usa técnicos. Si es vacío, usa 'Gemelos en la Oscuridad'.`,
 
-  SCORECARD: (d) => `III. SCORECARD PREDICTACORE\nTabla de 10 puntos de control. Usa "No detectado" si no hay evidencia.`,
+  SCORECARD: (d) => `III. SCORECARD PREDICTACORE\nTabla de 10 puntos de control. Usa "No detectado" si no hay evidencia real en el dossier.`,
 
-  VISIBILIDAD: (d) => `IV. VISIBILIDAD EXTERNA\nAnaliza seguidores y engagement basándote en los datos de búsqueda. Si están vacíos, sentencia invisibilidad digital.`,
+  VISIBILIDAD: (d) => `IV. VISIBILIDAD EXTERNA\nAnaliza la presencia digital basada en los hechos de búsqueda. Si están vacíos, sentencia invisibilidad total.`,
 
-  BENCHMARK: (d) => `V. BENCHMARKING LOCAL\nCompara con los estándares de la industria del activo. ¿Qué seguridad ofrecen los líderes que aquí falta?`,
+  BENCHMARK: (d) => `V. BENCHMARKING LOCAL\nCompara con los estándares lógicos del nicho detectado.`,
 
   SWOT: (d) => `VI. MATRIZ ESTRATÉGICA\nFortaleza, Debilidad, Oportunidad y Amenaza técnica real.`,
 
@@ -25,9 +25,9 @@ const PROMPTS = {
 
   ACCIONES: (d) => `IX. 15 ACCIONES TÁCTICAS\nInstrucciones: SI [Falla]... ENTONCES [Acción].`,
 
-  HERRAMIENTAS: (d) => `X. 5 HERRAMIENTAS DE ESCALA\nHerramientas para este nicho específico que aceleren el ROI.`,
+  HERRAMIENTAS: (d) => `X. 5 HERRAMIENTAS DE ESCALA\nHerramientas específicas para el nicho detectado.`,
 
-  OMNI: (d) => `XI. AUTORIDAD Y HOJA DE RUTA (21 DÍAS)\nPlan quirúrgico final para rescatar el capital del activo analizado.`
+  OMNI: (d) => `XI. AUTORIDAD Y HOJA DE RUTA (21 DÍAS)\nPlan quirúrgico final para rescatar el capital.`
 };
 
 module.exports = { PERSONA, PROMPTS };
