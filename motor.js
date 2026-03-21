@@ -9,7 +9,7 @@ async function scrapeDeep(input) {
     console.log("[MOTOR] Iniciando Barrido 360 en: " + input);
     browser = await chromium.launch({ 
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     
     const context = await browser.newContext({
@@ -19,17 +19,17 @@ async function scrapeDeep(input) {
     
     const page = await context.newPage();
 
-    // Captura de Errores No Visuales
+    // Captura de Errores No Visuales (Scripts rotos, fallos de API)
     let technicalErrors = [];
     page.on('pageerror', err => technicalErrors.push(err.message));
 
-    // Medición de Carga Real
+    // Medición de Carga y Bypass de Latencia
     const startTime = Date.now();
     await page.goto(input, { waitUntil: 'load', timeout: 45000 });
     const loadTime = (Date.now() - startTime) / 1000;
-    await page.waitForTimeout(3000); // Ventana para scripts de terceros
+    await page.waitForTimeout(4000); 
 
-    // BARRIDO 360: Apertura de Menús (Hamburguesas)
+    // BARRIDO 360: Menús y Navegación
     const menuSelectors = ['button[aria-label*="menu"]', '.hamburger', '.menu-toggle', 'nav button', '[class*="hamburger"]'];
     for (const sel of menuSelectors) {
       try {
@@ -42,13 +42,13 @@ async function scrapeDeep(input) {
       } catch (e) {}
     }
 
-    // SCROLL PROFUNDO: Activar Lazy Loading y Nodo de Cierre
+    // SCROLL PROFUNDO: Activar Lazy Loading
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     await page.waitForTimeout(2000);
 
     const fullText = await page.evaluate(() => document.body.innerText);
     
-    // Extracción de Visuales
+    // Extracción de Visuales Reales
     const visuals = {
       images: await page.$$eval('img', imgs => imgs.map(img => ({ 
         src: img.src, 
@@ -63,21 +63,20 @@ async function scrapeDeep(input) {
 
     await browser.close();
     
-    // Validación de Calidad: Si el texto es ridículamente corto, forzar Fallback
-    if (fullText.length < 500) throw new Error("Ceguera por Bloqueo");
+    if (fullText.length < 500) throw new Error("Ceguera de Contenido");
 
     return { text: fullText.substring(0, 45000), visuals };
 
   } catch (e) {
     if (browser) await browser.close();
-    console.error(`[MOTOR] Alerta: ${e.message}. Activando Sensor Jina.`);
+    console.error(`[MOTOR] Falla técnica: ${e.message}. Activando Sensor Jina.`);
     
     const res = await axios.get(`https://r.jina.ai/${input}`);
     const markdown = res.data;
 
-    // Extracción forense de imágenes desde Markdown
+    // Extracción de imágenes del Fallback para no estar ciegos
     const imageMatches = [...markdown.matchAll(/\!\[.*?\]\((https:\/\/.*?)\)/g)];
-    const fallbackImages = imageMatches.map(m => ({ src: m[1], alt: 'detectado vía sensor de emergencia' })).slice(0, 15);
+    const fallbackImages = imageMatches.map(m => ({ src: m[1], alt: 'emergencia' })).slice(0, 15);
 
     return { 
       text: markdown, 
