@@ -18,11 +18,23 @@ app.post('/diseccion', async (req, res) => {
   try {
     const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
     let hechos = "";
+    let targetUrl = dna.trim();
 
-    if (dna.startsWith('http')) {
-      hechos = await captureAndScrape(dna);
+    // 1. CORRECCIÓN DE URL: Si es un dominio pero el usuario no puso http, lo agregamos.
+    const isDomain = targetUrl.includes('.com') || targetUrl.includes('.net') || targetUrl.includes('.es') || targetUrl.includes('.org') || targetUrl.includes('.mx');
+    
+    if (targetUrl.startsWith('http')) {
+      hechos = await captureAndScrape(targetUrl);
+    } else if (isDomain) {
+      targetUrl = `https://${targetUrl}`;
+      hechos = await captureAndScrape(targetUrl);
     } else {
-      hechos = dna;
+      hechos = targetUrl; // Es una idea o texto ingresado manualmente
+    }
+
+    // 2. EL KILL SWITCH: Si el motor devuelve el error, abortamos la IA para que no invente.
+    if (hechos.includes("ERROR CRÍTICO")) {
+        return res.json({ content: `### 🛑 ABORTO FORENSE\nEl motor no pudo extraer datos de ${targetUrl}. El firewall del sitio bloqueó la conexión o el sitio no existe. No se simularán datos sin evidencia empírica.` });
     }
 
     const promptFinal = PROMPTS[idFinal](hechos);
@@ -50,4 +62,4 @@ app.post('/diseccion', async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN - ARQUITECTURA ORIGINAL RESTAURADA`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN - TUBERÍA REPARADA`));
