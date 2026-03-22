@@ -20,7 +20,7 @@ app.post('/diseccion', async (req, res) => {
     let hechos = "";
     let targetUrl = dna.trim();
 
-    // 1. CORRECCIÓN DE URL: Si es un dominio pero el usuario no puso http, lo agregamos.
+    // 1. LA CURA A LA CEGUERA: Forzamos el encendido del motor aunque falte el "http"
     const isDomain = targetUrl.includes('.com') || targetUrl.includes('.net') || targetUrl.includes('.es') || targetUrl.includes('.org') || targetUrl.includes('.mx');
     
     if (targetUrl.startsWith('http')) {
@@ -29,12 +29,12 @@ app.post('/diseccion', async (req, res) => {
       targetUrl = `https://${targetUrl}`;
       hechos = await captureAndScrape(targetUrl);
     } else {
-      hechos = targetUrl; // Es una idea o texto ingresado manualmente
+      hechos = targetUrl; // Es una idea o concepto escrito a mano
     }
 
-    // 2. EL KILL SWITCH: Si el motor devuelve el error, abortamos la IA para que no invente.
+    // 2. EL KILL SWITCH ANTI-ALUCINACIONES
     if (hechos.includes("ERROR CRÍTICO")) {
-        return res.json({ content: `### 🛑 ABORTO FORENSE\nEl motor no pudo extraer datos de ${targetUrl}. El firewall del sitio bloqueó la conexión o el sitio no existe. No se simularán datos sin evidencia empírica.` });
+        return res.json({ content: `### 🛑 ABORTO FORENSE\nEl motor de PredictaCore no pudo penetrar la seguridad de ${targetUrl}. Cloudflare o Shopify bloquearon la extracción. \n\n**Sentencia:** Un sitio que bloquea a los bots de auditoría también bloquea a Google. Su SEO orgánico está muerto. \n\n*Operación abortada para garantizar Cero Alucinación.*` });
     }
 
     const promptFinal = PROMPTS[idFinal](hechos);
@@ -49,7 +49,7 @@ app.post('/diseccion', async (req, res) => {
           { role: "system", content: `DOSSIER LITERAL EXTRAÍDO DEL SITIO WEB:\n${hechos}` },
           { role: "user", content: promptFinal }
         ],
-        temperature: 0.1
+        temperature: 0.1 // Cero imaginación, solo bisturí forense.
       })
     });
 
@@ -58,8 +58,8 @@ app.post('/diseccion', async (req, res) => {
 
   } catch (error) {
     console.error("Falla del Servidor:", error.message);
-    res.status(500).json({ content: `### FALLA TÉCNICA\nDetalle: ${error.message}` });
+    res.status(500).json({ content: `### FALLA TÉCNICA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN - TUBERÍA REPARADA`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN - MOTOR DESBLOQUEADO Y KILL SWITCH ACTIVO`));
