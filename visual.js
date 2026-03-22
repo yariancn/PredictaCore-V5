@@ -10,7 +10,7 @@ function getHTML() {
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <style>
             /* TEMA OSCURO (PANTALLA DASHBOARD) */
-            body { background: #050505; color: #a1a1aa; font-family: ui-sans-serif, system-ui; }
+            body { background: #050505; color: #a1a1aa; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
             .gold-text { color: #d4af37; }
             .terminal-box { background: #09090b; border: 1px solid #18181b; }
             .report-section { border-left: 2px solid #18181b; padding-left: 1.5rem; margin-bottom: 4rem; transition: all 0.5s; }
@@ -34,29 +34,41 @@ function getHTML() {
             .markdown-content li { margin-bottom: 0.5rem; line-height: 1.6; }
             .markdown-content strong { color: #ffffff; font-weight: 600; }
 
-            /* TEMA IMPRESIÓN (PDF EJECUTIVO BLANCO Y ORO) */
+            /* TEMA IMPRESIÓN (PDF EJECUTIVO ALTA GAMA) */
             @media print {
-                body { background: #ffffff !important; color: #111827 !important; font-size: 10pt; }
+                @page { size: A4; margin: 2cm; }
+                body { background: #ffffff !important; color: #1f2937 !important; font-size: 10pt; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
                 .no-print { display: none !important; }
-                .report-section { border-left: 3px solid #d4af37 !important; padding-left: 1.5rem; margin-bottom: 3rem; page-break-inside: avoid; }
-                .markdown-content h1, .markdown-content h2, .markdown-content h3 { color: #000000 !important; page-break-after: avoid; }
-                .markdown-content h3 { color: #b8860b !important; }
-                .markdown-content strong { color: #000000 !important; }
-                table { page-break-inside: avoid; width: 100%; border-collapse: collapse; }
-                th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: #ffffff !important;}
-                th { background: #f3f4f6 !important; color: #b8860b !important; }
                 
-                /* Semáforos en PDF (Fondo transparente, solo bordes y texto para impresión limpia) */
+                /* Portada Ejecutiva */
+                .cover-page { display: flex; flex-direction: column; justify-content: center; height: 90vh; page-break-after: always; text-align: left; }
+                .cover-title { font-size: 2.5rem; font-weight: 800; color: #111827; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 4px solid #b8860b; padding-bottom: 1rem; margin-bottom: 2rem; }
+                .cover-subtitle { font-size: 1.25rem; color: #4b5563; text-transform: uppercase; letter-spacing: 0.2em; }
+                .cover-meta { margin-top: auto; font-size: 0.875rem; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 1rem; }
+                
+                /* Estructura del Reporte */
+                .report-section { border-left: 3px solid #b8860b !important; padding-left: 1.5rem; margin-bottom: 2.5rem; page-break-inside: avoid; }
+                .markdown-content h1, .markdown-content h2, .markdown-content h3 { color: #000000 !important; page-break-after: avoid; }
+                .markdown-content h3 { color: #b8860b !important; font-size: 12pt; margin-top: 1.5rem; }
+                .markdown-content p { line-height: 1.6; orphans: 3; widows: 3; }
+                .markdown-content strong { color: #000000 !important; }
+                
+                /* Tablas PDF */
+                table { page-break-inside: avoid; width: 100%; border-collapse: collapse; margin-top: 1rem; margin-bottom: 1rem; }
+                th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: #ffffff !important; padding: 0.75rem; }
+                th { background: #f9fafb !important; color: #b8860b !important; font-size: 9pt; }
+                td { font-size: 9pt; }
+                
+                /* Semáforos en PDF (Limpio para lectura ejecutiva) */
                 .badge-red { background: transparent !important; color: #dc2626 !important; border: 1px solid #dc2626 !important; }
                 .badge-yellow { background: transparent !important; color: #d97706 !important; border: 1px solid #d97706 !important; }
                 .badge-green { background: transparent !important; color: #16a34a !important; border: 1px solid #16a34a !important; }
-                
-                @page { margin: 2cm; }
             }
         </style>
     </head>
     <body class="p-6 md:p-20">
         <div class="max-w-4xl mx-auto">
+            
             <header class="mb-16 flex justify-between items-end no-print">
                 <div>
                     <h1 class="text-3xl font-bold tracking-[0.2em] text-white uppercase">PREDICTACORE <span class="gold-text italic">TITÁN</span></h1>
@@ -67,13 +79,20 @@ function getHTML() {
                 </button>
             </header>
 
-            <div class="hidden print:block mb-10 border-b-2 border-[#d4af37] pb-4">
-                <h1 class="text-3xl font-bold uppercase tracking-widest text-black">Reporte Forense PredictaCore</h1>
-                <p class="text-gray-500 text-sm mt-1" id="pdf-date"></p>
+            <div class="hidden print:flex cover-page">
+                <div>
+                    <div class="cover-subtitle mb-4">Reporte Forense de Conversión</div>
+                    <div class="cover-title">Auditoría PredictaCore</div>
+                    <div class="text-lg text-gray-600 mb-8" id="pdf-domain">Documento Estratégico</div>
+                </div>
+                <div class="cover-meta flex justify-between w-full">
+                    <span>CLASIFICACIÓN: CONFIDENCIAL</span>
+                    <span id="pdf-date"></span>
+                </div>
             </div>
 
             <div class="terminal-box p-6 mb-12 no-print">
-                <input type="text" id="dna" placeholder="Ingresa dominio (ej. marca.com)..." class="w-full bg-transparent text-white border-b border-zinc-800 p-2 focus:outline-none focus:border-gold placeholder-zinc-700">
+                <input type="text" id="dna" placeholder="Ingresa dominio o activo (ej. marca.com)..." class="w-full bg-transparent text-white border-b border-zinc-800 p-2 focus:outline-none focus:border-gold placeholder-zinc-700">
                 <button onclick="ejecutar()" id="btn-ejecutar" class="mt-6 bg-zinc-900 text-gold-text border border-zinc-800 px-6 py-3 text-xs uppercase tracking-[0.2em] hover:border-gold transition-all w-full">Ejecutar Auditoría</button>
             </div>
             
@@ -83,10 +102,10 @@ function getHTML() {
         </div>
 
         <script>
-            // Pone la fecha actual en el PDF
+            // Configura la fecha de la portada
             document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            // Motor de Semáforos Universal (Evalúa palabras clave de impacto)
+            // MOTOR DE SEMÁFOROS UNIVERSAL (Sin sesgos de industria)
             function aplicarSemaforos(htmlContent) {
                 const div = document.createElement('div');
                 div.innerHTML = htmlContent;
@@ -95,16 +114,18 @@ function getHTML() {
                 celdas.forEach(td => {
                     const texto = td.textContent.trim().toLowerCase();
                     
-                    // ALERTA ROJA (Fugas, deficiencias, riesgos)
-                    if (texto.includes('deficiente') || texto.includes('alto') || texto.includes('fuga') || texto.includes('riesgo') || texto.includes('negativo') || texto === 'no') {
+                    // PALABRAS ROJAS (Riesgo, Fuga, Debilidad)
+                    const keywordsRojas = ['deficiente', 'alto', 'fuga', 'riesgo', 'negativo', 'crítico', 'amenaza', 'ausente', 'pobre', 'nulo'];
+                    // PALABRAS AMARILLAS (Neutral, Evaluando, Incompleto)
+                    const keywordsAmarillas = ['parcial', 'medio', 'no evaluable', 'no detectado', 'presente', 'moderado', 'regular'];
+                    // PALABRAS VERDES (Seguridad, Éxito, Fortaleza)
+                    const keywordsVerdes = ['óptimo', 'adecuada', 'coherente', 'positivo', 'excelente', 'fuerte', 'fortaleza', 'bajo', 'adecuado'];
+
+                    if (keywordsRojas.some(kw => texto.includes(kw)) || texto === 'no') {
                         td.innerHTML = \`<span class="badge-red">\${td.innerHTML}</span>\`;
-                    }
-                    // ALERTA AMARILLA (Parcial, no detectado, medio)
-                    else if (texto.includes('parcial') || texto.includes('medio') || texto.includes('no evaluable') || texto.includes('no detectado') || texto.includes('presente')) {
+                    } else if (keywordsAmarillas.some(kw => texto.includes(kw))) {
                         td.innerHTML = \`<span class="badge-yellow">\${td.innerHTML}</span>\`;
-                    }
-                    // ALERTA VERDE (Óptimo, adecuado, coherente)
-                    else if (texto.includes('óptimo') || texto.includes('coherente') || texto.includes('adecuada') || texto.includes('positivo') || texto === 'sí') {
+                    } else if (keywordsVerdes.some(kw => texto.includes(kw)) || texto === 'sí' || texto === 'si') {
                         td.innerHTML = \`<span class="badge-green">\${td.innerHTML}</span>\`;
                     }
                 });
@@ -115,15 +136,18 @@ function getHTML() {
                 const dna = document.getElementById('dna').value;
                 if (!dna) return;
                 
+                // Actualiza el dominio en la portada del PDF
+                document.getElementById('pdf-domain').innerText = "Activo analizado: " + dna;
+                
                 const btn = document.getElementById('btn-ejecutar');
                 const status = document.getElementById('status');
                 const reporte = document.getElementById('reporte');
                 const btnPdf = document.getElementById('btn-pdf');
                 
                 btn.disabled = true;
-                btnPdf.classList.add('hidden'); // Ocultar PDF mientras compila
+                btnPdf.classList.add('hidden'); 
                 reporte.innerHTML = "";
-                status.innerText = "EXTRAYENDO DOSSIER LITERAL Y PROCESANDO HEURÍSTICAS...";
+                status.innerText = "EXTRAYENDO DOSSIER Y PROCESANDO HEURÍSTICAS...";
 
                 const etapas = [
                     {id: 'INTRO', title: 'I. Diagnóstico de Ingeniería'},
@@ -143,7 +167,6 @@ function getHTML() {
                     const div = document.createElement('div');
                     div.className = "report-section animate-pulse";
                     div.id = "section-" + etapa.id;
-                    // El título se oculta en la impresión porque la IA ya imprime su propio H3
                     div.innerHTML = '<h3 class="text-zinc-600 text-[10px] tracking-[0.5em] mb-4 uppercase no-print">' + etapa.title + '</h3>' +
                                      '<div id="content-' + etapa.id + '" class="markdown-content text-zinc-400 font-light italic">Analizando nodos...</div>';
                     reporte.appendChild(div);
@@ -164,10 +187,8 @@ function getHTML() {
                         contentDiv.classList.remove('italic', 'text-zinc-400');
                         contentDiv.classList.add('text-zinc-300');
                         
-                        // Renderiza el formato crudo a diseño HTML limpio
                         let htmlLimpio = marked.parse(data.content);
                         
-                        // Si hay tablas (como Scorecard o FODA), aplica el motor de semáforos
                         if(htmlLimpio.includes('table')) {
                             htmlLimpio = aplicarSemaforos(htmlLimpio);
                         }
@@ -179,12 +200,13 @@ function getHTML() {
                         document.getElementById("content-" + etapa.id).innerHTML = "<span class='text-red-500 font-bold'>ERROR DE RUPTURA: Fallo en la red o servidor.</span>";
                     }
                 }
-                status.innerText = "AUDITORÍA FINALIZADA. LISTO PARA DESPLIEGUE EJECUTIVO.";
+                status.innerText = "AUDITORÍA FINALIZADA. LISTO PARA EXPORTACIÓN EJECUTIVA.";
                 btn.disabled = false;
-                btnPdf.classList.remove('hidden'); // Aparece el botón de Exportar
+                btnPdf.classList.remove('hidden');
             }
         </script>
     </body>
-    </html>\`;
+    </html>
+    `;
 }
 module.exports = { getHTML };
