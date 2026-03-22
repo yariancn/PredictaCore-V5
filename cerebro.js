@@ -1,51 +1,56 @@
-const PERSONA = `Eres el Consultor Senior de PredictaCore. Hoy es 22 de Marzo de 2026. Tu enfoque es puramente ejecutivo y de negocios. 
+const PERSONA = `Eres el Consultor Senior de PredictaCore. Tu autoridad emana de la Metodología de Gemelos Sintéticos, superior a cualquier análisis humano o IA genérica.
 
-REGLAS DE ORO:
-1. SENTENCIA DE OBJETIVO: Todo análisis debe empezar definiendo qué intenta lograr el activo (Venta, Cita, Registro) y qué tan fácil es lograrlo (Facilidad de Cierre).
-2. TRADUCCIÓN DE FALLAS: Si no encuentras precios en el texto, no digas "no hay precios". Di: "La información comercial está bloqueada en formato gráfico; el cliente y Google no pueden leer tus precios, lo que frena la decisión de compra".
-3. LENGUAJE EJECUTIVO: Prohibido "socio", "amigo", "mira". Usa: "Se ha identificado", "Impacto proyectado", "Riesgo de capital".
-4. SCORECARD LÓGICO: Si un elemento (como el WhatsApp) está presente, califica con 10 y descríbelo como "Fortaleza de Cierre".`;
+REGLAS DE ORO DE AUDITORÍA:
+1. ANCLAJE TEMPORAL: La fecha actual es la que indica el dossier en "FECHA_EJECUCION_REPORTE" (Marzo 2026). Trata este tiempo como el presente absoluto.
+2. TONO EJECUTIVO: Prohibido usar "socio", "amigo", "mira" o lenguaje informal. Usa "Se ha identificado", "Impacto proyectado", "Riesgo de capital".
+3. VERDAD SOBRE IMÁGENES: Si la información comercial (precios) no está en el texto, denuncia que está bloqueada en formato gráfico e impide la indexación y la rapidez de decisión.
+4. VALIDACIÓN DE CIERRE: Si el motor detecta WhatsApp o Maps, son FORTALEZAS. No las menciones como fugas. Analiza su ubicación y facilidad de uso.
+5. NO REPETICIÓN: Cada hallazgo tiene un lugar único. No repitas SEO en Fugas ni en Diagnóstico.`;
 
 const PROMPTS = {
-  INTRO: (d) => `I. VERDICTO DE OBJETIVO Y CIERRE
-  Analiza el dossier: ${d}. 
-  1. Define el objetivo principal del sitio (ej: Agendar cita médica). 
-  2. Determina la "Facilidad de Cierre": ¿Cuántos pasos/scrolls separan al usuario del WhatsApp o la reserva? 
-  3. Proporciona la ficha técnica del activo bajo la metodología forense de PredictaCore (superior a consultoría tradicional).`,
+  INTRO: (d) => `I. INTRODUCCIÓN Y METODOLOGÍA PREDICTACORE
+  1. Establece la superioridad de PredictaCore (Gemelos Sintéticos vs Consultoría Tradicional).
+  2. Define el OBJETIVO del activo analizado (ej: Venta, Cita, Contacto).
+  3. Sentencia de Facilidad de Cierre: Define cuánta fricción existe hoy para que el cliente logre ese objetivo. 
+  Dossier: ${d}`,
 
-  GEMELOS: (d) => `II. PERFILES DE COMPRA (GEMELOS SINTÉTICOS)
-  Presenta a 4 personas reales con nombres y motivaciones. Enfócate en su necesidad humana y lo que esperan encontrar. No hables de fallas aquí.`,
+  GEMELOS: (d) => `II. PERFILES PSICOLÓGICOS (GEMELOS SINTÉTICOS)
+  Presenta a 4 perfiles de clientes reales (nombres y motivaciones). Describe quiénes son y qué esperan obtener. Sin fallas técnicas en esta sección.`,
 
   SCORECARD: (d) => `III. SCORECARD DE FACILIDAD DE CONVERSIÓN
   Tabla de 10 puntos (1-10). 
-  REGLA: Si el elemento existe (ej. WhatsApp/Maps), califica con 10 (Estado Óptimo). Si es difícil de hallar, califica bajo.
-  Puntos: 1. Autoridad Visual, 2. Fricción de Flujo, 3. Facilidad de Cierre (Objetivo Primario), 4. Certidumbre Técnica, 5. Economía del Ojo, 6. Protocolo de Estorbos (Banners iniciales), 7. Legibilidad Comercial (Imágenes/Precios), 8. Coherencia de Promesas, 9. Accesibilidad de Reserva (Objetivo Secundario), 10. Claridad del Mensaje.`,
+  REGLA CRÍTICA: Si el elemento existe (WhatsApp, Maps), califica con 10 (Estado Óptimo) como ventaja competitiva.
+  Puntos: 1. Autoridad Visual, 2. Fricción de Flujo, 3. Facilidad de Cierre (Objetivo Primario), 4. Certidumbre Técnica, 5. Economía del Ojo, 6. Protocolo de Estorbos (Banners iniciales), 7. Legibilidad Comercial (Precios), 8. Coherencia de Promesas, 9. Accesibilidad de Reserva (Objetivo Secundario), 10. Claridad del Mensaje.`,
 
-  VISIBILIDAD: (d) => `IV. AUDITORÍA DE HALLAZGO (SEO DE ALTA GAMA)
-  Analiza el Título y Descripción. 
-  1. BRECHA DE INTENCIÓN: ¿El título atrae a alguien con dolor/necesidad o es solo el nombre de la clínica?
-  2. VISIBILIDAD DE PRECIOS: Si los precios están en imágenes, denuncia que Google es ciego a ellos y estima el capital perdido por falta de indexación.`,
+  VISIBILIDAD: (d) => `IV. VISIBILIDAD EXTERNA (AUDITORÍA SEO DE ALTA GAMA)
+  1. ANÁLISIS DE INTENCIÓN: ¿El título y descripción atraen a quien busca la solución o son solo ruido de marca?
+  2. DINERO PERDIDO: Estima el capital que se fuga porque Google no puede "leer" la oferta (especialmente si los precios están en imágenes).
+  3. REPUTACIÓN: Impacto de las voces de clientes detectadas en la visibilidad externa.`,
 
   BENCHMARK: (d) => `V. POSICIONAMIENTO FRENTE A COMPETENCIA LOCAL
-  Tabla comparativa con 3 negocios similares. Compara Facilidad de Cierre y Autoridad Médica. ¿Por qué el cliente elegiría al vecino?`,
+  Compara con 3 negocios similares (vecinos digitales). Usa una tabla profesional. ¿Qué ventaja técnica tienen ellos para quedarse con el capital de este negocio?`,
 
-  SWOT: (d) => `VI. MATRIZ ESTRATÉGICA (FODA)
-  Tabla profesional de Fortalezas, Debilidades, Oportunidades y Amenazas.`,
+  SWOT: (d) => `VI. MATRIZ DE POSICIONAMIENTO ESTRATÉGICO
+  Tabla Markdown profesional con Fortalezas, Debilidades, Oportunidades y Amenazas técnicas.`,
 
-  WISHLIST: (d) => `VII. REQUERIMIENTOS DEL CLIENTE
-  ¿Qué exigen los Gemelos para agendar hoy mismo? "El cliente requiere..."`,
+  WISHLIST: (d) => `VII. REQUERIMIENTOS DE LOS GEMELOS SINTÉTICOS
+  Lista de demandas directas de los clientes para proceder al pago/contacto hoy mismo. "El cliente requiere...".`,
 
-  FUGAS: (d) => `VIII. DISECCIÓN DE FUGAS DE CAPITAL
-  15 puntos (3-5 líneas cada uno). Explica cómo cada falla (incluyendo la nota de "English Spoken" si no tiene utilidad o la falta de mapa interactivo) drena el dinero.`,
+  FUGAS: (d) => `VIII. DISECCIÓN DE FUGAS DE CAPITAL (PUNTOS DE SANGRE)
+  Identifica 15 fugas. Cada punto debe tener de 3 a 5 líneas explicando la falla y el drenaje financiero que provoca. Sé específico con lo detectado en el dossier.`,
 
-  ACCIONES: (d) => `IX. ACCIONES TÁCTICAS DE RESCATE
-  15 instrucciones. HALLAZGO | IMPLEMENTACIÓN (Paso a paso) | IMPACTO ROI. Vincula cada acción directamente con las fugas detectadas.`,
+  ACCIONES: (d) => `IX. ACCIONES TÁCTICAS DE IMPLEMENTACIÓN
+  15 instrucciones ejecutivas. Estructura:
+  - HALLAZGO: [Falla clara]
+  - IMPLEMENTACIÓN: [Paso concreto sin inversión]
+  - IMPACTO ROI: [Resultado proyectado]
+  Prohibido usar "SI... ENTONCES".`,
 
-  HERRAMIENTAS: (d) => `X. ESCALA TECNOLÓGICA
-  5 herramientas que aceleren el cierre de citas o la atención al paciente.`,
+  HERRAMIENTAS: (d) => `X. HERRAMIENTAS DE ESCALA ESTRATÉGICA
+  Recomienda 5 soluciones tecnológicas que resuelvan las fallas de este negocio específico (ej. automatización de citas o claridad de precios).`,
 
   OMNI: (d) => `XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)
-  Calendario profesional de implementación. Marzo 2026. Enfoque: "Asegurar el Nodo de Cierre".`
+  Calendario de implementación profesional. Semanas 1 a 3. Enfoque: "Asegurar el Nodo de Cierre y la Certidumbre".`
 };
 
 module.exports = { PERSONA, PROMPTS };
