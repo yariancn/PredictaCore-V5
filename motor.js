@@ -3,66 +3,61 @@ const puppeteer = require('puppeteer');
 async function captureAndScrape(url) {
     let browser;
     try {
-        console.log(`[MOTOR TITÁN]: Iniciando disección de: ${url}`);
+        console.log(`[MOTOR TITÁN]: Iniciando disección forense en: ${url}`);
         browser = await puppeteer.launch({
             headless: "new",
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--no-first-run',
-                '--no-zygote',
-                '--single-process',
-                '--disable-gpu'
-            ]
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process', '--disable-gpu']
         });
         const page = await browser.newPage();
-        await page.setViewport({ width: 1280, height: 800 });
-        
+        await page.setViewport({ width: 1280, height: 900 });
         await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
-        // 1. ABRIR MENÚS VISIBLES (HAMBURGUESAS)
-        const menuSelectors = ['button[aria-label*="menu"]', 'button[aria-label*="Menu"]', '.hamburger', '.menu-toggle', 'nav button', '[class*="hamburger"]'];
-        for (const sel of menuSelectors) {
-            try {
-                const btn = await page.$(sel);
-                if (btn) {
-                    await page.evaluate(b => b.click(), btn); // Clic seguro
-                    await page.waitForTimeout(1500); // Esperar a que el menú se despliegue
-                    break;
-                }
-            } catch(e) { } // Si falla un botón, intenta el siguiente
-        }
-        
-        const textoExtraido = await page.evaluate(() => {
+        const dataForense = await page.evaluate(() => {
+            // 1. Limpieza de scripts
             const scripts = document.querySelectorAll('script, style, noscript, iframe');
             scripts.forEach(s => s.remove());
+
+            // 2. Escáner de Botones de Cierre (CTAs)
+            const botones = Array.from(document.querySelectorAll('a, button'))
+                .map(b => ({ texto: b.innerText.trim(), link: b.href || '' }))
+                .filter(b => b.texto.length > 2)
+                .slice(0, 15);
+
+            // 3. Detección de Canales Directos
+            const tieneWhatsApp = !!document.querySelector('a[href*="wa.me"], a[href*="whatsapp"]');
+            const tieneMaps = !!document.querySelector('a[href*="maps.google"], a[href*="google.com/maps"]');
             
-            // 2. CAPTURAR IMÁGENES PARA ANÁLISIS DE TEXTURA
-            const imgs = Array.from(document.querySelectorAll('img'))
-                .map(img => img.alt || img.src.split('/').pop())
-                .filter(text => text.length > 2)
-                .slice(0, 20); // Tomamos las primeras 20 imágenes
-            
+            // 4. Extracción de Atributos de Imagen (Buscando precios ocultos en ALT)
+            const imagenes = Array.from(document.querySelectorAll('img'))
+                .map(img => img.alt || img.title || "Imagen sin descripción técnica")
+                .filter(alt => alt !== "Imagen sin descripción técnica")
+                .slice(0, 10);
+
             return {
                 titulo: document.title,
                 descripcion: document.querySelector('meta[name="description"]')?.content || "",
-                cuerpo: document.body.innerText.substring(0, 45000),
-                imagenes: imgs.join(' | ')
+                cuerpo: document.body.innerText.substring(0, 40000),
+                evidencia: {
+                    canales: { whatsapp: tieneWhatsApp, maps: tieneMaps },
+                    botones: botones.map(b => b.texto).join(' | '),
+                    imagenesMetadata: imagenes.join(' | ')
+                }
             };
         });
 
         await browser.close();
-        console.log(`[MOTOR TITÁN]: Disección finalizada con éxito.`);
-        
-        // Enviamos todo empacado en un solo texto para la IA
-        return `TÍTULO (SEO): ${textoExtraido.titulo}\nDESCRIPCIÓN (SEO): ${textoExtraido.descripcion}\nIMÁGENES DETECTADAS: ${textoExtraido.imagenes}\nCONTENIDO: ${textoExtraido.cuerpo}`;
-        
+        return `
+            FECHA_AUDITORIA: 22 de marzo de 2026
+            TITULO_SEO: ${dataForense.titulo}
+            DESCRIPCION_SEO: ${dataForense.descripcion}
+            EVIDENCIA_CIERRE: WhatsApp(${dataForense.evidencia.canales.whatsapp}), Maps(${dataForense.evidencia.canales.maps})
+            ACCIONES_DETECTADAS: ${dataForense.evidencia.botones}
+            METADATOS_IMAGENES: ${dataForense.evidencia.imagenesMetadata}
+            CONTENIDO_LITERAL: ${dataForense.cuerpo}
+        `;
     } catch (error) {
-        console.error(`[FALLA DE MOTOR]: ${error.message}`);
         if (browser) await browser.close();
-        return `ERROR CRÍTICO: Imposible extraer datos de ${url}.`;
+        return `ERROR_CRITICO: ${error.message}`;
     }
 }
 
