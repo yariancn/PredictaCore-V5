@@ -1,6 +1,6 @@
 {
   "name": "predictacore-titan",
-  "version": "32.0.0",
+  "version": "33.0.0",
   "description": "PredictaCore Titán - Auditoría Forense",
   "main": "server.js",
   "scripts": {
@@ -9,7 +9,9 @@
   "dependencies": {
     "express": "^4.18.2",
     "axios": "^1.6.8",
-    "puppeteer": "^22.6.0"
+    "puppeteer": "^22.6.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
   "engines": {
     "node": "18.x"
