@@ -3,17 +3,25 @@ const puppeteer = require('puppeteer');
 async function captureAndScrape(url) {
     let browser;
     try {
+        console.log(`[MOTOR]: Iniciando análisis en: ${url}`);
         browser = await puppeteer.launch({
             headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process']
+            args: [
+                '--no-sandbox', 
+                '--disable-setuid-sandbox', 
+                '--disable-dev-shm-usage', 
+                '--single-process', 
+                '--disable-gpu',
+                '--no-zygote'
+            ]
         });
         const page = await browser.newPage();
         
-        // --- MANIOBRA 1: EL FRANCOTIRADOR ---
+        // Intercepción selectiva para acelerar la carga sin perder metadata
         await page.setRequestInterception(true);
         page.on('request', (req) => {
-            const listaNegra = ['google-analytics', 'facebook', 'hotjar', 'pixel', 'ads'];
-            if (listaNegra.some(script => req.url().includes(script)) || req.resourceType() === 'media') {
+            const blacklist = ['google-analytics', 'facebook', 'hotjar', 'pixel', 'ads'];
+            if (blacklist.some(script => req.url().includes(script)) || ['font', 'media'].includes(req.resourceType())) {
                 req.abort();
             } else {
                 req.continue();
@@ -22,43 +30,52 @@ async function captureAndScrape(url) {
 
         await page.setViewport({ width: 1280, height: 1600 });
         
-        // --- MANIOBRA 2: CARGA Y ESPERA INTELIGENTE ---
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
-        
-        // Espera manual de 5 segundos para que los scripts de precios/imágenes carguen
-        await new Promise(r => setTimeout(r, 5000));
+        // Carga el contenido esencial
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
 
-        // --- MANIOBRA 3: SCROLL PARA ACTIVAR LAZY LOADING ---
+        // Scroll rápido para activar contenido dinámico
         await page.evaluate(async () => {
             window.scrollBy(0, window.innerHeight);
             await new Promise(r => setTimeout(r, 1000));
             window.scrollTo(0, 0);
         });
 
-        const dataForense = await page.evaluate(() => {
-            // Extraemos TODO lo visual y textual
+        const data = await page.evaluate(() => {
             const imgs = Array.from(document.querySelectorAll('img'))
                 .map(img => `[Imagen: ${img.alt || img.title || 'Sin descripción'}]`)
                 .join(' | ');
 
-            const botones = Array.from(document.querySelectorAll('a, button'))
+            const buttons = Array.from(document.querySelectorAll('a, button'))
                 .map(b => b.innerText.trim())
                 .filter(t => t.length > 2)
                 .join(' | ');
 
             return {
                 titulo: document.title,
-                cuerpo: document.body.innerText.substring(0, 50000), // Mantenemos los 50k
+                cuerpo: document.body.innerText.substring(0, 50000),
                 imagenes: imgs,
-                interactores: botones
+                interactores: buttons
             };
         });
 
         await browser.close();
-        return `CONTENIDO_VISUAL: ${dataForense.imagenes} | TEXTO: ${dataForense.cuerpo}`;
+        
+        const fechaHoy = new Date().toLocaleDateString('es-ES', { 
+            day: 'numeric', month: 'long', year: 'numeric' 
+        });
 
+        return `
+            FECHA_EJECUCION: ${fechaHoy}
+            TITULO_SEO: ${data.titulo}
+            PUNTOS_INTERACCION: ${data.interactores}
+            CONTENIDO_VISUAL: ${data.imagenes}
+            TEXTO_LITERAL: ${data.cuerpo}
+        `;
     } catch (error) {
         if (browser) await browser.close();
-        return `FALLO_FORENSE: ${error.message}`;
+        throw error;
     }
 }
+
+// EXPORTACIÓN DIRECTA: Esto corrige el error "is not a function"
+module.exports = captureAndScrape;
