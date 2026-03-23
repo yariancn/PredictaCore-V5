@@ -1,11 +1,15 @@
 const express = require('express');
 const { PERSONA, PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
-const { captureAndScrape } = require('./motor'); // Importación original aprobada
-// ... resto de imports ...
+const { captureAndScrape } = require('./motor'); 
+const { SYSTEM_INSTRUCTIONS } = require('./instrucciones');
+const { PROTOCOLOS_IA } = require('./protocolos');
 
 const app = express();
-// ... configuración app ...
+const port = process.env.PORT || 8080;
+app.use(express.json());
+
+app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/diseccion', async (req, res) => {
   const { dna, etapaId } = req.body;
@@ -16,16 +20,16 @@ app.post('/diseccion', async (req, res) => {
     let hechos = "";
     let targetUrl = dna.trim();
 
+    const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
+    
     if (targetUrl.startsWith('http')) {
       hechos = await captureAndScrape(targetUrl);
-    } else if (targetUrl.includes('.com') || targetUrl.includes('.mx')) {
+    } else if (isDomain) {
       targetUrl = `https://${targetUrl}`;
       hechos = await captureAndScrape(targetUrl);
     } else {
       hechos = targetUrl;
     }
-
-    // ELIMINADO EL BLOQUE DE "ABORTO FORENSE" QUE CAUSABA EL FALLO
 
     const promptFinal = PROMPTS[idFinal](hechos);
 
@@ -35,7 +39,7 @@ app.post('/diseccion', async (req, res) => {
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning", 
         messages: [
-          { role: "system", content: `${PERSONA}` },
+          { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
           { role: "system", content: `DOSSIER DEL SITIO:\n${hechos}` },
           { role: "user", content: promptFinal }
         ],
@@ -47,8 +51,9 @@ app.post('/diseccion', async (req, res) => {
     res.json({ content: xData.choices[0].message.content });
 
   } catch (error) {
+    console.error("Falla del Servidor:", error.message);
     res.status(500).json({ content: `### FALLA TÉCNICA\nDetalle: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN - MOTOR ACTIVO`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN - MOTOR ACTIVO EN PUERTO ${port}`));
