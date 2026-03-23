@@ -1,7 +1,7 @@
 const express = require('express');
 const { PERSONA, PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
-const { captureAndScrape } = require('./motor');
+const captureAndScrape = require('./motor'); // CORRECCIÓN 1: Importación directa sin llaves
 const { SYSTEM_INSTRUCTIONS } = require('./instrucciones');
 const { PROTOCOLOS_IA } = require('./protocolos');
 
@@ -20,8 +20,8 @@ app.post('/diseccion', async (req, res) => {
     let hechos = "";
     let targetUrl = dna.trim();
 
-    // 1. LA CURA A LA CEGUERA: Forzamos el encendido del motor aunque falte el "http"
-    const isDomain = targetUrl.includes('.com') || targetUrl.includes('.net') || targetUrl.includes('.es') || targetUrl.includes('.org') || targetUrl.includes('.mx');
+    // Normalización de URL
+    const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
     
     if (targetUrl.startsWith('http')) {
       hechos = await captureAndScrape(targetUrl);
@@ -29,12 +29,12 @@ app.post('/diseccion', async (req, res) => {
       targetUrl = `https://${targetUrl}`;
       hechos = await captureAndScrape(targetUrl);
     } else {
-      hechos = targetUrl; // Es una idea o concepto escrito a mano
+      hechos = targetUrl; // Input manual (idea o concepto)
     }
 
-    // 2. EL KILL SWITCH ANTI-ALUCINACIONES
-    if (hechos.includes("ERROR CRÍTICO")) {
-        return res.json({ content: `### 🛑 ABORTO FORENSE\nEl motor de PredictaCore no pudo penetrar la seguridad de ${targetUrl}. Cloudflare o Shopify bloquearon la extracción. \n\n**Sentencia:** Un sitio que bloquea a los bots de auditoría también bloquea a Google. Su SEO orgánico está muerto. \n\n*Operación abortada para garantizar Cero Alucinación.*` });
+    // CORRECCIÓN 2: KILL SWITCH sincronizado con los errores del motor
+    if (hechos.includes("ERROR_MOTOR") || hechos.includes("FALLO_FORENSE")) {
+        return res.json({ content: `### 🛑 ABORTO FORENSE\nEl motor de PredictaCore no pudo penetrar la seguridad de ${targetUrl}. \n\n**Sentencia:** El sitio presenta barreras técnicas (Timeouts o Bloqueos) que impiden una auditoría limpia. Un activo que no se deja auditar tampoco permite una indexación SEO fluida.\n\n*Operación abortada para garantizar Cero Alucinación.*` });
     }
 
     const promptFinal = PROMPTS[idFinal](hechos);
@@ -49,7 +49,7 @@ app.post('/diseccion', async (req, res) => {
           { role: "system", content: `DOSSIER LITERAL EXTRAÍDO DEL SITIO WEB:\n${hechos}` },
           { role: "user", content: promptFinal }
         ],
-        temperature: 0.1 // Cero imaginación, solo bisturí forense.
+        temperature: 0.1 
       })
     });
 
