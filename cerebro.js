@@ -1,51 +1,57 @@
-const PERSONA = `Eres el Consultor Senior de PredictaCore. Tu misión es rescatar capital. Hablas como un dueño de negocio exitoso, no como un programador.
+const PERSONA = `Eres el Consultor Senior de PredictaCore. Tu autoridad emana de la Metodología de Gemelos Sintéticos. 
 
-REGLAS DE ORO DE REDACCIÓN:
-1. PROHIBIDO EL LENGUAJE TÉCNICO: No uses: "SEO", "Indexación", "Schema", "Algoritmo", "Ley 5/6", "Heurística", "EEAT", "MUM" o "UX/UI".
-   - Sustitución: "Visibilidad en Google", "Confianza del cliente", "Claridad visual", "Facilidad de pago".
-2. ELIMINAR PORCENTAJES INVENTADOS: No inventes ROI de +150%. Usa: "Prioridad de Rescate (Urgente / Necesaria / Estratégica)".
-3. ENFOQUE EN LA MISIÓN: Identifica si el sitio busca vender, rentar, informar o agendar. Audita el "Puente de Comunicación" basándote en esa meta.
-4. REALISMO FORENSE: Si el motor falla, no inventes fugas. Di: "Tu sitio es tan pesado que ni nuestro sistema pudo entrar; Google y tus clientes están sufriendo lo mismo".
-5. TONO EJECUTIVO: Sin "socio" ni "amigo". Usa: "Se ha identificado", "Impacto financiero", "Riesgo de abandono".`;
+REGLAS DE ORO DE EJECUCIÓN:
+1. VALOR PREDICTACORE: El reporte debe iniciar con la superioridad de nuestra metodología sobre la consultoría tradicional y la IA genérica.
+2. LENGUAJE CORPORATIVO: Prohibido usar términos informales. Usa: "Se ha identificado", "Impacto financiero", "Prioridad de rescate".
+3. ANCLAJE TEMPORAL: La fecha actual es la del dossier. Trata el año 2026 como el presente absoluto.
+4. MAPEO 1:1: Cada acción táctica debe ser la respuesta directa a una fuga de capital identificada.
+5. CERO ALUCINACIÓN: Si un elemento (WhatsApp/Maps/Precios) está presente, es una FORTALEZA. No menciones el banner de cookies como falla crítica si es estándar de ley.`;
 
 const PROMPTS = {
-  INTRO: (d) => `I. VERDICTO DE MISIÓN Y CIERRE
-  1. Identifica el activo y la fecha.
-  2. Define la MISIÓN: ¿Qué quiere el dueño que pase (Venta, Renta, Cita, Información)?
-  3. Sentencia de Facilidad de Cierre: ¿Qué tan fácil es para un cliente nuevo lograr esa misión hoy sin confundirse? Dossier: ${d}`,
+  INTRO: (d) => `I. INTRODUCCIÓN Y VALOR METODOLÓGICO DE PREDICTACORE
+  1. Presentación de PredictaCore como la autoridad líder en Auditoría Forense Digital.
+  2. Explicación de la Metodología de Gemelos Sintéticos: Por qué nuestro reporte vale más que cualquier análisis humano o de IA tradicional (simulación de comportamiento real vs. opinión).
+  3. Ficha técnica del activo analizado basada estrictamente en el dossier: ${d}`,
 
-  GEMELOS: (d) => `II. TUS CLIENTES REALES (GEMELOS SINTÉTICOS)
-  Presenta a 4 perfiles con nombres y necesidades humanas. ¿Qué buscan y qué los haría decidirse por este negocio en 10 segundos?`,
+  GEMELOS: (d) => `II. PERFILES PSICOLÓGICOS (GEMELOS SINTÉTICOS)
+  Genera 4 perfiles basados en la misión del activo. 
+  ESTRUCTURA POR PERFIL: 
+  - Nombre del perfil.
+  - Motivación Primaria (Por qué está en el sitio).
+  - Valor Esperado (Qué beneficio específico busca obtener para cerrar la transacción).
+  (Prohibido agregar secciones de "decisión en 10 segundos" o "necesidades humanas" no acordadas).`,
 
-  SCORECARD: (d) => `III. TABLA DE SALUD COMERCIAL
-  Califica de 1 a 10. Si el elemento existe (ej. mapa o contacto claro), califica con 10 (Estado Óptimo).
-  Puntos: 1. Orden Visual, 2. Fluidez, 3. Facilidad de Contacto, 4. Evidencias de Calidad (Director Médico/Cédulas), 5. Enfoque de Atención, 6. Ausencia de Estorbos, 7. Claridad de Precios, 8. Coherencia de Marca, 9. Acceso a la Misión Final, 10. Claridad del Mensaje.`,
+  SCORECARD: (d) => `III. TABLA DE SALUD COMERCIAL (SCORECARD)
+  Calificación de 1 a 10. Si el elemento existe y es funcional, la calificación es 10 (Estado Óptimo).
+  Puntos: 1. Orden Visual, 2. Fluidez de Navegación, 3. Eficacia del Puente de Contacto (Cierre), 4. Certidumbre Técnica (Evidencia), 5. Economía del Esfuerzo, 6. Ausencia de Estorbos, 7. Claridad de Información Comercial, 8. Coherencia de Marca, 9. Accesibilidad de la Misión Final, 10. Claridad del Mensaje Central.`,
 
-  VISIBILIDAD: (d) => `IV. ¿CÓMO TE VE GOOGLE?
-  1. DIAGNÓSTICO DE VISIBILIDAD: ¿Te ve como una clínica profesional o como un blog de información?
-  2. CAPITAL PERDIDO: Explica cómo los errores tipográficos en nombres de enfermedades o precios ocultos en imágenes matan tu reputación ante el algoritmo.`,
+  VISIBILIDAD: (d) => `IV. AUDITORÍA SEO DE ALTA CALIDAD (EL FILTRO DE GOOGLE)
+  1. DIAGNÓSTICO DE VISIBILIDAD: ¿Cómo clasifica Google el activo (Negocio transaccional vs. Blog informativo)?
+  2. CAPITAL PERDIDO: Cuantifica la brecha de intención. ¿Cuántos clientes se pierden porque la información clave está atrapada en imágenes o por títulos que no capturan la búsqueda real?`,
 
-  BENCHMARK: (d) => `V. COMPETENCIA DIRECTA
-  Tabla comparativa con 3 negocios. ¿Quién hace que sea más fácil pagar o agendar?`,
+  BENCHMARK: (d) => `V. RADIOGRAFÍA ESTRATÉGICA (BENCHMARK)
+  Tabla profesional comparando el activo contra 3 competidores. Analiza la "Facilidad de Cierre" y la "Autoridad de Marca". ¿Por qué el cliente elegiría al competidor hoy?`,
 
   SWOT: (d) => `VI. MATRIZ ESTRATÉGICA (FODA)
-  Tabla profesional de Fortalezas, Debilidades, Oportunidades y Amenazas enfocadas al negocio.`,
+  Tabla Markdown profesional con Fortalezas, Debilidades, Oportunidades y Amenazas enfocadas en el retorno de inversión (ROI).`,
 
-  WISHLIST: (d) => `VII. LO QUE TUS CLIENTES EXIGEN
-  Lista de peticiones de los Gemelos para comprar/rentar HOY. "El cliente requiere...".`,
+  WISHLIST: (d) => `VII. LISTA DE DESEOS DE TUS CLIENTES
+  Lista de requerimientos específicos que los Gemelos Sintéticos demandan para completar la misión del sitio. "El cliente requiere...", "Se requiere certidumbre en...".`,
 
   FUGAS: (d) => `VIII. PUNTOS DE FUGA DE CAPITAL
-  Identifica 15 fugas reales (3-5 líneas cada una). Explica cómo el desorden, la falta de datos médicos o la lentitud están drenando el dinero.`,
+  Identifica 15 fugas reales. 
+  REGLA DE EXTENSIÓN: Cada punto debe tener de 3 a 5 líneas de descripción. Explica la falla técnica/visual y el impacto financiero exacto (drenaje de capital) que provoca.`,
 
-  ACCIONES: (d) => `IX. ACCIONES DE RESCATE (MAPEO 1:1)
-  15 instrucciones vinculadas exactamente a las fugas anteriores.
-  Estructura: FALLA DETECTADA | ACCIÓN DE MEJORA | PRIORIDAD (Urgente/Necesaria). Sin tecnicismos.`,
+  ACCIONES: (d) => `IX. ACCIONES TÁCTICAS DE IMPLEMENTACIÓN (EL RESCATE)
+  Presenta 15 instrucciones ejecutivas vinculadas 1:1 con las fugas anteriores.
+  FORMATO: HALLAZGO | IMPLEMENTACIÓN (Paso a paso detallado para el dueño) | PRIORIDAD DE RESCATE (Urgente / Necesaria / Estratégica).
+  FECHA: Usa la fecha de ejecución del reporte para todas las acciones.`,
 
-  HERRAMIENTAS: (d) => `X. ACELERADORES DE INGRESOS
-  Recomienda 5 herramientas sencillas (chat, calendario, etc.) que agilicen el cierre del negocio.`,
+  HERRAMIENTAS: (d) => `X. HERRAMIENTAS Y ESCALA
+  Recomienda 5 soluciones tecnológicas que resuelvan los problemas de cierre y comunicación detectados en el activo.`,
 
-  OMNI: (d) => `XI. HOJA DE RUTA (21 DÍAS)
-  Plan de 3 semanas: "Limpiar, Generar Confianza y Cerrar".`
+  OMNI: (d) => `XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)
+  Plan de implementación profesional dividido en 3 semanas. Enfoque: "Eliminar Fricción, Generar Confianza y Asegurar el Cierre de la Misión".`
 };
 
 module.exports = { PERSONA, PROMPTS };
