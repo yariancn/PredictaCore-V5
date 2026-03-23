@@ -5,63 +5,54 @@ async function captureAndScrape(url) {
     try {
         browser = await puppeteer.launch({
             headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process', '--no-zygote']
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process', '--disable-gpu']
         });
         const page = await browser.newPage();
+        await page.setViewport({ width: 1280, height: 900 });
         
-        // --- MANIOBRA QUIRÚRGICA: BLOQUEO DE RUIDO ---
-        await page.setRequestInterception(true);
-        page.on('request', (req) => {
-            const basura = ['google-analytics', 'facebook', 'hotjar', 'pixel', 'ads', 'doubleclick'];
-            if (basura.some(s => req.url().includes(s)) || ['font', 'media'].includes(req.resourceType())) {
-                req.abort();
-            } else {
-                req.continue();
-            }
-        });
+        // Volvemos a networkidle2: más lento pero lee todo, incluyendo precios y scripts
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
-        await page.setViewport({ width: 1280, height: 1600 });
-        
-        // Carga y espera dinámica
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
-        await new Promise(r => setTimeout(r, 4000)); // 4s para que carguen precios dinámicos
-
-        // --- MANIOBRA DE REVELACIÓN: SCROLL ---
-        await page.evaluate(async () => {
-            window.scrollBy(0, window.innerHeight);
-            await new Promise(r => setTimeout(r, 800));
-            window.scrollTo(0, 0);
-        });
-
-        const data = await page.evaluate(() => {
-            const scripts = document.querySelectorAll('script, style, noscript');
+        const dataForense = await page.evaluate(() => {
+            const scripts = document.querySelectorAll('script, style, noscript, iframe');
             scripts.forEach(s => s.remove());
 
             const imgs = Array.from(document.querySelectorAll('img'))
-                .map(img => `[Imagen: ${img.alt || img.title || 'Sin etiqueta'}]`)
+                .map(img => `[Imagen: ${img.alt || img.title || 'Sin descripción'}]`)
                 .join(' | ');
 
-            const btns = Array.from(document.querySelectorAll('a, button'))
+            const botones = Array.from(document.querySelectorAll('a, button'))
                 .map(b => b.innerText.trim())
-                .filter(t => t.length > 2)
+                .filter(texto => texto.length > 2)
                 .join(' | ');
 
             return {
                 titulo: document.title,
-                cuerpo: document.body.innerText.substring(0, 50000),
-                graficos: imgs,
-                acciones: btns
+                descripcion: document.querySelector('meta[name="description"]')?.content || "",
+                cuerpo: document.body.innerText.substring(0, 45000),
+                interactores: botones,
+                visual: imgs
             };
         });
 
-        await browser.close();
-        const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+        const fechaHoy = new Date().toLocaleDateString('es-ES', { 
+            day: 'numeric', month: 'long', year: 'numeric' 
+        });
 
-        return `FECHA: ${fecha} | TITULO: ${data.titulo} | CTAS: ${data.acciones} | IMAGENES: ${data.graficos} | TEXTO: ${data.cuerpo}`;
+        await browser.close();
+
+        return `
+            FECHA_REPORTE: ${fechaHoy}
+            TITULO: ${dataForense.titulo}
+            DESCRIPCION: ${dataForense.descripcion}
+            BOTONES_Y_ACCIONES: ${dataForense.interactores}
+            IMAGENES_Y_TEXTOS: ${dataForense.visual}
+            CONTENIDO_SITIO: ${dataForense.cuerpo}
+        `;
     } catch (error) {
         if (browser) await browser.close();
-        return `FALLO_FORENSE: ${error.message}`;
+        return `ERROR_MOTOR: No se pudo acceder al activo. Detalle: ${error.message}`;
     }
 }
 
-module.exports = captureAndScrape;
+module.exports = { captureAndScrape }; // Exportación original aprobada
