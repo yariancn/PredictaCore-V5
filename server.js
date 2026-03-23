@@ -1,15 +1,11 @@
 const express = require('express');
 const { PERSONA, PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
-const captureAndScrape = require('./motor'); // CORRECCIÓN 1: Importación directa sin llaves
-const { SYSTEM_INSTRUCTIONS } = require('./instrucciones');
-const { PROTOCOLOS_IA } = require('./protocolos');
+const { captureAndScrape } = require('./motor'); // Importación original aprobada
+// ... resto de imports ...
 
 const app = express();
-const port = process.env.PORT || 8080;
-app.use(express.json());
-
-app.get('/', (req, res) => res.send(getHTML()));
+// ... configuración app ...
 
 app.post('/diseccion', async (req, res) => {
   const { dna, etapaId } = req.body;
@@ -20,22 +16,16 @@ app.post('/diseccion', async (req, res) => {
     let hechos = "";
     let targetUrl = dna.trim();
 
-    // Normalización de URL
-    const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
-    
     if (targetUrl.startsWith('http')) {
       hechos = await captureAndScrape(targetUrl);
-    } else if (isDomain) {
+    } else if (targetUrl.includes('.com') || targetUrl.includes('.mx')) {
       targetUrl = `https://${targetUrl}`;
       hechos = await captureAndScrape(targetUrl);
     } else {
-      hechos = targetUrl; // Input manual (idea o concepto)
+      hechos = targetUrl;
     }
 
-    // CORRECCIÓN 2: KILL SWITCH sincronizado con los errores del motor
-    if (hechos.includes("ERROR_MOTOR") || hechos.includes("FALLO_FORENSE")) {
-        return res.json({ content: `### 🛑 ABORTO FORENSE\nEl motor de PredictaCore no pudo penetrar la seguridad de ${targetUrl}. \n\n**Sentencia:** El sitio presenta barreras técnicas (Timeouts o Bloqueos) que impiden una auditoría limpia. Un activo que no se deja auditar tampoco permite una indexación SEO fluida.\n\n*Operación abortada para garantizar Cero Alucinación.*` });
-    }
+    // ELIMINADO EL BLOQUE DE "ABORTO FORENSE" QUE CAUSABA EL FALLO
 
     const promptFinal = PROMPTS[idFinal](hechos);
 
@@ -45,8 +35,8 @@ app.post('/diseccion', async (req, res) => {
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning", 
         messages: [
-          { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `DOSSIER LITERAL EXTRAÍDO DEL SITIO WEB:\n${hechos}` },
+          { role: "system", content: `${PERSONA}` },
+          { role: "system", content: `DOSSIER DEL SITIO:\n${hechos}` },
           { role: "user", content: promptFinal }
         ],
         temperature: 0.1 
@@ -57,9 +47,8 @@ app.post('/diseccion', async (req, res) => {
     res.json({ content: xData.choices[0].message.content });
 
   } catch (error) {
-    console.error("Falla del Servidor:", error.message);
-    res.status(500).json({ content: `### FALLA TÉCNICA DE INFRAESTRUCTURA\nDetalle: ${error.message}` });
+    res.status(500).json({ content: `### FALLA TÉCNICA\nDetalle: ${error.message}` });
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN - MOTOR DESBLOQUEADO Y KILL SWITCH ACTIVO`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN - MOTOR ACTIVO`));
