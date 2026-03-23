@@ -3,25 +3,17 @@ const puppeteer = require('puppeteer');
 async function captureAndScrape(url) {
     let browser;
     try {
-        console.log(`[MOTOR]: Iniciando análisis en: ${url}`);
         browser = await puppeteer.launch({
             headless: "new",
-            args: [
-                '--no-sandbox', 
-                '--disable-setuid-sandbox', 
-                '--disable-dev-shm-usage', 
-                '--single-process', 
-                '--disable-gpu',
-                '--no-zygote'
-            ]
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process', '--no-zygote']
         });
         const page = await browser.newPage();
         
-        // Intercepción selectiva para acelerar la carga sin perder metadata
+        // --- MANIOBRA QUIRÚRGICA: BLOQUEO DE RUIDO ---
         await page.setRequestInterception(true);
         page.on('request', (req) => {
-            const blacklist = ['google-analytics', 'facebook', 'hotjar', 'pixel', 'ads'];
-            if (blacklist.some(script => req.url().includes(script)) || ['font', 'media'].includes(req.resourceType())) {
+            const basura = ['google-analytics', 'facebook', 'hotjar', 'pixel', 'ads', 'doubleclick'];
+            if (basura.some(s => req.url().includes(s)) || ['font', 'media'].includes(req.resourceType())) {
                 req.abort();
             } else {
                 req.continue();
@@ -30,22 +22,26 @@ async function captureAndScrape(url) {
 
         await page.setViewport({ width: 1280, height: 1600 });
         
-        // Carga el contenido esencial
+        // Carga y espera dinámica
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+        await new Promise(r => setTimeout(r, 4000)); // 4s para que carguen precios dinámicos
 
-        // Scroll rápido para activar contenido dinámico
+        // --- MANIOBRA DE REVELACIÓN: SCROLL ---
         await page.evaluate(async () => {
             window.scrollBy(0, window.innerHeight);
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 800));
             window.scrollTo(0, 0);
         });
 
         const data = await page.evaluate(() => {
+            const scripts = document.querySelectorAll('script, style, noscript');
+            scripts.forEach(s => s.remove());
+
             const imgs = Array.from(document.querySelectorAll('img'))
-                .map(img => `[Imagen: ${img.alt || img.title || 'Sin descripción'}]`)
+                .map(img => `[Imagen: ${img.alt || img.title || 'Sin etiqueta'}]`)
                 .join(' | ');
 
-            const buttons = Array.from(document.querySelectorAll('a, button'))
+            const btns = Array.from(document.querySelectorAll('a, button'))
                 .map(b => b.innerText.trim())
                 .filter(t => t.length > 2)
                 .join(' | ');
@@ -53,29 +49,19 @@ async function captureAndScrape(url) {
             return {
                 titulo: document.title,
                 cuerpo: document.body.innerText.substring(0, 50000),
-                imagenes: imgs,
-                interactores: buttons
+                graficos: imgs,
+                acciones: btns
             };
         });
 
         await browser.close();
-        
-        const fechaHoy = new Date().toLocaleDateString('es-ES', { 
-            day: 'numeric', month: 'long', year: 'numeric' 
-        });
+        const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
-        return `
-            FECHA_EJECUCION: ${fechaHoy}
-            TITULO_SEO: ${data.titulo}
-            PUNTOS_INTERACCION: ${data.interactores}
-            CONTENIDO_VISUAL: ${data.imagenes}
-            TEXTO_LITERAL: ${data.cuerpo}
-        `;
+        return `FECHA: ${fecha} | TITULO: ${data.titulo} | CTAS: ${data.acciones} | IMAGENES: ${data.graficos} | TEXTO: ${data.cuerpo}`;
     } catch (error) {
         if (browser) await browser.close();
-        throw error;
+        return `FALLO_FORENSE: ${error.message}`;
     }
 }
 
-// EXPORTACIÓN DIRECTA: Esto corrige el error "is not a function"
 module.exports = captureAndScrape;
