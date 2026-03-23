@@ -9,8 +9,6 @@ async function captureAndScrape(url) {
         });
         const page = await browser.newPage();
         await page.setViewport({ width: 1280, height: 900 });
-        
-        // Volvemos a networkidle2: más lento pero lee todo, incluyendo precios y scripts
         await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
         const dataForense = await page.evaluate(() => {
@@ -35,24 +33,14 @@ async function captureAndScrape(url) {
             };
         });
 
-        const fechaHoy = new Date().toLocaleDateString('es-ES', { 
-            day: 'numeric', month: 'long', year: 'numeric' 
-        });
-
         await browser.close();
+        const fechaHoy = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
-        return `
-            FECHA_REPORTE: ${fechaHoy}
-            TITULO: ${dataForense.titulo}
-            DESCRIPCION: ${dataForense.descripcion}
-            BOTONES_Y_ACCIONES: ${dataForense.interactores}
-            IMAGENES_Y_TEXTOS: ${dataForense.visual}
-            CONTENIDO_SITIO: ${dataForense.cuerpo}
-        `;
+        return `FECHA: ${fechaHoy} | TITULO: ${dataForense.titulo} | DESCRIPCION: ${dataForense.descripcion} | CTAS: ${dataForense.interactores} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}`;
     } catch (error) {
         if (browser) await browser.close();
-        return `ERROR_MOTOR: No se pudo acceder al activo. Detalle: ${error.message}`;
+        return `ERROR_MOTOR: ${error.message}`;
     }
 }
 
-module.exports = { captureAndScrape }; // Exportación original aprobada
+module.exports = { captureAndScrape };
