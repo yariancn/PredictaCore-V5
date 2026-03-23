@@ -13,33 +13,33 @@ async function captureAndScrape(url) {
         await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
         const dataForense = await page.evaluate(() => {
-            // 1. Limpieza de elementos irrelevantes
+            // 1. Limpieza de ruidos técnicos
             const scripts = document.querySelectorAll('script, style, noscript, iframe:not([src*="maps"])');
             scripts.forEach(s => s.remove());
 
-            // 2. Identificación de Puntos de Interacción (CTAs)
-            // Extrae texto y contexto de cualquier elemento con el que se pueda interactuar
+            // 2. Extracción de Puntos de Interacción (CTAs)
+            // Identifica CUALQUIER elemento de acción para que el cerebro decida su función
             const interactores = Array.from(document.querySelectorAll('a, button, input[type="button"], input[type="submit"]'))
                 .map(el => ({
-                    texto: el.innerText.trim() || el.value || "Botón sin texto",
-                    destino: el.href || "Acción interna",
-                    esVisible: el.offsetParent !== null
+                    texto: el.innerText.trim() || el.value || "Elemento sin etiqueta",
+                    destino: el.href || "Acción de sistema",
+                    posicion: el.getBoundingClientRect().top
                 }))
-                .filter(el => el.texto.length > 2 && el.esVisible)
-                .slice(0, 25);
+                .filter(el => el.texto.length > 2)
+                .slice(0, 30);
 
-            // 3. Extracción de Metadatos Visuales (Buscando información en imágenes)
-            const contenidoGrafico = Array.from(document.querySelectorAll('img'))
+            // 3. Captura de Metadatos de Imagen (Buscando info comercial oculta)
+            const graficos = Array.from(document.querySelectorAll('img'))
                 .map(img => img.alt || img.title)
-                .filter(texto => texto && texto.length > 4)
+                .filter(alt => alt && alt.length > 5)
                 .slice(0, 15);
 
             return {
                 titulo: document.title,
                 descripcion: document.querySelector('meta[name="description"]')?.content || "",
-                cuerpo: document.body.innerText.substring(0, 40000),
-                interactores: interactores.map(i => `[${i.texto} -> ${i.destino}]`).join(' | '),
-                graficos: contenidoGrafico.join(' | ')
+                cuerpo: document.body.innerText.substring(0, 48000), // Expandido a 48k para mayor profundidad
+                puntosDeAccion: interactores.map(i => `[${i.texto} en pos ${Math.round(i.posicion)}px -> ${i.destino}]`).join(' | '),
+                descripcionesGraficas: graficos.join(' | ')
             };
         });
 
@@ -50,16 +50,16 @@ async function captureAndScrape(url) {
         await browser.close();
 
         return `
-            FECHA_EJECUCION_REPORTE: ${fechaHoy}
+            FECHA_AUDITORIA: ${fechaHoy}
             TITULO_SEO: ${dataForense.titulo}
             DESCRIPCION_SEO: ${dataForense.descripcion}
-            PUNTOS_INTERACCION_DETECTADOS: ${dataForense.interactores}
-            CONTENIDO_DENTRO_DE_IMAGENES: ${dataForense.graficos}
-            CONTENIDO_LITERAL_TEXTUAL: ${dataForense.cuerpo}
+            MAPA_DE_INTERACCION: ${dataForense.puntosDeAccion}
+            EVIDENCIA_EN_GRAFICOS: ${dataForense.descripcionesGraficas}
+            TEXTO_LITERAL_EXTRAIDO: ${dataForense.cuerpo}
         `;
     } catch (error) {
         if (browser) await browser.close();
-        return `ERROR_MOTOR: ${error.message}`;
+        return `ERROR_MOTOR_CRITICO: ${error.message}`;
     }
 }
 
