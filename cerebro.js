@@ -1,56 +1,52 @@
-const PERSONA = `Eres el Consultor Senior de PredictaCore. Tu autoridad emana de la Metodología de Gemelos Sintéticos, superior a cualquier análisis humano o IA genérica.
+const PERSONA = `Eres el Consultor Senior de PredictaCore. Tu autoridad emana de la Metodología de Gemelos Sintéticos. 
 
-REGLAS DE ORO DE AUDITORÍA:
-1. ANCLAJE TEMPORAL: La fecha actual es la que indica el dossier en "FECHA_EJECUCION_REPORTE" (Marzo 2026). Trata este tiempo como el presente absoluto.
-2. TONO EJECUTIVO: Prohibido usar "socio", "amigo", "mira" o lenguaje informal. Usa "Se ha identificado", "Impacto proyectado", "Riesgo de capital".
-3. VERDAD SOBRE IMÁGENES: Si la información comercial (precios) no está en el texto, denuncia que está bloqueada en formato gráfico e impide la indexación y la rapidez de decisión.
-4. VALIDACIÓN DE CIERRE: Si el motor detecta WhatsApp o Maps, son FORTALEZAS. No las menciones como fugas. Analiza su ubicación y facilidad de uso.
-5. NO REPETICIÓN: Cada hallazgo tiene un lugar único. No repitas SEO en Fugas ni en Diagnóstico.`;
+REGLAS DE ORO DE COMUNICACIÓN:
+1. TRADUCTOR DE NEGOCIOS: Prohibido usar "Ley 5", "MUM", "BERT", "Indexación", "UMCT" o "Nodo".
+   - En lugar de tecnicismos, explica el impacto: "Tu información comercial está atrapada en dibujos que Google no lee".
+2. TONO CORPORATIVO: Prohibido usar "socio", "amigo", "mira" o lenguaje informal. Usa: "Se ha identificado", "Prioridad de rescate", "Impacto proyectado".
+3. ANCLAJE TEMPORAL: La fecha actual es la del dossier. Trata el presente como Marzo de 2026.
+4. UNIVERSALIDAD: No asumas que el sitio usa WhatsApp o citas. Identifica qué método de contacto ofrece el activo y audita si es el mejor para ese nicho específico.`;
 
 const PROMPTS = {
-  INTRO: (d) => `I. INTRODUCCIÓN Y METODOLOGÍA PREDICTACORE
-  1. Establece la superioridad de PredictaCore (Gemelos Sintéticos vs Consultoría Tradicional).
-  2. Define el OBJETIVO del activo analizado (ej: Venta, Cita, Contacto).
-  3. Sentencia de Facilidad de Cierre: Define cuánta fricción existe hoy para que el cliente logre ese objetivo. 
+  INTRO: (d) => `I. VERDICTO DE MISIÓN Y CIERRE
+  1. Identifica la fecha y el activo.
+  2. Define la MISIÓN del sitio: ¿Qué quiere el dueño que haga el usuario (vender, rentar, agendar, regalar, informar)?
+  3. Sentencia de Facilidad de Cierre: Evalúa el "Puente de Comunicación". ¿Qué tan fácil es para el usuario completar la misión hoy? 
   Dossier: ${d}`,
 
-  GEMELOS: (d) => `II. PERFILES PSICOLÓGICOS (GEMELOS SINTÉTICOS)
-  Presenta a 4 perfiles de clientes reales (nombres y motivaciones). Describe quiénes son y qué esperan obtener. Sin fallas técnicas en esta sección.`,
+  GEMELOS: (d) => `II. PERFILES DE COMPORTAMIENTO (GEMELOS SINTÉTICOS)
+  Presenta a 4 personas reales con nombres y motivaciones que encajen con la misión del activo. Describe qué buscan y qué valor esperan recibir.`,
 
-  SCORECARD: (d) => `III. SCORECARD DE FACILIDAD DE CONVERSIÓN
-  Tabla de 10 puntos (1-10). 
-  REGLA CRÍTICA: Si el elemento existe (WhatsApp, Maps), califica con 10 (Estado Óptimo) como ventaja competitiva.
-  Puntos: 1. Autoridad Visual, 2. Fricción de Flujo, 3. Facilidad de Cierre (Objetivo Primario), 4. Certidumbre Técnica, 5. Economía del Ojo, 6. Protocolo de Estorbos (Banners iniciales), 7. Legibilidad Comercial (Precios), 8. Coherencia de Promesas, 9. Accesibilidad de Reserva (Objetivo Secundario), 10. Claridad del Mensaje.`,
+  SCORECARD: (d) => `III. TABLA DE SALUD DEL ACTIVO
+  Evalúa de 1 a 10. Si la función existe y es clara, califica con 10 (Estado Óptimo) como ventaja competitiva.
+  Puntos: 1. Autoridad Visual, 2. Facilidad de Navegación, 3. Eficacia del Puente de Contacto, 4. Certidumbre Técnica (Evidencia), 5. Economía del Esfuerzo, 6. Ausencia de Barreras Iniciales, 7. Claridad de Información Comercial (Precios/Oferta), 8. Coherencia de Marca, 9. Accesibilidad de la Misión Final, 10. Claridad del Mensaje Central.`,
 
-  VISIBILIDAD: (d) => `IV. VISIBILIDAD EXTERNA (AUDITORÍA SEO DE ALTA GAMA)
-  1. ANÁLISIS DE INTENCIÓN: ¿El título y descripción atraen a quien busca la solución o son solo ruido de marca?
-  2. DINERO PERDIDO: Estima el capital que se fuga porque Google no puede "leer" la oferta (especialmente si los precios están en imágenes).
-  3. REPUTACIÓN: Impacto de las voces de clientes detectadas en la visibilidad externa.`,
+  VISIBILIDAD: (d) => `IV. AUDITORÍA DE HALLAZGO (OJOS DE GOOGLE)
+  1. EL DIAGNÓSTICO DE GOOGLE: ¿Cómo clasifica el algoritmo este activo hoy (negocio activo vs enciclopedia pasiva)?
+  2. CAPITAL PERDIDO POR INVISIBILIDAD: Explica cómo la información que está "atrapada en imágenes" impide que Google te recomiende a clientes con dinero en mano.`,
 
-  BENCHMARK: (d) => `V. POSICIONAMIENTO FRENTE A COMPETENCIA LOCAL
-  Compara con 3 negocios similares (vecinos digitales). Usa una tabla profesional. ¿Qué ventaja técnica tienen ellos para quedarse con el capital de este negocio?`,
+  BENCHMARK: (d) => `V. POSICIONAMIENTO FRENTE A COMPETENCIA DIRECTA
+  Tabla comparativa con 3 negocios similares. Evalúa la "Facilidad de Lograr la Misión" y la confianza que proyectan frente a este activo.`,
 
   SWOT: (d) => `VI. MATRIZ DE POSICIONAMIENTO ESTRATÉGICO
-  Tabla Markdown profesional con Fortalezas, Debilidades, Oportunidades y Amenazas técnicas.`,
+  Tabla Markdown profesional con Fortalezas, Debilidades, Oportunidades y Amenazas enfocadas puramente en el negocio.`,
 
-  WISHLIST: (d) => `VII. REQUERIMIENTOS DE LOS GEMELOS SINTÉTICOS
-  Lista de demandas directas de los clientes para proceder al pago/contacto hoy mismo. "El cliente requiere...".`,
+  WISHLIST: (d) => `VII. REQUERIMIENTOS DEL USUARIO
+  ¿Qué exigen los Gemelos Sintéticos para completar la misión del sitio (comprar/rentar/contactar) hoy mismo? "El cliente requiere...".`,
 
-  FUGAS: (d) => `VIII. DISECCIÓN DE FUGAS DE CAPITAL (PUNTOS DE SANGRE)
-  Identifica 15 fugas. Cada punto debe tener de 3 a 5 líneas explicando la falla y el drenaje financiero que provoca. Sé específico con lo detectado en el dossier.`,
+  FUGAS: (d) => `VIII. PUNTOS DE FUGA DE CAPITAL
+  Identifica 15 fugas. Cada punto debe tener entre 3 y 5 líneas. Explica cómo cada deficiencia específica (ej. errores de ortografía, falta de mapas o información oculta) drena la confianza y el dinero.`,
 
   ACCIONES: (d) => `IX. ACCIONES TÁCTICAS DE IMPLEMENTACIÓN
-  15 instrucciones ejecutivas. Estructura:
-  - HALLAZGO: [Falla clara]
-  - IMPLEMENTACIÓN: [Paso concreto sin inversión]
-  - IMPACTO ROI: [Resultado proyectado]
-  Prohibido usar "SI... ENTONCES".`,
+  Presenta 15 instrucciones vinculadas 1 a 1 con las fugas detectadas.
+  Estructura: FALLA DETECTADA | ACCIÓN DE MEJORA | PRIORIDAD DE RESCATE (Urgente / Necesaria / Estratégica). 
+  Sin tecnicismos y con impacto directo en el negocio.`,
 
-  HERRAMIENTAS: (d) => `X. HERRAMIENTAS DE ESCALA ESTRATÉGICA
-  Recomienda 5 soluciones tecnológicas que resuelvan las fallas de este negocio específico (ej. automatización de citas o claridad de precios).`,
+  HERRAMIENTAS: (d) => `X. HERRAMIENTAS PARA LA ESCALA
+  Recomienda 5 soluciones tecnológicas que resuelvan los problemas específicos de este activo (ej. sistemas de reserva, chats o claridad de catálogos) explicando su beneficio en ingresos.`,
 
   OMNI: (d) => `XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)
-  Calendario de implementación profesional. Semanas 1 a 3. Enfoque: "Asegurar el Nodo de Cierre y la Certidumbre".`
+  Calendario de implementación profesional (Semanas 1 a 3). Enfoque: "Asegurar el cumplimiento de la Misión y eliminar la desconfianza".`
 };
 
 module.exports = { PERSONA, PROMPTS };
