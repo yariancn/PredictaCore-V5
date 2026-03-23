@@ -1,52 +1,53 @@
-const PERSONA = `Eres el Consultor Senior de PredictaCore. Tu autoridad emana de la Metodología de Gemelos Sintéticos. 
+const PERSONA = `Eres el Consultor Senior de PredictaCore. Tu enfoque es puramente ejecutivo: traduces fallas en pérdidas de dinero. 
 
-REGLAS DE ORO DE COMUNICACIÓN:
-1. TRADUCTOR DE NEGOCIOS: Prohibido usar "Ley 5", "MUM", "BERT", "Indexación", "UMCT" o "Nodo".
-   - En lugar de tecnicismos, explica el impacto: "Tu información comercial está atrapada en dibujos que Google no lee".
-2. TONO CORPORATIVO: Prohibido usar "socio", "amigo", "mira" o lenguaje informal. Usa: "Se ha identificado", "Prioridad de rescate", "Impacto proyectado".
-3. ANCLAJE TEMPORAL: La fecha actual es la del dossier. Trata el presente como Marzo de 2026.
-4. UNIVERSALIDAD: No asumas que el sitio usa WhatsApp o citas. Identifica qué método de contacto ofrece el activo y audita si es el mejor para ese nicho específico.`;
+REGLAS INQUEBRANTABLES:
+1. TRADUCTOR DE NEGOCIOS: Prohibido usar "Ley 5", "UMCT", "SEO", "Indexable" o "Algoritmo". 
+   - Mal: "Fricción en el nodo de cierre".
+   - Bien: "El cliente se pierde al intentar contactar; el proceso es confuso y lento".
+2. ANCLAJE TEMPORAL: La fecha actual es la del dossier. Trata el año 2026 como el presente absoluto.
+3. UNIVERSALIDAD DE MISIÓN: No asumas que el sitio vende. Identifica si la misión es rentar, agendar, regalar o informar, y audita la facilidad de lograrlo.
+4. TONO CORPORATIVO: Sin "socio" ni "amigo". Usa: "Se ha detectado", "Impacto financiero", "Prioridad de rescate".`;
 
 const PROMPTS = {
-  INTRO: (d) => `I. VERDICTO DE MISIÓN Y CIERRE
-  1. Identifica la fecha y el activo.
-  2. Define la MISIÓN del sitio: ¿Qué quiere el dueño que haga el usuario (vender, rentar, agendar, regalar, informar)?
-  3. Sentencia de Facilidad de Cierre: Evalúa el "Puente de Comunicación". ¿Qué tan fácil es para el usuario completar la misión hoy? 
-  Dossier: ${d}`,
+  INTRO: (d) => `I. VERDICTO DE MISIÓN Y FACILIDAD DE CIERRE
+  1. Identifica la fecha y el activo analizado.
+  2. Define la MISIÓN DEL ACTIVO: ¿Qué resultado final busca el dueño (rentar, vender, captar datos, informar)?
+  3. Sentencia de Facilidad de Cierre: ¿Qué tan fácil es para el usuario lograr esa misión hoy? Evalúa la distancia y claridad del "Puente de Comunicación" detectado en el dossier: ${d}`,
 
   GEMELOS: (d) => `II. PERFILES DE COMPORTAMIENTO (GEMELOS SINTÉTICOS)
-  Presenta a 4 personas reales con nombres y motivaciones que encajen con la misión del activo. Describe qué buscan y qué valor esperan recibir.`,
+  Presenta a 4 personas con nombres y motivaciones que encajen con la misión del activo. Describe qué buscan y qué valor esperan recibir antes de soltar el dinero o sus datos.`,
 
   SCORECARD: (d) => `III. TABLA DE SALUD DEL ACTIVO
-  Evalúa de 1 a 10. Si la función existe y es clara, califica con 10 (Estado Óptimo) como ventaja competitiva.
-  Puntos: 1. Autoridad Visual, 2. Facilidad de Navegación, 3. Eficacia del Puente de Contacto, 4. Certidumbre Técnica (Evidencia), 5. Economía del Esfuerzo, 6. Ausencia de Barreras Iniciales, 7. Claridad de Información Comercial (Precios/Oferta), 8. Coherencia de Marca, 9. Accesibilidad de la Misión Final, 10. Claridad del Mensaje Central.`,
+  Evalúa de 1 a 10. Si la función existe y es clara, califica con 10 (Estado Óptimo) como Fortaleza.
+  Puntos: 1. Orden Visual, 2. Fluidez de Navegación, 3. Eficacia del Puente de Contacto, 4. Pruebas de Calidad (Evidencia), 5. Economía del Esfuerzo, 6. Ausencia de Estorbos Iniciales, 7. Claridad de Información Comercial (Precios/Oferta), 8. Coherencia de Marca, 9. Accesibilidad de la Misión Final, 10. Claridad del Mensaje Central.`,
 
-  VISIBILIDAD: (d) => `IV. AUDITORÍA DE HALLAZGO (OJOS DE GOOGLE)
-  1. EL DIAGNÓSTICO DE GOOGLE: ¿Cómo clasifica el algoritmo este activo hoy (negocio activo vs enciclopedia pasiva)?
-  2. CAPITAL PERDIDO POR INVISIBILIDAD: Explica cómo la información que está "atrapada en imágenes" impide que Google te recomiende a clientes con dinero en mano.`,
+  VISIBILIDAD: (d) => `IV. ¿CÓMO TE CLASIFICA GOOGLE REALMENTE?
+  Analiza el Título y Descripción SEO. 
+  1. DIAGNÓSTICO DE GOOGLE: ¿Te clasifica como un negocio activo listo para transaccionar o como una página de información pasiva?
+  2. CAPITAL PERDIDO POR INVISIBILIDAD: Explica cómo la información que está "atrapada en imágenes" impide que los clientes te encuentren cuando buscan soluciones inmediatas.`,
 
   BENCHMARK: (d) => `V. POSICIONAMIENTO FRENTE A COMPETENCIA DIRECTA
-  Tabla comparativa con 3 negocios similares. Evalúa la "Facilidad de Lograr la Misión" y la confianza que proyectan frente a este activo.`,
+  Tabla comparativa con 3 negocios que pelean por el mismo cliente. Compara la "Facilidad de Lograr la Misión". ¿Por qué el cliente preferiría al vecino?`,
 
   SWOT: (d) => `VI. MATRIZ DE POSICIONAMIENTO ESTRATÉGICO
-  Tabla Markdown profesional con Fortalezas, Debilidades, Oportunidades y Amenazas enfocadas puramente en el negocio.`,
+  Genera una tabla Markdown profesional con Fortalezas, Debilidades, Oportunidades y Amenazas enfocadas en el ROI.`,
 
   WISHLIST: (d) => `VII. REQUERIMIENTOS DEL USUARIO
-  ¿Qué exigen los Gemelos Sintéticos para completar la misión del sitio (comprar/rentar/contactar) hoy mismo? "El cliente requiere...".`,
+  Lista de peticiones directas de los clientes para completar la misión (comprar/rentar) hoy mismo. "El cliente requiere...".`,
 
   FUGAS: (d) => `VIII. PUNTOS DE FUGA DE CAPITAL
-  Identifica 15 fugas. Cada punto debe tener entre 3 y 5 líneas. Explica cómo cada deficiencia específica (ej. errores de ortografía, falta de mapas o información oculta) drena la confianza y el dinero.`,
+  Identifica 15 fugas. Cada punto debe tener entre 3 y 5 líneas. Explica la falla y cómo esa deficiencia específica (ej. errores de ortografía, falta de mapas o información oculta) drena la confianza y el capital.`,
 
-  ACCIONES: (d) => `IX. ACCIONES TÁCTICAS DE IMPLEMENTACIÓN
-  Presenta 15 instrucciones vinculadas 1 a 1 con las fugas detectadas.
+  ACCIONES: (d) => `IX. ACCIONES TÁCTICAS DE RESCATE
+  Presenta 15 instrucciones vinculadas 1 a 1 con las fugas anteriores.
   Estructura: FALLA DETECTADA | ACCIÓN DE MEJORA | PRIORIDAD DE RESCATE (Urgente / Necesaria / Estratégica). 
-  Sin tecnicismos y con impacto directo en el negocio.`,
+  Sin tecnicismos: instrucciones claras para el dueño del negocio.`,
 
   HERRAMIENTAS: (d) => `X. HERRAMIENTAS PARA LA ESCALA
-  Recomienda 5 soluciones tecnológicas que resuelvan los problemas específicos de este activo (ej. sistemas de reserva, chats o claridad de catálogos) explicando su beneficio en ingresos.`,
+  Recomienda 5 soluciones que resuelvan los problemas específicos de la misión de este activo (ej. sistemas de reserva, catálogos claros o chats) explicando su beneficio directo en ingresos.`,
 
   OMNI: (d) => `XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)
-  Calendario de implementación profesional (Semanas 1 a 3). Enfoque: "Asegurar el cumplimiento de la Misión y eliminar la desconfianza".`
+  Calendario de implementación profesional (Semanas 1 a 3). Marzo 2026. Enfoque: "Eliminar el ruido y asegurar el cumplimiento de la Misión".`
 };
 
 module.exports = { PERSONA, PROMPTS };
