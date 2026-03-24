@@ -5,7 +5,7 @@ const PROMPTS = {
   Explica brevemente quiénes somos (PredictaCore), qué hacemos y por qué somos mejores. Al final, redacta un breve resumen exclusivo de quién es y qué hace el activo analizado (ya sea web, red social o idea). NO escribas nada más. NO incluyas valores financieros. Dossier: ${d}`,
 
   GEMELOS: (d) => `Inicia tu respuesta con este encabezado: ### II. PERFILES PSICOLÓGICOS
-  Genera 4 perfiles de Gemelos Sintéticos basados en el activo. Pon el tipo de perfil en **negritas**. En ese mismo párrafo, redacta exactamente 3 líneas definiendo su perfil psicológico como cliente promedio: qué busca en el activo y qué le causa fricción. Cero historias de vida o miedos profundos. Prohibido usar nombres propios, 'Motivación Primaria' o 'Valor Esperado'.`,
+  Genera 4 perfiles de Gemelos Sintéticos basados en el activo. Pon el tipo de perfil en **negritas**. En ese mismo párrafo, describe a un comprador real de este nicho en exactamente 3 líneas fluidas: quién es, cuál es su necesidad transaccional inmediata al entrar y qué evidencia visual necesita para sacar su tarjeta de crédito. Cero plantillas robóticas de "busca X, teme Y" o historias profundas de vida. Prohibido usar nombres propios.`,
 
   SCORECARD: (d) => `Inicia tu respuesta con este encabezado: ### III. SCORECARD DE SALUD COMERCIAL
   Presenta una tabla Markdown usando barras (|) de 3 columnas exactas: | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |. 
@@ -27,10 +27,10 @@ const PROMPTS = {
   Divide la lista en 4 bloques: **Fortalezas**, **Debilidades**, **Oportunidades** y **Amenazas**. Redacta de 3 a 5 líneas de explicación forense continua por cada punto. PROHIBIDO usar tablas.`,
 
   WISHLIST: (d) => `Inicia tu respuesta con este encabezado: ### VII. LISTA DE DESEOS
-  Enumera exactamente 10 anhelos o innovaciones de experiencia que los gemelos sintéticos soñarían encontrar en el activo. OBLIGATORIO: Inicia cada deseo con un guion (-) para crear una viñeta limpia. Cada deseo debe tener estrictamente entre 3 y 5 líneas de texto continuo. ESTRICTAMENTE PROHIBIDO listar errores a corregir; lista sueños de usuario y valor añadido. No menciones quién los pide ni uses 'demandas'.`,
+  Enumera exactamente 10 características, innovaciones o experiencias de usuario de alto valor para el activo. OBLIGATORIO: Inicia cada punto con un guion (-) para crear una viñeta limpia. Cada punto debe tener estrictamente entre 3 y 5 líneas de texto continuo. ESTRICTAMENTE PROHIBIDO listar errores a corregir o usar lenguaje romántico/narrativo como "yo desearía" o "anhelo". Lista las funciones de forma objetiva y directa.`,
 
   FUGAS: (d) => `Inicia tu respuesta con este encabezado: ### VIII. 15 PUNTOS DE FUGA
-  Identifica 15 hallazgos críticos. OBLIGATORIO: Inicia cada fuga con un guion (-) para crear una viñeta. Pon el título de la fuga en **negritas**. Cada fuga debe tener estrictamente entre 3 y 5 líneas de texto continuo, explicando a fondo el hallazgo.`,
+  Identifica 15 hallazgos críticos de diseño, estrategia o sustancia del producto. OBLIGATORIO: Inicia cada fuga con un guion (-) para crear una viñeta. Pon el título de la fuga en **negritas**. Cada fuga debe tener estrictamente entre 3 y 5 líneas de texto continuo, explicando a fondo el hallazgo.`,
 
   ACCIONES: (d) => `Inicia tu respuesta con este encabezado: ### IX. 15 ACCIONES TÁCTICAS
   Explica cómo corregir cada uno de los 15 hallazgos. OBLIGATORIO: Inicia cada acción con un guion (-) para crear una viñeta, usando exactamente este formato: - Acción X (Sella la Fuga X): **[Nombre del Hallazgo]**. Cada acción debe tener estrictamente entre 3 y 5 líneas de texto continuo.`,
@@ -39,9 +39,7 @@ const PROMPTS = {
   Recomienda 5 soluciones tecnológicas. OBLIGATORIO: Inicia cada recomendación con un guion (-) para crear una viñeta. Cada punto debe tener de 3 a 5 líneas.`,
 
   OMNI: (d) => `Inicia tu respuesta con este encabezado: ### XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)
-  Crea un cronograma táctico de choque de 21 días. Inicia cada fase con un guion (-) para crear una viñeta. 
-  Debes mencionar EXPLÍCITAMENTE qué números de fugas se están tapando en cada fase. 
-  Ejemplo: - Días 1-4: Sellado de Fugas Críticas (Ataque a las Fugas 3, 7 y 9) - [Explicación de 3 a 5 líneas]. Mantén una tensión operativa implacable.`
+  Crea un cronograma táctico de choque de 21 días. Inicia cada fase con un guion (-) para crear una viñeta. Integra la resolución de las fugas detectadas con una redacción ejecutiva, fluida y estratégica. ESTRICTAMENTE PROHIBIDO repetir mecánicamente la plantilla "(Ataque a las Fugas X, Y)". Nombra las fugas que se tapan de forma natural dentro del texto. Mantén una tensión operativa implacable.`
 };
 
 module.exports = { PROMPTS };
