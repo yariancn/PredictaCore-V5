@@ -1,4 +1,4 @@
-// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN ORO MOLIDO - GEMINI VERTEX AI)
+// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN VANGUARDIA - VISIÓN ABSOLUTA)
 
 const express = require('express');
 const { PROMPTS } = require('./cerebro'); 
@@ -18,21 +18,22 @@ app.post('/diseccion', async (req, res) => {
   
   try {
     const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
-    let hechos = "";
+    let datosTarget = { isUrl: false, texto: "", desktopBase64: null, mobileBase64: null };
     let targetUrl = dna.trim();
 
     const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
     
     if (targetUrl.startsWith('http')) {
-      hechos = await captureAndScrape(targetUrl);
+      datosTarget = await captureAndScrape(targetUrl);
     } else if (isDomain) {
       targetUrl = `https://${targetUrl}`;
-      hechos = await captureAndScrape(targetUrl);
+      datosTarget = await captureAndScrape(targetUrl);
     } else {
-      hechos = targetUrl;
+      // Si el usuario metió una idea cruda en vez de URL
+      datosTarget.texto = targetUrl;
     }
 
-    const promptFinal = PROMPTS[idFinal](hechos);
+    const promptFinal = PROMPTS[idFinal](datosTarget.texto);
     const fechaActual = new Date().toLocaleDateString('es-ES', { 
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
     });
@@ -53,7 +54,33 @@ app.post('/diseccion', async (req, res) => {
 
     const vertexUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-2.5-pro:generateContent`;
 
-    // 2. CONSTRUCCIÓN DEL PAYLOAD CON BÚSQUEDA EN GOOGLE (GROUNDING)
+    // 2. CONSTRUCCIÓN DEL PAYLOAD (TEXTO + VISIÓN MULTIMODAL + GOOGLE SEARCH)
+    let partesMensaje = [
+        { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa todo basándote en que este es el presente absoluto.` },
+        { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos extraídos, tiempo de carga y errores de consola):\n${datosTarget.texto}` }
+    ];
+
+    // INYECCIÓN DE VISIÓN ABSOLUTA: Si el motor trajo fotos, se las mostramos a Gemini
+    if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
+        partesMensaje.push({ text: "EVIDENCIA VISUAL 1: Captura de pantalla de la versión Escritorio (Desktop). Analiza colores, contrastes, visibilidad de botones y economía del ojo." });
+        partesMensaje.push({
+            inlineData: {
+                mimeType: "image/png",
+                data: datosTarget.desktopBase64
+            }
+        });
+        partesMensaje.push({ text: "EVIDENCIA VISUAL 2: Captura de pantalla de la versión Móvil (Smartphone). Analiza si el diseño es responsivo, si hay elementos encimados y si hay fricción visual en la navegación táctil." });
+        partesMensaje.push({
+            inlineData: {
+                mimeType: "image/png",
+                data: datosTarget.mobileBase64
+            }
+        });
+    }
+
+    // Añadir la instrucción específica de la etapa (Scorecard, Fugas, etc.)
+    partesMensaje.push({ text: promptFinal });
+
     const payload = {
       systemInstruction: {
         parts: [{ text: FIREWALL_IA }] 
@@ -61,15 +88,11 @@ app.post('/diseccion', async (req, res) => {
       contents: [
         { 
           role: "user", 
-          parts: [
-            { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa todo basándote en que este es el presente absoluto.` },
-            { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos extraídos):\n${hechos}` },
-            { text: promptFinal }
-          ]
+          parts: partesMensaje
         }
       ],
       tools: [
-        { googleSearch: {} } // CORRECCIÓN: Vertex AI actualizó el comando a googleSearch
+        { googleSearch: {} } // Radar SEO en tiempo real
       ],
       generationConfig: {
         temperature: 0.1 
@@ -92,8 +115,6 @@ app.post('/diseccion', async (req, res) => {
     }
 
     const vertexData = await vertexRes.json();
-    
-    // Extracción del texto de la respuesta de Gemini
     const textoForense = vertexData.candidates[0].content.parts[0].text;
     
     res.json({ content: textoForense });
