@@ -1,4 +1,4 @@
-// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN VANGUARDIA + MEMORIA CACHÉ)
+// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN VANGUARDIA + RADAR INTELIGENTE)
 
 const express = require('express');
 const { PROMPTS } = require('./cerebro'); 
@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json());
 
-// MEMORIA CACHÉ: Almacena las fotos y texto temporalmente para no colapsar el servidor
+// MEMORIA CACHÉ: Almacena las fotos y texto temporalmente
 const dossierCache = {};
 
 app.get('/', (req, res) => res.send(getHTML()));
@@ -31,17 +31,13 @@ app.post('/diseccion', async (req, res) => {
     }
 
     if (isDomain || targetUrl.startsWith('http')) {
-      // SI NO ESTÁ EN MEMORIA, ENCIENDE EL MOTOR (SOLO OCURRE 1 VEZ POR AUDITORÍA)
       if (!dossierCache[targetUrl]) {
         console.log(`[+] Extrayendo Visión Absoluta de: ${targetUrl}`);
         dossierCache[targetUrl] = await captureAndScrape(targetUrl);
-        
-        // Autodestrucción de la memoria en 15 minutos para liberar RAM del servidor
         setTimeout(() => { delete dossierCache[targetUrl]; }, 1000 * 60 * 15);
       }
       datosTarget = dossierCache[targetUrl];
     } else {
-      // Si el usuario metió una idea cruda en vez de URL
       datosTarget.texto = targetUrl;
     }
 
@@ -50,7 +46,6 @@ app.post('/diseccion', async (req, res) => {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
     });
 
-    // 1. AUTENTICACIÓN FORENSE CON VERTEX AI
     const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
     const projectId = credenciales.project_id;
     const location = 'us-central1'; 
@@ -66,13 +61,11 @@ app.post('/diseccion', async (req, res) => {
 
     const vertexUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-2.5-pro:generateContent`;
 
-    // 2. CONSTRUCCIÓN DEL PAYLOAD (TEXTO + VISIÓN MULTIMODAL + GOOGLE SEARCH)
     let partesMensaje = [
         { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa todo basándote en que este es el presente absoluto.` },
         { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos extraídos, tiempo de carga y errores):\n${datosTarget.texto}` }
     ];
 
-    // INYECCIÓN DE VISIÓN: Si el motor trajo fotos de la caché, se las mostramos a Gemini
     if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
         partesMensaje.push({ text: "EVIDENCIA VISUAL 1: Captura de la versión Escritorio. Analiza colores, contrastes y economía del ojo." });
         partesMensaje.push({
@@ -102,15 +95,16 @@ app.post('/diseccion', async (req, res) => {
           parts: partesMensaje
         }
       ],
-      tools: [
-        { googleSearch: {} } // Radar SEO 
-      ],
       generationConfig: {
         temperature: 0.1 
       }
     };
 
-    // 3. EJECUCIÓN DEL DIAGNÓSTICO
+    // RADAR INTELIGENTE: Solo usamos la cuota de búsqueda en Google si la sección lo exige
+    if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
+        payload.tools = [{ googleSearch: {} }];
+    }
+
     const vertexRes = await fetch(vertexUrl, {
       method: "POST",
       headers: { 
