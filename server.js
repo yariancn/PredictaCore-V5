@@ -69,7 +69,7 @@ app.post('/diseccion', async (req, res) => {
         }
       ],
       tools: [
-        { googleSearchRetrieval: {} } // EL RADAR: Activa la investigación SEO en tiempo real
+        { googleSearch: {} } // CORRECCIÓN: Vertex AI actualizó el comando a googleSearch
       ],
       generationConfig: {
         temperature: 0.1 
