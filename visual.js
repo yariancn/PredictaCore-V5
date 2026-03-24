@@ -48,7 +48,7 @@ function getHTML() {
                 
                 /* Estructura del Reporte y Saltos de Página Premium */
                 .report-section { 
-                    page-break-before: always; /* Obliga a cada sección a iniciar en hoja nueva */
+                    page-break-before: always; 
                     break-before: page;
                     border-left: 3px solid #b8860b !important; 
                     padding-left: 1.5rem; 
@@ -68,14 +68,14 @@ function getHTML() {
                     font-size: 13pt; 
                     margin-top: 0; 
                     padding-bottom: 0.5rem;
-                    border-bottom: 1px solid #e5e7eb; /* Línea sutil separadora */
+                    border-bottom: 1px solid #e5e7eb; 
                     margin-bottom: 1.5rem;
                 }
                 
                 /* Textos Ejecutivos (Justificados y con oxígeno) */
                 .markdown-content p, .markdown-content li { 
                     line-height: 1.7; 
-                    text-align: justify; /* Alineación limpia */
+                    text-align: justify; 
                     orphans: 3; 
                     widows: 3; 
                     margin-bottom: 1.2rem;
@@ -138,20 +138,33 @@ function getHTML() {
             // Configura la fecha de la portada
             document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            // MOTOR DE SEMÁFOROS UNIVERSAL (Sin sesgos de industria)
+            // MOTOR DE SEMÁFOROS UNIVERSAL (Matemático y Textual)
             function aplicarSemaforos(htmlContent) {
                 const div = document.createElement('div');
                 div.innerHTML = htmlContent;
                 
                 const celdas = div.querySelectorAll('td');
                 celdas.forEach(td => {
-                    const texto = td.textContent.trim().toLowerCase();
+                    const textoOriginal = td.textContent.trim();
+                    const texto = textoOriginal.toLowerCase();
                     
-                    // PALABRAS ROJAS (Riesgo, Fuga, Debilidad)
+                    // 1. EVALUACIÓN NUMÉRICA DE PRECISIÓN (Para el Scorecard)
+                    const matchNumero = textoOriginal.match(/^(\\d+)(?:\\/10)?$/);
+                    if (matchNumero) {
+                        const calif = parseInt(matchNumero[1], 10);
+                        if (calif <= 5) {
+                            td.innerHTML = \`<span class="badge-red">\${td.innerHTML}</span>\`;
+                        } else if (calif <= 7) {
+                            td.innerHTML = \`<span class="badge-yellow">\${td.innerHTML}</span>\`;
+                        } else {
+                            td.innerHTML = \`<span class="badge-green">\${td.innerHTML}</span>\`;
+                        }
+                        return; // Termina la evaluación para esta celda matemática
+                    }
+                    
+                    // 2. EVALUACIÓN POR PALABRAS (Para el Benchmark)
                     const keywordsRojas = ['deficiente', 'alto', 'fuga', 'riesgo', 'negativo', 'crítico', 'amenaza', 'ausente', 'pobre', 'nulo'];
-                    // PALABRAS AMARILLAS (Neutral, Evaluando, Incompleto)
                     const keywordsAmarillas = ['parcial', 'medio', 'no evaluable', 'no detectado', 'presente', 'moderado', 'regular'];
-                    // PALABRAS VERDES (Seguridad, Éxito, Fortaleza)
                     const keywordsVerdes = ['óptimo', 'adecuada', 'coherente', 'positivo', 'excelente', 'fuerte', 'fortaleza', 'bajo', 'adecuado'];
 
                     if (keywordsRojas.some(kw => texto.includes(kw)) || texto === 'no') {
