@@ -10,7 +10,7 @@ const PROMPTS = {
 
   SCORECARD: (d) => `Inicia tu respuesta con este encabezado: ### III. SCORECARD DE SALUD COMERCIAL
   Presenta una tabla Markdown usando barras (|) de 3 columnas exactas: | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |. 
-  Evalúa los 10 puntos de salud comercial. REGLA DE CONGRUENCIA: Si la calificación es de 1 a 6, usa palabras como 'fuga' o 'riesgo'. Si es de 7 a 10, usa palabras como 'óptimo' o 'sólido'. Escribe de 3 a 5 líneas dentro de cada celda de diagnóstico.`,
+  Evalúa los 10 puntos de salud comercial. Escribe de 3 a 5 líneas de texto continuo dentro de cada celda de diagnóstico.`,
 
   VISIBILIDAD: (d) => `Inicia tu respuesta con este encabezado: ### IV. VISIBILIDAD EXTERNA
   Realiza un diagnóstico forense basado en Google. Imprime DATOS DUROS y respeta el ANCLA GEOGRÁFICA:
@@ -34,13 +34,13 @@ const PROMPTS = {
   Identifica 15 hallazgos críticos de diseño o sustancia. OBLIGATORIO: Inicia cada fuga con un guion (-) para crear una viñeta. Pon el título de la fuga en **negritas**. Cada fuga debe tener de 3 a 5 líneas continuas. PROHIBIDO usar tablas.`,
 
   ACCIONES: (d) => `Inicia tu respuesta con este encabezado: ### IX. 15 ACCIONES TÁCTICAS
-  Explica cómo corregir cada uno de los 15 hallazgos. OBLIGATORIO: Inicia cada acción con un guion (-) para crear una viñeta, usando este formato: - Acción X (Sella la Fuga X): **[Nombre del Hallazgo]**. Cada acción debe tener de 3 a 5 líneas continuas. PROHIBIDO usar tablas.`,
+  Explica cómo corregir cada uno de los 15 hallazgos yendo directo a la solución quirúrgica. NO repitas el problema, enfócate en la ejecución. OBLIGATORIO: Inicia cada acción con un guion (-) para crear una viñeta, usando este formato: - Acción X (Sella la Fuga X): **[Nombre del Hallazgo]**. Cada acción debe tener de 3 a 5 líneas continuas. PROHIBIDO usar tablas.`,
 
   HERRAMIENTAS: (d) => `Inicia tu respuesta con este encabezado: ### X. HERRAMIENTAS DE ESCALA
   Recomienda 5 soluciones tecnológicas. OBLIGATORIO: Inicia cada recomendación con un guion (-) para crear una viñeta. Cada punto debe tener de 3 a 5 líneas. PROHIBIDO usar tablas.`,
 
   OMNI: (d) => `Inicia tu respuesta con este encabezado: ### XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)
-  Crea un cronograma táctico de choque de 21 días. Inicia cada fase con un guion (-) para crear una viñeta. Integra la resolución de las fugas detectadas con una redacción ejecutiva y fluida. PROHIBIDO repetir mecánicamente la plantilla "(Ataque a las Fugas X, Y)". Nombra las fugas naturalmente. PROHIBIDO usar tablas.`
+  Crea un cronograma táctico de choque de 21 días. REGLA INQUEBRANTABLE: Inicia CADA FASE exactamente con el símbolo de un guion seguido de un espacio (- ) para forzar la creación de una viñeta Markdown. Integra la resolución de las fugas con una redacción ejecutiva y fluida. PROHIBIDO repetir mecánicamente la plantilla "(Ataque a las Fugas)". Nombra las fugas naturalmente. PROHIBIDO usar tablas.`
 };
 
 module.exports = { PROMPTS };
