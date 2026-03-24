@@ -1,10 +1,10 @@
-// server.js - BÚNKER 5: OPERADOR LÓGICO Y DIRECTOR DE ORQUESTA
+// server.js - BÚNKER 5: OPERADOR LÓGICO
 
 const express = require('express');
-const { PROMPTS } = require('./cerebro'); // Solo importa los prompts limpios
+const { PROMPTS } = require('./cerebro'); 
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
-const { FIREWALL_IA } = require('./firewall'); // NUESTRO CANDADO DE AUTORIDAD
+const { FIREWALL_IA } = require('./firewall'); // NUESTRO CANDADO MAESTRO
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -40,14 +40,14 @@ app.post('/diseccion', async (req, res) => {
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning", 
         messages: [
-          // 1. EL CANDADO DE TITANIO: Entra primero, establece la ley.
+          // 1. EL CANDADO DE TITANIO: Entra primero, establece las reglas inquebrantables.
           { role: "system", content: FIREWALL_IA },
-          // 2. LOS DATOS: La información forense del sitio.
+          // 2. LOS DATOS: La información cruda extraída del motor.
           { role: "system", content: `DOSSIER DEL ACTIVO ANALIZADO:\n${hechos}` },
-          // 3. LA INSTRUCCIÓN DE LA SECCIÓN
+          // 3. LA INSTRUCCIÓN: El prompt limpio del cerebro.
           { role: "user", content: promptFinal }
         ],
-        temperature: 0.1 // Cero creatividad.
+        temperature: 0.1 // Temperatura baja para evitar alucinaciones.
       })
     });
 
