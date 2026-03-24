@@ -1,8 +1,8 @@
-// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (VERSIÓN ORO MOLIDO + CANDADOS DE TITANIO)
+// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (VERSIÓN ORO MOLIDO + ANCLA GEOGRÁFICA)
 
 const PROMPTS = {
   INTRO: (d) => `Inicia tu respuesta con este encabezado: ### I. INTRODUCCIÓN Y RESUMEN DEL ACTIVO
-  Explica brevemente quiénes somos (PredictaCore), qué hacemos y por qué somos mejores. Al final, redacta un breve resumen exclusivo de quién es y qué hace el activo analizado (ya sea web, red social o idea). NO escribas nada más. NO incluyas valores financieros. Dossier: ${d}`,
+  Explica brevemente quiénes somos (PredictaCore), qué hacemos y por qué somos mejores. Al final, redacta un breve resumen exclusivo de quién es el activo analizado, qué hace y DEBES identificar explícitamente su PAÍS / MERCADO OBJETIVO (Geografía). NO escribas nada más. NO incluyas valores financieros. Dossier: ${d}`,
 
   GEMELOS: (d) => `Inicia tu respuesta con este encabezado: ### II. PERFILES PSICOLÓGICOS
   Genera 4 perfiles de Gemelos Sintéticos basados en el activo. Pon el tipo de perfil en **negritas**. En ese mismo párrafo, describe a un comprador real de este nicho en exactamente 3 líneas fluidas: quién es, cuál es su necesidad transaccional inmediata al entrar y qué evidencia visual necesita para sacar su tarjeta de crédito. Cero plantillas robóticas de "busca X, teme Y" o historias profundas de vida. Prohibido usar nombres propios.`,
@@ -12,15 +12,15 @@ const PROMPTS = {
   Evalúa los 10 puntos de salud comercial. REGLA INQUEBRANTABLE DE CONGRUENCIA: Si la calificación es de 1 a 6, tu Diagnóstico Forense DEBE usar palabras como 'fuga', 'riesgo', 'crítico' o 'deficiente'. Si es de 7 a 10, DEBE usar palabras como 'óptimo', 'sólido', 'excelente' o 'fuerte'. Escribe de 3 a 5 líneas de texto continuo dentro de cada celda de diagnóstico.`,
 
   VISIBILIDAD: (d) => `Inicia tu respuesta con este encabezado: ### IV. VISIBILIDAD EXTERNA
-  Realiza un diagnóstico forense crudo basado en tu búsqueda real en Google. Tienes la OBLIGACIÓN de imprimir DATOS DUROS:
+  Realiza un diagnóstico forense crudo basado en tu búsqueda real en Google. Tienes la OBLIGACIÓN de imprimir DATOS DUROS y respetar el ANCLA GEOGRÁFICA:
   1. Imprime la calificación exacta de estrellas y el número de reseñas en Google Maps o en la red.
-  2. Nombra a 3 competidores REALES y específicos que están acaparando la primera página o pagando Ads.
-  3. Enlista 3 "Palabras Clave Transaccionales" exactas que el activo está perdiendo.
+  2. Nombra el PAÍS/MERCADO del activo. Luego, nombra a 3 competidores REALES y específicos DE ESE MISMO PAÍS que están acaparando la primera página o pagando Ads. ESTRICTAMENTE PROHIBIDO mezclar competidores de otros países.
+  3. Enlista 3 "Palabras Clave Transaccionales" exactas que el activo está perdiendo en su región.
   4. Estima el porcentaje de capital evaporado por esta fricción de hallazgo. Cero teoría, puros números.`,
 
   BENCHMARK: (d) => `Inicia tu respuesta con este encabezado: ### V. RADIOGRAFÍA ESTRATÉGICA (BENCHMARK)
   Presenta una tabla Markdown usando barras (|) comparando el activo con los 3 competidores EXACTOS que acabas de nombrar en la sección IV. 
-  OBLIGATORIO: Tienes ESTRICTAMENTE PROHIBIDO inventar competidores nuevos en esta tabla. Usa los mismos 3 de la sección anterior. La tabla debe evaluar 3 puntos de fricción de cierre e incluir de 3 a 5 líneas de texto explicativo en cada celda.`,
+  OBLIGATORIO: Tienes ESTRICTAMENTE PROHIBIDO inventar competidores nuevos en esta tabla. Usa los mismos 3 de la sección anterior, respetando el mercado geográfico. La tabla debe evaluar 3 puntos de fricción de cierre e incluir de 3 a 5 líneas de texto explicativo en cada celda.`,
 
   SWOT: (d) => `Inicia tu respuesta con este encabezado: ### VI. MATRIZ ESTRATÉGICA
   Presenta el análisis estrictamente en formato de lista. OBLIGATORIO: Inicia cada punto con un guion (-) para crear una viñeta Markdown. 
