@@ -46,18 +46,51 @@ function getHTML() {
                 .cover-subtitle { font-size: 1.25rem; color: #4b5563; text-transform: uppercase; letter-spacing: 0.2em; }
                 .cover-meta { margin-top: auto; font-size: 0.875rem; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 1rem; }
                 
-                /* Estructura del Reporte */
-                .report-section { border-left: 3px solid #b8860b !important; padding-left: 1.5rem; margin-bottom: 2.5rem; page-break-inside: avoid; }
+                /* Estructura del Reporte y Saltos de Página Premium */
+                .report-section { 
+                    page-break-before: always; /* Obliga a cada sección a iniciar en hoja nueva */
+                    break-before: page;
+                    border-left: 3px solid #b8860b !important; 
+                    padding-left: 1.5rem; 
+                    margin-bottom: 2.5rem; 
+                }
+                
+                /* Excepción: La primera sección no brinca hoja para no dejar la página 2 en blanco */
+                #section-INTRO {
+                    page-break-before: auto;
+                    break-before: auto;
+                }
+
+                /* Títulos Premium en PDF */
                 .markdown-content h1, .markdown-content h2, .markdown-content h3 { color: #000000 !important; page-break-after: avoid; }
-                .markdown-content h3 { color: #b8860b !important; font-size: 12pt; margin-top: 1.5rem; }
-                .markdown-content p { line-height: 1.6; orphans: 3; widows: 3; }
+                .markdown-content h3 { 
+                    color: #b8860b !important; 
+                    font-size: 13pt; 
+                    margin-top: 0; 
+                    padding-bottom: 0.5rem;
+                    border-bottom: 1px solid #e5e7eb; /* Línea sutil separadora */
+                    margin-bottom: 1.5rem;
+                }
+                
+                /* Textos Ejecutivos (Justificados y con oxígeno) */
+                .markdown-content p, .markdown-content li { 
+                    line-height: 1.7; 
+                    text-align: justify; /* Alineación limpia */
+                    orphans: 3; 
+                    widows: 3; 
+                    margin-bottom: 1.2rem;
+                }
                 .markdown-content strong { color: #000000 !important; }
                 
-                /* Tablas PDF */
-                table { page-break-inside: avoid; width: 100%; border-collapse: collapse; margin-top: 1rem; margin-bottom: 1rem; }
-                th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: #ffffff !important; padding: 0.75rem; }
-                th { background: #f9fafb !important; color: #b8860b !important; font-size: 9pt; }
-                td { font-size: 9pt; }
+                /* Tablas PDF Blindadas (Para que no se partan a la mitad) */
+                table { page-break-inside: avoid; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; }
+                tr { page-break-inside: avoid; page-break-after: auto; }
+                th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: #ffffff !important; padding: 12px; vertical-align: top; }
+                th { background: #f9fafb !important; color: #b8860b !important; font-size: 9pt; text-transform: uppercase; }
+                td { font-size: 9.5pt; }
+                
+                /* Listas PDF Blindadas */
+                ul, ol { page-break-inside: avoid; }
                 
                 /* Semáforos en PDF (Limpio para lectura ejecutiva) */
                 .badge-red { background: transparent !important; color: #dc2626 !important; border: 1px solid #dc2626 !important; }
