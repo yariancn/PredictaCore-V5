@@ -1,9 +1,10 @@
+// server.js - BÚNKER 5: OPERADOR LÓGICO Y DIRECTOR DE ORQUESTA
+
 const express = require('express');
-const { PERSONA, PROMPTS } = require('./cerebro');
+const { PROMPTS } = require('./cerebro'); // Solo importa los prompts limpios
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
-const { SYSTEM_INSTRUCTIONS } = require('./instrucciones');
-const { PROTOCOLOS_IA } = require('./protocolos');
+const { FIREWALL_IA } = require('./firewall'); // NUESTRO CANDADO DE AUTORIDAD
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -39,11 +40,14 @@ app.post('/diseccion', async (req, res) => {
       body: JSON.stringify({
         model: "grok-4-1-fast-reasoning", 
         messages: [
-          { role: "system", content: `${SYSTEM_INSTRUCTIONS}\n\n${PERSONA}\n\n${PROTOCOLOS_IA}` },
-          { role: "system", content: `DOSSIER DEL SITIO:\n${hechos}` },
+          // 1. EL CANDADO DE TITANIO: Entra primero, establece la ley.
+          { role: "system", content: FIREWALL_IA },
+          // 2. LOS DATOS: La información forense del sitio.
+          { role: "system", content: `DOSSIER DEL ACTIVO ANALIZADO:\n${hechos}` },
+          // 3. LA INSTRUCCIÓN DE LA SECCIÓN
           { role: "user", content: promptFinal }
         ],
-        temperature: 0.1 
+        temperature: 0.1 // Cero creatividad.
       })
     });
 
