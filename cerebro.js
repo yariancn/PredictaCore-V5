@@ -5,7 +5,7 @@ const PROMPTS = {
   Explica brevemente quiénes somos (PredictaCore), qué hacemos y por qué somos mejores. Al final, redacta un breve resumen exclusivo de quién es y qué hace el activo analizado (ya sea web, red social o idea). NO escribas nada más. NO incluyas valores financieros. Dossier: ${d}`,
 
   GEMELOS: (d) => `Inicia tu respuesta con este encabezado: ### II. PERFILES PSICOLÓGICOS
-  Genera 4 perfiles basados en el activo. Pon el tipo de perfil en **negritas**. En ese mismo párrafo, redacta una breve descripción de lo que buscan. Prohibido usar nombres propios, 'Motivación Primaria' o 'Valor Esperado'.`,
+  Genera 4 perfiles de Gemelos Sintéticos basados en el activo. Pon el tipo de perfil en **negritas**. En ese mismo párrafo, redacta exactamente 3 líneas definiendo su perfil psicológico como cliente promedio: qué busca en el activo y qué le causa fricción. Cero historias de vida o miedos profundos. Prohibido usar nombres propios, 'Motivación Primaria' o 'Valor Esperado'.`,
 
   SCORECARD: (d) => `Inicia tu respuesta con este encabezado: ### III. SCORECARD DE SALUD COMERCIAL
   Presenta una tabla Markdown usando barras (|) de 3 columnas exactas: | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |. 
@@ -27,7 +27,7 @@ const PROMPTS = {
   Divide la lista en 4 bloques: **Fortalezas**, **Debilidades**, **Oportunidades** y **Amenazas**. Redacta de 3 a 5 líneas de explicación forense continua por cada punto. PROHIBIDO usar tablas.`,
 
   WISHLIST: (d) => `Inicia tu respuesta con este encabezado: ### VII. LISTA DE DESEOS
-  Enumera exactamente 10 deseos que faciliten la transacción. OBLIGATORIO: Inicia cada deseo con un guion (-) para crear una viñeta limpia. Cada deseo debe tener estrictamente entre 3 y 5 líneas de texto continuo.`,
+  Enumera exactamente 10 anhelos o innovaciones de experiencia que los gemelos sintéticos soñarían encontrar en el activo. OBLIGATORIO: Inicia cada deseo con un guion (-) para crear una viñeta limpia. Cada deseo debe tener estrictamente entre 3 y 5 líneas de texto continuo. ESTRICTAMENTE PROHIBIDO listar errores a corregir; lista sueños de usuario y valor añadido. No menciones quién los pide ni uses 'demandas'.`,
 
   FUGAS: (d) => `Inicia tu respuesta con este encabezado: ### VIII. 15 PUNTOS DE FUGA
   Identifica 15 hallazgos críticos. OBLIGATORIO: Inicia cada fuga con un guion (-) para crear una viñeta. Pon el título de la fuga en **negritas**. Cada fuga debe tener estrictamente entre 3 y 5 líneas de texto continuo, explicando a fondo el hallazgo.`,
