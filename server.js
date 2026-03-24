@@ -1,4 +1,4 @@
-// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN VANGUARDIA - VISIÓN ABSOLUTA)
+// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN VANGUARDIA + MEMORIA CACHÉ)
 
 const express = require('express');
 const { PROMPTS } = require('./cerebro'); 
@@ -10,6 +10,9 @@ const { GoogleAuth } = require('google-auth-library');
 const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json());
+
+// MEMORIA CACHÉ: Almacena las fotos y texto temporalmente para no colapsar el servidor
+const dossierCache = {};
 
 app.get('/', (req, res) => res.send(getHTML()));
 
@@ -23,11 +26,20 @@ app.post('/diseccion', async (req, res) => {
 
     const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
     
-    if (targetUrl.startsWith('http')) {
-      datosTarget = await captureAndScrape(targetUrl);
-    } else if (isDomain) {
+    if (!targetUrl.startsWith('http') && isDomain) {
       targetUrl = `https://${targetUrl}`;
-      datosTarget = await captureAndScrape(targetUrl);
+    }
+
+    if (isDomain || targetUrl.startsWith('http')) {
+      // SI NO ESTÁ EN MEMORIA, ENCIENDE EL MOTOR (SOLO OCURRE 1 VEZ POR AUDITORÍA)
+      if (!dossierCache[targetUrl]) {
+        console.log(`[+] Extrayendo Visión Absoluta de: ${targetUrl}`);
+        dossierCache[targetUrl] = await captureAndScrape(targetUrl);
+        
+        // Autodestrucción de la memoria en 15 minutos para liberar RAM del servidor
+        setTimeout(() => { delete dossierCache[targetUrl]; }, 1000 * 60 * 15);
+      }
+      datosTarget = dossierCache[targetUrl];
     } else {
       // Si el usuario metió una idea cruda en vez de URL
       datosTarget.texto = targetUrl;
@@ -57,19 +69,19 @@ app.post('/diseccion', async (req, res) => {
     // 2. CONSTRUCCIÓN DEL PAYLOAD (TEXTO + VISIÓN MULTIMODAL + GOOGLE SEARCH)
     let partesMensaje = [
         { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa todo basándote en que este es el presente absoluto.` },
-        { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos extraídos, tiempo de carga y errores de consola):\n${datosTarget.texto}` }
+        { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos extraídos, tiempo de carga y errores):\n${datosTarget.texto}` }
     ];
 
-    // INYECCIÓN DE VISIÓN ABSOLUTA: Si el motor trajo fotos, se las mostramos a Gemini
+    // INYECCIÓN DE VISIÓN: Si el motor trajo fotos de la caché, se las mostramos a Gemini
     if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
-        partesMensaje.push({ text: "EVIDENCIA VISUAL 1: Captura de pantalla de la versión Escritorio (Desktop). Analiza colores, contrastes, visibilidad de botones y economía del ojo." });
+        partesMensaje.push({ text: "EVIDENCIA VISUAL 1: Captura de la versión Escritorio. Analiza colores, contrastes y economía del ojo." });
         partesMensaje.push({
             inlineData: {
                 mimeType: "image/png",
                 data: datosTarget.desktopBase64
             }
         });
-        partesMensaje.push({ text: "EVIDENCIA VISUAL 2: Captura de pantalla de la versión Móvil (Smartphone). Analiza si el diseño es responsivo, si hay elementos encimados y si hay fricción visual en la navegación táctil." });
+        partesMensaje.push({ text: "EVIDENCIA VISUAL 2: Captura de la versión Móvil. Analiza responsividad y fricción táctil." });
         partesMensaje.push({
             inlineData: {
                 mimeType: "image/png",
@@ -78,7 +90,6 @@ app.post('/diseccion', async (req, res) => {
         });
     }
 
-    // Añadir la instrucción específica de la etapa (Scorecard, Fugas, etc.)
     partesMensaje.push({ text: promptFinal });
 
     const payload = {
@@ -92,7 +103,7 @@ app.post('/diseccion', async (req, res) => {
         }
       ],
       tools: [
-        { googleSearch: {} } // Radar SEO en tiempo real
+        { googleSearch: {} } // Radar SEO 
       ],
       generationConfig: {
         temperature: 0.1 
