@@ -1,4 +1,4 @@
-// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (Aislado de las reglas de formato)
+// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (Aislado)
 
 const PROMPTS = {
   INTRO: (d) => `### I. INTRODUCCIÓN Y RESUMEN DEL ACTIVO
