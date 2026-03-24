@@ -6,7 +6,7 @@ const PROMPTS = {
   ¡ALERTA CRÍTICA!: DETENTE AQUÍ. Tienes ESTRICTAMENTE PROHIBIDO generar Fugas, Acciones, Deseos o cualquier otra sección. NO escribas absolutamente nada más después de la introducción. Dossier: ${d}`,
 
   GEMELOS: (d) => `Inicia tu respuesta con este encabezado: ### II. PERFILES PSICOLÓGICOS
-  Genera 4 perfiles de Gemelos Sintéticos basados en el activo. Pon el tipo de perfil en **negritas**. En ese mismo párrafo, describe a un comprador real de este nicho en exactamente 3 líneas fluidas: quién es, cuál es su necesidad transaccional inmediata y qué evidencia visual necesita. Cero plantillas robóticas de "busca X, teme Y".`,
+  Genera 4 perfiles de Gemelos Sintéticos basados en el activo. Pon el nombre del perfil en **negritas**. Redacta MÁXIMO 2 ORACIONES FLUIDAS por perfil indicando quién es y qué producto exacto viene a buscar. PROHIBIDO usar el formato "busca X, teme Y" o historias de vida. Habla con naturalidad, como un consultor humano que describe a un cliente rápido y directo.`,
 
   SCORECARD: (d) => `Inicia tu respuesta con este encabezado: ### III. SCORECARD DE SALUD COMERCIAL
   Presenta una tabla Markdown usando barras (|) de 3 columnas exactas: | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |. 
