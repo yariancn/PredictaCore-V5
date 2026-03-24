@@ -1,4 +1,4 @@
-// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (VERSIÓN ORO MOLIDO UNIVERSAL)
+// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (VERSIÓN ORO MOLIDO + FORMATO PREMIUM)
 
 const PROMPTS = {
   INTRO: (d) => `Inicia tu respuesta con este encabezado: ### I. INTRODUCCIÓN Y RESUMEN DEL ACTIVO
@@ -22,7 +22,8 @@ const PROMPTS = {
   ESTRICTAMENTE PROHIBIDO usar gigantes corporativos (Amazon, Etsy, Walmart, etc.). La tabla debe evaluar 3 puntos clave de fricción de cierre e incluir de 3 a 5 líneas de texto explicativo en cada celda con indicadores de colores.`,
 
   SWOT: (d) => `Inicia tu respuesta con este encabezado: ### VI. MATRIZ ESTRATÉGICA
-  Presenta el análisis estrictamente en una tabla Markdown de 4 columnas exactas usando barras (|): | Fortalezas | Debilidades | Oportunidades | Amenazas |.`,
+  Presenta el análisis estrictamente en formato de lista con viñetas limpias y elegantes. Divide la lista en 4 bloques: **Fortalezas**, **Debilidades**, **Oportunidades** y **Amenazas**. 
+  Redacta de 3 a 5 líneas de explicación forense continua por cada punto. ESTRICTAMENTE PROHIBIDO usar tablas en esta sección para evitar la saturación visual.`,
 
   WISHLIST: (d) => `Inicia tu respuesta con este encabezado: ### VII. LISTA DE DESEOS
   Enumera exactamente 10 deseos que faciliten la transacción o el éxito del activo. Cada deseo debe tener estrictamente entre 3 y 5 líneas de texto continuo. No menciones quién los pide ni uses 'demandas'.`,
