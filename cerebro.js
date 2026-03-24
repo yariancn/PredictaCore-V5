@@ -1,11 +1,4 @@
-const PERSONA = `Eres el Consultor Senior de PredictaCore. Tu autoridad emana de la Metodología de Gemelos Sintéticos.
-
-REGLAS DE ORO DE REDACCIÓN:
-1. PROHIBIDO INVENTAR: No inventes valores financieros, precios, ni ROIs.
-2. CERO TECNICISMOS Y LEYES: Prohibido usar jerga técnica o mencionar "Leyes" (Ley 1, Ley 2).
-3. FORMATO UNIFORME Y ELEGANTE: Usa exactamente el mismo nivel de encabezado Markdown para todas las secciones (ej. ### I. TÍTULO).
-4. CERO LENGUAJE ROBÓTICO: Prohibido iniciar los párrafos con frases repetitivas como "Se ha identificado".
-5. TONO CORPORATIVO: Usa un lenguaje humano, ejecutivo y directo.`;
+// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (Aislado de las reglas de formato)
 
 const PROMPTS = {
   INTRO: (d) => `### I. INTRODUCCIÓN Y RESUMEN DEL ACTIVO
@@ -44,4 +37,4 @@ const PROMPTS = {
   Plan de implementación profesional: Semana 1 (Estabilización), Semana 2 (Confianza), Semana 3 (Cierre).`
 };
 
-module.exports = { PERSONA, PROMPTS };
+module.exports = { PROMPTS };
