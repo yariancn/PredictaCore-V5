@@ -5,7 +5,7 @@ const { PROMPTS } = require('./cerebro');
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
-const { GoogleAuth } = require('google-auth-library'); // NUEVO: Autenticación nativa de Google
+const { GoogleAuth } = require('google-auth-library');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -40,7 +40,7 @@ app.post('/diseccion', async (req, res) => {
     // 1. AUTENTICACIÓN FORENSE CON VERTEX AI
     const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
     const projectId = credenciales.project_id;
-    const location = 'us-central1'; // Región estable para Gemini 2.5 Pro
+    const location = 'us-central1'; 
     
     const auth = new GoogleAuth({
       credentials: credenciales,
@@ -53,26 +53,26 @@ app.post('/diseccion', async (req, res) => {
 
     const vertexUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-2.5-pro:generateContent`;
 
-    // 2. CONSTRUCCIÓN DEL PAYLOAD CON GROUNDING (BÚSQUEDA EN GOOGLE)
+    // 2. CONSTRUCCIÓN DEL PAYLOAD CON BÚSQUEDA EN GOOGLE (GROUNDING)
     const payload = {
       systemInstruction: {
-        parts: [{ text: FIREWALL_IA }] // Nuestro candado de titanio
+        parts: [{ text: FIREWALL_IA }] 
       },
       contents: [
         { 
           role: "user", 
           parts: [
             { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa todo basándote en que este es el presente absoluto.` },
-            { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos del sitio):\n${hechos}` },
+            { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos extraídos):\n${hechos}` },
             { text: promptFinal }
           ]
         }
       ],
       tools: [
-        { googleSearchRetrieval: {} } // EL RADAR: Esto activa la búsqueda en Google en tiempo real
+        { googleSearchRetrieval: {} } // EL RADAR: Activa la investigación SEO en tiempo real
       ],
       generationConfig: {
-        temperature: 0.1 // Frío y calculador, cero inventos
+        temperature: 0.1 
       }
     };
 
