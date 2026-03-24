@@ -1,8 +1,11 @@
+// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN ORO MOLIDO - GEMINI VERTEX AI)
+
 const express = require('express');
 const { PROMPTS } = require('./cerebro'); 
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
-const { FIREWALL_IA } = require('./firewall'); 
+const { FIREWALL_IA } = require('./firewall');
+const { GoogleAuth } = require('google-auth-library'); // NUEVO: Autenticación nativa de Google
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -12,8 +15,7 @@ app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/diseccion', async (req, res) => {
   const { dna, etapaId } = req.body;
-  const { XAI_API_KEY } = process.env;
-
+  
   try {
     const idFinal = PROMPTS[etapaId] ? etapaId : 'OMNI';
     let hechos = "";
@@ -31,30 +33,70 @@ app.post('/diseccion', async (req, res) => {
     }
 
     const promptFinal = PROMPTS[idFinal](hechos);
-
-    // NUEVO: Calculamos la fecha actual para el motor
     const fechaActual = new Date().toLocaleDateString('es-ES', { 
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
     });
 
-    const xRes = await fetch("https://api.x.ai/v1/chat/completions", {
+    // 1. AUTENTICACIÓN FORENSE CON VERTEX AI
+    const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
+    const projectId = credenciales.project_id;
+    const location = 'us-central1'; // Región estable para Gemini 2.5 Pro
+    
+    const auth = new GoogleAuth({
+      credentials: credenciales,
+      scopes: ['https://www.googleapis.com/auth/cloud-platform']
+    });
+    
+    const client = await auth.getClient();
+    const tokenResponse = await client.getAccessToken();
+    const accessToken = tokenResponse.token;
+
+    const vertexUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-2.5-pro:generateContent`;
+
+    // 2. CONSTRUCCIÓN DEL PAYLOAD CON GROUNDING (BÚSQUEDA EN GOOGLE)
+    const payload = {
+      systemInstruction: {
+        parts: [{ text: FIREWALL_IA }] // Nuestro candado de titanio
+      },
+      contents: [
+        { 
+          role: "user", 
+          parts: [
+            { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa todo basándote en que este es el presente absoluto.` },
+            { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos del sitio):\n${hechos}` },
+            { text: promptFinal }
+          ]
+        }
+      ],
+      tools: [
+        { googleSearchRetrieval: {} } // EL RADAR: Esto activa la búsqueda en Google en tiempo real
+      ],
+      generationConfig: {
+        temperature: 0.1 // Frío y calculador, cero inventos
+      }
+    };
+
+    // 3. EJECUCIÓN DEL DIAGNÓSTICO
+    const vertexRes = await fetch(vertexUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${XAI_API_KEY}` },
-      body: JSON.stringify({
-        model: "grok-4-1-fast-reasoning", 
-        messages: [
-          { role: "system", content: FIREWALL_IA },
-          // NUEVO: Inyectamos el reloj interno a la IA
-          { role: "system", content: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa cualquier fecha en los datos (como reseñas o posts) basándote en que este es el presente absoluto. No asumas que eventos de este año están en el futuro.` },
-          { role: "system", content: `DOSSIER DEL ACTIVO ANALIZADO:\n${hechos}` },
-          { role: "user", content: promptFinal }
-        ],
-        temperature: 0.1 
-      })
+      headers: { 
+        "Content-Type": "application/json", 
+        "Authorization": `Bearer ${accessToken}` 
+      },
+      body: JSON.stringify(payload)
     });
 
-    const xData = await xRes.json();
-    res.json({ content: xData.choices[0].message.content });
+    if (!vertexRes.ok) {
+        const errorData = await vertexRes.text();
+        throw new Error(`Fallo en Vertex AI: ${errorData}`);
+    }
+
+    const vertexData = await vertexRes.json();
+    
+    // Extracción del texto de la respuesta de Gemini
+    const textoForense = vertexData.candidates[0].content.parts[0].text;
+    
+    res.json({ content: textoForense });
 
   } catch (error) {
     console.error("Falla del Servidor:", error.message);
@@ -62,4 +104,4 @@ app.post('/diseccion', async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN - MOTOR ACTIVO EN PUERTO ${port}`));
+app.listen(port, () => console.log(`PREDICTACORE TITÁN - MOTOR ORO MOLIDO ACTIVO EN PUERTO ${port}`));
