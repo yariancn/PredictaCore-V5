@@ -1,4 +1,4 @@
-// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN VANGUARDIA + RADAR INTELIGENTE)
+// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN VANGUARDIA + INTERRUPTOR VISUAL)
 
 const express = require('express');
 const { PROMPTS } = require('./cerebro'); 
@@ -66,7 +66,11 @@ app.post('/diseccion', async (req, res) => {
         { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos extraídos, tiempo de carga y errores):\n${datosTarget.texto}` }
     ];
 
-    if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
+    // INTERRUPTOR VISUAL: Solo inyectamos las fotos pesadas si la sección audita diseño o UX
+    const etapasVisuales = ['SCORECARD', 'WISHLIST', 'FUGAS', 'ACCIONES', 'OMNI'];
+    const requiereVision = etapasVisuales.includes(etapaId);
+
+    if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64 && requiereVision) {
         partesMensaje.push({ text: "EVIDENCIA VISUAL 1: Captura de la versión Escritorio. Analiza colores, contrastes y economía del ojo." });
         partesMensaje.push({
             inlineData: {
