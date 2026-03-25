@@ -46,7 +46,7 @@ function getHTML() {
                 .cover-subtitle { font-size: 1.25rem; color: #4b5563; text-transform: uppercase; letter-spacing: 0.2em; }
                 .cover-meta { margin-top: auto; font-size: 0.875rem; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 1rem; }
                 
-                /* Estructura del Reporte y Saltos de Página Premium */
+                /* Estructura del Reporte */
                 .report-section { 
                     page-break-before: always; 
                     break-before: page;
@@ -55,13 +55,11 @@ function getHTML() {
                     margin-bottom: 2.5rem; 
                 }
                 
-                /* Excepción: La primera sección no brinca hoja para no dejar la página 2 en blanco */
                 #section-INTRO {
                     page-break-before: auto;
                     break-before: auto;
                 }
 
-                /* Títulos Premium en PDF */
                 .markdown-content h1, .markdown-content h2, .markdown-content h3 { color: #000000 !important; page-break-after: avoid; }
                 .markdown-content h3 { 
                     color: #b8860b !important; 
@@ -72,27 +70,32 @@ function getHTML() {
                     margin-bottom: 1.5rem;
                 }
                 
-                /* Textos Ejecutivos (Justificados y con oxígeno) */
-                .markdown-content p, .markdown-content li { 
+                /* Blindaje de Párrafos y VIÑETAS (No se cortan a la mitad) */
+                .markdown-content p { 
                     line-height: 1.7; 
                     text-align: justify; 
                     orphans: 3; 
                     widows: 3; 
                     margin-bottom: 1.2rem;
                 }
+                .markdown-content li {
+                    line-height: 1.7;
+                    text-align: justify;
+                    margin-bottom: 1.2rem;
+                    page-break-inside: avoid; /* OBLIGA A PASAR EL PUNTO ENTERO A LA OTRA HOJA */
+                }
                 .markdown-content strong { color: #000000 !important; }
                 
-                /* Tablas PDF Blindadas (Para que no se partan a la mitad) */
-                table { page-break-inside: avoid; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; }
-                tr { page-break-inside: avoid; page-break-after: auto; }
+                /* Tablas PDF Blindadas y Títulos Repetidos */
+                table { page-break-inside: auto; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; }
+                thead { display: table-header-group; } /* REPITE LOS ENCABEZADOS EN CADA PÁGINA */
+                tr { page-break-inside: avoid; page-break-after: auto; } /* LA FILA NO SE PARTE A LA MITAD */
                 th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: #ffffff !important; padding: 12px; vertical-align: top; }
                 th { background: #f9fafb !important; color: #b8860b !important; font-size: 9pt; text-transform: uppercase; }
                 td { font-size: 9.5pt; }
                 
-                /* Listas PDF Blindadas */
-                ul, ol { page-break-inside: avoid; }
+                ul, ol { page-break-inside: auto; }
                 
-                /* Semáforos en PDF (Limpio para lectura ejecutiva) */
                 .badge-red { background: transparent !important; color: #dc2626 !important; border: 1px solid #dc2626 !important; }
                 .badge-yellow { background: transparent !important; color: #d97706 !important; border: 1px solid #d97706 !important; }
                 .badge-green { background: transparent !important; color: #16a34a !important; border: 1px solid #16a34a !important; }
@@ -135,10 +138,8 @@ function getHTML() {
         </div>
 
         <script>
-            // Configura la fecha de la portada
             document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            // MOTOR DE SEMÁFOROS UNIVERSAL (Matemático y Textual)
             function aplicarSemaforos(htmlContent) {
                 const div = document.createElement('div');
                 div.innerHTML = htmlContent;
@@ -148,7 +149,6 @@ function getHTML() {
                     const textoOriginal = td.textContent.trim();
                     const texto = textoOriginal.toLowerCase();
                     
-                    // 1. EVALUACIÓN NUMÉRICA DE PRECISIÓN (Para el Scorecard)
                     const matchNumero = textoOriginal.match(/^(\\d+)(?:\\/10)?$/);
                     if (matchNumero) {
                         const calif = parseInt(matchNumero[1], 10);
@@ -159,10 +159,9 @@ function getHTML() {
                         } else {
                             td.innerHTML = \`<span class="badge-green">\${td.innerHTML}</span>\`;
                         }
-                        return; // Termina la evaluación para esta celda matemática
+                        return; 
                     }
                     
-                    // 2. EVALUACIÓN POR PALABRAS (Para el Benchmark)
                     const keywordsRojas = ['deficiente', 'alto', 'fuga', 'riesgo', 'negativo', 'crítico', 'amenaza', 'ausente', 'pobre', 'nulo'];
                     const keywordsAmarillas = ['parcial', 'medio', 'no evaluable', 'no detectado', 'presente', 'moderado', 'regular'];
                     const keywordsVerdes = ['óptimo', 'adecuada', 'coherente', 'positivo', 'excelente', 'fuerte', 'fortaleza', 'bajo', 'adecuado'];
@@ -182,7 +181,6 @@ function getHTML() {
                 const dna = document.getElementById('dna').value;
                 if (!dna) return;
                 
-                // Actualiza el dominio en la portada del PDF
                 document.getElementById('pdf-domain').innerText = "Activo analizado: " + dna;
                 
                 const btn = document.getElementById('btn-ejecutar');
@@ -205,54 +203,4 @@ function getHTML() {
                     {id: 'WISHLIST', title: 'VII. Lista de Deseos'},
                     {id: 'FUGAS', title: 'VIII. 15 Fugas de Capital'},
                     {id: 'ACCIONES', title: 'IX. 15 Acciones Tácticas'},
-                    {id: 'HERRAMIENTAS', title: 'X. Herramientas de Escala'},
-                    {id: 'OMNI', title: 'XI. Autoridad y Hoja de Ruta'}
-                ];
-
-                for (const etapa of etapas) {
-                    const div = document.createElement('div');
-                    div.className = "report-section animate-pulse";
-                    div.id = "section-" + etapa.id;
-                    div.innerHTML = '<h3 class="text-zinc-600 text-[10px] tracking-[0.5em] mb-4 uppercase no-print">' + etapa.title + '</h3>' +
-                                     '<div id="content-' + etapa.id + '" class="markdown-content text-zinc-400 font-light italic">Analizando nodos...</div>';
-                    reporte.appendChild(div);
-
-                    try {
-                        const res = await fetch('/diseccion', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ dna, etapaId: etapa.id })
-                        });
-                        const data = await res.json();
-                        
-                        const contentDiv = document.getElementById("content-" + etapa.id);
-                        const sectionDiv = document.getElementById("section-" + etapa.id);
-                        
-                        sectionDiv.classList.remove('animate-pulse');
-                        sectionDiv.classList.add('border-gold');
-                        contentDiv.classList.remove('italic', 'text-zinc-400');
-                        contentDiv.classList.add('text-zinc-300');
-                        
-                        let htmlLimpio = marked.parse(data.content);
-                        
-                        if(htmlLimpio.includes('table')) {
-                            htmlLimpio = aplicarSemaforos(htmlLimpio);
-                        }
-                        
-                        contentDiv.innerHTML = htmlLimpio;
-                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                    } catch (e) {
-                        console.error(e);
-                        document.getElementById("content-" + etapa.id).innerHTML = "<span class='text-red-500 font-bold'>ERROR DE RUPTURA: Fallo en la red o servidor.</span>";
-                    }
-                }
-                status.innerText = "AUDITORÍA FINALIZADA. LISTO PARA EXPORTACIÓN EJECUTIVA.";
-                btn.disabled = false;
-                btnPdf.classList.remove('hidden');
-            }
-        </script>
-    </body>
-    </html>
-    `;
-}
-module.exports = { getHTML };
+                    {id: 'HERRAMIENTAS', title: 'X. Herramientas de
