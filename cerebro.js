@@ -1,4 +1,4 @@
-// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (VERSIÓN ORO MOLIDO + FRANCOTIRADOR)
+// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (CALIDAD SUPREMA + NUMERACIÓN PDF)
 
 const PROMPTS = {
   INTRO: (d) => `Inicia tu respuesta con este encabezado: ### I. INTRODUCCIÓN Y RESUMEN DEL ACTIVO
@@ -23,22 +23,22 @@ const PROMPTS = {
   Presenta una tabla Markdown usando barras (|) comparando el activo. OBLIGATORIO Y REGLA CRÍTICA: COPIA Y PEGA EXACTAMENTE LOS MISMOS 3 COMPETIDORES que nombraste en la sección IV. Tienes ESTRICTAMENTE PROHIBIDO inventar nombres nuevos o mezclarlos. Evalúa 3 puntos de fricción e incluye de 3 a 5 líneas de texto en cada celda.`,
 
   SWOT: (d) => `Inicia tu respuesta con este encabezado: ### VI. MATRIZ ESTRATÉGICA
-  Presenta el análisis en formato de lista. OBLIGATORIO: Inicia cada punto con un guion (-) para crear una viñeta Markdown. Divide la lista en 4 bloques: **Fortalezas**, **Debilidades**, **Oportunidades** y **Amenazas**. Redacta de 3 a 5 líneas continuas por punto. PROHIBIDO usar tablas.`,
+  Presenta el análisis. OBLIGATORIO: Enumera cada punto usando números (1., 2., 3.). Divide la lista en 4 bloques: **Fortalezas**, **Debilidades**, **Oportunidades** y **Amenazas**. Redacta de 3 a 5 líneas continuas por punto. PROHIBIDO usar tablas.`,
 
   WISHLIST: (d) => `Inicia tu respuesta con este encabezado: ### VII. LISTA DE DESEOS
-  Enumera 10 características de alto valor. OBLIGATORIO: Inicia cada punto con un guion (-) para crear una viñeta limpia. Cada punto debe tener de 3 a 5 líneas continuas. PROHIBIDO usar lenguaje romántico ("yo desearía"). Sé objetivo. PROHIBIDO usar tablas.`,
+  Enumera 10 características de alto valor. OBLIGATORIO: Inicia cada punto con un número (1., 2., 3., etc.) para forzar una lista numerada en HTML. Cada punto debe tener de 3 a 5 líneas continuas. Sé objetivo. PROHIBIDO usar tablas.`,
 
   FUGAS: (d) => `Inicia tu respuesta con este encabezado: ### VIII. 15 PUNTOS DE FUGA
-  Identifica 15 hallazgos críticos. REGLA DEL FRANCOTIRADOR: Elige 1 o máximo 2 fugas letales e invisibles (ej. errores técnicos, código, carga) y márcalas como **[HEMORRAGIA CRÍTICA]**. Solo para estas, rompe la regla de longitud y explica a fondo: 1. El Síntoma, 2. La Causa Raíz técnica, 3. El Impacto. Para las 13 fugas restantes, mantenlo rápido y táctico (3 a 5 líneas). OBLIGATORIO: Inicia CADA fuga con un guion (-) para crear viñeta.`,
+  Identifica 15 hallazgos críticos. REGLA DEL FRANCOTIRADOR: Elige 1 o máximo 2 fugas letales e invisibles (ej. errores técnicos, código, carga) y márcalas como **[HEMORRAGIA CRÍTICA]**. Solo para estas, explica a fondo: Síntoma, Causa Raíz e Impacto. Para las restantes, mantenlo rápido. OBLIGATORIO: Enumera las 15 fugas usando números (1., 2., 3., etc.). Pon el título de la fuga en **negritas**.`,
 
   ACCIONES: (d) => `Inicia tu respuesta con este encabezado: ### IX. 15 ACCIONES TÁCTICAS
-  Explica cómo corregir cada uno de los 15 hallazgos yendo directo a la solución. OBLIGATORIO: Inicia cada acción con un guion (-) para crear una viñeta, usando este formato: - Acción X (Sella la Fuga X): **[Nombre del Hallazgo]**. Cada acción debe tener de 3 a 5 líneas continuas. PROHIBIDO usar tablas.`,
+  Explica cómo corregir cada uno de los 15 hallazgos yendo directo a la solución. OBLIGATORIO: Enumera las 15 acciones usando números (1., 2., 3., etc.). Cada acción debe tener de 3 a 5 líneas continuas. PROHIBIDO usar tablas.`,
 
   HERRAMIENTAS: (d) => `Inicia tu respuesta con este encabezado: ### X. HERRAMIENTAS DE ESCALA
-  Recomienda 5 soluciones tecnológicas. OBLIGATORIO: Inicia cada recomendación con un guion (-) para crear una viñeta. Cada punto debe tener de 3 a 5 líneas. PROHIBIDO usar tablas.`,
+  Recomienda 5 soluciones tecnológicas. OBLIGATORIO: Enumera cada recomendación con un número (1., 2., 3., 4., 5.). Cada punto debe tener de 3 a 5 líneas. PROHIBIDO usar tablas.`,
 
   OMNI: (d) => `Inicia tu respuesta con este encabezado: ### XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)
-  Crea un cronograma táctico de choque de 21 días. REGLA INQUEBRANTABLE: Inicia CADA FASE exactamente con el símbolo de un guion seguido de un espacio (- ) para forzar la creación de una viñeta Markdown. Integra la resolución con redacción fluida. PROHIBIDO usar tablas.`
+  Crea un cronograma táctico de choque de 21 días. REGLA INQUEBRANTABLE: Enumera cada fase con un número (1., 2., 3.) para forzar una lista numerada en HTML. Integra la resolución con redacción fluida. PROHIBIDO usar tablas.`
 };
 
 module.exports = { PROMPTS };
