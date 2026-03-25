@@ -1,4 +1,4 @@
-// server.js - BÚNKER 5: OPERADOR LÓGICO (VERSIÓN VANGUARDIA + INTERRUPTOR VISUAL)
+// server.js - BÚNKER 5: OPERADOR LÓGICO (VISIÓN ABSOLUTA PERMANENTE)
 
 const express = require('express');
 const { PROMPTS } = require('./cerebro'); 
@@ -11,7 +11,6 @@ const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json());
 
-// MEMORIA CACHÉ: Almacena las fotos y texto temporalmente
 const dossierCache = {};
 
 app.get('/', (req, res) => res.send(getHTML()));
@@ -66,22 +65,19 @@ app.post('/diseccion', async (req, res) => {
         { text: `DOSSIER DEL ACTIVO ANALIZADO (Datos internos extraídos, tiempo de carga y errores):\n${datosTarget.texto}` }
     ];
 
-    // INTERRUPTOR VISUAL: Solo inyectamos las fotos pesadas si la sección audita diseño o UX
-    const etapasVisuales = ['SCORECARD', 'WISHLIST', 'FUGAS', 'ACCIONES', 'OMNI'];
-    const requiereVision = etapasVisuales.includes(etapaId);
-
-    if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64 && requiereVision) {
+    // VISIÓN ABSOLUTA RESTAURADA: Se envía siempre para no perder inteligencia de mercado
+    if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
         partesMensaje.push({ text: "EVIDENCIA VISUAL 1: Captura de la versión Escritorio. Analiza colores, contrastes y economía del ojo." });
         partesMensaje.push({
             inlineData: {
-                mimeType: "image/png",
+                mimeType: "image/jpeg",
                 data: datosTarget.desktopBase64
             }
         });
         partesMensaje.push({ text: "EVIDENCIA VISUAL 2: Captura de la versión Móvil. Analiza responsividad y fricción táctil." });
         partesMensaje.push({
             inlineData: {
-                mimeType: "image/png",
+                mimeType: "image/jpeg",
                 data: datosTarget.mobileBase64
             }
         });
@@ -104,7 +100,6 @@ app.post('/diseccion', async (req, res) => {
       }
     };
 
-    // RADAR INTELIGENTE: Solo usamos la cuota de búsqueda en Google si la sección lo exige
     if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
         payload.tools = [{ googleSearch: {} }];
     }
@@ -134,5 +129,4 @@ app.post('/diseccion', async (req, res) => {
   }
 });
 
-// CURA DE PUERTO: Forzamos la IP pública 0.0.0.0 para que Railway no bloquee la conexión
 app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR ORO MOLIDO ACTIVO EN PUERTO ${port}`));
