@@ -1,49 +1,49 @@
-// cerebro.js - BÚNKER 2: ESTRUCTURA DEL REPORTE (UNIVERSALIDAD SUPREMA + FORMATO ESTRICTO)
+// cerebro.js - BÚNKER 2: ESTRUCTURA JSON (DATOS PUROS Y CONTROL ABSOLUTO)
 
 const PROMPTS = {
-  INTRO: (d) => `Inicia tu respuesta con este encabezado: ### I. INTRODUCCIÓN Y RESUMEN DEL ACTIVO
-  Explica brevemente quiénes somos (PredictaCore), qué hacemos y por qué somos mejores. Al final, redacta un breve resumen exclusivo de quién es el activo analizado, qué hace y DEBES identificar explícitamente su PAÍS / MERCADO OBJETIVO (Geografía). 
-  ¡ALERTA CRÍTICA!: DETENTE AQUÍ. Tienes ESTRICTAMENTE PROHIBIDO generar secciones adicionales. Dossier: ${d}`,
+  INTRO: (d) => `Eres PredictaCore. Basado en este dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "parrafos": ["Párrafo 1 explicando qué es PredictaCore y por qué somos mejores en conversión.", "Párrafo 2 resumiendo de qué trata el activo analizado y declarando explícitamente su PAÍS/MERCADO OBJETIVO."] }`,
 
-  GEMELOS: (d) => `Inicia tu respuesta con este encabezado: ### II. PERFILES PSICOLÓGICOS
-  Genera 4 perfiles de Gemelos Sintéticos basados en el activo. 
-  REGLA DE FORMATO ESTRICTA: Debes usar EXACTAMENTE esta estructura para los 4 perfiles:
-  - **[Nombre del Perfil]**: [Máximo 2 oraciones fluidas indicando quién es y qué producto o servicio exacto viene a buscar].
-  Habla con naturalidad y precisión forense.`,
+  GEMELOS: (d) => `Basado en el dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "gemelos": [ { "nombre": "Nombre del Perfil 1", "descripcion": "Máximo 2 oraciones indicando quién es y qué producto busca." }, ... (genera 4 perfiles) ] }`,
 
-  SCORECARD: (d) => `Inicia tu respuesta con este encabezado: ### III. SCORECARD DE SALUD COMERCIAL
-  Presenta una tabla Markdown usando barras (|) de 3 columnas exactas: | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |. 
-  Evalúa los 10 puntos de salud comercial con profundidad analítica. 
-  REGLA DE FORMATO ESTRICTA: Escribe de 3 a 5 líneas de texto continuo dentro de cada celda. Tienes ESTRICTAMENTE PROHIBIDO escribir tus diagnósticos en letras MAYÚSCULAS SOSTENIDAS. Usa mayúsculas y minúsculas de forma normal.`,
+  SCORECARD: (d) => `Evalúa 10 puntos de salud comercial con máxima profundidad. Dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "scorecard": [ { "punto": "Nombre del punto", "calificacion": "X/10", "diagnostico": "Análisis forense de 3 a 5 líneas." }, ... (genera 10 puntos) ] }`,
 
-  VISIBILIDAD: (d) => `Inicia tu respuesta con este encabezado: ### IV. VISIBILIDAD EXTERNA
-  Realiza un diagnóstico forense basado en Google. Imprime DATOS DUROS y respeta el ANCLA GEOGRÁFICA:
-  HEURÍSTICA DE BÚSQUEDA UNIVERSAL: Antes de usar la herramienta de búsqueda, identifica la industria, el nicho exacto y el mercado del activo basándote en el dossier. Integra este contexto en tu búsqueda de Google para asegurar resultados precisos y relevantes al sector comercial, evitando coincidencias nominales irrelevantes.
-  1. Imprime la calificación exacta de estrellas y el número de reseñas en Maps, redes o la plataforma correspondiente.
-  2. Nombra el PAÍS/MERCADO del activo. Luego, nombra a 3 competidores REALES Y DIRECTOS DE ESE MISMO PAÍS que acaparan la primera página en ese nicho exacto.
-  3. Enlista 3 "Palabras Clave Transaccionales" exactas que pierde en su región.
-  4. Estima el porcentaje de capital evaporado por esta fricción.`,
+  VISIBILIDAD: (d) => `Haz un análisis de visibilidad y competidores en Google. Respeta el país del activo. Dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "datos": [ { "titulo": "Estrellas y Reseñas", "texto": "..." }, { "titulo": "Mercado y 3 Competidores Directos", "texto": "..." }, { "titulo": "Palabras Clave Transaccionales Perdidas", "texto": "..." }, { "titulo": "Capital Evaporado", "texto": "..." } ] }`,
 
-  BENCHMARK: (d) => `Inicia tu respuesta con este encabezado: ### V. RADIOGRAFÍA ESTRATÉGICA (BENCHMARK)
-  Presenta una tabla Markdown usando barras (|) comparando el activo. OBLIGATORIO Y REGLA CRÍTICA: COPIA Y PEGA EXACTAMENTE LOS MISMOS 3 COMPETIDORES que nombraste en la sección IV. Evalúa 3 puntos de fricción estratégica e incluye de 3 a 5 líneas de análisis profundo en cada celda. PROHIBIDO usar MAYÚSCULAS SOSTENIDAS en la tabla.`,
+  BENCHMARK: (d) => `Compara el activo con los 3 competidores exactos de la sección de Visibilidad. Dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "competidores": ["Comp1", "Comp2", "Comp3"], "fricciones": [ { "nombre": "Fricción Estratégica 1", "activo": "Diagnóstico del activo...", "comp1": "Diagnóstico comp1...", "comp2": "...", "comp3": "..." }, ... (genera 3 fricciones) ] }`,
 
-  SWOT: (d) => `Inicia tu respuesta con este encabezado: ### VI. MATRIZ ESTRATÉGICA
-  Presenta el análisis estratégico transversal. OBLIGATORIO: Enumera cada punto usando números (1., 2., 3.). Divide la lista en 4 bloques: **Fortalezas**, **Debilidades**, **Oportunidades** y **Amenazas**. Redacta de 3 a 5 líneas continuas por punto. PROHIBIDO usar tablas.`,
+  SWOT: (d) => `Genera una matriz estratégica. Dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "fortalezas": ["Punto 1...", "Punto 2...", "Punto 3..."], "debilidades": ["..."], "oportunidades": ["..."], "amenazas": ["..."] }`,
 
-  WISHLIST: (d) => `Inicia tu respuesta con este encabezado: ### VII. LISTA DE DESEOS
-  Enumera 10 características de alto valor que revolucionarían el activo. OBLIGATORIO: Enumera cada punto con un número (1., 2., 3., etc.). Cada punto debe tener de 3 a 5 líneas continuas de análisis táctico. PROHIBIDO usar tablas.`,
+  WISHLIST: (d) => `Identifica 10 características de alto valor. Dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "deseos": ["Deseo táctico 1...", "Deseo táctico 2...", ... (hasta 10)] }`,
 
-  FUGAS: (d) => `Inicia tu respuesta con este encabezado: ### VIII. 15 PUNTOS DE FUGA
-  Identifica 15 hallazgos críticos de fricción. REGLA DEL FRANCOTIRADOR: Elige 1 o máximo 2 fugas letales e invisibles (ej. errores técnicos, código, carga) y márcalas como **[HEMORRAGIA CRÍTICA]**. Solo para estas, explica a fondo: Síntoma, Causa Raíz e Impacto en el usuario. Para las restantes, mantenlo agudo y rápido (3 a 5 líneas). OBLIGATORIO: Enumera las 15 fugas usando números (1., 2., 3., etc.). Pon el título de la fuga en **negritas**.`,
+  FUGAS: (d) => `Identifica 15 fugas criticas. Marca 1 o 2 como [HEMORRAGIA CRÍTICA]. Dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "fugas": [ { "titulo": "Nombre de la fuga", "descripcion": "Análisis y causa raíz..." }, ... (hasta 15)] }`,
 
-  ACCIONES: (d) => `Inicia tu respuesta con este encabezado: ### IX. 15 ACCIONES TÁCTICAS
-  Explica cómo corregir cada uno de los 15 hallazgos yendo directo a la solución de ingeniería o negocio. OBLIGATORIO: Enumera las 15 acciones usando números (1., 2., 3., etc.). Cada acción debe tener de 3 a 5 líneas continuas. PROHIBIDO usar tablas.`,
+  ACCIONES: (d) => `Identifica 15 acciones tácticas directas para sellar las fugas. Dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "acciones": [ { "titulo": "Acción para fuga 1", "descripcion": "Cómo solucionarlo..." }, ... (hasta 15)] }`,
 
-  HERRAMIENTAS: (d) => `Inicia tu respuesta con este encabezado: ### X. HERRAMIENTAS DE ESCALA
-  Recomienda 5 soluciones tecnológicas (SaaS) específicas para escalar este modelo de negocio en particular. OBLIGATORIO: Enumera cada recomendación con un número (1., 2., 3., 4., 5.). Cada punto debe tener de 3 a 5 líneas. PROHIBIDO usar tablas.`,
+  HERRAMIENTAS: (d) => `Recomienda 5 herramientas SaaS. Dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "herramientas": [ { "nombre": "Nombre del Software", "descripcion": "Por qué usarlo..." }, ... (hasta 5)] }`,
 
-  OMNI: (d) => `Inicia tu respuesta con este encabezado: ### XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)
-  Crea un cronograma táctico de choque de 21 días. REGLA INQUEBRANTABLE: Enumera cada fase con un número (1., 2., 3.) para forzar una lista numerada en formato HTML. Integra la resolución de las fugas con redacción ejecutiva. PROHIBIDO usar tablas.`
+  OMNI: (d) => `Crea la hoja de ruta ejecutiva. Dossier: ${d}
+  Responde ÚNICAMENTE con un objeto JSON válido con este formato exacto:
+  { "fases": [ { "fase": "Fase 1 (Días 1-7)", "descripcion": "..." }, { "fase": "Fase 2 (Días 8-14)", "descripcion": "..." }, { "fase": "Fase 3 (Días 15-21)", "descripcion": "..." } ] }`
 };
 
 module.exports = { PROMPTS };
