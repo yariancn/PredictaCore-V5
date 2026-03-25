@@ -130,4 +130,5 @@ app.post('/diseccion', async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`PREDICTACORE TITÁN - MOTOR ORO MOLIDO ACTIVO EN PUERTO ${port}`));
+// CURA DE PUERTO: Forzamos la IP pública 0.0.0.0 para que Railway no bloquee la conexión
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR ORO MOLIDO ACTIVO EN PUERTO ${port}`));
