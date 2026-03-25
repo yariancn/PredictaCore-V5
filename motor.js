@@ -24,7 +24,7 @@ async function captureAndScrape(url) {
         
         const loadTime = ((Date.now() - startTime) / 1000).toFixed(2);
         
-        // COMPRESIÓN TÁCTICA: Cambiamos PNG por JPEG al 60% para que vuele el servidor
+        // CÁMARA LIGERA: JPEG al 60% para máxima velocidad sin perder el ojo clínico de la IA
         const desktopBase64 = await page.screenshot({ type: 'jpeg', quality: 60, encoding: 'base64' });
 
         await page.setViewport({ width: 390, height: 844, isMobile: true });
