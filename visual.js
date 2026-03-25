@@ -230,6 +230,10 @@ function getHTML() {
                         
                         contentDiv.innerHTML = htmlLimpio;
                         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                        
+                        // EL RESPIRADOR: Pausa de 3 segundos exactos para evitar estrangulamiento de Google
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        
                     } catch (e) {
                         console.error(e);
                         document.getElementById('content-' + etapa.id).innerHTML = '<span class="text-red-500 font-bold">ERROR DE RUPTURA: Fallo en la red o servidor.</span>';
