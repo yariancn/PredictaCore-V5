@@ -9,24 +9,20 @@ function getHTML() {
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <style>
-            /* TEMA OSCURO (PANTALLA DASHBOARD) */
             body { background: #050505; color: #a1a1aa; font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; }
             .gold-text { color: #d4af37; }
             .terminal-box { background: #09090b; border: 1px solid #18181b; }
             .report-section { border-left: 2px solid #18181b; padding-left: 1.5rem; margin-bottom: 4rem; transition: all 0.5s; }
             .border-gold { border-color: #d4af37 !important; }
             
-            /* ESTILOS DE TABLAS (PANTALLA) */
             table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; font-size: 0.875rem; background: #09090b; }
             th, td { border: 1px solid #27272a; padding: 1rem; text-align: left; vertical-align: top; }
             th { background: #18181b; color: #d4af37; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
             
-            /* SEMÁFOROS UNIVERSALES (PANTALLA) */
             .badge-red { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid #7f1d1d; padding: 4px 10px; border-radius: 4px; font-weight: 600; display: inline-block; font-size: 0.75rem; text-transform: uppercase;}
             .badge-yellow { background: rgba(234, 179, 8, 0.1); color: #facc15; border: 1px solid #713f12; padding: 4px 10px; border-radius: 4px; font-weight: 600; display: inline-block; font-size: 0.75rem; text-transform: uppercase;}
             .badge-green { background: rgba(34, 197, 94, 0.1); color: #4ade80; border: 1px solid #14532d; padding: 4px 10px; border-radius: 4px; font-weight: 600; display: inline-block; font-size: 0.75rem; text-transform: uppercase;}
             
-            /* FORMATO DE TEXTO (PANTALLA) */
             .markdown-content h1, .markdown-content h2, .markdown-content h3 { color: #e4e4e7; margin-top: 2rem; margin-bottom: 1rem; font-weight: 600; }
             .markdown-content h3 { font-size: 1.1rem; color: #d4af37; text-transform: uppercase; letter-spacing: 0.05em; }
             .markdown-content p { margin-bottom: 1rem; line-height: 1.7; }
@@ -34,19 +30,16 @@ function getHTML() {
             .markdown-content li { margin-bottom: 0.5rem; line-height: 1.6; }
             .markdown-content strong { color: #ffffff; font-weight: 600; }
 
-            /* TEMA IMPRESIÓN (PDF EJECUTIVO ALTA GAMA) */
             @media print {
                 @page { size: A4; margin: 2cm; }
                 body { background: #ffffff !important; color: #1f2937 !important; font-size: 10pt; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
                 .no-print { display: none !important; }
                 
-                /* Portada Ejecutiva */
                 .cover-page { display: flex; flex-direction: column; justify-content: center; height: 90vh; page-break-after: always; text-align: left; }
                 .cover-title { font-size: 2.5rem; font-weight: 800; color: #111827; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 4px solid #b8860b; padding-bottom: 1rem; margin-bottom: 2rem; }
                 .cover-subtitle { font-size: 1.25rem; color: #4b5563; text-transform: uppercase; letter-spacing: 0.2em; }
                 .cover-meta { margin-top: auto; font-size: 0.875rem; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 1rem; }
                 
-                /* Estructura del Reporte */
                 .report-section { 
                     page-break-before: always; 
                     break-before: page;
@@ -70,7 +63,6 @@ function getHTML() {
                     margin-bottom: 1.5rem;
                 }
                 
-                /* Blindaje de Párrafos y VIÑETAS (No se cortan a la mitad) */
                 .markdown-content p { 
                     line-height: 1.7; 
                     text-align: justify; 
@@ -82,14 +74,13 @@ function getHTML() {
                     line-height: 1.7;
                     text-align: justify;
                     margin-bottom: 1.2rem;
-                    page-break-inside: avoid; /* OBLIGA A PASAR EL PUNTO ENTERO A LA OTRA HOJA */
+                    page-break-inside: avoid;
                 }
                 .markdown-content strong { color: #000000 !important; }
                 
-                /* Tablas PDF Blindadas y Títulos Repetidos */
                 table { page-break-inside: auto; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; }
-                thead { display: table-header-group; } /* REPITE LOS ENCABEZADOS EN CADA PÁGINA */
-                tr { page-break-inside: avoid; page-break-after: auto; } /* LA FILA NO SE PARTE A LA MITAD */
+                thead { display: table-header-group; }
+                tr { page-break-inside: avoid; page-break-after: auto; }
                 th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: #ffffff !important; padding: 12px; vertical-align: top; }
                 th { background: #f9fafb !important; color: #b8860b !important; font-size: 9pt; text-transform: uppercase; }
                 td { font-size: 9.5pt; }
@@ -153,11 +144,11 @@ function getHTML() {
                     if (matchNumero) {
                         const calif = parseInt(matchNumero[1], 10);
                         if (calif <= 5) {
-                            td.innerHTML = \`<span class="badge-red">\${td.innerHTML}</span>\`;
+                            td.innerHTML = '<span class="badge-red">' + td.innerHTML + '</span>';
                         } else if (calif <= 7) {
-                            td.innerHTML = \`<span class="badge-yellow">\${td.innerHTML}</span>\`;
+                            td.innerHTML = '<span class="badge-yellow">' + td.innerHTML + '</span>';
                         } else {
-                            td.innerHTML = \`<span class="badge-green">\${td.innerHTML}</span>\`;
+                            td.innerHTML = '<span class="badge-green">' + td.innerHTML + '</span>';
                         }
                         return; 
                     }
@@ -167,11 +158,11 @@ function getHTML() {
                     const keywordsVerdes = ['óptimo', 'adecuada', 'coherente', 'positivo', 'excelente', 'fuerte', 'fortaleza', 'bajo', 'adecuado'];
 
                     if (keywordsRojas.some(kw => texto.includes(kw)) || texto === 'no') {
-                        td.innerHTML = \`<span class="badge-red">\${td.innerHTML}</span>\`;
+                        td.innerHTML = '<span class="badge-red">' + td.innerHTML + '</span>';
                     } else if (keywordsAmarillas.some(kw => texto.includes(kw))) {
-                        td.innerHTML = \`<span class="badge-yellow">\${td.innerHTML}</span>\`;
+                        td.innerHTML = '<span class="badge-yellow">' + td.innerHTML + '</span>';
                     } else if (keywordsVerdes.some(kw => texto.includes(kw)) || texto === 'sí' || texto === 'si') {
-                        td.innerHTML = \`<span class="badge-green">\${td.innerHTML}</span>\`;
+                        td.innerHTML = '<span class="badge-green">' + td.innerHTML + '</span>';
                     }
                 });
                 return div.innerHTML;
@@ -181,7 +172,7 @@ function getHTML() {
                 const dna = document.getElementById('dna').value;
                 if (!dna) return;
                 
-                document.getElementById('pdf-domain').innerText = "Activo analizado: " + dna;
+                document.getElementById('pdf-domain').innerText = 'Activo analizado: ' + dna;
                 
                 const btn = document.getElementById('btn-ejecutar');
                 const status = document.getElementById('status');
@@ -190,8 +181,8 @@ function getHTML() {
                 
                 btn.disabled = true;
                 btnPdf.classList.add('hidden'); 
-                reporte.innerHTML = "";
-                status.innerText = "EXTRAYENDO DOSSIER Y PROCESANDO HEURÍSTICAS...";
+                reporte.innerHTML = '';
+                status.innerText = 'EXTRAYENDO DOSSIER Y PROCESANDO HEURÍSTICAS...';
 
                 const etapas = [
                     {id: 'INTRO', title: 'I. Diagnóstico de Ingeniería'},
@@ -203,4 +194,54 @@ function getHTML() {
                     {id: 'WISHLIST', title: 'VII. Lista de Deseos'},
                     {id: 'FUGAS', title: 'VIII. 15 Fugas de Capital'},
                     {id: 'ACCIONES', title: 'IX. 15 Acciones Tácticas'},
-                    {id: 'HERRAMIENTAS', title: 'X. Herramientas de
+                    {id: 'HERRAMIENTAS', title: 'X. Herramientas de Escala'},
+                    {id: 'OMNI', title: 'XI. Autoridad y Hoja de Ruta'}
+                ];
+
+                for (const etapa of etapas) {
+                    const div = document.createElement('div');
+                    div.className = 'report-section animate-pulse';
+                    div.id = 'section-' + etapa.id;
+                    div.innerHTML = '<h3 class="text-zinc-600 text-[10px] tracking-[0.5em] mb-4 uppercase no-print">' + etapa.title + '</h3>' +
+                                     '<div id="content-' + etapa.id + '" class="markdown-content text-zinc-400 font-light italic">Analizando nodos...</div>';
+                    reporte.appendChild(div);
+
+                    try {
+                        const res = await fetch('/diseccion', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ dna: dna, etapaId: etapa.id })
+                        });
+                        const data = await res.json();
+                        
+                        const contentDiv = document.getElementById('content-' + etapa.id);
+                        const sectionDiv = document.getElementById('section-' + etapa.id);
+                        
+                        sectionDiv.classList.remove('animate-pulse');
+                        sectionDiv.classList.add('border-gold');
+                        contentDiv.classList.remove('italic', 'text-zinc-400');
+                        contentDiv.classList.add('text-zinc-300');
+                        
+                        let htmlLimpio = marked.parse(data.content);
+                        
+                        if(htmlLimpio.includes('table')) {
+                            htmlLimpio = aplicarSemaforos(htmlLimpio);
+                        }
+                        
+                        contentDiv.innerHTML = htmlLimpio;
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    } catch (e) {
+                        console.error(e);
+                        document.getElementById('content-' + etapa.id).innerHTML = '<span class="text-red-500 font-bold">ERROR DE RUPTURA: Fallo en la red o servidor.</span>';
+                    }
+                }
+                status.innerText = 'AUDITORÍA FINALIZADA. LISTO PARA EXPORTACIÓN EJECUTIVA.';
+                btn.disabled = false;
+                btnPdf.classList.remove('hidden');
+            }
+        </script>
+    </body>
+    </html>
+    `;
+}
+module.exports = { getHTML };
