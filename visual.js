@@ -33,7 +33,6 @@ function getHTML() {
             .markdown-content strong { color: #ffffff; font-weight: 600; }
 
             @media print {
-                /* Aumentamos el margen superior para que no se pegue */
                 @page { size: A4; margin: 2.5cm 2cm 2cm 2cm; }
                 body { background: #ffffff !important; color: #1f2937 !important; font-size: 10pt; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
                 .no-print { display: none !important; }
@@ -43,7 +42,6 @@ function getHTML() {
                 .cover-subtitle { font-size: 1.25rem; color: #4b5563; text-transform: uppercase; letter-spacing: 0.2em; }
                 .cover-meta { margin-top: auto; font-size: 0.875rem; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 1rem; }
                 
-                /* Agregamos padding superior a las secciones para separarlas del margen */
                 .report-section { page-break-before: always; border-left: 3px solid #b8860b !important; padding-left: 1.5rem; margin-bottom: 2.5rem; padding-top: 1rem; }
                 #section-INTRO { page-break-before: auto; }
 
@@ -53,7 +51,6 @@ function getHTML() {
                 .markdown-content li { line-height: 1.7; text-align: justify; margin-bottom: 1.2rem; page-break-inside: avoid; }
                 .markdown-content strong { color: #000000 !important; }
                 
-                /* BLINDAJE AGRESIVO DE TABLAS PARA EVITAR CORTES Y REPETIR ENCABEZADOS */
                 table { page-break-inside: auto; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; }
                 thead { display: table-header-group; }
                 tfoot { display: table-footer-group; }
@@ -254,4 +251,31 @@ function getHTML() {
 
             function pintarSeccion(etapaId, content) {
                 const contentDiv = document.getElementById('content-' + etapaId);
-                const sectionDiv = document
+                const sectionDiv = document.getElementById('section-' + etapaId);
+                const loadTitle = document.getElementById('load-title-' + etapaId);
+
+                if(!contentDiv || !sectionDiv) return;
+
+                if(loadTitle) loadTitle.style.display = 'none';
+
+                sectionDiv.classList.remove('animate-pulse');
+                sectionDiv.classList.add('border-gold');
+                contentDiv.classList.remove('italic', 'text-zinc-400');
+                contentDiv.classList.add('text-zinc-300');
+
+                let textoSuavizado = suavizarMayusculas(content);
+                let htmlLimpio = marked.parse(textoSuavizado);
+
+                if(htmlLimpio.includes('table')) {
+                    htmlLimpio = aplicarSemaforos(htmlLimpio);
+                }
+
+                contentDiv.innerHTML = htmlLimpio;
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        </script>
+    </body>
+    </html>
+    `;
+}
+module.exports = { getHTML };
