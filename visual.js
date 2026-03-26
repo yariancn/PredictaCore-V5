@@ -130,7 +130,6 @@ function getHTML() {
                 }).join('\\n');
             }
 
-            // CORRECCIÓN DE SEMÁFOROS: Solo colorea la celda que contiene el número, no pinta palabras al azar.
             function aplicarSemaforos(htmlContent) {
                 const div = document.createElement('div');
                 div.innerHTML = htmlContent;
@@ -149,6 +148,9 @@ function getHTML() {
                 return div.innerHTML;
             }
 
+            let pollingInterval = null;
+            let paintedEtapas = new Set();
+
             async function ejecutar() {
                 const dna = document.getElementById('dna').value;
                 if (!dna) return;
@@ -162,7 +164,10 @@ function getHTML() {
                 btn.disabled = true;
                 btnPdf.classList.add('hidden'); 
                 reporte.innerHTML = '';
-                status.innerText = 'EXTRAYENDO DOSSIER Y PROCESANDO HEURÍSTICAS...';
+                status.innerText = 'CONECTANDO CON EL MOTOR AUTÓNOMO...';
+
+                paintedEtapas.clear();
+                if (pollingInterval) clearInterval(pollingInterval);
 
                 const etapas = [
                     {id: 'INTRO', title: 'I. Diagnóstico de Ingeniería'},
@@ -178,50 +183,97 @@ function getHTML() {
                     {id: 'OMNI', title: 'XI. Autoridad y Hoja de Ruta'}
                 ];
 
-                for (const etapa of etapas) {
+                // Crear los contenedores vacíos para mantener la estructura visual
+                etapas.forEach(etapa => {
                     const div = document.createElement('div');
                     div.className = 'report-section animate-pulse';
                     div.id = 'section-' + etapa.id;
                     div.innerHTML = '<h3 class="text-zinc-600 text-[10px] tracking-[0.5em] mb-4 uppercase no-print">' + etapa.title + '</h3>' +
-                                     '<div id="content-' + etapa.id + '" class="markdown-content text-zinc-400 font-light italic">Analizando nodos...</div>';
+                                     '<div id="content-' + etapa.id + '" class="markdown-content text-zinc-400 font-light italic">En cola de procesamiento...</div>';
                     reporte.appendChild(div);
+                });
 
-                    try {
-                        const res = await fetch('/diseccion', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ dna: dna, etapaId: etapa.id })
-                        });
-                        const data = await res.json();
-                        
-                        const contentDiv = document.getElementById('content-' + etapa.id);
-                        const sectionDiv = document.getElementById('section-' + etapa.id);
-                        
-                        sectionDiv.classList.remove('animate-pulse');
-                        sectionDiv.classList.add('border-gold');
-                        contentDiv.classList.remove('italic', 'text-zinc-400');
-                        contentDiv.classList.add('text-zinc-300');
-                        
-                        let textoSuavizado = suavizarMayusculas(data.content);
-                        let htmlLimpio = marked.parse(textoSuavizado);
-                        
-                        if(htmlLimpio.includes('table')) {
-                            htmlLimpio = aplicarSemaforos(htmlLimpio);
+                try {
+                    // EL DISPARO: Se envía la orden y se libera el navegador
+                    const startRes = await fetch('/start', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ dna: dna })
+                    });
+                    const startData = await startRes.json();
+                    const jobId = startData.jobId;
+
+                    status.innerText = 'AUDITORÍA CORRIENDO EN SEGUNDO PLANO (PUEDES CAMBIAR DE PESTAÑA)';
+
+                    // EL RADAR: Pregunta al servidor cada 5 segundos cómo va todo
+                    pollingInterval = setInterval(async () => {
+                        try {
+                            const pollRes = await fetch('/poll?jobId=' + encodeURIComponent(jobId));
+                            const jobInfo = await pollRes.json();
+
+                            if (jobInfo.status === 'not_found') return;
+
+                            // Revisamos si el servidor ya terminó alguna sección nueva y la pintamos
+                            for (const etapaId in jobInfo.progress) {
+                                if (!paintedEtapas.has(etapaId)) {
+                                    pintarSeccion(etapaId, jobInfo.progress[etapaId]);
+                                    paintedEtapas.add(etapaId);
+                                }
+                            }
+
+                            // Actualizamos visualmente en qué sección está trabajando actualmente
+                            if (jobInfo.currentEtapa && !paintedEtapas.has(jobInfo.currentEtapa)) {
+                                const contentDiv = document.getElementById('content-' + jobInfo.currentEtapa);
+                                if (contentDiv && contentDiv.innerText === 'En cola de procesamiento...') {
+                                     contentDiv.innerText = 'Analizando nodos...';
+                                }
+                            }
+
+                            // Verificamos si ya terminó todo el proceso
+                            if (jobInfo.status === 'done' || jobInfo.status === 'error') {
+                                clearInterval(pollingInterval);
+                                status.innerText = jobInfo.status === 'done' ? 'AUDITORÍA FINALIZADA. LISTO PARA EXPORTACIÓN EJECUTIVA.' : 'ERROR CRÍTICO: FALLO EN MOTOR DE FONDO.';
+                                btn.disabled = false;
+                                if(jobInfo.status === 'done') btnPdf.classList.remove('hidden');
+
+                                // Quitar el parpadeo de pulso a las secciones que hayan quedado
+                                etapas.forEach(etapa => {
+                                    const sectionDiv = document.getElementById('section-' + etapa.id);
+                                    if(sectionDiv) sectionDiv.classList.remove('animate-pulse');
+                                });
+                            }
+                        } catch (e) {
+                            console.error("Error en el radar de actualización:", e);
                         }
-                        
-                        contentDiv.innerHTML = htmlLimpio;
-                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                        
-                        await new Promise(resolve => setTimeout(resolve, 3000));
-                        
-                    } catch (e) {
-                        console.error(e);
-                        document.getElementById('content-' + etapa.id).innerHTML = '<span class="text-red-500 font-bold">ERROR DE RUPTURA: Fallo en la red o servidor.</span>';
-                    }
+                    }, 5000); // 5000ms = 5 segundos
+
+                } catch (e) {
+                    console.error("Fallo al iniciar el servidor:", e);
+                    status.innerText = 'ERROR DE CONEXIÓN CON EL MOTOR.';
+                    btn.disabled = false;
                 }
-                status.innerText = 'AUDITORÍA FINALIZADA. LISTO PARA EXPORTACIÓN EJECUTIVA.';
-                btn.disabled = false;
-                btnPdf.classList.remove('hidden');
+            }
+
+            function pintarSeccion(etapaId, content) {
+                const contentDiv = document.getElementById('content-' + etapaId);
+                const sectionDiv = document.getElementById('section-' + etapaId);
+
+                if(!contentDiv || !sectionDiv) return;
+
+                sectionDiv.classList.remove('animate-pulse');
+                sectionDiv.classList.add('border-gold');
+                contentDiv.classList.remove('italic', 'text-zinc-400');
+                contentDiv.classList.add('text-zinc-300');
+
+                let textoSuavizado = suavizarMayusculas(content);
+                let htmlLimpio = marked.parse(textoSuavizado);
+
+                if(htmlLimpio.includes('table')) {
+                    htmlLimpio = aplicarSemaforos(htmlLimpio);
+                }
+
+                contentDiv.innerHTML = htmlLimpio;
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
         </script>
     </body>
