@@ -1,4 +1,4 @@
-// server.js - BÚNKER 5: OPERADOR LÓGICO (MEMORIA EXTENDIDA)
+// server.js - BÚNKER 5: OPERADOR LÓGICO (PROTECCIÓN RAM A 25 MIN)
 
 const express = require('express');
 const { PROMPTS } = require('./cerebro'); 
@@ -34,9 +34,8 @@ app.post('/diseccion', async (req, res) => {
         console.log(`[+] Extrayendo Visión Absoluta de: ${targetUrl}`);
         dossierCache[targetUrl] = await captureAndScrape(targetUrl);
         
-        // LA SOLUCIÓN DEL TIEMPO: Ampliamos la memoria a 2 horas (120 minutos)
-        // Evita que el sistema reinicie la extracción si la pestaña se duerme.
-        setTimeout(() => { delete dossierCache[targetUrl]; }, 1000 * 60 * 120);
+        // PROTECCIÓN RAM: 25 minutos exactos para salvar el servidor del colapso OOM
+        setTimeout(() => { delete dossierCache[targetUrl]; }, 1000 * 60 * 25);
       }
       datosTarget = dossierCache[targetUrl];
     } else {
