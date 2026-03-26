@@ -19,9 +19,9 @@ function getHTML() {
             th, td { border: 1px solid #27272a; padding: 1rem; text-align: left; vertical-align: top; }
             th { background: #18181b; color: #d4af37; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
             
-            .badge-red { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid #7f1d1d; padding: 4px 10px; border-radius: 4px; font-weight: 600; display: inline-block; font-size: 0.75rem; text-transform: uppercase;}
-            .badge-yellow { background: rgba(234, 179, 8, 0.1); color: #facc15; border: 1px solid #713f12; padding: 4px 10px; border-radius: 4px; font-weight: 600; display: inline-block; font-size: 0.75rem; text-transform: uppercase;}
-            .badge-green { background: rgba(34, 197, 94, 0.1); color: #4ade80; border: 1px solid #14532d; padding: 4px 10px; border-radius: 4px; font-weight: 600; display: inline-block; font-size: 0.75rem; text-transform: uppercase;}
+            .badge-red { color: #f87171; font-weight: 800; font-size: 1.2rem;}
+            .badge-yellow { color: #facc15; font-weight: 800; font-size: 1.2rem;}
+            .badge-green { color: #4ade80; font-weight: 800; font-size: 1.2rem;}
             
             .markdown-content h1, .markdown-content h2, .markdown-content h3 { color: #e4e4e7; margin-top: 2rem; margin-bottom: 1rem; font-weight: 600; }
             .markdown-content h3 { font-size: 1.1rem; color: #d4af37; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -57,10 +57,10 @@ function getHTML() {
                 th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: #ffffff !important; padding: 12px; vertical-align: top; }
                 th { background: #f9fafb !important; color: #b8860b !important; font-size: 9pt; text-transform: uppercase; }
                 td { font-size: 9.5pt; }
-                ul, ol { page-break-inside: auto; }
-                .badge-red { background: transparent !important; color: #dc2626 !important; border: 1px solid #dc2626 !important; }
-                .badge-yellow { background: transparent !important; color: #d97706 !important; border: 1px solid #d97706 !important; }
-                .badge-green { background: transparent !important; color: #16a34a !important; border: 1px solid #16a34a !important; }
+                
+                .badge-red { color: #dc2626 !important; font-weight: bold; }
+                .badge-yellow { color: #d97706 !important; font-weight: bold; }
+                .badge-green { color: #16a34a !important; font-weight: bold; }
             }
         </style>
     </head>
@@ -100,13 +100,10 @@ function getHTML() {
         <script>
             document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            // ESCUDO ANTI-MAYÚSCULAS AGRESIVO: Intercepta bloques gritados y los normaliza
             function suavizarMayusculas(texto) {
                 const lineas = texto.split('\\n');
                 return lineas.map(linea => {
-                    if (linea.startsWith('###')) return linea; // Respetar títulos principales
-                    
-                    // Si es una fila de tabla, evaluamos celda por celda
+                    if (linea.startsWith('###')) return linea; 
                     if (linea.trim().startsWith('|')) {
                         let celdas = linea.split('|');
                         celdas = celdas.map(celda => {
@@ -114,7 +111,7 @@ function getHTML() {
                             const letras = textoCelda.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '');
                             if (letras.length > 15) {
                                 const mayusculas = textoCelda.replace(/[^A-ZÁÉÍÓÚÑ]/g, '').length;
-                                if (mayusculas / letras.length > 0.45) { // Si más del 45% son mayúsculas
+                                if (mayusculas / letras.length > 0.45) { 
                                     return ' ' + textoCelda.charAt(0).toUpperCase() + textoCelda.slice(1).toLowerCase() + ' ';
                                 }
                             }
@@ -122,8 +119,6 @@ function getHTML() {
                         });
                         return celdas.join('|');
                     }
-
-                    // Evaluación de párrafos normales
                     const letras = linea.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '');
                     if (letras.length > 20) {
                         const mayusculas = linea.replace(/[^A-ZÁÉÍÓÚÑ]/g, '').length;
@@ -135,13 +130,13 @@ function getHTML() {
                 }).join('\\n');
             }
 
+            // CORRECCIÓN DE SEMÁFOROS: Solo colorea la celda que contiene el número, no pinta palabras al azar.
             function aplicarSemaforos(htmlContent) {
                 const div = document.createElement('div');
                 div.innerHTML = htmlContent;
                 const celdas = div.querySelectorAll('td');
                 celdas.forEach(td => {
                     const textoOriginal = td.textContent.trim();
-                    const texto = textoOriginal.toLowerCase();
                     const matchNumero = textoOriginal.match(/^(\\d+)(?:\\/10)?$/);
                     
                     if (matchNumero) {
@@ -149,16 +144,7 @@ function getHTML() {
                         if (calif <= 5) td.innerHTML = '<span class="badge-red">' + td.innerHTML + '</span>';
                         else if (calif <= 7) td.innerHTML = '<span class="badge-yellow">' + td.innerHTML + '</span>';
                         else td.innerHTML = '<span class="badge-green">' + td.innerHTML + '</span>';
-                        return; 
                     }
-                    
-                    const keywordsRojas = ['deficiente', 'alto', 'fuga', 'riesgo', 'negativo', 'crítico', 'amenaza', 'ausente', 'pobre', 'nulo'];
-                    const keywordsAmarillas = ['parcial', 'medio', 'no evaluable', 'no detectado', 'presente', 'moderado', 'regular'];
-                    const keywordsVerdes = ['óptimo', 'adecuada', 'coherente', 'positivo', 'excelente', 'fuerte', 'fortaleza', 'bajo', 'adecuado'];
-
-                    if (keywordsRojas.some(kw => texto.includes(kw)) || texto === 'no') td.innerHTML = '<span class="badge-red">' + td.innerHTML + '</span>';
-                    else if (keywordsAmarillas.some(kw => texto.includes(kw))) td.innerHTML = '<span class="badge-yellow">' + td.innerHTML + '</span>';
-                    else if (keywordsVerdes.some(kw => texto.includes(kw)) || texto === 'sí' || texto === 'si') td.innerHTML = '<span class="badge-green">' + td.innerHTML + '</span>';
                 });
                 return div.innerHTML;
             }
@@ -216,13 +202,9 @@ function getHTML() {
                         contentDiv.classList.remove('italic', 'text-zinc-400');
                         contentDiv.classList.add('text-zinc-300');
                         
-                        // 1. Aplicar Escudo Anti-Mayúsculas
                         let textoSuavizado = suavizarMayusculas(data.content);
-                        
-                        // 2. Procesar Markdown a HTML
                         let htmlLimpio = marked.parse(textoSuavizado);
                         
-                        // 3. Aplicar semáforos si hay tablas
                         if(htmlLimpio.includes('table')) {
                             htmlLimpio = aplicarSemaforos(htmlLimpio);
                         }
@@ -230,7 +212,6 @@ function getHTML() {
                         contentDiv.innerHTML = htmlLimpio;
                         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                         
-                        // Respirador
                         await new Promise(resolve => setTimeout(resolve, 3000));
                         
                     } catch (e) {
