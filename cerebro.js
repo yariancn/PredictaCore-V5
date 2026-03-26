@@ -1,4 +1,4 @@
-// cerebro.js - BÚNKER 2: FORMATO PDF 100% ESTRICTO Y SEO REAL
+// cerebro.js - BÚNKER 2: FORMATO PDF 100% ESTRICTO Y SEO DE PRIMERA PÁGINA
 
 const PROMPTS = {
   INTRO: (d) => `Inicia tu respuesta EXACTAMENTE con este encabezado: ### I. INTRODUCCIÓN Y RESUMEN DEL ACTIVO
@@ -16,12 +16,12 @@ REGLAS INQUEBRANTABLES:
 2. TIENES ESTRICTAMENTE PROHIBIDO usar saltos de línea (Enter) dentro de las celdas, o romperás el código de la tabla. Todo el texto de una celda debe ir en una sola línea continua. Dossier: ${d}`,
 
   VISIBILIDAD: (d) => `Inicia tu respuesta EXACTAMENTE con este encabezado: ### IV. VISIBILIDAD EXTERNA
-[INSTRUCCIÓN CRÍTICA: DEBES UTILIZAR LA HERRAMIENTA DE BÚSQUEDA DE GOOGLE AHORA MISMO para investigar el dominio y extraer su Autoridad de Dominio (DA) y Tráfico Orgánico estimado].
-Escribe con esta estructura exacta:
-1. **Estatus de Reputación**: Indica estrellas y reseñas.
-2. **Competidores Directos**: Nombra al país y a 3 competidores reales obtenidos de Google.
-3. **Métricas SEO Duras**: Imprime la Autoridad de Dominio (DA) o el nivel de tráfico estimado.
-4. **Análisis SEO de Élite**: Redacta el impacto de la fricción de mercado. Dossier: ${d}`,
+[INSTRUCCIÓN CRÍTICA: DEBES UTILIZAR LA HERRAMIENTA DE BÚSQUEDA DE GOOGLE AHORA MISMO. Busca el nombre de la marca para encontrar reseñas reales, y busca su producto principal para ver qué domina la primera página de resultados].
+Escribe con esta estructura exacta (NO uses títulos principales adicionales):
+1. **Estatus de Reputación**: Indica estrellas, reseñas y la FUENTE EXACTA (nombra la plataforma o URL) obtenida de tu búsqueda.
+2. **Competidores en Primera Página**: Nombra al país y a 3 competidores reales que acaparan los primeros resultados de Google para este nicho.
+3. **Fricción de Búsqueda**: Nombra 3 palabras clave transaccionales críticas.
+4. **Análisis SEO de Élite**: Redacta el impacto de perder la primera página contra estos competidores identificados. Dossier: ${d}`,
 
   BENCHMARK: (d) => `Inicia tu respuesta EXACTAMENTE con este encabezado: ### V. RADIOGRAFÍA ESTRATÉGICA (BENCHMARK)
 Presenta una tabla Markdown ESTRICTAMENTE con esta cabecera exacta:
