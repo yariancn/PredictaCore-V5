@@ -1,4 +1,4 @@
-// server.js - BÚNKER 5: OPERADOR LÓGICO (ESTABLE PYA20)
+// server.js - BÚNKER 5: OPERADOR LÓGICO (MEMORIA EXTENDIDA)
 
 const express = require('express');
 const { PROMPTS } = require('./cerebro'); 
@@ -33,7 +33,10 @@ app.post('/diseccion', async (req, res) => {
       if (!dossierCache[targetUrl]) {
         console.log(`[+] Extrayendo Visión Absoluta de: ${targetUrl}`);
         dossierCache[targetUrl] = await captureAndScrape(targetUrl);
-        setTimeout(() => { delete dossierCache[targetUrl]; }, 1000 * 60 * 15);
+        
+        // LA SOLUCIÓN DEL TIEMPO: Ampliamos la memoria a 2 horas (120 minutos)
+        // Evita que el sistema reinicie la extracción si la pestaña se duerme.
+        setTimeout(() => { delete dossierCache[targetUrl]; }, 1000 * 60 * 120);
       }
       datosTarget = dossierCache[targetUrl];
     } else {
