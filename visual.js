@@ -183,18 +183,17 @@ function getHTML() {
                     {id: 'OMNI', title: 'XI. Autoridad y Hoja de Ruta'}
                 ];
 
-                // Crear los contenedores vacíos para mantener la estructura visual
                 etapas.forEach(etapa => {
                     const div = document.createElement('div');
                     div.className = 'report-section animate-pulse';
                     div.id = 'section-' + etapa.id;
-                    div.innerHTML = '<h3 class="text-zinc-600 text-[10px] tracking-[0.5em] mb-4 uppercase no-print">' + etapa.title + '</h3>' +
+                    // Se agregó el ID al título de carga para poder ocultarlo después
+                    div.innerHTML = '<h3 id="load-title-' + etapa.id + '" class="text-zinc-600 text-[10px] tracking-[0.5em] mb-4 uppercase no-print">' + etapa.title + '</h3>' +
                                      '<div id="content-' + etapa.id + '" class="markdown-content text-zinc-400 font-light italic">En cola de procesamiento...</div>';
                     reporte.appendChild(div);
                 });
 
                 try {
-                    // EL DISPARO: Se envía la orden y se libera el navegador
                     const startRes = await fetch('/start', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -205,7 +204,6 @@ function getHTML() {
 
                     status.innerText = 'AUDITORÍA CORRIENDO EN SEGUNDO PLANO (PUEDES CAMBIAR DE PESTAÑA)';
 
-                    // EL RADAR: Pregunta al servidor cada 5 segundos cómo va todo
                     pollingInterval = setInterval(async () => {
                         try {
                             const pollRes = await fetch('/poll?jobId=' + encodeURIComponent(jobId));
@@ -213,7 +211,6 @@ function getHTML() {
 
                             if (jobInfo.status === 'not_found') return;
 
-                            // Revisamos si el servidor ya terminó alguna sección nueva y la pintamos
                             for (const etapaId in jobInfo.progress) {
                                 if (!paintedEtapas.has(etapaId)) {
                                     pintarSeccion(etapaId, jobInfo.progress[etapaId]);
@@ -221,7 +218,6 @@ function getHTML() {
                                 }
                             }
 
-                            // Actualizamos visualmente en qué sección está trabajando actualmente
                             if (jobInfo.currentEtapa && !paintedEtapas.has(jobInfo.currentEtapa)) {
                                 const contentDiv = document.getElementById('content-' + jobInfo.currentEtapa);
                                 if (contentDiv && contentDiv.innerText === 'En cola de procesamiento...') {
@@ -229,14 +225,12 @@ function getHTML() {
                                 }
                             }
 
-                            // Verificamos si ya terminó todo el proceso
                             if (jobInfo.status === 'done' || jobInfo.status === 'error') {
                                 clearInterval(pollingInterval);
                                 status.innerText = jobInfo.status === 'done' ? 'AUDITORÍA FINALIZADA. LISTO PARA EXPORTACIÓN EJECUTIVA.' : 'ERROR CRÍTICO: FALLO EN MOTOR DE FONDO.';
                                 btn.disabled = false;
                                 if(jobInfo.status === 'done') btnPdf.classList.remove('hidden');
 
-                                // Quitar el parpadeo de pulso a las secciones que hayan quedado
                                 etapas.forEach(etapa => {
                                     const sectionDiv = document.getElementById('section-' + etapa.id);
                                     if(sectionDiv) sectionDiv.classList.remove('animate-pulse');
@@ -245,7 +239,7 @@ function getHTML() {
                         } catch (e) {
                             console.error("Error en el radar de actualización:", e);
                         }
-                    }, 5000); // 5000ms = 5 segundos
+                    }, 5000);
 
                 } catch (e) {
                     console.error("Fallo al iniciar el servidor:", e);
@@ -257,8 +251,12 @@ function getHTML() {
             function pintarSeccion(etapaId, content) {
                 const contentDiv = document.getElementById('content-' + etapaId);
                 const sectionDiv = document.getElementById('section-' + etapaId);
+                const loadTitle = document.getElementById('load-title-' + etapaId);
 
                 if(!contentDiv || !sectionDiv) return;
+
+                // Ocultar el título de carga para evitar el eco con el título real de la IA
+                if(loadTitle) loadTitle.style.display = 'none';
 
                 sectionDiv.classList.remove('animate-pulse');
                 sectionDiv.classList.add('border-gold');
