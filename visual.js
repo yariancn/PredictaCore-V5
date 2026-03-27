@@ -145,3 +145,185 @@ function getHTML() {
                     if (matchNumero) {
                         const calif = parseInt(matchNumero[1], 10);
                         if (calif <= 5) td.innerHTML = '<span class="badge-red">' + td.innerHTML + '</span>';
+                        else if (calif <= 7) td.innerHTML = '<span class="badge-yellow">' + td.innerHTML + '</span>';
+                        else td.innerHTML = '<span class="badge-green">' + td.innerHTML + '</span>';
+                    }
+                });
+                return div.innerHTML;
+            }
+
+            let pollingInterval = null;
+            let paintedEtapas = new Set();
+
+            async function ejecutar() {
+                const dna = document.getElementById('dna').value;
+                if (!dna) return;
+                
+                document.getElementById('pdf-domain').innerText = 'Activo analizado: ' + dna;
+                const btn = document.getElementById('btn-ejecutar');
+                const status = document.getElementById('status');
+                const reporte = document.getElementById('reporte');
+                const btnPdf = document.getElementById('btn-pdf');
+                
+                btn.disabled = true;
+                btnPdf.classList.add('hidden'); 
+                reporte.innerHTML = '';
+                status.innerText = 'CONECTANDO CON EL MOTOR AUTÓNOMO...';
+
+                paintedEtapas.clear();
+                if (pollingInterval) clearInterval(pollingInterval);
+
+                const etapas = [
+                    {id: 'INTRO', title: 'I. Diagnóstico de Ingeniería'},
+                    {id: 'GEMELOS', title: 'II. Perfiles Psicológicos'},
+                    {id: 'SCORECARD', title: 'III. Scorecard PredictaCore'},
+                    {id: 'VISIBILIDAD', title: 'IV. Visibilidad Externa'},
+                    {id: 'BENCHMARK', title: 'V. Benchmarking Local'},
+                    {id: 'SWOT', title: 'VI. Matriz Estratégica'},
+                    {id: 'WISHLIST', title: 'VII. Lista de Deseos'},
+                    {id: 'FUGAS', title: 'VIII. 15 Fugas de Capital'},
+                    {id: 'ACCIONES', title: 'IX. 15 Acciones Tácticas'},
+                    {id: 'HERRAMIENTAS', title: 'X. Herramientas de Escala'},
+                    {id: 'OMNI', title: 'XI. Autoridad y Hoja de Ruta'}
+                ];
+
+                etapas.forEach(etapa => {
+                    const div = document.createElement('div');
+                    div.className = 'report-section animate-pulse';
+                    div.id = 'section-' + etapa.id;
+                    div.innerHTML = '<h3 id="load-title-' + etapa.id + '" class="text-zinc-600 text-[10px] tracking-[0.5em] mb-4 uppercase no-print">' + etapa.title + '</h3>' +
+                                     '<div id="content-' + etapa.id + '" class="markdown-content text-zinc-400 font-light italic">En cola de procesamiento...</div>';
+                    reporte.appendChild(div);
+                });
+
+                try {
+                    const startRes = await fetch('/start', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ dna: dna })
+                    });
+                    
+                    const startData = await startRes.json();
+                    
+                    if (!startRes.ok) {
+                        throw new Error(startData.error || "Error al iniciar auditoría");
+                    }
+                    
+                    const jobId = startData.jobId;
+
+                    status.innerText = 'AUDITORÍA CORRIENDO EN SEGUNDO PLANO (PUEDES CAMBIAR DE PESTAÑA)';
+
+                    pollingInterval = setInterval(async () => {
+                        try {
+                            const pollRes = await fetch('/poll?jobId=' + encodeURIComponent(jobId));
+                            const jobInfo = await pollRes.json();
+
+                            if (jobInfo.status === 'not_found') return;
+
+                            for (const etapaId in jobInfo.progress) {
+                                if (!paintedEtapas.has(etapaId)) {
+                                    pintarSeccion(etapaId, jobInfo.progress[etapaId]);
+                                    paintedEtapas.add(etapaId);
+                                }
+                            }
+
+                            if (jobInfo.currentEtapa && !paintedEtapas.has(jobInfo.currentEtapa)) {
+                                const contentDiv = document.getElementById('content-' + jobInfo.currentEtapa);
+                                if (contentDiv && contentDiv.innerText === 'En cola de procesamiento...') {
+                                     contentDiv.innerText = 'Analizando nodos...';
+                                }
+                            }
+
+                            if (jobInfo.status === 'done' || jobInfo.status === 'error') {
+                                clearInterval(pollingInterval);
+                                status.innerText = jobInfo.status === 'done' ? 'AUDITORÍA FINALIZADA. LISTO PARA EXPORTACIÓN EJECUTIVA.' : 'ERROR CRÍTICO: FALLO EN MOTOR DE FONDO.';
+                                btn.disabled = false;
+                                if(jobInfo.status === 'done') btnPdf.classList.remove('hidden');
+
+                                etapas.forEach(etapa => {
+                                    const sectionDiv = document.getElementById('section-' + etapa.id);
+                                    if(sectionDiv) sectionDiv.classList.remove('animate-pulse');
+                                });
+                            }
+                        } catch (e) {
+                            console.error("Error en el radar de actualización:", e);
+                        }
+                    }, 5000);
+
+                } catch (e) {
+                    console.error("Fallo al iniciar el servidor:", e);
+                    if (e.message.includes('ERR_NAME_NOT_RESOLVED')) {
+                        status.innerText = 'ERROR CRÍTICO: EL DOMINIO INGRESADO NO EXISTE O NO ES ACCESIBLE.';
+                    } else {
+                        status.innerText = 'ERROR DE CONEXIÓN CON EL MOTOR.';
+                    }
+                    btn.disabled = false;
+                }
+            }
+
+            function pintarSeccion(etapaId, content) {
+                const contentDiv = document.getElementById('content-' + etapaId);
+                const sectionDiv = document.getElementById('section-' + etapaId);
+                const loadTitle = document.getElementById('load-title-' + etapaId);
+
+                if(!contentDiv || !sectionDiv) return;
+
+                if(loadTitle) loadTitle.style.display = 'none';
+
+                sectionDiv.classList.remove('animate-pulse');
+                sectionDiv.classList.add('border-gold');
+                contentDiv.classList.remove('italic', 'text-zinc-400');
+                contentDiv.classList.add('text-zinc-300');
+
+                let textoSuavizado = suavizarMayusculas(content);
+                let htmlLimpio = marked.parse(textoSuavizado);
+
+                if(htmlLimpio.includes('table')) {
+                    htmlLimpio = aplicarSemaforos(htmlLimpio);
+                }
+
+                contentDiv.innerHTML = htmlLimpio;
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+
+            async function descargarPDFBackend() {
+                const btnPdf = document.getElementById('btn-pdf');
+                const btnOriginalText = btnPdf.innerText;
+                
+                btnPdf.innerText = 'GENERANDO PDF EJECUTIVO...';
+                btnPdf.disabled = true;
+
+                const htmlContent = document.documentElement.outerHTML;
+
+                try {
+                    const response = await fetch('/generate-pdf', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ html: htmlContent })
+                    });
+
+                    if (!response.ok) throw new Error("Fallo en la generación del PDF");
+
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'PredictaCore_Auditoria_' + document.getElementById('dna').value + '.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                } catch (error) {
+                    console.error("Error al descargar:", error);
+                    alert("Ocurrió un error al generar el PDF de alta calidad. Reintenta en unos segundos.");
+                } finally {
+                    btnPdf.innerText = btnOriginalText;
+                    btnPdf.disabled = false;
+                }
+            }
+        </script>
+    </body>
+    </html>
+    `;
+}
+module.exports = { getHTML };
