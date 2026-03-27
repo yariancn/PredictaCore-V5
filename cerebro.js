@@ -1,29 +1,182 @@
-// cerebro.js - BÚNKER 2: MULTILINGÜE, VISIÓN ESTRICTA Y SEO OXYGEN
+// server.js - BÚNKER 5: MOTOR AUTÓNOMO Y GENERADOR PDF EN BACKEND
 
-const IDIOMA = "INSTRUCCIÓN CRÍTICA Y ABSOLUTA: Detecta el idioma principal del sitio web analizado (basado en el Dossier y las Imágenes). DEBES redactar tu respuesta COMPLETA (incluyendo el encabezado, el análisis, las tablas y las viñetas) ESTRICTAMENTE en ese idioma detectado. Cero mezclas.";
+const express = require('express');
+const { PROMPTS } = require('./cerebro'); 
+const { getHTML } = require('./visual');
+const { captureAndScrape } = require('./motor'); 
+const { FIREWALL_IA } = require('./firewall');
+const { GoogleAuth } = require('google-auth-library');
+const puppeteer = require('puppeteer'); // Herramienta para generar el PDF
 
-const PROMPTS = {
-  INTRO: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### I. INTRODUCCIÓN Y RESUMEN DEL ACTIVO\nExplica con prosa de consultor de élite quiénes somos (PredictaCore) y nuestro enfoque. Redacta un diagnóstico agudo (3 a 5 líneas por idea). [OBLIGATORIO VISIÓN: Analiza las capturas de pantalla adjuntas. Critica severamente la interfaz visual: señala botones que no son claros, espacios en negro horribles, mal contraste o desorden]. Dossier: ${d}`,
+const app = express();
+const port = process.env.PORT || 8080;
 
-  GEMELOS: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### II. PERFILES PSICOLÓGICOS\nDiseña 4 perfiles de Gemelos Sintéticos. Redacta de 3 a 5 líneas fluidas por perfil, profundizando en sus dolores y motivaciones de compra. Dossier: ${d}`,
+// Aumentamos el límite para poder recibir el HTML completo de la página
+app.use(express.json({ limit: '10mb' }));
 
-  SCORECARD: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### III. SCORECARD DE SALUD COMERCIAL\nPresenta una tabla Markdown. Traduce esta cabecera: | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |\nREGLAS INQUEBRANTABLES:\n1. EXACTAMENTE 10 filas.\n2. PROHIBIDO usar saltos de línea (Enter) dentro de las celdas.\n3. Diagnóstico de 3 a 5 líneas. [OBLIGATORIO VISIÓN: Al menos 3 puntos de salud deben criticar fallos visuales reales vistos en las imágenes, como botones ilegibles o espacios vacíos]. Dossier: ${d}`,
+const dossierCache = {};
+const jobs = {}; 
 
-  VISIBILIDAD: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### IV. VISIBILIDAD EXTERNA Y SEO\nRealiza una Auditoría SEO Forense (Nivel Oxygen). Escribe con esta estructura (traduce los títulos):\n1. **Fricción de Autoridad**: Analiza la reputación y cómo las reseñas impactan la conversión orgánica (3 a 5 líneas).\n2. **Riesgo y Vulnerabilidad**: Evalúa el impacto financiero de depender de terceros (marketplaces, redes) en lugar de dominar la búsqueda orgánica propia (3 a 5 líneas).\n3. **Brechas de Palabras Clave (Keywords)**: Nombra 3 "Long-Tail Keywords" transaccionales exactas (en el idioma de la página) que el negocio está perdiendo.\n4. **Estrategia de Dominancia SERP**: Propón un plan de contenido agresivo para robarle tráfico orgánico a los líderes del nicho (3 a 5 líneas). Dossier: ${d}`,
+const ETAPAS_ORDEN = [
+    'INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK',
+    'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'
+];
 
-  BENCHMARK: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### V. RADIOGRAFÍA ESTRATÉGICA (BENCHMARK)\nElige a 3 competidores reales del nicho. Presenta una tabla Markdown. Traduce esta cabecera: | Criterio de Análisis | Activo Analizado | [Nombre Comp 1] | [Nombre Comp 2] | [Nombre Comp 3] |\nREGLAS: NO usar saltos de línea (Enter) en celdas. Evalúa 3 puntos de fricción profundos (3 a 5 líneas por celda). Dossier: ${d}`,
+app.get('/', (req, res) => res.send(getHTML()));
 
-  SWOT: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### VI. MATRIZ ESTRATÉGICA\nDesarrolla Fortalezas, Debilidades, Oportunidades y Amenazas (3 a 5 líneas cada una). REGLA: Inicia CADA viñeta con un NÚMERO y un PUNTO (ejemplo: 1., 2.). Dossier: ${d}`,
+app.post('/start', async (req, res) => {
+    const { dna } = req.body;
+    let targetUrl = dna.trim();
+    
+    const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
+    if (!targetUrl.startsWith('http') && isDomain) {
+        targetUrl = `https://${targetUrl}`;
+    }
+    
+    const jobId = targetUrl; 
 
-  WISHLIST: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### VII. LISTA DE DESEOS\n10 características tácticas de alto valor (3 a 5 líneas). REGLA: Inicia cada punto estrictamente con un NÚMERO y un PUNTO (1., 2. al 10.). Dossier: ${d}`,
+    if (!jobs[jobId] || jobs[jobId].status === 'done' || jobs[jobId].status === 'error') {
+        jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO' };
+        
+        ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
+            console.error("Fallo crítico en fondo:", e);
+            if(jobs[jobId]) jobs[jobId].status = 'error';
+        });
+    }
+    
+    res.json({ jobId });
+});
 
-  FUGAS: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### VIII. 15 PUNTOS DE FUGA\nIdentifica 15 hallazgos críticos de fricción. Marca las peores como **[HEMORRAGIA CRÍTICA]** (traduce la etiqueta). REGLA: Inicia cada punto con un NÚMERO y un PUNTO (1., 2. al 15.). [OBLIGATORIO VISIÓN: Identifica como fugas los defectos visuales de las fotos: botones poco claros, textos encimados, bloques negros]. Explica el impacto financiero de cada fuga (3 a 5 líneas). Dossier: ${d}`,
+app.get('/poll', (req, res) => {
+    const jobId = req.query.jobId;
+    if (!jobs[jobId]) return res.json({ status: 'not_found' });
+    res.json(jobs[jobId]);
+});
 
-  ACCIONES: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### IX. 15 ACCIONES TÁCTICAS\nProporciona la solución exacta a las 15 fugas. REGLA: Inicia cada punto con un NÚMERO y un PUNTO (1., 2. al 15.). [OBLIGATORIO: Incluye acciones claras de rediseño para los espacios negros o botones defectuosos]. (3 a 5 líneas por punto). Dossier: ${d}`,
+// NUEVO: MOTOR DE GENERACIÓN DE PDF EJECUTIVO EN EL SERVIDOR
+app.post('/generate-pdf', async (req, res) => {
+    const { html } = req.body;
+    let browser;
+    try {
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process', '--disable-gpu']
+        });
+        const page = await browser.newPage();
+        
+        // Inyectamos el HTML recibido
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        
+        // Generamos el PDF con reglas estrictas de impresión
+        const pdfBuffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: { top: '2.5cm', bottom: '2cm', left: '2cm', right: '2cm' }
+        });
+        
+        await browser.close();
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="PredictaCore_Auditoria.pdf"');
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error("Error al generar PDF:", error);
+        if (browser) await browser.close();
+        res.status(500).send("Fallo al generar el documento PDF.");
+    }
+});
 
-  HERRAMIENTAS: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### X. HERRAMIENTAS DE ESCALA\n5 soluciones SaaS (3 a 5 líneas justificando ROI). REGLA: Inicia cada punto con NÚMERO y PUNTO (1. al 5.). Dossier: ${d}`,
+async function ejecutarAuditoriaFondo(targetUrl, jobId) {
+    let datosTarget = { isUrl: false, texto: "", desktopBase64: null, mobileBase64: null };
+    const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
 
-  OMNI: (d) => `${IDIOMA}\nEscribe este encabezado traducido al idioma detectado: ### XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)\n3 fases de 7 días. REGLA: Inicia cada paso con NÚMERO y PUNTO (1., 2., 3.). Explica la ejecución en 3 a 5 líneas. Dossier: ${d}`
-};
+    if (isDomain || targetUrl.startsWith('http')) {
+        if (!dossierCache[targetUrl]) {
+            console.log(`[+] Extrayendo Visión Absoluta de: ${targetUrl}`);
+            dossierCache[targetUrl] = await captureAndScrape(targetUrl);
+            setTimeout(() => { delete dossierCache[targetUrl]; }, 1000 * 60 * 25);
+        }
+        datosTarget = dossierCache[targetUrl];
+    } else {
+        datosTarget.texto = targetUrl;
+    }
 
-module.exports = { PROMPTS };
+    const fechaActual = new Date().toLocaleDateString('es-ES', { 
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+    });
+
+    const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
+    const projectId = credenciales.project_id;
+    const location = 'us-central1'; 
+    
+    const auth = new GoogleAuth({
+        credentials: credenciales,
+        scopes: ['https://www.googleapis.com/auth/cloud-platform']
+    });
+    
+    const client = await auth.getClient();
+    const tokenResponse = await client.getAccessToken();
+    const accessToken = tokenResponse.token;
+    const vertexUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-2.5-pro:generateContent`;
+
+    for (const etapaId of ETAPAS_ORDEN) {
+        jobs[jobId].currentEtapa = etapaId; 
+        
+        try {
+            const promptFinal = PROMPTS[etapaId](datosTarget.texto);
+            
+            let partesMensaje = [
+                { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa todo basándote en que este es el presente absoluto.` },
+                { text: `DOSSIER DEL ACTIVO ANALIZADO:\n${datosTarget.texto}` }
+            ];
+
+            if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
+                partesMensaje.push({ text: "EVIDENCIA VISUAL 1: Captura de la versión Escritorio." });
+                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
+                partesMensaje.push({ text: "EVIDENCIA VISUAL 2: Captura de la versión Móvil." });
+                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
+            }
+
+            partesMensaje.push({ text: promptFinal });
+
+            const payload = {
+                systemInstruction: { parts: [{ text: FIREWALL_IA }] },
+                contents: [{ role: "user", parts: partesMensaje }],
+                generationConfig: { temperature: 0.1 }
+            };
+
+            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
+                payload.tools = [{ googleSearch: {} }];
+            }
+
+            const vertexRes = await fetch(vertexUrl, {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json", 
+                    "Authorization": `Bearer ${accessToken}` 
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!vertexRes.ok) {
+                const errorData = await vertexRes.text();
+                throw new Error(`Fallo en Vertex AI: ${errorData}`);
+            }
+
+            const vertexData = await vertexRes.json();
+            const textoForense = vertexData.candidates[0].content.parts[0].text;
+            
+            jobs[jobId].progress[etapaId] = textoForense;
+
+            await new Promise(resolve => setTimeout(resolve, 3000));
+
+        } catch (error) {
+            console.error(`Fallo en etapa ${etapaId}:`, error.message);
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\nDetalle: ${error.message}`;
+        }
+    }
+    
+    jobs[jobId].status = 'done'; 
+}
+
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR AUTÓNOMO Y PDF ACTIVO EN ${port}`));
