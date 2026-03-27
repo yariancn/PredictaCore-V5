@@ -1,4 +1,4 @@
-// server.js - BÚNKER 5: OPERADOR LÓGICO AUTÓNOMO (SEGUNDO PLANO)
+// server.js - BÚNKER 5: MOTOR AUTÓNOMO Y GENERADOR PDF EN BACKEND
 
 const express = require('express');
 const { PROMPTS } = require('./cerebro'); 
@@ -6,13 +6,15 @@ const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
+const puppeteer = require('puppeteer'); // Herramienta para generar el PDF
 
 const app = express();
 const port = process.env.PORT || 8080;
-app.use(express.json());
+
+// Aumentamos el límite para poder recibir el HTML completo de la página
+app.use(express.json({ limit: '10mb' }));
 
 const dossierCache = {};
-// NUEVA MEMORIA CENTRAL: Aquí se guardan los reportes mientras se procesan en fondo
 const jobs = {}; 
 
 const ETAPAS_ORDEN = [
@@ -22,7 +24,6 @@ const ETAPAS_ORDEN = [
 
 app.get('/', (req, res) => res.send(getHTML()));
 
-// EL DISPARO: Inicia el proceso y libera al navegador inmediatamente
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
     let targetUrl = dna.trim();
@@ -32,13 +33,11 @@ app.post('/start', async (req, res) => {
         targetUrl = `https://${targetUrl}`;
     }
     
-    const jobId = targetUrl; // Usamos la URL como ID único del trabajo
+    const jobId = targetUrl; 
 
-    // Si no existe o ya terminó, creamos un trabajo nuevo en segundo plano
     if (!jobs[jobId] || jobs[jobId].status === 'done' || jobs[jobId].status === 'error') {
         jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO' };
         
-        // Disparamos la función asíncrona sin "await" para que trabaje sola
         ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
             console.error("Fallo crítico en fondo:", e);
             if(jobs[jobId]) jobs[jobId].status = 'error';
@@ -48,14 +47,45 @@ app.post('/start', async (req, res) => {
     res.json({ jobId });
 });
 
-// EL RADAR: El frontend llama aquí para ver cómo va el reporte
 app.get('/poll', (req, res) => {
     const jobId = req.query.jobId;
     if (!jobs[jobId]) return res.json({ status: 'not_found' });
     res.json(jobs[jobId]);
 });
 
-// LA MÁQUINA DE TRABAJO (Opera aunque cierres la computadora)
+// NUEVO: MOTOR DE GENERACIÓN DE PDF EJECUTIVO EN EL SERVIDOR
+app.post('/generate-pdf', async (req, res) => {
+    const { html } = req.body;
+    let browser;
+    try {
+        browser = await puppeteer.launch({
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process', '--disable-gpu']
+        });
+        const page = await browser.newPage();
+        
+        // Inyectamos el HTML recibido
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        
+        // Generamos el PDF con reglas estrictas de impresión
+        const pdfBuffer = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: { top: '2.5cm', bottom: '2cm', left: '2cm', right: '2cm' }
+        });
+        
+        await browser.close();
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="PredictaCore_Auditoria.pdf"');
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error("Error al generar PDF:", error);
+        if (browser) await browser.close();
+        res.status(500).send("Fallo al generar el documento PDF.");
+    }
+});
+
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     let datosTarget = { isUrl: false, texto: "", desktopBase64: null, mobileBase64: null };
     const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
@@ -90,7 +120,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     const vertexUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-2.5-pro:generateContent`;
 
     for (const etapaId of ETAPAS_ORDEN) {
-        jobs[jobId].currentEtapa = etapaId; // Informamos qué etapa se está procesando
+        jobs[jobId].currentEtapa = etapaId; 
         
         try {
             const promptFinal = PROMPTS[etapaId](datosTarget.texto);
@@ -136,10 +166,8 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             const vertexData = await vertexRes.json();
             const textoForense = vertexData.candidates[0].content.parts[0].text;
             
-            // Guardamos el resultado exitoso en la memoria central
             jobs[jobId].progress[etapaId] = textoForense;
 
-            // Respirador de 3 segundos para el servidor
             await new Promise(resolve => setTimeout(resolve, 3000));
 
         } catch (error) {
@@ -148,7 +176,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
         }
     }
     
-    jobs[jobId].status = 'done'; // Proceso finalizado con éxito
+    jobs[jobId].status = 'done'; 
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR AUTÓNOMO ACTIVO EN ${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR AUTÓNOMO Y PDF ACTIVO EN ${port}`));
