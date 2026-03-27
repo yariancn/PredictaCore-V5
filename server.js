@@ -1,17 +1,19 @@
-// server.js - BÚNKER 5: MOTOR AUTÓNOMO Y GENERADOR PDF EN BACKEND
+// server.js - BÚNKER 5: MOTOR AUTÓNOMO CON CANDADO DNS Y GENERADOR PDF
 
 const express = require('express');
-const { PROMPTS } = require('./cerebro'); 
+const { PROMPTS, IDIOMA, REGLA_ANTI_LORO } = require('./cerebro'); 
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
-const puppeteer = require('puppeteer'); // Herramienta para generar el PDF
+const puppeteer = require('puppeteer');
+const dns = require('dns');
+const { promisify } = require('util');
+const lookup = promisify(dns.lookup);
 
 const app = express();
 const port = process.env.PORT || 8080;
 
-// Aumentamos el límite para poder recibir el HTML completo de la página
 app.use(express.json({ limit: '10mb' }));
 
 const dossierCache = {};
@@ -24,6 +26,17 @@ const ETAPAS_ORDEN = [
 
 app.get('/', (req, res) => res.send(getHTML()));
 
+// FUNCION DE CANDADO PARA VALIDAR DOMINIO
+async function verificarDominio(url) {
+    try {
+        const urlObj = new URL(url);
+        await lookup(urlObj.hostname);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
     let targetUrl = dna.trim();
@@ -31,6 +44,14 @@ app.post('/start', async (req, res) => {
     const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
     if (!targetUrl.startsWith('http') && isDomain) {
         targetUrl = `https://${targetUrl}`;
+    }
+    
+    // VALIDACIÓN DE DOMINIO ANTES DE ARRANCAR
+    if (isDomain || targetUrl.startsWith('http')) {
+        const dominioValido = await verificarDominio(targetUrl);
+        if (!dominioValido) {
+            return res.status(400).json({ error: "ERR_NAME_NOT_RESOLVED" });
+        }
     }
     
     const jobId = targetUrl; 
@@ -53,7 +74,6 @@ app.get('/poll', (req, res) => {
     res.json(jobs[jobId]);
 });
 
-// NUEVO: MOTOR DE GENERACIÓN DE PDF EJECUTIVO EN EL SERVIDOR
 app.post('/generate-pdf', async (req, res) => {
     const { html } = req.body;
     let browser;
@@ -63,17 +83,12 @@ app.post('/generate-pdf', async (req, res) => {
             args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process', '--disable-gpu']
         });
         const page = await browser.newPage();
-        
-        // Inyectamos el HTML recibido
         await page.setContent(html, { waitUntil: 'networkidle0' });
-        
-        // Generamos el PDF con reglas estrictas de impresión
         const pdfBuffer = await page.pdf({
             format: 'A4',
             printBackground: true,
             margin: { top: '2.5cm', bottom: '2cm', left: '2cm', right: '2cm' }
         });
-        
         await browser.close();
         
         res.setHeader('Content-Type', 'application/pdf');
@@ -126,6 +141,8 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             const promptFinal = PROMPTS[etapaId](datosTarget.texto);
             
             let partesMensaje = [
+                { text: IDIOMA },
+                { text: REGLA_ANTI_LORO },
                 { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa todo basándote en que este es el presente absoluto.` },
                 { text: `DOSSIER DEL ACTIVO ANALIZADO:\n${datosTarget.texto}` }
             ];
@@ -142,7 +159,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             const payload = {
                 systemInstruction: { parts: [{ text: FIREWALL_IA }] },
                 contents: [{ role: "user", parts: partesMensaje }],
-                generationConfig: { temperature: 0.1 }
+                generationConfig: { temperature: 0.15 } // Ligeramente subido para evitar respuestas robóticas
             };
 
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
@@ -179,4 +196,4 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     jobs[jobId].status = 'done'; 
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR AUTÓNOMO Y PDF ACTIVO EN ${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR AUTÓNOMO ACTIVO EN ${port}`));
