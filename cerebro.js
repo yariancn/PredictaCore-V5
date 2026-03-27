@@ -1,4 +1,4 @@
-// cerebro.js - BÚNKER 2: FORMATO PDF 100% ESTRICTO Y SEO DE PRIMERA PÁGINA
+// cerebro.js - BÚNKER 2: FORMATO PDF ESTRICTO Y SEO DE PRIMERA PÁGINA
 
 const PROMPTS = {
   INTRO: (d) => `Inicia tu respuesta EXACTAMENTE con este encabezado: ### I. INTRODUCCIÓN Y RESUMEN DEL ACTIVO
@@ -12,22 +12,24 @@ Presenta una tabla Markdown ESTRICTAMENTE con esta cabecera exacta:
 | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |
 |---|---|---|
 REGLAS INQUEBRANTABLES:
-1. Genera EXACTAMENTE 10 filas.
-2. TIENES ESTRICTAMENTE PROHIBIDO usar saltos de línea (Enter) dentro de las celdas, o romperás el código de la tabla. Todo el texto de una celda debe ir en una sola línea continua. Dossier: ${d}`,
+1. Genera EXACTAMENTE 10 filas de evaluación completas.
+2. TIENES ESTRICTAMENTE PROHIBIDO usar saltos de línea (Enter) dentro de las celdas de la tabla. Todo el texto de una celda debe ir en una sola línea continua para no romper el formato. Dossier: ${d}`,
 
   VISIBILIDAD: (d) => `Inicia tu respuesta EXACTAMENTE con este encabezado: ### IV. VISIBILIDAD EXTERNA
-[INSTRUCCIÓN CRÍTICA: DEBES UTILIZAR LA HERRAMIENTA DE BÚSQUEDA DE GOOGLE AHORA MISMO. Busca el nombre de la marca para encontrar reseñas reales, y busca su producto principal para ver qué domina la primera página de resultados].
+[INSTRUCCIÓN CRÍTICA: UTILIZA LA HERRAMIENTA GOOGLE SEARCH EN ESTE MOMENTO. Realiza una búsqueda real de las palabras clave transaccionales del activo (ej. "custom baby crib bedding" en el país destino) para ver quién domina la primera página de resultados].
 Escribe con esta estructura exacta (NO uses títulos principales adicionales):
-1. **Estatus de Reputación**: Indica estrellas, reseñas y la FUENTE EXACTA (nombra la plataforma o URL) obtenida de tu búsqueda.
-2. **Competidores en Primera Página**: Nombra al país y a 3 competidores reales que acaparan los primeros resultados de Google para este nicho.
-3. **Fricción de Búsqueda**: Nombra 3 palabras clave transaccionales críticas.
-4. **Análisis SEO de Élite**: Redacta el impacto de perder la primera página contra estos competidores identificados. Dossier: ${d}`,
+1. **Estatus de Reputación**: Analiza la reputación basándote en el dossier.
+2. **Competidores Reales en Google (SERP)**: Nombra los 3 dominios reales que actualmente ocupan los primeros lugares orgánicos en Google para el nicho del activo.
+3. **Fricción de Búsqueda**: Nombra 3 palabras clave transaccionales exactas que el cliente está perdiendo.
+4. **Análisis SEO de Élite**: Redacta el impacto financiero de ceder la primera página a los competidores reales identificados. Dossier: ${d}`,
 
   BENCHMARK: (d) => `Inicia tu respuesta EXACTAMENTE con este encabezado: ### V. RADIOGRAFÍA ESTRATÉGICA (BENCHMARK)
-Presenta una tabla Markdown ESTRICTAMENTE con esta cabecera exacta:
-| Criterio de Análisis | Activo Analizado | Competidor 1 | Competidor 2 | Competidor 3 |
+Elige a 3 competidores reales y reconocidos del nicho. Presenta una tabla Markdown ESTRICTAMENTE con esta estructura (Reemplaza "Comp 1", etc., por los nombres reales):
+| Criterio de Análisis | Activo Analizado | [Nombre Comp 1] | [Nombre Comp 2] | [Nombre Comp 3] |
 |---|---|---|---|---|
-REGLA INQUEBRANTABLE: TIENES ESTRICTAMENTE PROHIBIDO usar saltos de línea (Enter) dentro de las celdas de la tabla. Escribe el análisis en una sola línea continua por celda. Evalúa 3 puntos de fricción. Dossier: ${d}`,
+REGLAS INQUEBRANTABLES: 
+1. TIENES ESTRICTAMENTE PROHIBIDO usar saltos de línea (Enter) dentro de las celdas. 
+2. Evalúa 3 puntos de fricción. Dossier: ${d}`,
 
   SWOT: (d) => `Inicia tu respuesta EXACTAMENTE con este encabezado: ### VI. MATRIZ ESTRATÉGICA
 Desarrolla el análisis en Fortalezas, Debilidades, Oportunidades y Amenazas. Inicia cada viñeta estrictamente con un número (ejemplo: 1., 2., 3.). Dossier: ${d}`,
