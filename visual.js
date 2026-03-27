@@ -53,13 +53,14 @@ function getHTML() {
                 .markdown-content li { line-height: 1.6; text-align: justify; margin-bottom: 1.2rem; page-break-inside: avoid; }
                 .markdown-content strong { color: #000000 !important; }
                 
-                table { page-break-inside: auto; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; }
+                /* AQUÍ MATAMOS LOS BLOQUES NEGROS: background: transparent !important; */
+                table { page-break-inside: auto; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; background: transparent !important; }
                 thead { display: table-header-group; }
                 tfoot { display: table-footer-group; }
                 tr { page-break-inside: avoid !important; page-break-after: auto; }
                 td, th { page-break-inside: avoid !important; }
                 /* AJUSTE DE TAMAÑO EN TABLAS PARA MANTENER PROPORCIÓN */
-                th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: #ffffff !important; padding: 12px; vertical-align: top; }
+                th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: transparent !important; padding: 12px; vertical-align: top; }
                 th { background: #f9fafb !important; color: #b8860b !important; font-size: 10pt; text-transform: uppercase; }
                 td { font-size: 10.5pt; }
                 
