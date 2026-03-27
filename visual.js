@@ -32,6 +32,7 @@ function getHTML() {
             .markdown-content li { margin-bottom: 0.8rem; line-height: 1.6; }
             .markdown-content strong { color: #ffffff; font-weight: 600; }
 
+            /* REGLAS AGRESIVAS DE IMPRESIÓN PARA EL MOTOR BACKEND */
             @media print {
                 @page { size: A4; margin: 2.5cm 2cm 2cm 2cm; }
                 body { background: #ffffff !important; color: #1f2937 !important; font-size: 10pt; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
@@ -73,7 +74,7 @@ function getHTML() {
                     <h1 class="text-3xl font-bold tracking-[0.2em] text-white uppercase">PREDICTACORE <span class="gold-text italic">TITÁN</span></h1>
                     <p class="text-zinc-600 text-[10px] mt-2 uppercase tracking-[0.3em]">Auditoría Forense de Conversión</p>
                 </div>
-                <button id="btn-pdf" onclick="window.print()" class="hidden border border-[#d4af37] text-[#d4af37] px-6 py-2 text-xs uppercase tracking-widest hover:bg-[#d4af37] hover:text-black transition-colors duration-300">
+                <button id="btn-pdf" onclick="descargarPDFBackend()" class="hidden border border-[#d4af37] text-[#d4af37] px-6 py-2 text-xs uppercase tracking-widest hover:bg-[#d4af37] hover:text-black transition-colors duration-300">
                     Exportar PDF
                 </button>
             </header>
@@ -272,6 +273,45 @@ function getHTML() {
 
                 contentDiv.innerHTML = htmlLimpio;
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+
+            // NUEVA FUNCIÓN: Envía el HTML actual al servidor para estampar un PDF perfecto
+            async function descargarPDFBackend() {
+                const btnPdf = document.getElementById('btn-pdf');
+                const btnOriginalText = btnPdf.innerText;
+                
+                btnPdf.innerText = 'GENERANDO PDF EJECUTIVO...';
+                btnPdf.disabled = true;
+
+                // Capturamos el HTML de la página tal como está
+                const htmlContent = document.documentElement.outerHTML;
+
+                try {
+                    const response = await fetch('/generate-pdf', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ html: htmlContent })
+                    });
+
+                    if (!response.ok) throw new Error("Fallo en la generación del PDF");
+
+                    // Convertimos la respuesta binaria en un archivo descargable
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'PredictaCore_Auditoria_' + document.getElementById('dna').value + '.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                } catch (error) {
+                    console.error("Error al descargar:", error);
+                    alert("Ocurrió un error al generar el PDF de alta calidad. Reintenta en unos segundos.");
+                } finally {
+                    btnPdf.innerText = btnOriginalText;
+                    btnPdf.disabled = false;
+                }
             }
         </script>
     </body>
