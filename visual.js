@@ -34,41 +34,52 @@ function getHTML() {
 
             /* REGLAS AGRESIVAS DE IMPRESIÓN PARA EL MOTOR BACKEND */
             @media print {
-                @page { size: A4; margin: 2.5cm 2cm 2cm 2cm; }
-                body { background: #ffffff !important; color: #1f2937 !important; font-size: 11.5pt; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.5; }
+                @page { size: A4; margin: 3cm 2cm 2cm 2cm; }
+                
+                /* REGLA NUCLEAR: TODO EL TEXTO ES NEGRO PURO */
+                * { color: #000000 !important; }
+                
+                body { background: #ffffff !important; font-size: 11.5pt; font-weight: 400; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; }
                 .no-print { display: none !important; }
                 
                 .cover-page { display: flex; flex-direction: column; justify-content: center; height: 90vh; page-break-after: always; text-align: left; }
-                .cover-title { font-size: 2.5rem; font-weight: 800; color: #111827; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 4px solid #b8860b; padding-bottom: 1rem; margin-bottom: 2rem; }
-                .cover-subtitle { font-size: 1.25rem; color: #4b5563; text-transform: uppercase; letter-spacing: 0.2em; }
-                .cover-meta { margin-top: auto; font-size: 0.875rem; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 1rem; }
+                .cover-title { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 4px solid #000000; padding-bottom: 1rem; margin-bottom: 2rem; }
+                .cover-subtitle { font-size: 1.25rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.2em; }
+                .cover-meta { margin-top: auto; font-size: 0.875rem; font-weight: bold; border-top: 2px solid #000000; padding-top: 1rem; }
                 
-                .report-section { page-break-before: always; border-left: 3px solid #b8860b !important; padding-left: 1.5rem; margin-bottom: 2.5rem; padding-top: 1rem; }
+                .report-section { page-break-before: always; border-left: 4px solid #000000 !important; padding-left: 1.5rem; margin-bottom: 2.5rem; padding-top: 1rem; }
                 #section-INTRO { page-break-before: auto; }
 
-                .markdown-content h1, .markdown-content h2, .markdown-content h3 { color: #000000 !important; page-break-after: avoid; }
-                .markdown-content h3 { color: #b8860b !important; font-size: 14pt; margin-top: 0; padding-bottom: 0.5rem; border-bottom: 1px solid #e5e7eb; margin-bottom: 1.5rem; }
+                .markdown-content h1, .markdown-content h2, .markdown-content h3 { font-weight: 800; page-break-after: avoid; }
+                .markdown-content h3 { font-size: 14pt; margin-top: 0; padding-bottom: 0.5rem; border-bottom: 2px solid #000000; margin-bottom: 1.5rem; }
                 .markdown-content p { line-height: 1.6; text-align: justify; orphans: 3; widows: 3; margin-bottom: 1.2rem; }
                 .markdown-content li { line-height: 1.6; text-align: justify; margin-bottom: 1.2rem; page-break-inside: avoid; }
-                .markdown-content strong { color: #000000 !important; }
+                .markdown-content strong { font-weight: 800; }
                 
-                /* FONDOS TRANSPARENTES PARA EVITAR BLOQUES NEGROS EN EL PDF */
-                table { page-break-inside: auto; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; background: transparent !important; }
+                table { page-break-inside: auto; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; background: transparent !important; border: 2px solid #000000; }
                 thead { display: table-header-group; }
                 tfoot { display: table-footer-group; }
-                tr { page-break-inside: avoid !important; page-break-after: auto; }
+                tr { page-break-inside: avoid !important; page-break-after: auto; border-bottom: 1px solid #000000; }
                 td, th { page-break-inside: avoid !important; }
-                th, td { border: 1px solid #d1d5db !important; color: #111827 !important; background: transparent !important; padding: 12px; vertical-align: top; }
-                th { background: #f9fafb !important; color: #b8860b !important; font-size: 10pt; text-transform: uppercase; }
-                td { font-size: 10.5pt; }
+                th, td { border: 1px solid #000000 !important; background: transparent !important; padding: 12px; vertical-align: top; }
+                th { font-weight: 800; font-size: 10pt; text-transform: uppercase; border-bottom: 2px solid #000000 !important; }
+                td { font-size: 10.5pt; font-weight: 500; }
                 
-                .badge-red { color: #dc2626 !important; font-weight: bold; }
-                .badge-yellow { color: #d97706 !important; font-weight: bold; }
-                .badge-green { color: #16a34a !important; font-weight: bold; }
+                .badge-red { font-weight: 900; text-decoration: underline; }
+                .badge-yellow { font-weight: 800; }
+                .badge-green { font-weight: bold; }
             }
         </style>
     </head>
     <body class="p-6 md:p-20">
+        
+        <div class="hidden print:block fixed top-0 right-0 pt-4 pr-8 z-50">
+            <img src="https://predictacore.com/tu-logo.png" alt="PredictaCore" style="height: 40px; width: auto;" onerror="this.style.display='none';">
+            <span style="font-weight: 900; font-size: 10pt; text-transform: uppercase; letter-spacing: 0.2em; border-bottom: 2px solid #000000; padding-bottom: 2px;">
+                PREDICTACORE TITÁN
+            </span>
+        </div>
+
         <div class="max-w-4xl mx-auto">
             <header class="mb-16 flex justify-between items-end no-print">
                 <div>
@@ -84,11 +95,11 @@ function getHTML() {
                 <div>
                     <div class="cover-subtitle mb-4">Reporte Forense de Conversión</div>
                     <div class="cover-title">Auditoría PredictaCore</div>
-                    <div class="text-lg text-gray-600 mb-8" id="pdf-domain">Documento Estratégico</div>
+                    <div class="text-lg mb-8 font-bold" id="pdf-domain">Documento Estratégico</div>
                 </div>
                 <div class="cover-meta flex justify-between w-full">
-                    <span>CLASIFICACIÓN: CONFIDENCIAL</span>
-                    <span id="pdf-date"></span>
+                    <span class="font-bold">CLASIFICACIÓN: CONFIDENCIAL</span>
+                    <span id="pdf-date" class="font-bold"></span>
                 </div>
             </div>
 
@@ -258,6 +269,7 @@ function getHTML() {
                         status.innerText = 'ERROR DE CONEXIÓN CON EL MOTOR.';
                     }
                     btn.disabled = false;
+                    reporte.innerHTML = ''; 
                 }
             }
 
