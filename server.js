@@ -146,7 +146,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             
             let partesMensaje = [
                 { text: IDIOMA },
-                { text: REGLA_NUCLEAR }, // Corregido aquí para que empareje con tu archivo original
+                { text: REGLA_NUCLEAR }, 
                 { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}.` },
                 { text: `URL DEL ACTIVO (CLAVE PARA IDENTIFICAR AL CLIENTE): ${targetUrl}` },
                 { text: `DOSSIER DEL ACTIVO ANALIZADO:\n${datosTarget.texto}` }
