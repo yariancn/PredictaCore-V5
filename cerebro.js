@@ -1,8 +1,7 @@
-// cerebro.js - BÚNKER 2: MULTILINGÜE, SEO TRADUCIDO Y COMPATIBILIDAD ORIGINAL
+// cerebro.js - BÚNKER 2.1: MULTILINGÜE BLINDADO ANTI-SPANGLISH, SEO Y COMPATIBILIDAD ORIGINAL
 
-const IDIOMA = "INSTRUCCIÓN CRÍTICA Y ABSOLUTA: Detecta el idioma principal del sitio web analizado (basado en el Dossier y las Imágenes). DEBES redactar tu respuesta COMPLETA (incluyendo el encabezado, el análisis, las tablas y las viñetas) ESTRICTAMENTE en ese idioma detectado. Cero mezclas.";
+const IDIOMA = "INSTRUCCIÓN CRÍTICA Y ABSOLUTA (CANDADO DE IDIOMA): El dossier contiene texto mezclado (la biografía del negocio y la interfaz de la plataforma/navegador). DEBES detectar el idioma de la BIOGRAFÍA/DESCRIPCIÓN DEL NEGOCIO e IGNORAR por completo el idioma de los botones o la interfaz (ej. 'seguidores', 'publicaciones', 'cart'). Si la biografía del cliente está en INGLÉS, redacta TODO este bloque ESTRICTAMENTE EN INGLÉS. Si está en ESPAÑOL, redacta TODO EN ESPAÑOL. Tienes estrictamente prohibido mezclar idiomas o cambiar de idioma a mitad de la respuesta.";
 
-// Mantenemos el nombre original (REGLA_ANTI_LORO) para no romper tu server.js actual
 const REGLA_ANTI_LORO = "REGLA NUCLEAR DE AUDITORÍA: TIENES ESTRICTAMENTE PROHIBIDO mencionar reseñas de clientes, testimonios, o quejas (como manchas o defectos) en NINGUNA PARTE del reporte, CON EXCEPCIÓN ÚNICA de la Sección IV (Visibilidad y SEO).";
 
 const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO FATAL: TIENES ESTRICTAMENTE PROHIBIDO usar viñetas simples (bullets como • o -). DEBES iniciar cada punto OBLIGATORIAMENTE con un NÚMERO seguido de un PUNTO y un ESPACIO. Ejemplo CORRECTO: '1. [Texto]'. Ejemplo INCORRECTO: '• [Texto]'.";
