@@ -32,42 +32,76 @@ function getHTML() {
             .markdown-content li { margin-bottom: 0.8rem; line-height: 1.6; }
             .markdown-content strong { color: #ffffff; font-weight: 600; }
 
-            /* REGLAS AGRESIVAS DE IMPRESIÓN PARA EL MOTOR BACKEND */
+            /* HEMORRAGIA WEB */
+            .hemorragia-critica { background-color: rgba(248, 113, 113, 0.2); color: #f87171; font-weight: 900; padding: 2px 6px; border-radius: 4px; display: inline-block; }
+
+            /* REGLAS AGRESIVAS DE IMPRESIÓN PARA EL FORMATO TITÁN EJECUTIVO */
             @media print {
-                @page { size: A4; margin: 3cm 2cm 2cm 2cm; }
+                @page { size: A4; margin: 2.5cm 2cm 2.5cm 2cm; }
                 
-                /* REGLA NUCLEAR: TODO EL TEXTO ES NEGRO PURO */
-                * { color: #000000 !important; }
+                :root {
+                    --black-core: #0A0A0A;
+                    --green-electric: #39FF14;
+                    --text-main: #1F2937;
+                    --bg-light: #F9FAFB;
+                    --alerta-suave-text: #991B1B; /* Rojo diluido y elegante */
+                    --alerta-suave-bg: #FEE2E2; /* Fondo tenue para resaltar sin gritar */
+                }
                 
-                body { background: #ffffff !important; font-size: 11.5pt; font-weight: 400; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; }
+                body { background: #ffffff !important; color: var(--text-main) !important; font-size: 11pt; font-weight: 400; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.65; }
                 .no-print { display: none !important; }
                 
                 .cover-page { display: flex; flex-direction: column; justify-content: center; height: 90vh; page-break-after: always; text-align: left; }
-                .cover-title { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 4px solid #000000; padding-bottom: 1rem; margin-bottom: 2rem; }
-                .cover-subtitle { font-size: 1.25rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.2em; }
-                .cover-meta { margin-top: auto; font-size: 0.875rem; font-weight: bold; border-top: 2px solid #000000; padding-top: 1rem; }
+                .cover-title { font-size: 2.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 4px solid var(--black-core); padding-bottom: 1rem; margin-bottom: 2rem; color: var(--black-core) !important; }
+                .cover-subtitle { font-size: 1.25rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.2em; color: var(--black-core) !important; }
+                .cover-meta { margin-top: auto; font-size: 0.875rem; font-weight: bold; border-top: 2px solid var(--black-core); padding-top: 1rem; color: var(--black-core) !important; }
                 
-                .report-section { page-break-before: always; border-left: 4px solid #000000 !important; padding-left: 1.5rem; margin-bottom: 2.5rem; padding-top: 1rem; }
+                .report-section { page-break-before: always; border-left: none !important; padding-left: 0; margin-bottom: 2.5rem; padding-top: 0; }
                 #section-INTRO { page-break-before: auto; }
 
                 .markdown-content h1, .markdown-content h2, .markdown-content h3 { font-weight: 800; page-break-after: avoid; }
-                .markdown-content h3 { font-size: 14pt; margin-top: 0; padding-bottom: 0.5rem; border-bottom: 2px solid #000000; margin-bottom: 1.5rem; }
-                .markdown-content p { line-height: 1.6; text-align: justify; orphans: 3; widows: 3; margin-bottom: 1.2rem; }
-                .markdown-content li { line-height: 1.6; text-align: justify; margin-bottom: 1.2rem; page-break-inside: avoid; }
-                .markdown-content strong { font-weight: 800; }
                 
-                table { page-break-inside: auto; width: 100%; border-collapse: collapse; margin-top: 1.5rem; margin-bottom: 1.5rem; background: transparent !important; border: 2px solid #000000; }
+                /* TÍTULOS EJECUTIVOS: FONDO NEGRO, ACENTO VERDE ELÉCTRICO, LETRA BLANCA */
+                .markdown-content h3 { 
+                    background-color: var(--black-core) !important; 
+                    color: #FFFFFF !important; 
+                    padding: 12px 20px !important; 
+                    border-left: 6px solid var(--green-electric) !important; 
+                    margin-top: 30px !important; 
+                    margin-bottom: 20px !important; 
+                    font-size: 13pt !important; 
+                    text-transform: uppercase !important; 
+                    letter-spacing: 0.5px !important;
+                    border-bottom: none !important;
+                }
+                
+                .markdown-content p { line-height: 1.65; text-align: justify; orphans: 3; widows: 3; margin-bottom: 18px; color: var(--text-main) !important; }
+                .markdown-content li { line-height: 1.65; text-align: justify; margin-bottom: 12px; page-break-inside: avoid; color: var(--text-main) !important; }
+                .markdown-content strong { font-weight: 800; color: var(--black-core) !important; }
+                
+                /* TABLAS EJECUTIVAS */
+                table { page-break-inside: auto; width: 100%; border-collapse: collapse; margin-top: 25px; margin-bottom: 25px; background: transparent !important; border: none !important; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
                 thead { display: table-header-group; }
                 tfoot { display: table-footer-group; }
-                tr { page-break-inside: avoid !important; page-break-after: auto; border-bottom: 1px solid #000000; }
+                tr { page-break-inside: avoid !important; page-break-after: auto; border-bottom: 1px solid #E5E7EB !important; }
+                tr:nth-child(even) td { background-color: var(--bg-light) !important; }
                 td, th { page-break-inside: avoid !important; }
-                th, td { border: 1px solid #000000 !important; background: transparent !important; padding: 12px; vertical-align: top; }
-                th { font-weight: 800; font-size: 10pt; text-transform: uppercase; border-bottom: 2px solid #000000 !important; }
-                td { font-size: 10.5pt; font-weight: 500; }
+                th { background-color: var(--black-core) !important; color: var(--green-electric) !important; padding: 14px !important; text-align: left !important; font-weight: 600 !important; text-transform: uppercase !important; border: none !important; }
+                td { border: none !important; padding: 12px 14px !important; vertical-align: top !important; font-size: 10.5pt; color: var(--text-main) !important; }
                 
-                .badge-red { font-weight: 900; text-decoration: underline; }
-                .badge-yellow { font-weight: 800; }
-                .badge-green { font-weight: bold; }
+                .badge-red { font-weight: 900; text-decoration: underline; color: var(--black-core) !important; }
+                .badge-yellow { font-weight: 800; color: var(--black-core) !important; }
+                .badge-green { font-weight: bold; color: var(--black-core) !important; }
+
+                /* ETIQUETA HEMORRAGIA CRÍTICA IMPRESIÓN (Rojo Diluido) */
+                .hemorragia-critica {
+                    background-color: var(--alerta-suave-bg) !important;
+                    color: var(--alerta-suave-text) !important;
+                    font-weight: 900 !important;
+                    padding: 2px 6px !important;
+                    border-radius: 4px !important;
+                    display: inline-block;
+                }
             }
         </style>
     </head>
@@ -294,6 +328,10 @@ function getHTML() {
                     htmlLimpio = aplicarSemaforos(htmlLimpio);
                 }
 
+                // --- INYECCIÓN DE ESTILO PARA HEMORRAGIAS (Visual Web y PDF) ---
+                // Reemplaza tanto la versión con formato bold como la normal que genera Markdown
+                htmlLimpio = htmlLimpio.replace(/(<strong>)?\\[HEMORRAGIA CRÍTICA\\](<\\/strong>)?/gi, '<span class="hemorragia-critica">[HEMORRAGIA CRÍTICA]</span>');
+
                 contentDiv.innerHTML = htmlLimpio;
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
@@ -336,6 +374,6 @@ function getHTML() {
         </script>
     </body>
     </html>
-    `;
+    \`;
 }
 module.exports = { getHTML };
