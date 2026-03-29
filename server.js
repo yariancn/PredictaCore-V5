@@ -1,7 +1,7 @@
 // server.js - BÚNKER 7: ENRUTADOR DE DOS CEREBROS (CERO RIESGO)
 
 const express = require('express');
-const cerebroWeb = require('./cerebro');           // TU CEREBRO ORIGINAL INTACTO (Para E-commerce)
+const cerebroWeb = require('./cerebro');           // TU CEREBRO ORIGINAL INTACTO DE ESTA MAÑANA
 const cerebroSocial = require('./cerebro_social'); // TU NUEVO CEREBRO (Para Redes Sociales)
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
@@ -115,10 +115,10 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
         datosTarget.texto = targetUrl;
     }
 
-    // EL INTERRUPTOR MAESTRO: ¿Qué cerebro usamos?
+    // EL INTERRUPTOR MAESTRO: Aísla y usa el archivo correcto
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
     const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
-    const { PROMPTS, IDIOMA, REGLA_ANTI_LORO } = cerebroActivo;
+    const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
 
     const fechaActual = new Date().toLocaleDateString('es-ES', { 
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
@@ -146,7 +146,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             
             let partesMensaje = [
                 { text: IDIOMA },
-                { text: REGLA_ANTI_LORO },
+                { text: REGLA_NUCLEAR }, // Corregido aquí para que empareje con tu archivo original
                 { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}.` },
                 { text: `URL DEL ACTIVO (CLAVE PARA IDENTIFICAR AL CLIENTE): ${targetUrl}` },
                 { text: `DOSSIER DEL ACTIVO ANALIZADO:\n${datosTarget.texto}` }
