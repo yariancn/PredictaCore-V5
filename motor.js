@@ -65,7 +65,7 @@ async function captureAndScrape(url) {
             const scripts = document.querySelectorAll('script, style, noscript, iframe');
             scripts.forEach(s => s.remove());
 
-            // 3. TÁCTICA OPEN GRAPH: Extraemos la bio real del cliente para que la IA sepa a quién audita
+            // 3. TÁCTICA OPEN GRAPH: Extraemos la bio real del cliente
             const metaDesc = document.querySelector('meta[name="description"]')?.content || document.querySelector('meta[property="og:description"]')?.content || "";
             const metaTitle = document.querySelector('meta[property="og:title"]')?.content || document.title;
 
