@@ -1,7 +1,8 @@
-// server.js - BÚNKER 5: MOTOR AUTÓNOMO CON CANDADO DNS Y GENERADOR PDF
+// server.js - BÚNKER 7: ENRUTADOR DE DOS CEREBROS (CERO RIESGO)
 
 const express = require('express');
-const { PROMPTS, IDIOMA, REGLA_ANTI_LORO } = require('./cerebro'); 
+const cerebroWeb = require('./cerebro');           // TU CEREBRO ORIGINAL INTACTO (Para E-commerce)
+const cerebroSocial = require('./cerebro_social'); // TU NUEVO CEREBRO (Para Redes Sociales)
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
@@ -24,9 +25,6 @@ const ETAPAS_ORDEN = [
     'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'
 ];
 
-app.get('/', (req, res) => res.send(getHTML()));
-
-// FUNCION DE CANDADO PARA VALIDAR DOMINIO
 async function verificarDominio(url) {
     try {
         const urlObj = new URL(url);
@@ -37,6 +35,8 @@ async function verificarDominio(url) {
     }
 }
 
+app.get('/', (req, res) => res.send(getHTML()));
+
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
     let targetUrl = dna.trim();
@@ -46,7 +46,6 @@ app.post('/start', async (req, res) => {
         targetUrl = `https://${targetUrl}`;
     }
     
-    // VALIDACIÓN DE DOMINIO ANTES DE ARRANCAR
     if (isDomain || targetUrl.startsWith('http')) {
         const dominioValido = await verificarDominio(targetUrl);
         if (!dominioValido) {
@@ -116,6 +115,11 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
         datosTarget.texto = targetUrl;
     }
 
+    // EL INTERRUPTOR MAESTRO: ¿Qué cerebro usamos?
+    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
+    const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
+    const { PROMPTS, IDIOMA, REGLA_ANTI_LORO } = cerebroActivo;
+
     const fechaActual = new Date().toLocaleDateString('es-ES', { 
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
     });
@@ -143,7 +147,8 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             let partesMensaje = [
                 { text: IDIOMA },
                 { text: REGLA_ANTI_LORO },
-                { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}. Evalúa todo basándote en que este es el presente absoluto.` },
+                { text: `FECHA ACTUAL DEL SISTEMA: Hoy es ${fechaActual}.` },
+                { text: `URL DEL ACTIVO (CLAVE PARA IDENTIFICAR AL CLIENTE): ${targetUrl}` },
                 { text: `DOSSIER DEL ACTIVO ANALIZADO:\n${datosTarget.texto}` }
             ];
 
@@ -159,7 +164,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             const payload = {
                 systemInstruction: { parts: [{ text: FIREWALL_IA }] },
                 contents: [{ role: "user", parts: partesMensaje }],
-                generationConfig: { temperature: 0.15 } // Ligeramente subido para evitar respuestas robóticas
+                generationConfig: { temperature: 0.15 } 
             };
 
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
