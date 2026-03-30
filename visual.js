@@ -8,14 +8,14 @@ function getHTML() {
         <title>PredictaCore Titán - Auditoría Forense</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
         <style>
             :root {
-                --pc-green: #10b981; /* Verde esmeralda digital, elegante y moderno */
+                --pc-green: #10b981;
                 --pc-crimson: #991b1b;
                 --pc-crimson-bg: #fef2f2;
                 --pc-dark: #111827;
-                --pc-gray: #6b7280;
+                --pc-gray: #4b5563;
                 --pc-border: #e5e7eb;
             }
 
@@ -28,36 +28,30 @@ function getHTML() {
 
             /* --- INTERFAZ WEB DARK --- */
             .terminal-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; }
-            .gold-text { color: var(--pc-green); }
-            
-            .report-section { 
-                border-left: 2px solid #1e293b; 
-                padding-left: 2rem; 
-                margin-bottom: 4rem; 
-                transition: all 0.5s; 
-            }
-            .border-pc { border-color: var(--pc-green) !important; }
-
-            /* --- TABLAS WEB --- */
-            table { width: 100%; border-collapse: collapse; margin: 2rem 0; background: #0f172a; border-radius: 8px; overflow: hidden; }
-            th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #1e293b; }
-            th { background: #1e293b; color: var(--pc-green); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.1em; }
+            .report-section { border-left: 2px solid #1e293b; padding-left: 2rem; margin-bottom: 4rem; }
 
             /* --- ESTILO DE IMPRESIÓN EJECUTIVO --- */
             @media print {
-                @page { size: A4; margin: 0; }
+                @page { 
+                    size: A4; 
+                    margin: 0; 
+                }
                 
-                body { background: #ffffff !important; color: var(--pc-dark) !important; padding: 0; }
+                body { 
+                    background: #ffffff !important; 
+                    color: var(--pc-dark) !important; 
+                    padding: 0; 
+                }
+                
                 .no-print { display: none !important; }
 
-                /* Contenedor Principal con Margen Derecho (Ralla) */
+                /* Contenedor con Margen Ejecutivo */
                 .print-container {
-                    padding: 3cm 2cm 2cm 2.5cm;
+                    padding: 2.5cm 3cm 2.5cm 2.5cm; /* Margen derecho más amplio para la ralla */
                     position: relative;
-                    min-height: 297mm;
                 }
 
-                /* La Ralla de la Derecha Estilo PredictaCore */
+                /* Ralla de Autoridad Derecha */
                 .print-container::after {
                     content: "";
                     position: fixed;
@@ -66,7 +60,7 @@ function getHTML() {
                     bottom: 0;
                     width: 1px;
                     background: var(--pc-border);
-                    z-index: -1;
+                    z-index: 10;
                 }
 
                 /* Portada Pro */
@@ -76,92 +70,135 @@ function getHTML() {
                     flex-direction: column; 
                     justify-content: center;
                     page-break-after: always;
-                    padding-right: 3rem;
+                    padding-right: 2cm;
                 }
-                .cover-title { font-size: 3.5rem; font-weight: 800; line-height: 1; color: var(--pc-dark) !important; margin-bottom: 1rem; }
-                .cover-accent { width: 80px; height: 6px; background: var(--pc-green); margin-bottom: 2rem; }
+                
+                .cover-title { 
+                    font-size: 3.5rem; 
+                    font-weight: 800; 
+                    color: var(--pc-dark) !important; 
+                    margin-bottom: 1rem;
+                    text-transform: uppercase;
+                }
+                
+                .cover-accent { 
+                    width: 100px; 
+                    height: 8px; 
+                    background: var(--pc-green); 
+                    margin-bottom: 2.5rem; 
+                }
 
-                /* Títulos de Sección: Limpios, sin cuadros negros */
+                /* Títulos de Sección: Sin cuadros, con aire */
                 .markdown-content h3 { 
                     color: var(--pc-dark) !important;
-                    font-size: 1.5rem !important;
+                    font-size: 1.6rem !important;
                     font-weight: 800 !important;
-                    border-bottom: 1px solid var(--pc-dark);
-                    padding-bottom: 0.5rem;
-                    margin: 2.5rem 0 1.5rem 0 !important;
+                    border-bottom: 2px solid var(--pc-dark);
+                    padding-bottom: 0.6rem;
+                    margin: 3.5rem 0 1.8rem 0 !important;
                     text-transform: uppercase;
-                    letter-spacing: -0.02em;
                     page-break-after: avoid;
                 }
 
-                /* Texto */
-                .markdown-content p { font-size: 11pt; line-height: 1.6; text-align: justify; margin-bottom: 1.2rem; color: #374151 !important; }
-                .markdown-content li { font-size: 11pt; margin-bottom: 0.8rem; }
+                /* Bloques de Texto */
+                .markdown-content p { 
+                    font-size: 11pt; 
+                    line-height: 1.7; 
+                    text-align: justify; 
+                    margin-bottom: 1.5rem; 
+                    color: #1f2937 !important; 
+                }
+                
+                .markdown-content li { 
+                    font-size: 11pt; 
+                    line-height: 1.6;
+                    margin-bottom: 1rem; 
+                }
 
-                /* Tablas Ejecutivas: Modernas */
-                table { background: transparent !important; border: 1px solid var(--pc-border) !important; border-radius: 0; margin: 1.5rem 0; page-break-inside: auto; }
-                th { background: #f9fafb !important; color: var(--pc-dark) !important; border-bottom: 2px solid var(--pc-dark) !important; font-size: 9pt !important; }
-                td { border-bottom: 1px solid var(--pc-border) !important; color: #4b5563 !important; font-size: 10pt !important; background: transparent !important; }
-                tr:nth-child(even) { background: #fcfcfc !important; }
-                tr { page-break-inside: avoid; }
+                /* Tablas: Espaciado Interno Real */
+                table { 
+                    width: 100%;
+                    background: transparent !important; 
+                    border: 1px solid var(--pc-border) !important; 
+                    margin: 2rem 0; 
+                    page-break-inside: auto; 
+                }
+                
+                th { 
+                    background: #f3f4f6 !important; 
+                    color: var(--pc-dark) !important; 
+                    padding: 14px !important;
+                    font-weight: 700 !important;
+                    font-size: 9pt !important;
+                    border-bottom: 2px solid var(--pc-dark) !important;
+                }
+                
+                td { 
+                    padding: 12px 14px !important;
+                    border-bottom: 1px solid var(--pc-border) !important; 
+                    color: #374151 !important; 
+                    font-size: 10pt !important; 
+                }
 
-                /* Hemorragia: Rojo Diluido Elegant */
+                /* Hemorragia: Rojo PredictaCore */
                 .hemorragia-critica {
                     background-color: var(--pc-crimson-bg) !important;
                     color: var(--pc-crimson) !important;
-                    padding: 2px 8px !important;
+                    padding: 3px 10px !important;
                     border-radius: 4px !important;
-                    font-weight: 700 !important;
+                    font-weight: 800 !important;
                     border: 1px solid #fecaca !important;
+                    display: inline-block;
                 }
+                
+                .report-section { page-break-before: always; }
+                #section-INTRO { page-break-before: auto; }
             }
         </style>
     </head>
     <body class="p-6 md:p-20">
-        
-        <div class="max-w-5xl mx-auto">
+        <div class="max-w-6xl mx-auto">
             <!-- Header Web -->
             <header class="mb-16 flex justify-between items-end no-print">
                 <div>
                     <h1 class="text-3xl font-extrabold tracking-tighter text-white">PREDICTACORE <span class="text-emerald-500">TITÁN</span></h1>
-                    <p class="text-zinc-500 text-xs uppercase tracking-widest mt-1">Surgical Conversion Audit</p>
+                    <p class="text-zinc-500 text-xs uppercase tracking-widest mt-1">Forensic Conversion Intelligence</p>
                 </div>
-                <button id="btn-pdf" onclick="descargarPDFBackend()" class="hidden border border-emerald-500 text-emerald-500 px-8 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">
-                    Exportar PDF Titán
+                <button id="btn-pdf" onclick="descargarPDFBackend()" class="hidden border border-emerald-500 text-emerald-500 px-8 py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-500 hover:text-black transition-all">
+                    Generar Reporte Titán
                 </button>
             </header>
 
             <div class="print-container">
                 <!-- Portada Impresión -->
                 <div class="hidden print:flex cover-page">
-                    <div class="text-emerald-500 font-bold uppercase tracking-[0.3em] mb-4">Forensic Conversion Report</div>
+                    <div class="text-emerald-500 font-bold uppercase tracking-[0.4em] mb-6">Auditoría Forense de Conversión</div>
                     <div class="cover-accent"></div>
-                    <div class="cover-title">Auditoría<br>PredictaCore</div>
-                    <div class="text-2xl text-gray-500 mb-12" id="pdf-domain">Asset Analysis</div>
+                    <div class="cover-title">PredictaCore<br>Titán Report</div>
+                    <div class="text-3xl text-gray-400 font-light mb-16" id="pdf-domain">Análisis de Activo Digital</div>
                     
-                    <div class="mt-auto pt-8 border-t border-gray-200 flex justify-between items-end">
+                    <div class="mt-auto pt-10 border-t-2 border-gray-900 flex justify-between items-end">
                         <div>
-                            <div class="text-xs uppercase tracking-widest text-gray-400">Classification</div>
-                            <div class="font-bold text-gray-900">CONFIDENCIAL / TITÁN</div>
+                            <div class="text-xs uppercase tracking-widest text-gray-500 mb-1">Classification</div>
+                            <div class="font-bold text-gray-900 text-lg">ALTAMENTE CONFIDENCIAL</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-xs uppercase tracking-widest text-gray-400">Date Issued</div>
-                            <div id="pdf-date" class="font-bold text-gray-900"></div>
+                            <div class="text-xs uppercase tracking-widest text-gray-500 mb-1">Audit Date</div>
+                            <div id="pdf-date" class="font-bold text-gray-900 text-lg"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Contenido del Reporte -->
-                <div id="reporte" class="space-y-12"></div>
+                <!-- Contenido Dinámico -->
+                <div id="reporte"></div>
             </div>
 
-            <!-- Input Web -->
-            <div class="terminal-box p-8 mt-12 no-print">
-                <input type="text" id="dna" placeholder="Ingresa dominio (ej. google.com)..." class="w-full bg-transparent text-xl text-white border-b border-zinc-800 pb-2 focus:outline-none focus:border-emerald-500 placeholder-zinc-700 font-light">
-                <div class="flex gap-4">
-                    <button onclick="ejecutar()" id="btn-ejecutar" class="mt-8 bg-emerald-600 text-white font-bold py-4 px-8 text-xs uppercase tracking-widest hover:bg-emerald-400 transition-all flex-1">Iniciar Escaneo Forense</button>
-                </div>
-                <div id="status" class="mt-6 text-[10px] text-zinc-500 uppercase tracking-widest">Esperando instrucciones...</div>
+            <!-- Panel de Control Web -->
+            <div class="terminal-box p-10 mt-20 no-print">
+                <label class="text-[10px] uppercase tracking-[0.4em] text-zinc-500 mb-4 block">Dossier DNA Input</label>
+                <input type="text" id="dna" placeholder="https://dominio.com" class="w-full bg-transparent text-2xl text-white border-b border-zinc-800 pb-4 focus:outline-none focus:border-emerald-500 placeholder-zinc-800 transition-all">
+                <button onclick="ejecutar()" id="btn-ejecutar" class="mt-10 bg-emerald-600 text-white font-bold py-5 px-10 text-xs uppercase tracking-widest hover:bg-emerald-400 transition-all w-full md:w-auto">Ejecutar Simulación Forense</button>
+                <div id="status" class="mt-8 text-[10px] text-zinc-600 uppercase tracking-widest font-mono">Esperando secuencia de inicio...</div>
             </div>
         </div>
 
@@ -225,28 +262,16 @@ function getHTML() {
                 btn.disabled = true;
                 btnPdf.classList.add('hidden'); 
                 reporte.innerHTML = '';
-                status.innerText = '>>> Estableciendo conexión simbióptica...';
+                status.innerText = '>>> INICIANDO PROCESO SIMBIÓPTICO...';
                 paintedEtapas.clear();
 
-                const etapas = [
-                    {id: 'INTRO', title: 'I. Diagnóstico de Ingeniería'},
-                    {id: 'GEMELOS', title: 'II. Perfiles Psicológicos'},
-                    {id: 'SCORECARD', title: 'III. Scorecard PredictaCore'},
-                    {id: 'VISIBILIDAD', title: 'IV. Visibilidad Externa'},
-                    {id: 'BENCHMARK', title: 'V. Benchmarking Local'},
-                    {id: 'SWOT', title: 'VI. Matriz Estratégica'},
-                    {id: 'WISHLIST', title: 'VII. Lista de Deseos'},
-                    {id: 'FUGAS', title: 'VIII. 15 Fugas de Capital'},
-                    {id: 'ACCIONES', title: 'IX. 15 Acciones Tácticas'},
-                    {id: 'HERRAMIENTAS', title: 'X. Herramientas de Escala'},
-                    {id: 'OMNI', title: 'XI. Hoja de Ruta Ejecutiva'}
-                ];
+                const etapas = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
 
                 etapas.forEach(etapa => {
                     const div = document.createElement('div');
                     div.className = 'report-section';
-                    div.id = 'section-' + etapa.id;
-                    div.innerHTML = '<div id="content-' + etapa.id + '" class="text-zinc-600 italic text-xs animate-pulse">Procesando nodo...</div>';
+                    div.id = 'section-' + etapa;
+                    div.innerHTML = '<div id="content-' + etapa + '" class="text-zinc-700 italic text-xs animate-pulse">Procesando nodo...</div>';
                     reporte.appendChild(div);
                 });
 
@@ -271,13 +296,13 @@ function getHTML() {
 
                         if (info.status === 'done') {
                             clearInterval(pollingInterval);
-                            status.innerText = '>>> Auditoría completada.';
+                            status.innerText = '>>> AUDITORÍA TITÁN FINALIZADA.';
                             btn.disabled = false;
                             btnPdf.classList.remove('hidden');
                         }
                     }, 4000);
                 } catch (e) {
-                    status.innerText = '>>> Error de red.';
+                    status.innerText = '>>> ERROR DE COMUNICACIÓN.';
                     btn.disabled = false;
                 }
             }
@@ -287,7 +312,6 @@ function getHTML() {
                 const sectionDiv = document.getElementById('section-' + etapaId);
                 if(!contentDiv) return;
 
-                sectionDiv.classList.add('border-pc');
                 let textoSuavizado = suavizarMayusculas(content);
                 let htmlLimpio = marked.parse(textoSuavizado);
                 if(htmlLimpio.includes('table')) htmlLimpio = aplicarSemaforos(htmlLimpio);
@@ -295,14 +319,13 @@ function getHTML() {
                 htmlLimpio = htmlLimpio.replace(/\\[HEMORRAGIA CRÍTICA\\]/gi, '<span class="hemorragia-critica">[HEMORRAGIA CRÍTICA]</span>');
                 
                 contentDiv.innerHTML = '<div class="markdown-content">' + htmlLimpio + '</div>';
-                contentDiv.classList.remove('animate-pulse', 'italic', 'text-xs', 'text-zinc-600');
+                contentDiv.classList.remove('animate-pulse', 'italic', 'text-xs', 'text-zinc-700');
                 contentDiv.classList.add('text-zinc-300');
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
 
             async function descargarPDFBackend() {
                 const btn = document.getElementById('btn-pdf');
-                btn.innerText = "Preparando PDF...";
+                btn.innerText = "CRISTALIZANDO PDF...";
                 const html = document.documentElement.outerHTML;
                 const res = await fetch('/generate-pdf', {
                     method: 'POST',
@@ -313,9 +336,9 @@ function getHTML() {
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'PredictaCore_Auditoria_' + document.getElementById('dna').value + '.pdf';
+                a.download = 'PredictaCore_TITAN_' + document.getElementById('dna').value + '.pdf';
                 a.click();
-                btn.innerText = "Exportar PDF Titán";
+                btn.innerText = "Generar Reporte Titán";
             }
         </script>
     </body>
