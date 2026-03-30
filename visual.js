@@ -8,14 +8,15 @@ function getHTML() {
         <title>PredictaCore Titán - Auditoría Forense</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-
             :root {
                 --pc-green: #10b981;
+                --pc-gold: #d4af37;
                 --pc-crimson: #991b1b;
                 --pc-crimson-bg: #fef2f2;
                 --pc-dark: #0f172a;
+                --pc-gray-text: #374151;
                 --pc-border: #e5e7eb;
             }
 
@@ -26,59 +27,150 @@ function getHTML() {
                 -webkit-font-smoothing: antialiased;
             }
 
+            /* --- INTERFAZ WEB --- */
             .terminal-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; }
             .report-section { border-left: 2px solid #1e293b; padding-left: 2rem; margin-bottom: 5rem; }
 
+            /* --- REGLAS DE IMPRESIÓN TITÁN --- */
             @media print {
-                @page { size: A4; margin: 0; }
-                body { background: #ffffff !important; color: var(--pc-dark) !important; padding: 0 !important; }
+                @page { 
+                    size: A4; 
+                    margin: 1in; /* Margen de 1 pulgada en todos los lados según requerimiento */
+                }
+                
+                body { 
+                    background: #ffffff !important; 
+                    color: var(--pc-dark) !important; 
+                    padding: 0 !important;
+                }
+                
                 .no-print { display: none !important; }
 
-                .print-container { padding: 3cm 3.5cm 3cm 3cm !important; position: relative; }
-
-                .print-container::after {
-                    content: ""; position: fixed; right: 1.8cm; top: 0; bottom: 0; width: 1px;
-                    background: #f1f5f9; z-index: 5;
+                /* Contenedor Principal: Respiración y Estructura */
+                .print-container {
+                    position: relative;
+                    padding: 0 !important;
                 }
 
+                /* Ralla de Autoridad Derecha (Margen de Color) */
+                .print-container::after {
+                    content: "";
+                    position: fixed;
+                    right: -0.5in; /* Ajustado para que quede en el borde del papel */
+                    top: -1in;
+                    bottom: -1in;
+                    width: 8px;
+                    background: var(--pc-gold);
+                    z-index: 100;
+                }
+
+                /* Portada Ejecutiva */
                 .cover-page { 
-                    height: 100vh; display: flex; flex-direction: column; justify-content: center;
-                    page-break-after: always; padding-right: 4cm;
+                    height: 9in; 
+                    display: flex; 
+                    flex-direction: column; 
+                    justify-content: center;
+                    page-break-after: always;
                 }
                 
                 .cover-title { 
-                    font-size: 3.8rem; font-weight: 800; color: var(--pc-dark) !important; 
-                    margin-bottom: 1.5rem; line-height: 1; text-transform: uppercase; letter-spacing: -0.04em;
+                    font-size: 3.5rem; 
+                    font-weight: 800; 
+                    color: var(--pc-dark) !important; 
+                    margin-bottom: 1.5rem;
+                    line-height: 1.1;
+                    text-transform: uppercase;
                 }
                 
-                .cover-accent { width: 120px; height: 10px; background: var(--pc-green); margin-bottom: 3rem; }
+                .cover-accent { 
+                    width: 100px; 
+                    height: 10px; 
+                    background: var(--pc-green); 
+                    margin-bottom: 3rem; 
+                }
 
+                /* Títulos PredictaCore: Sin cuadros negros, con elegancia */
                 .markdown-content h3 { 
-                    color: var(--pc-dark) !important; font-size: 1.8rem !important; font-weight: 800 !important;
-                    border-bottom: 3px solid var(--pc-dark); padding-bottom: 0.8rem;
-                    margin: 4.5rem 0 2rem 0 !important; text-transform: uppercase;
-                    page-break-after: avoid; letter-spacing: -0.02em;
+                    color: var(--pc-dark) !important;
+                    font-size: 1.7rem !important;
+                    font-weight: 800 !important;
+                    border-bottom: 3px solid var(--pc-green);
+                    padding-bottom: 0.5rem;
+                    margin: 4rem 0 2rem 0 !important;
+                    text-transform: uppercase;
+                    page-break-after: avoid;
                 }
 
-                .markdown-content p { font-size: 11.5pt; line-height: 1.8; text-align: justify; margin-bottom: 1.8rem; color: #1e293b !important; }
-                .markdown-content li { font-size: 11.5pt; line-height: 1.7; margin-bottom: 1.2rem; }
+                /* Cuerpo de Texto Ejecutivos (Sin grises claros) */
+                .markdown-content p { 
+                    font-size: 11pt; 
+                    line-height: 1.8; 
+                    text-align: justify; 
+                    margin-bottom: 1.5rem; 
+                    color: var(--pc-dark) !important; /* Texto en negro para máxima legibilidad */
+                }
+                
+                .markdown-content li { 
+                    font-size: 11pt; 
+                    line-height: 1.7;
+                    margin-bottom: 1rem; 
+                    color: var(--pc-dark) !important;
+                }
 
-                table { width: 100%; background: transparent !important; border: 1px solid var(--pc-border) !important; margin: 2.5rem 0; page-break-inside: auto; }
+                /* Tablas: Eliminación de recuadros negros y mejora de colores */
+                table { 
+                    width: 100%;
+                    background: transparent !important; 
+                    border: 1px solid var(--pc-border) !important; 
+                    margin: 2rem 0; 
+                    page-break-inside: auto; 
+                    border-collapse: collapse;
+                }
+                
                 th { 
-                    background: var(--pc-dark) !important; color: var(--pc-green) !important; padding: 18px !important;
-                    font-weight: 700 !important; font-size: 9.5pt !important; text-transform: uppercase;
-                    letter-spacing: 0.05em; border: none !important; -webkit-print-color-adjust: exact;
+                    background: var(--pc-dark) !important; 
+                    color: #ffffff !important; 
+                    padding: 15px !important;
+                    font-weight: 700 !important;
+                    font-size: 10pt !important;
+                    text-transform: uppercase;
+                    border: none !important;
+                    -webkit-print-color-adjust: exact;
                 }
-                td { padding: 14px 18px !important; border-bottom: 1px solid var(--pc-border) !important; color: #334155 !important; font-size: 10.5pt !important; vertical-align: top !important; }
-                tr:nth-child(even) td { background: #f8fafc !important; -webkit-print-color-adjust: exact; }
+                
+                td { 
+                    padding: 12px 15px !important;
+                    border-bottom: 1px solid var(--pc-border) !important; 
+                    color: var(--pc-gray-text) !important; 
+                    font-size: 10.5pt !important; 
+                    vertical-align: top !important;
+                    border-left: none !important;
+                    border-right: none !important;
+                }
 
-                .hemorragia-critica {
-                    background-color: var(--pc-crimson-bg) !important; color: var(--pc-crimson) !important;
-                    padding: 4px 12px !important; border-radius: 6px !important; font-weight: 800 !important;
-                    border: 1px solid #fecaca !important; display: inline-block; -webkit-print-color-adjust: exact;
+                tr:nth-child(even) td {
+                    background: #f9fafb !important;
+                    -webkit-print-color-adjust: exact;
                 }
-                .report-section { page-break-before: always; }
-                #section-INTRO { page-break-before: auto; }
+
+                /* Hemorragia: Carmesí Diluido con Borde */
+                .hemorragia-critica {
+                    background-color: var(--pc-crimson-bg) !important;
+                    color: var(--pc-crimson) !important;
+                    padding: 4px 10px !important;
+                    border-radius: 4px !important;
+                    font-weight: 800 !important;
+                    border: 1px solid #fecaca !important;
+                    display: inline-block;
+                    -webkit-print-color-adjust: exact;
+                }
+                
+                .report-section { 
+                    page-break-before: always; 
+                    border: none !important;
+                    padding: 0 !important;
+                }
+                #section-INTRO { page-break-before: avoid; }
             }
         </style>
     </head>
@@ -99,11 +191,12 @@ function getHTML() {
                     <div class="text-emerald-500 font-bold uppercase tracking-[0.5em] mb-8">Auditoría Forense de Conversión</div>
                     <div class="cover-accent"></div>
                     <div class="cover-title">PredictaCore<br>Titán Intelligence</div>
-                    <div class="text-3xl text-gray-400 font-light mb-20" id="pdf-domain">Asset Analysis</div>
-                    <div class="mt-auto pt-12 border-t-4 border-gray-900 flex justify-between items-end">
+                    <div class="text-3xl text-gray-400 font-light mb-20" id="pdf-domain">Análisis de Activo Digital</div>
+                    
+                    <div class="mt-auto pt-12 border-t-2 border-gray-900 flex justify-between items-end">
                         <div>
                             <div class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-2">Classification</div>
-                            <div class="font-bold text-gray-900 text-xl">ALTAMENTE CONFIDENCIAL</div>
+                            <div class="font-bold text-gray-900 text-xl uppercase">Altamente Confidencial</div>
                         </div>
                         <div class="text-right">
                             <div class="text-xs uppercase tracking-[0.3em] text-gray-500 mb-2">Issue Date</div>
@@ -175,7 +268,6 @@ function getHTML() {
                 const btnPdf = document.getElementById('btn-pdf');
                 const status = document.getElementById('status');
                 const reporte = document.getElementById('reporte');
-                
                 btn.disabled = true;
                 btnPdf.classList.add('hidden'); 
                 reporte.innerHTML = '';
@@ -185,7 +277,6 @@ function getHTML() {
                 const etapas = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
                 etapas.forEach(etapa => {
                     const div = document.createElement('div');
-                    div.className = 'report-section';
                     div.id = 'section-' + etapa;
                     div.innerHTML = '<div id="content-' + etapa + '" class="text-zinc-700 italic text-xs animate-pulse">Procesando nodo forense...</div>';
                     reporte.appendChild(div);
@@ -198,7 +289,6 @@ function getHTML() {
                         body: JSON.stringify({ dna: dna })
                     });
                     const data = await res.json();
-                    
                     pollingInterval = setInterval(async () => {
                         const poll = await fetch('/poll?jobId=' + encodeURIComponent(data.jobId));
                         const info = await poll.json();
@@ -244,7 +334,7 @@ function getHTML() {
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ html: html })
                     });
-                    const blob = await res.blob();
+                    const blob = await response.blob();
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
