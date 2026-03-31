@@ -1,4 +1,4 @@
-// server.js - BÚNKER 10.1: RECTIFICACIÓN DE MODELO Y ENDPOINT STABLE
+// server.js - BÚNKER 11: RECTIFICACIÓN DE RUTA Y ESCALA SEGURA
 
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
@@ -8,9 +8,6 @@ const { captureAndScrape } = require('./motor');
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
-const dns = require('dns');
-const { promisify } = require('util');
-const lookup = promisify(dns.lookup);
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -22,27 +19,23 @@ const jobs = {};
 app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/start', async (req, res) => {
-    try {
-        const { dna } = req.body;
-        if (!dna) return res.status(400).json({ error: "Falta DNA" });
+    const { dna } = req.body;
+    if (!dna) return res.status(400).json({ error: "Falta DNA" });
 
-        let targetUrl = dna.trim();
-        const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
-        if (!targetUrl.startsWith('http') && isDomain) targetUrl = `https://${targetUrl}`;
-        
-        const jobId = `job_${Date.now()}`; 
-        jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: targetUrl };
-        
-        ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
-            console.error("Fallo crítico en fondo:", e);
-            if(jobs[jobId]) jobs[jobId].status = 'error';
-        });
-        
-        console.log(`[+] Auditoría iniciada. ID: ${jobId} | Target: ${targetUrl}`);
-        res.json({ jobId });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    let targetUrl = dna.trim();
+    const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
+    if (!targetUrl.startsWith('http') && isDomain) targetUrl = `https://${targetUrl}`;
+    
+    // ID único para cada auditoría para permitir simultaneidad
+    const jobId = `job_${Date.now()}`; 
+    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: targetUrl };
+    
+    ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
+        console.error("Fallo crítico en fondo:", e);
+        if(jobs[jobId]) jobs[jobId].status = 'error';
+    });
+    
+    res.json({ jobId });
 });
 
 app.get('/poll', (req, res) => {
@@ -71,37 +64,11 @@ app.post('/generate-pdf', async (req, res) => {
     }
 });
 
-// MOTOR DE REINTENTO MEJORADO
-async function llamarVertexConReintento(url, headers, payload, etapaId, intentos = 3) {
-    for (let i = 0; i < intentos; i++) {
-        try {
-            const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(payload) });
-            if (res.status === 429) {
-                const espera = 15000 * (i + 1);
-                console.log(`[!] Cuota excedida en ${etapaId}. Reintentando en ${espera/1000}s...`);
-                await new Promise(r => setTimeout(r, espera));
-                continue;
-            }
-            if (!res.ok) {
-                const errText = await res.text();
-                throw new Error(errText);
-            }
-            return await res.json();
-        } catch (error) {
-            if (i === intentos - 1) throw error;
-            await new Promise(r => setTimeout(r, 5000));
-        }
-    }
-}
-
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     const ETAPAS = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
     
     let datosTarget = { isUrl: false, texto: "", desktopBase64: null, mobileBase64: null };
-    const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
-
-    if (isDomain || targetUrl.startsWith('http')) {
-        console.log(`[+] Scrapeando: ${targetUrl}`);
+    if (/\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl) || targetUrl.startsWith('http')) {
         datosTarget = await captureAndScrape(targetUrl);
     } else {
         datosTarget.texto = targetUrl;
@@ -109,15 +76,16 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
 
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
     const cerebro = isSocialMedia ? cerebroSocial : cerebroWeb;
-    
-    // --- EXTRACCIÓN DE CREDENCIALES SEGURA ---
+
+    // --- EXTRACCIÓN DINÁMICA DE CREDENCIALES ---
     const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
     const auth = new GoogleAuth({ credentials: credenciales, scopes: ['https://www.googleapis.com/auth/cloud-platform'] });
     const client = await auth.getClient();
     const tokenResponse = await client.getAccessToken();
     
-    // CAMBIO CRÍTICO: Usamos gemini-1.5-pro-002 (Versión de producción estable)
-    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro-002:generateContent`;
+    // Usamos el project_id real que viene en tu JSON para evitar el 404
+    const projectId = credenciales.project_id;
+    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
 
     for (const etapaId of ETAPAS) {
         jobs[jobId].currentEtapa = etapaId;
@@ -125,7 +93,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             const promptFinal = cerebro.PROMPTS[etapaId](datosTarget.texto);
             let partes = [
                 { text: cerebro.IDIOMA }, { text: cerebro.REGLA_NUCLEAR },
-                { text: `URL: ${targetUrl} | DOSSIER: ${datosTarget.texto}` }
+                { text: `URL ANALIZADA: ${targetUrl} | DOSSIER: ${datosTarget.texto}` }
             ];
 
             if (datosTarget.isUrl && datosTarget.desktopBase64) {
@@ -142,19 +110,28 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
 
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
-            const vertexData = await llamarVertexConReintento(vertexUrl, { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` }, payload, etapaId);
-            
-            if (vertexData.candidates && vertexData.candidates[0].content) {
-                jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
-            } else {
-                throw new Error("Respuesta de AI malformada");
+            const vertexRes = await fetch(vertexUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` },
+                body: JSON.stringify(payload)
+            });
+
+            if (!vertexRes.ok) {
+                const errorText = await vertexRes.text();
+                throw new Error(errorText);
             }
 
-            // Cadencia de 4s para estabilidad
+            const vertexData = await vertexRes.json();
+            jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
+
+            // Retraso de 4 segundos entre etapas para no saturar la cuota
             await new Promise(r => setTimeout(r, 4000));
+            
         } catch (error) {
             console.error(`[-] Error en ${etapaId}:`, error.message);
-            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\nDetalle: El motor de inteligencia no respondió correctamente. Reintenta la simulación o verifica tus cuotas de Google Cloud.`;
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\nDetalle: ${error.message}`;
+            // Espera extra si hubo error para "enfriar" la conexión
+            await new Promise(r => setTimeout(r, 6000));
         }
     }
     jobs[jobId].status = 'done'; 
