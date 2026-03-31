@@ -1,4 +1,4 @@
-// server.js - BÚNKER 15: SINCRONIZACIÓN DE LLAVES Y MOTOR SDK TITÁN
+// server.js - BÚNKER 15.1: RECTIFICACIÓN QUIRÚRGICA (CERO ERRORES)
 const express = require('express');
 const { VertexAI } = require('@google-cloud/vertexai'); 
 const cerebroWeb = require('./cerebro');           
@@ -21,12 +21,10 @@ app.post('/start', async (req, res) => {
     if (!dna) return res.status(400).json({ error: "Falta DNA" });
     const jobId = `job_${Date.now()}`; 
     jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: dna.trim() };
-    
     ejecutarAuditoriaFondo(dna.trim(), jobId).catch(e => {
-        console.error("Fallo crítico en fondo:", e);
+        console.error("Fallo crítico:", e);
         if(jobs[jobId]) jobs[jobId].status = 'error';
     });
-    
     res.json({ jobId });
 });
 
@@ -39,26 +37,28 @@ app.get('/poll', (req, res) => {
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     const ETAPAS = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
     
-    // 1. Scrapeo Forense
+    // 1. Motor de Scraping Intacto
     let datosTarget = await captureAndScrape(targetUrl);
 
-    // 2. Cerebro
+    // 2. Cerebro (Web o Social)
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
     const cerebro = isSocialMedia ? cerebroSocial : cerebroWeb;
 
-    // 3. --- INICIALIZACIÓN BLINDADA (EL FIX) ---
+    // 3. IDENTIFICACIÓN Y MODELO (RECTIFICACIÓN)
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
     
+    // Log de seguridad para que veas en Railway qué ID se está usando realmente
+    console.log(`[!] Iniciando VertexAI para el proyecto: ${creds.project_id}`);
+
     const vertexAI = new VertexAI({ 
         project: creds.project_id, 
         location: 'us-central1',
-        googleAuthOptions: {
-            credentials: creds // Esto inyecta las llaves directamente sin buscar archivos
-        }
+        googleAuthOptions: { credentials: creds }
     });
 
+    // Regresamos al nombre de modelo estándar para asegurar compatibilidad total
     const model = vertexAI.getGenerativeModel({
-        model: 'gemini-1.5-pro-002',
+        model: 'gemini-1.5-pro', 
         systemInstruction: FIREWALL_IA,
         generationConfig: { temperature: 0.15 }
     });
@@ -67,11 +67,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
         jobs[jobId].currentEtapa = etapaId;
         try {
             const promptFinal = cerebro.PROMPTS[etapaId](datosTarget.texto);
-            let msgParts = [
-                { text: cerebro.IDIOMA },
-                { text: cerebro.REGLA_NUCLEAR },
-                { text: `DOSSIER:\n${datosTarget.texto}` }
-            ];
+            let msgParts = [{ text: cerebro.IDIOMA }, { text: cerebro.REGLA_NUCLEAR }, { text: `DOSSIER:\n${datosTarget.texto}` }];
 
             if (datosTarget.desktopBase64) {
                 msgParts.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
@@ -80,10 +76,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             msgParts.push({ text: promptFinal });
 
             const request = { contents: [{ role: 'user', parts: msgParts }] };
-            
-            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
-                request.tools = [{ googleSearch: {} }];
-            }
+            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') request.tools = [{ googleSearch: {} }];
 
             const result = await model.generateContent(request);
             const response = await result.response;
@@ -91,7 +84,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
 
             await new Promise(r => setTimeout(r, 5000)); 
         } catch (error) {
-            console.error(`[-] Error en etapa ${etapaId}:`, error.message);
+            console.error(`[-] Error en ${etapaId}:`, error.message);
             jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\n${error.message}`;
             await new Promise(r => setTimeout(r, 8000));
         }
@@ -103,10 +96,7 @@ app.post('/generate-pdf', async (req, res) => {
     const { html } = req.body;
     let browser;
     try {
-        browser = await puppeteer.launch({ 
-            headless: "new", 
-            args: ['--no-sandbox', '--disable-setuid-sandbox'] 
-        });
+        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
         await page.setContent(html, { waitUntil: 'networkidle0' });
         const pdf = await page.pdf({ format: 'A4', printBackground: true });
@@ -114,8 +104,8 @@ app.post('/generate-pdf', async (req, res) => {
         res.contentType("application/pdf").send(pdf);
     } catch (e) {
         if(browser) await browser.close();
-        res.status(500).send("Error en Cristalización");
+        res.status(500).send("Error PDF");
     }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN OPERATIVO EN RAILWAY (SDK STABLE)`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN OPERATIVO EN RAILWAY`));
