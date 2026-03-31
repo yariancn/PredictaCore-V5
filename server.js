@@ -1,4 +1,4 @@
-// server.js - BÚNKER 9: MOTOR DE REINTENTO DINÁMICO Y MULTI-AUDITORÍA
+// server.js - BÚNKER 10: SINCRONIZACIÓN TOTAL Y MULTI-AUDITORÍA BLINDADA
 
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
@@ -17,13 +17,7 @@ const port = process.env.PORT || 8080;
 
 app.use(express.json({ limit: '10mb' }));
 
-const dossierCache = {};
 const jobs = {}; 
-
-const ETAPAS_ORDEN = [
-    'INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK',
-    'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'
-];
 
 async function verificarDominio(url) {
     try {
@@ -36,25 +30,29 @@ async function verificarDominio(url) {
 app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/start', async (req, res) => {
-    const { dna } = req.body;
-    let targetUrl = dna.trim();
-    const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
-    if (!targetUrl.startsWith('http') && isDomain) targetUrl = `https://${targetUrl}`;
-    
-    if (isDomain || targetUrl.startsWith('http')) {
-        const dominioValido = await verificarDominio(targetUrl);
-        if (!dominioValido) return res.status(400).json({ error: "ERR_NAME_NOT_RESOLVED" });
+    try {
+        const { dna } = req.body;
+        if (!dna) return res.status(400).json({ error: "Falta DNA" });
+
+        let targetUrl = dna.trim();
+        const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
+        if (!targetUrl.startsWith('http') && isDomain) targetUrl = `https://${targetUrl}`;
+        
+        // El ID para el front-end será el timestamp para evitar colisiones
+        const jobId = `job_${Date.now()}`; 
+        jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: targetUrl };
+        
+        // Ejecución asíncrona
+        ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
+            console.error("Fallo crítico en fondo:", e);
+            if(jobs[jobId]) jobs[jobId].status = 'error';
+        });
+        
+        console.log(`[+] Auditoría iniciada. ID: ${jobId} | Target: ${targetUrl}`);
+        res.json({ jobId });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-    
-    const jobId = `${targetUrl}_${Date.now()}`; 
-    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO' };
-    
-    ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
-        console.error("Fallo crítico en fondo:", e);
-        jobs[jobId].status = 'error';
-    });
-    
-    res.json({ jobId });
 });
 
 app.get('/poll', (req, res) => {
@@ -79,25 +77,21 @@ app.post('/generate-pdf', async (req, res) => {
         res.send(pdfBuffer);
     } catch (error) {
         if (browser) await browser.close();
-        res.status(500).send("Fallo al generar PDF.");
+        res.status(500).send("Fallo PDF");
     }
 });
 
-// FUNCIÓN DE AYUDA PARA REINTENTOS
 async function llamarVertexConReintento(url, headers, payload, etapaId, intentos = 3) {
     for (let i = 0; i < intentos; i++) {
         try {
             const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(payload) });
             if (res.status === 429) {
-                const espera = 10000 * (i + 1);
-                console.log(`[!] Cuota excedida en ${etapaId}. Reintentando en ${espera/1000}s...`);
+                const espera = 12000 * (i + 1);
+                console.log(`[!] Cuota Gemini excedida en ${etapaId}. Reintentando en ${espera/1000}s...`);
                 await new Promise(r => setTimeout(r, espera));
                 continue;
             }
-            if (!res.ok) {
-                const errText = await res.text();
-                throw new Error(errText);
-            }
+            if (!res.ok) throw new Error(await res.text());
             return await res.json();
         } catch (error) {
             if (i === intentos - 1) throw error;
@@ -107,68 +101,61 @@ async function llamarVertexConReintento(url, headers, payload, etapaId, intentos
 }
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
+    const ETAPAS = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
+    
     let datosTarget = { isUrl: false, texto: "", desktopBase64: null, mobileBase64: null };
     const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
 
     if (isDomain || targetUrl.startsWith('http')) {
-        console.log(`[+] Extrayendo Visión Absoluta de: ${targetUrl}`);
+        console.log(`[+] Scrapeando: ${targetUrl}`);
         datosTarget = await captureAndScrape(targetUrl);
     } else {
         datosTarget.texto = targetUrl;
     }
 
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
-    const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
-    const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
-    const fechaActual = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
+    const cerebro = isSocialMedia ? cerebroSocial : cerebroWeb;
     const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
-    const projectId = credenciales.project_id;
+    
     const auth = new GoogleAuth({ credentials: credenciales, scopes: ['https://www.googleapis.com/auth/cloud-platform'] });
     const client = await auth.getClient();
     const tokenResponse = await client.getAccessToken();
-    const accessToken = tokenResponse.token;
-    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
+    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
 
-    const headers = { "Content-Type": "application/json", "Authorization": `Bearer ${accessToken}` };
-
-    for (const etapaId of ETAPAS_ORDEN) {
+    for (const etapaId of ETAPAS) {
         jobs[jobId].currentEtapa = etapaId;
         try {
-            const promptFinal = PROMPTS[etapaId](datosTarget.texto);
-            let partesMensaje = [
-                { text: IDIOMA }, { text: REGLA_NUCLEAR },
-                { text: `FECHA ACTUAL: ${fechaActual} | URL: ${targetUrl}` },
-                { text: `DOSSIER: ${datosTarget.texto}` }
+            const promptFinal = cerebro.PROMPTS[etapaId](datosTarget.texto);
+            let partes = [
+                { text: cerebro.IDIOMA }, { text: cerebro.REGLA_NUCLEAR },
+                { text: `URL: ${targetUrl} | DOSSIER: ${datosTarget.texto}` }
             ];
 
             if (datosTarget.isUrl && datosTarget.desktopBase64) {
-                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
-                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
+                partes.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
+                partes.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
             }
-
-            partesMensaje.push({ text: promptFinal });
+            partes.push({ text: promptFinal });
 
             const payload = {
                 systemInstruction: { parts: [{ text: FIREWALL_IA }] },
-                contents: [{ role: "user", parts: partesMensaje }],
+                contents: [{ role: "user", parts: partes }],
                 generationConfig: { temperature: 0.15 } 
             };
 
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
-            const vertexData = await llamarVertexConReintento(vertexUrl, headers, payload, etapaId);
+            const vertexData = await llamarVertexConReintento(vertexUrl, { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` }, payload, etapaId);
             jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
 
-            // Cadencia de seguridad para permitir multi-auditoría
+            // Cadencia de 4s para estabilidad total
             await new Promise(r => setTimeout(r, 4000));
-
         } catch (error) {
-            console.error(`[-] Error final en etapa ${etapaId}:`, error.message);
-            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA RECURRENTE\nEl motor de inteligencia está saturado. Intenta exportar lo que se generó o reinicia la simulación.`;
+            console.error(`[-] Error en ${etapaId}:`, error.message);
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\nEl motor de inteligencia está saturado temporalmente. Reintenta la simulación.`;
         }
     }
     jobs[jobId].status = 'done'; 
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR AUTÓNOMO ACTIVO EN ${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN ACTIVO EN ${port}`));
