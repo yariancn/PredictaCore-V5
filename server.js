@@ -1,8 +1,8 @@
-// server.js - BÚNKER 7: ENRUTADOR DE DOS CEREBROS (CERO RIESGO)
+// server.js - BÚNKER 8: SECUENCIADOR ANTIBLOQUEO (CADENCIA TITÁN)
 
 const express = require('express');
-const cerebroWeb = require('./cerebro');           // TU CEREBRO ORIGINAL INTACTO DE ESTA MAÑANA
-const cerebroSocial = require('./cerebro_social'); // TU NUEVO CEREBRO (Para Redes Sociales)
+const cerebroWeb = require('./cerebro');           
+const cerebroSocial = require('./cerebro_social'); 
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
@@ -86,7 +86,7 @@ app.post('/generate-pdf', async (req, res) => {
         const pdfBuffer = await page.pdf({
             format: 'A4',
             printBackground: true,
-            margin: { top: '2.5cm', bottom: '2cm', left: '2cm', right: '2cm' }
+            margin: { top: '0in', bottom: '0in', left: '0in', right: '0in' } // El margen de 1in ya viene en tu visual.js
         });
         await browser.close();
         
@@ -115,7 +115,6 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
         datosTarget.texto = targetUrl;
     }
 
-    // EL INTERRUPTOR MAESTRO: Aísla y usa el archivo correcto
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
     const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
     const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
@@ -136,7 +135,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     const client = await auth.getClient();
     const tokenResponse = await client.getAccessToken();
     const accessToken = tokenResponse.token;
-    const vertexUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-2.5-pro:generateContent`;
+    const vertexUrl = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/gemini-1.5-pro:generateContent`;
 
     for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId; 
@@ -181,8 +180,12 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             });
 
             if (!vertexRes.ok) {
-                const errorData = await vertexRes.text();
-                throw new Error(`Fallo en Vertex AI: ${errorData}`);
+                const errorData = await vertexRes.json();
+                // Manejo de cuota agotada (429) para reintento automático opcional o reporte claro
+                if (vertexRes.status === 429) {
+                    throw new Error("Límite de peticiones de Google agotado. El sistema esperará más tiempo en la siguiente etapa.");
+                }
+                throw new Error(`Fallo en Vertex AI: \${JSON.stringify(errorData)}`);
             }
 
             const vertexData = await vertexRes.json();
@@ -190,15 +193,18 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             
             jobs[jobId].progress[etapaId] = textoForense;
 
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            // --- AJUSTE TITÁN: Retraso de 5 segundos para proteger la cuota ---
+            await new Promise(resolve => setTimeout(resolve, 5000));
 
         } catch (error) {
-            console.error(`Fallo en etapa ${etapaId}:`, error.message);
-            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\nDetalle: ${error.message}`;
+            console.error(`Fallo en etapa \${etapaId}:`, error.message);
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\\nDetalle: \${error.message}`;
+            // Si hay error, esperamos un poco más antes de la siguiente para "enfriar" la API
+            await new Promise(resolve => setTimeout(resolve, 8000));
         }
     }
     
     jobs[jobId].status = 'done'; 
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR AUTÓNOMO ACTIVO EN ${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN - MOTOR AUTÓNOMO ACTIVO EN \${port}`));
