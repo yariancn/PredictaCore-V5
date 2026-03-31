@@ -1,4 +1,4 @@
-// server.js - BÚNKER 14: MOTOR DE ESCALA INDUSTRIAL (SDK MODE)
+// server.js - BÚNKER 15: SINCRONIZACIÓN DE LLAVES Y MOTOR SDK TITÁN
 const express = require('express');
 const { VertexAI } = require('@google-cloud/vertexai'); 
 const cerebroWeb = require('./cerebro');           
@@ -16,7 +16,6 @@ const jobs = {};
 
 app.get('/', (req, res) => res.send(getHTML()));
 
-// --- POST START: RECIBE EL COMANDO ---
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
     if (!dna) return res.status(400).json({ error: "Falta DNA" });
@@ -31,29 +30,31 @@ app.post('/start', async (req, res) => {
     res.json({ jobId });
 });
 
-// --- POLL: MONITOREO DE PROGRESO ---
 app.get('/poll', (req, res) => {
     const jobId = req.query.jobId;
     if (!jobs[jobId]) return res.json({ status: 'not_found' });
     res.json(jobs[jobId]);
 });
 
-// --- MOTOR PRINCIPAL: SINCRONIZADO CON TUS ARCHIVOS ---
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     const ETAPAS = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
     
-    // 1. Scrapeo (Usa tu motor.js intacto)
+    // 1. Scrapeo Forense
     let datosTarget = await captureAndScrape(targetUrl);
 
-    // 2. Selección de Cerebro (Social o Web)
+    // 2. Cerebro
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
     const cerebro = isSocialMedia ? cerebroSocial : cerebroWeb;
 
-    // 3. Inicialización Vertex AI (El motor oficial de Google)
+    // 3. --- INICIALIZACIÓN BLINDADA (EL FIX) ---
     const creds = JSON.parse(process.env.GOOGLE_CREDS);
+    
     const vertexAI = new VertexAI({ 
         project: creds.project_id, 
-        location: 'us-central1' 
+        location: 'us-central1',
+        googleAuthOptions: {
+            credentials: creds // Esto inyecta las llaves directamente sin buscar archivos
+        }
     });
 
     const model = vertexAI.getGenerativeModel({
@@ -80,7 +81,6 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
 
             const request = { contents: [{ role: 'user', parts: msgParts }] };
             
-            // Inyectamos búsqueda en Google si la etapa lo requiere
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
                 request.tools = [{ googleSearch: {} }];
             }
@@ -89,18 +89,16 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             const response = await result.response;
             jobs[jobId].progress[etapaId] = response.candidates[0].content.parts[0].text;
 
-            // Cadencia de 4.5 segundos para estabilidad de cuota
-            await new Promise(r => setTimeout(r, 4500)); 
+            await new Promise(r => setTimeout(r, 5000)); 
         } catch (error) {
             console.error(`[-] Error en etapa ${etapaId}:`, error.message);
             jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\n${error.message}`;
-            await new Promise(r => setTimeout(r, 8000)); // Enfriamiento
+            await new Promise(r => setTimeout(r, 8000));
         }
     }
     jobs[jobId].status = 'done';
 }
 
-// --- GENERACIÓN DE PDF: CRISTALIZACIÓN ---
 app.post('/generate-pdf', async (req, res) => {
     const { html } = req.body;
     let browser;
@@ -120,4 +118,4 @@ app.post('/generate-pdf', async (req, res) => {
     }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN OPERATIVO EN RAILWAY`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN OPERATIVO EN RAILWAY (SDK STABLE)`));
