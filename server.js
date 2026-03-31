@@ -1,36 +1,29 @@
-// server.js - BÚNKER 11: RECTIFICACIÓN DE RUTA Y ESCALA SEGURA
-
+// server.js - BÚNKER 14: MOTOR DE ESCALA INDUSTRIAL (SDK MODE)
 const express = require('express');
+const { VertexAI } = require('@google-cloud/vertexai'); 
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
-const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 
 const app = express();
 const port = process.env.PORT || 8080;
 
 app.use(express.json({ limit: '10mb' }));
-
 const jobs = {}; 
 
 app.get('/', (req, res) => res.send(getHTML()));
 
+// --- POST START: RECIBE EL COMANDO ---
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
     if (!dna) return res.status(400).json({ error: "Falta DNA" });
-
-    let targetUrl = dna.trim();
-    const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
-    if (!targetUrl.startsWith('http') && isDomain) targetUrl = `https://${targetUrl}`;
-    
-    // ID único para cada auditoría para permitir simultaneidad
     const jobId = `job_${Date.now()}`; 
-    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: targetUrl };
+    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: dna.trim() };
     
-    ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
+    ejecutarAuditoriaFondo(dna.trim(), jobId).catch(e => {
         console.error("Fallo crítico en fondo:", e);
         if(jobs[jobId]) jobs[jobId].status = 'error';
     });
@@ -38,103 +31,93 @@ app.post('/start', async (req, res) => {
     res.json({ jobId });
 });
 
+// --- POLL: MONITOREO DE PROGRESO ---
 app.get('/poll', (req, res) => {
     const jobId = req.query.jobId;
     if (!jobs[jobId]) return res.json({ status: 'not_found' });
     res.json(jobs[jobId]);
 });
 
-app.post('/generate-pdf', async (req, res) => {
-    const { html } = req.body;
-    let browser;
-    try {
-        browser = await puppeteer.launch({
-            headless: "new",
-            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--single-process', '--disable-gpu']
-        });
-        const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: 'networkidle0' });
-        const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
-        await browser.close();
-        res.setHeader('Content-Type', 'application/pdf');
-        res.send(pdfBuffer);
-    } catch (error) {
-        if (browser) await browser.close();
-        res.status(500).send("Fallo PDF");
-    }
-});
-
+// --- MOTOR PRINCIPAL: SINCRONIZADO CON TUS ARCHIVOS ---
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     const ETAPAS = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
     
-    let datosTarget = { isUrl: false, texto: "", desktopBase64: null, mobileBase64: null };
-    if (/\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl) || targetUrl.startsWith('http')) {
-        datosTarget = await captureAndScrape(targetUrl);
-    } else {
-        datosTarget.texto = targetUrl;
-    }
+    // 1. Scrapeo (Usa tu motor.js intacto)
+    let datosTarget = await captureAndScrape(targetUrl);
 
+    // 2. Selección de Cerebro (Social o Web)
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
     const cerebro = isSocialMedia ? cerebroSocial : cerebroWeb;
 
-    // --- EXTRACCIÓN DINÁMICA DE CREDENCIALES ---
-    const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
-    const auth = new GoogleAuth({ credentials: credenciales, scopes: ['https://www.googleapis.com/auth/cloud-platform'] });
-    const client = await auth.getClient();
-    const tokenResponse = await client.getAccessToken();
-    
-    // Usamos el project_id real que viene en tu JSON para evitar el 404
-    const projectId = credenciales.project_id;
-    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
+    // 3. Inicialización Vertex AI (El motor oficial de Google)
+    const creds = JSON.parse(process.env.GOOGLE_CREDS);
+    const vertexAI = new VertexAI({ 
+        project: creds.project_id, 
+        location: 'us-central1' 
+    });
+
+    const model = vertexAI.getGenerativeModel({
+        model: 'gemini-1.5-pro-002',
+        systemInstruction: FIREWALL_IA,
+        generationConfig: { temperature: 0.15 }
+    });
 
     for (const etapaId of ETAPAS) {
         jobs[jobId].currentEtapa = etapaId;
         try {
             const promptFinal = cerebro.PROMPTS[etapaId](datosTarget.texto);
-            let partes = [
-                { text: cerebro.IDIOMA }, { text: cerebro.REGLA_NUCLEAR },
-                { text: `URL ANALIZADA: ${targetUrl} | DOSSIER: ${datosTarget.texto}` }
+            let msgParts = [
+                { text: cerebro.IDIOMA },
+                { text: cerebro.REGLA_NUCLEAR },
+                { text: `DOSSIER:\n${datosTarget.texto}` }
             ];
 
-            if (datosTarget.isUrl && datosTarget.desktopBase64) {
-                partes.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
-                partes.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
+            if (datosTarget.desktopBase64) {
+                msgParts.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
+                msgParts.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
             }
-            partes.push({ text: promptFinal });
+            msgParts.push({ text: promptFinal });
 
-            const payload = {
-                systemInstruction: { parts: [{ text: FIREWALL_IA }] },
-                contents: [{ role: "user", parts: partes }],
-                generationConfig: { temperature: 0.15 } 
-            };
-
-            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
-
-            const vertexRes = await fetch(vertexUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` },
-                body: JSON.stringify(payload)
-            });
-
-            if (!vertexRes.ok) {
-                const errorText = await vertexRes.text();
-                throw new Error(errorText);
-            }
-
-            const vertexData = await vertexRes.json();
-            jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
-
-            // Retraso de 4 segundos entre etapas para no saturar la cuota
-            await new Promise(r => setTimeout(r, 4000));
+            const request = { contents: [{ role: 'user', parts: msgParts }] };
             
+            // Inyectamos búsqueda en Google si la etapa lo requiere
+            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
+                request.tools = [{ googleSearch: {} }];
+            }
+
+            const result = await model.generateContent(request);
+            const response = await result.response;
+            jobs[jobId].progress[etapaId] = response.candidates[0].content.parts[0].text;
+
+            // Cadencia de 4.5 segundos para estabilidad de cuota
+            await new Promise(r => setTimeout(r, 4500)); 
         } catch (error) {
-            console.error(`[-] Error en ${etapaId}:`, error.message);
-            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\nDetalle: ${error.message}`;
-            // Espera extra si hubo error para "enfriar" la conexión
-            await new Promise(r => setTimeout(r, 6000));
+            console.error(`[-] Error en etapa ${etapaId}:`, error.message);
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\n${error.message}`;
+            await new Promise(r => setTimeout(r, 8000)); // Enfriamiento
         }
     }
-    jobs[jobId].status = 'done'; 
+    jobs[jobId].status = 'done';
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN ACTIVO EN ${port}`));
+// --- GENERACIÓN DE PDF: CRISTALIZACIÓN ---
+app.post('/generate-pdf', async (req, res) => {
+    const { html } = req.body;
+    let browser;
+    try {
+        browser = await puppeteer.launch({ 
+            headless: "new", 
+            args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+        });
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        const pdf = await page.pdf({ format: 'A4', printBackground: true });
+        await browser.close();
+        res.contentType("application/pdf").send(pdf);
+    } catch (e) {
+        if(browser) await browser.close();
+        res.status(500).send("Error en Cristalización");
+    }
+});
+
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN OPERATIVO EN RAILWAY`));
