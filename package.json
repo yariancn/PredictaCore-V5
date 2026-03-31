@@ -1,7 +1,7 @@
 {
   "name": "predictacore-titan",
-  "version": "37.0.0",
-  "description": "PredictaCore Titán - Motor de Élite Blindado",
+  "version": "37.1.0",
+  "description": "PredictaCore Titán - Producción Inmune",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
