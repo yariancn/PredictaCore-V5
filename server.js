@@ -1,4 +1,4 @@
-// server.js - BÚNKER 10: SINCRONIZACIÓN TOTAL Y MULTI-AUDITORÍA BLINDADA
+// server.js - BÚNKER 10.1: RECTIFICACIÓN DE MODELO Y ENDPOINT STABLE
 
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
@@ -19,14 +19,6 @@ app.use(express.json({ limit: '10mb' }));
 
 const jobs = {}; 
 
-async function verificarDominio(url) {
-    try {
-        const urlObj = new URL(url);
-        await lookup(urlObj.hostname);
-        return true;
-    } catch (error) { return false; }
-}
-
 app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/start', async (req, res) => {
@@ -38,11 +30,9 @@ app.post('/start', async (req, res) => {
         const isDomain = /\.(com|net|es|org|mx|info|biz|online|store|shop)/i.test(targetUrl);
         if (!targetUrl.startsWith('http') && isDomain) targetUrl = `https://${targetUrl}`;
         
-        // El ID para el front-end será el timestamp para evitar colisiones
         const jobId = `job_${Date.now()}`; 
         jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: targetUrl };
         
-        // Ejecución asíncrona
         ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
             console.error("Fallo crítico en fondo:", e);
             if(jobs[jobId]) jobs[jobId].status = 'error';
@@ -81,17 +71,21 @@ app.post('/generate-pdf', async (req, res) => {
     }
 });
 
+// MOTOR DE REINTENTO MEJORADO
 async function llamarVertexConReintento(url, headers, payload, etapaId, intentos = 3) {
     for (let i = 0; i < intentos; i++) {
         try {
             const res = await fetch(url, { method: "POST", headers, body: JSON.stringify(payload) });
             if (res.status === 429) {
-                const espera = 12000 * (i + 1);
-                console.log(`[!] Cuota Gemini excedida en ${etapaId}. Reintentando en ${espera/1000}s...`);
+                const espera = 15000 * (i + 1);
+                console.log(`[!] Cuota excedida en ${etapaId}. Reintentando en ${espera/1000}s...`);
                 await new Promise(r => setTimeout(r, espera));
                 continue;
             }
-            if (!res.ok) throw new Error(await res.text());
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(errText);
+            }
             return await res.json();
         } catch (error) {
             if (i === intentos - 1) throw error;
@@ -115,12 +109,15 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
 
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
     const cerebro = isSocialMedia ? cerebroSocial : cerebroWeb;
-    const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
     
+    // --- EXTRACCIÓN DE CREDENCIALES SEGURA ---
+    const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
     const auth = new GoogleAuth({ credentials: credenciales, scopes: ['https://www.googleapis.com/auth/cloud-platform'] });
     const client = await auth.getClient();
     const tokenResponse = await client.getAccessToken();
-    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
+    
+    // CAMBIO CRÍTICO: Usamos gemini-1.5-pro-002 (Versión de producción estable)
+    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro-002:generateContent`;
 
     for (const etapaId of ETAPAS) {
         jobs[jobId].currentEtapa = etapaId;
@@ -146,13 +143,18 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
             const vertexData = await llamarVertexConReintento(vertexUrl, { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` }, payload, etapaId);
-            jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
+            
+            if (vertexData.candidates && vertexData.candidates[0].content) {
+                jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
+            } else {
+                throw new Error("Respuesta de AI malformada");
+            }
 
-            // Cadencia de 4s para estabilidad total
+            // Cadencia de 4s para estabilidad
             await new Promise(r => setTimeout(r, 4000));
         } catch (error) {
             console.error(`[-] Error en ${etapaId}:`, error.message);
-            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\nEl motor de inteligencia está saturado temporalmente. Reintenta la simulación.`;
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\nDetalle: El motor de inteligencia no respondió correctamente. Reintenta la simulación o verifica tus cuotas de Google Cloud.`;
         }
     }
     jobs[jobId].status = 'done'; 
