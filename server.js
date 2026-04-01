@@ -1,4 +1,4 @@
-// server.js - BÚNKER 25: INTEGRACIÓN TÁCTICA Y MAQUETACIÓN PRO
+// server.js - BÚNKER 25.1: INTEGRACIÓN TÁCTICA (CASE-SENSITIVE FIX)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -8,10 +8,10 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 
-// --- IMPORTACIÓN DE CAPAS TÁCTICAS (NUEVAS) ---
-const { PROMPTS_MEJORADOS } = require('./cerebro_tactico');
-const { CONTEXTOS } = require('./guia_ejecutiva');
-const { CSS_TITAN } = require('./estilos_titan');
+// --- IMPORTACIÓN SINCRONIZADA CON TUS ARCHIVOS (CamelCase) ---
+const { PROMPTS_MEJORADOS } = require('./CerebroTactico');
+const { CONTEXTOS } = require('./GuiaEjecutiva');
+const { CSS_TITAN } = require('./EstilosTitan');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -48,15 +48,12 @@ app.get('/poll', (req, res) => {
 });
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
-    // 1. EXTRACCIÓN (MOTOR 6.3 INTACTO)
     let datosTarget = await captureAndScrape(targetUrl);
 
-    // 2. SELECCIÓN DE CEREBRO
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com');
     const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
     const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
 
-    // 3. AUTENTICACIÓN VERTEX AI
     const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
     const auth = new GoogleAuth({
         credentials: credenciales,
@@ -70,8 +67,8 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId;
         try {
-            // --- INYECCIÓN DE PROMPTS MEJORADOS (TACTICAL BYPASS) ---
             let promptFinal;
+            // Bypass para usar la nueva inteligencia multimodal
             if (etapaId === 'BENCHMARK') {
                 promptFinal = PROMPTS_MEJORADOS.BENCHMARK_PRO(targetUrl, datosTarget.texto);
             } else if (etapaId === 'FUGAS') {
@@ -86,7 +83,6 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
                 { text: `DOSSIER FORENSE:\n${datosTarget.texto}` }
             ];
 
-            // Inyección de Visión Forense (Multimodal)
             if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
@@ -100,7 +96,6 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
                 generationConfig: { temperature: 0.15 } 
             };
 
-            // Herramientas de búsqueda para Benchmark y Visibilidad
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
                 payload.tools = [{ googleSearch: {} }];
             }
@@ -133,15 +128,12 @@ app.post('/generate-pdf', async (req, res) => {
         });
         const page = await browser.newPage();
 
-        // --- INYECCIÓN DE CÁPSULAS DE CONTEXTO Y MAQUETACIÓN ---
         let htmlFinal = html;
         for (const [etapa, explicacion] of Object.entries(CONTEXTOS)) {
-            // Buscamos el encabezado de cada sección para meter la guía justo debajo
             const regex = new RegExp(`(### .+)`, 'g');
             htmlFinal = htmlFinal.replace(regex, `$1\n<div class="capsula-contexto">${explicacion}</div>`);
         }
 
-        // Inyectamos los Estilos de Élite (CSS_TITAN)
         const htmlConEstilos = htmlFinal.replace('</head>', `${CSS_TITAN}</head>`);
         
         await page.setContent(htmlConEstilos, { waitUntil: 'networkidle0' });
