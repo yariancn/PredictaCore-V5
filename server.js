@@ -1,4 +1,4 @@
-// server.js - BÚNKER 20: RESTAURACIÓN DE VISIÓN ABSOLUTA
+// server.js - BÚNKER 22: RECTIFICACIÓN LÍNEA POR LÍNEA (2.5 PRO)
 const express = require('express');
 const { GoogleGenerativeAI } = require('@google/generative-ai'); 
 const cerebroWeb = require('./cerebro');           
@@ -6,11 +6,13 @@ const cerebroSocial = require('./cerebro_social');
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
+const puppeteer = require('puppeteer');
 
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(express.json({ limit: '30mb' })); // Espacio de sobra para capturas 4K
+// Aumentamos el límite para que las capturas de pantalla no bloqueen el servidor
+app.use(express.json({ limit: '50mb' }));
 
 const jobs = {}; 
 
@@ -23,7 +25,7 @@ app.post('/start', async (req, res) => {
     jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: dna.trim() };
     
     ejecutarAuditoriaFondo(dna.trim(), jobId).catch(e => {
-        console.error("[-] Error Crítico:", e.message);
+        console.error("[-] Error en Búnker 22:", e.message);
         if(jobs[jobId]) jobs[jobId].status = 'error';
     });
     
@@ -39,19 +41,17 @@ app.get('/poll', (req, res) => {
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     const ETAPAS = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
     
-    // 1. SCRAPING (Motor intacto de 9,000 simulaciones)
+    // 1. Scraping Multimodal (Ojos del Titán)
     let datosTarget = await captureAndScrape(targetUrl);
 
-    // 2. SELECCIÓN DE CEREBRO
-    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
+    // 2. Selección de Cerebro Estratégico
+    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com');
     const cerebro = isSocialMedia ? cerebroSocial : cerebroWeb;
 
-    // 3. INICIALIZACIÓN DE MOTOR DE ÉLITE
+    // 3. Motor de Élite: Gemini 2.5 Pro
     const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-    
-    // Usamos Gemini 1.5 Pro: El único capaz de diseccionar UX/UI con precisión forense
     const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-pro",
+        model: "gemini-2.5-pro", 
         systemInstruction: FIREWALL_IA
     });
 
@@ -60,14 +60,14 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
         try {
             const promptFinal = cerebro.PROMPTS[etapaId](datosTarget.texto);
             
-            // CONSTRUCCIÓN DEL PAQUETE MULTIMODAL
+            // Construcción del Mensaje Forense
             let msgParts = [
-                { text: `ID_IDIOMA: ${cerebro.IDIOMA}` },
+                { text: `SISTEMA_IDIOMA: ${cerebro.IDIOMA}` },
                 { text: `REGLA_NUCLEAR: ${cerebro.REGLA_NUCLEAR}` },
-                { text: `DOSSIER_ACTIVO: ${datosTarget.texto}` }
+                { text: `DOSSIER_AUDITORIA: ${datosTarget.texto}` }
             ];
 
-            // INYECTAMOS VISIÓN (Desktop + Mobile)
+            // Inyección de Visión (Desktop + Mobile) con calidad optimizada
             if (datosTarget.desktopBase64 && datosTarget.mobileBase64) {
                 msgParts.push({ inlineData: { data: datosTarget.desktopBase64, mimeType: "image/jpeg" } });
                 msgParts.push({ inlineData: { data: datosTarget.mobileBase64, mimeType: "image/jpeg" } });
@@ -75,22 +75,21 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
 
             msgParts.push({ text: promptFinal });
 
-            // CONFIGURACIÓN DE GENERACIÓN
-            const config = {
-                temperature: 0.15,
-                topP: 0.8,
-                topK: 40
-            };
-
-            // FIX DE HERRAMIENTAS: El SDK de Google usa una sintaxis distinta a Vertex
+            // Herramientas de búsqueda solo para etapas específicas
             const tools = (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') 
                 ? [{ googleSearchRetrieval: {} }] 
                 : [];
 
             const result = await model.generateContent({
                 contents: [{ role: 'user', parts: msgParts }],
-                generationConfig: config,
-                tools: tools
+                generationConfig: { temperature: 0.15 },
+                tools: tools,
+                safetySettings: [
+                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+                ]
             });
 
             const response = await result.response;
@@ -100,17 +99,17 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
 
             jobs[jobId].progress[etapaId] = text;
             
-            // Cadencia de seguridad para evitar bloqueos por cuota
+            // Pausa estratégica de 4.5s para blindar la cuota de la API
             await new Promise(r => setTimeout(r, 4500)); 
 
         } catch (error) {
-            console.error(`[-] Fallo en etapa ${etapaId}:`, error.message);
-            // RE INTENTO SIN IMÁGENES (Solo si falla la visión por peso de archivo)
+            console.error(`[-] Fallo en ${etapaId}:`, error.message);
+            // Reintento de seguridad sin herramientas de búsqueda si estas fallan
             try {
-                const retry = await model.generateContent([cerebro.PROMPTS[etapaId](datosTarget.texto)]);
+                const retry = await model.generateContent([{ text: cerebro.PROMPTS[etapaId](datosTarget.texto) }]);
                 jobs[jobId].progress[etapaId] = retry.response.text();
             } catch (e2) {
-                jobs[jobId].progress[etapaId] = `### ERROR FORENSE\nNo se pudo generar el veredicto en ${etapaId}. Motivo: ${error.message}`;
+                jobs[jobId].progress[etapaId] = `### ERROR FORENSE\nFallo en el nodo ${etapaId}. Detalle técnico: ${error.message}`;
             }
         }
     }
@@ -129,8 +128,11 @@ app.post('/generate-pdf', async (req, res) => {
         res.contentType("application/pdf").send(pdf);
     } catch (e) {
         if(browser) await browser.close();
-        res.status(500).send("Error PDF.");
+        res.status(500).send("Fallo en cristalización PDF.");
     }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`TITÁN BÚNKER 20: ONLINE`));
+// El servidor debe escuchar en 0.0.0.0 para que Railway lo detecte como vivo
+app.listen(port, "0.0.0.0", () => {
+    console.log(`TITÁN BÚNKER 22: MOTOR 2.5 PRO DESPLEGADO EN PUERTO ${port}`);
+});
