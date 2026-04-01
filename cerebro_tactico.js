@@ -1,11 +1,12 @@
-// CerebroTactico.js - BALANCE TÉCNICO-VISUAL
+// cerebro_tactico.js - INTELIGENCIA SIMBIÓPTICA UNIVERSAL
 const PROMPTS_MEJORADOS = {
-    BENCHMARK_PRO: (url, d) => `USE GOOGLE SEARCH to find 3 real baby apparel competitors for ${url}. 
-    Compare them in a table focusing on REAL market positioning and trust signals. Dossier: ${d}`,
+    BENCHMARK_PRO: (url, d) => `USE GOOGLE SEARCH to identify 3 real competitors for ${url}. 
+    Analyze their market authority and trust signals vs this asset. Dossier: ${d}`,
 
-    FUGAS_PRO: (d) => `Identify 15 critical friction findings. 
-    INSTRUCTION: You MUST combine TECHNICAL DATA (Check the 'TIEMPO DE CARGA' and 'ERRORES CONSOLA' in the dossier text) with VISUAL EVIDENCE from the screenshots. 
-    If Shop Pay or checkout errors are present in the text, report them with high priority. 
-    Mark the most damaging as **[HEMORRAGIA CRÍTICA]**. Dossier: ${d}`
+    FUGAS_PRO: (d) => `Identify exactly 15 numbered friction findings (1. to 15.). 
+    CRITICAL INSTRUCTION: Analyze the asset using a SYMBIOPTIC approach. 
+    You must weigh TECHNICAL DATA (logs, console errors, load times) and VISUAL EVIDENCE (screenshots) with equal priority. 
+    Identify any anomaly that disrupts the transaction or compromises user trust, regardless of its nature. 
+    Use a forensic, high-level executive tone. DO NOT use bullets; use a numbered list. Dossier: ${d}`
 };
 module.exports = { PROMPTS_MEJORADOS };
