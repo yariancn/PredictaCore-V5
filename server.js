@@ -1,4 +1,4 @@
-// server.js - BÚNKER 7 RESTAURADO (SIN FILTROS NI REDUNDANCIAS)
+// server.js - BÚNKER 25: INTEGRACIÓN TÁCTICA Y MAQUETACIÓN PRO
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -8,26 +8,33 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 
+// --- IMPORTACIÓN DE CAPAS TÁCTICAS (NUEVAS) ---
+const { PROMPTS_MEJORADOS } = require('./cerebro_tactico');
+const { CONTEXTOS } = require('./guia_ejecutiva');
+const { CSS_TITAN } = require('./estilos_titan');
+
 const app = express();
 const port = process.env.PORT || 8080;
-app.use(express.json({ limit: '10mb' }));
+
+app.use(express.json({ limit: '50mb' }));
 
 const jobs = {}; 
-const dossierCache = {};
 const ETAPAS_ORDEN = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
 
 app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
+    if (!dna) return res.status(400).json({ error: "Falta DNA" });
+    
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
     
-    const jobId = targetUrl; 
-    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO' };
+    const jobId = `job_${Date.now()}`; 
+    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: targetUrl };
     
     ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
-        console.error("Fallo crítico:", e);
+        console.error("[-] Fallo crítico:", e);
         if(jobs[jobId]) jobs[jobId].status = 'error';
     });
     
@@ -41,12 +48,15 @@ app.get('/poll', (req, res) => {
 });
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
+    // 1. EXTRACCIÓN (MOTOR 6.3 INTACTO)
     let datosTarget = await captureAndScrape(targetUrl);
 
-    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
+    // 2. SELECCIÓN DE CEREBRO
+    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com');
     const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
     const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
 
+    // 3. AUTENTICACIÓN VERTEX AI
     const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
     const auth = new GoogleAuth({
         credentials: credenciales,
@@ -55,22 +65,33 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     
     const client = await auth.getClient();
     const tokenResponse = await client.getAccessToken();
-    // RECTIFICACIÓN: Endpoint estable para Gemini 2.5 Pro en Vertex
     const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
     for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId;
         try {
-            const promptFinal = PROMPTS[etapaId](datosTarget.texto);
+            // --- INYECCIÓN DE PROMPTS MEJORADOS (TACTICAL BYPASS) ---
+            let promptFinal;
+            if (etapaId === 'BENCHMARK') {
+                promptFinal = PROMPTS_MEJORADOS.BENCHMARK_PRO(targetUrl, datosTarget.texto);
+            } else if (etapaId === 'FUGAS') {
+                promptFinal = PROMPTS_MEJORADOS.FUGAS_PRO(datosTarget.texto);
+            } else {
+                promptFinal = PROMPTS[etapaId](datosTarget.texto);
+            }
+
             let partesMensaje = [
-                { text: IDIOMA }, { text: REGLA_NUCLEAR },
-                { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` }
+                { text: IDIOMA }, 
+                { text: REGLA_NUCLEAR },
+                { text: `DOSSIER FORENSE:\n${datosTarget.texto}` }
             ];
 
+            // Inyección de Visión Forense (Multimodal)
             if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
             }
+            
             partesMensaje.push({ text: promptFinal });
 
             const payload = {
@@ -79,7 +100,10 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
                 generationConfig: { temperature: 0.15 } 
             };
 
-            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
+            // Herramientas de búsqueda para Benchmark y Visibilidad
+            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
+                payload.tools = [{ googleSearch: {} }];
+            }
 
             const vertexRes = await fetch(vertexUrl, {
                 method: "POST",
@@ -89,11 +113,11 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
 
             const vertexData = await vertexRes.json();
             jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
-            await new Promise(r => setTimeout(r, 3500));
+            
+            await new Promise(r => setTimeout(r, 4000));
 
         } catch (error) {
-            // ELIMINADA LA REDUNDANCIA: Regresamos a la verdad forense
-            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\n${error.message}`;
+            jobs[jobId].progress[etapaId] = `### FALLA EN NODO\n${error.message}`;
         }
     }
     jobs[jobId].status = 'done';
@@ -103,16 +127,37 @@ app.post('/generate-pdf', async (req, res) => {
     const { html } = req.body;
     let browser;
     try {
-        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        browser = await puppeteer.launch({ 
+            headless: "new", 
+            args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] 
+        });
         const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: 'networkidle0' });
-        const pdf = await page.pdf({ format: 'A4', printBackground: true });
+
+        // --- INYECCIÓN DE CÁPSULAS DE CONTEXTO Y MAQUETACIÓN ---
+        let htmlFinal = html;
+        for (const [etapa, explicacion] of Object.entries(CONTEXTOS)) {
+            // Buscamos el encabezado de cada sección para meter la guía justo debajo
+            const regex = new RegExp(`(### .+)`, 'g');
+            htmlFinal = htmlFinal.replace(regex, `$1\n<div class="capsula-contexto">${explicacion}</div>`);
+        }
+
+        // Inyectamos los Estilos de Élite (CSS_TITAN)
+        const htmlConEstilos = htmlFinal.replace('</head>', `${CSS_TITAN}</head>`);
+        
+        await page.setContent(htmlConEstilos, { waitUntil: 'networkidle0' });
+        
+        const pdf = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            margin: { top: '1.5cm', bottom: '1.5cm', left: '1.2cm', right: '1.2cm' }
+        });
+        
         await browser.close();
         res.contentType("application/pdf").send(pdf);
     } catch (e) {
         if(browser) await browser.close();
-        res.status(500).send("Fallo PDF");
+        res.status(500).send("Fallo en la cristalización del reporte.");
     }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN RESTAURADO`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN: BÚNKER 25 OPERATIVO`));
