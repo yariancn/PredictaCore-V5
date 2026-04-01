@@ -1,4 +1,4 @@
-// server.js - BÚNKER 25.1: INTEGRACIÓN TÁCTICA (CASE-SENSITIVE FIX)
+// server.js - BÚNKER 25.3: SINCRONIZACIÓN DE RUTAS MINÚSCULAS
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -8,10 +8,10 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 
-// --- IMPORTACIÓN SINCRONIZADA CON TUS ARCHIVOS (CamelCase) ---
-const { PROMPTS_MEJORADOS } = require('./CerebroTactico');
-const { CONTEXTOS } = require('./GuiaEjecutiva');
-const { CSS_TITAN } = require('./EstilosTitan');
+// --- RUTAS CORREGIDAS SEGÚN TU GITHUB (TODO MINÚSCULAS) ---
+const { PROMPTS_MEJORADOS } = require('./cerebro_tactico');
+const { CONTEXTOS } = require('./guia_ejecutiva');
+const { CSS_TITAN } = require('./estilos_titan');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -68,7 +68,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
         jobs[jobId].currentEtapa = etapaId;
         try {
             let promptFinal;
-            // Bypass para usar la nueva inteligencia multimodal
+            // Se activan las mejoras tácticas de visión y búsqueda
             if (etapaId === 'BENCHMARK') {
                 promptFinal = PROMPTS_MEJORADOS.BENCHMARK_PRO(targetUrl, datosTarget.texto);
             } else if (etapaId === 'FUGAS') {
