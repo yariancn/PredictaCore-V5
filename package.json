@@ -1,7 +1,7 @@
 {
   "name": "predictacore-titan",
-  "version": "38.0.0",
-  "description": "PredictaCore Titán - Visión Forense Restaurada",
+  "version": "39.1.0",
+  "description": "PredictaCore Titán - Motor 2.5 Pro Multimodal",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
