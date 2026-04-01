@@ -1,86 +1,52 @@
-// visual.js - MASTER VISUAL (UNIFICADO)
+// visual.js - DASHBOARD DE CONTROL
 const getHTML = (content = "") => `
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <title>PredictaCore Titán</title>
     <style>
-        /* ESTILO EJECUTIVO UNIFICADO */
-        body { 
-            text-align: justify !important; 
-            line-height: 1.6; 
-            color: #1e293b; 
-            font-family: 'Inter', system-ui, sans-serif;
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-        }
-        
-        h3 { 
-            color: #1e293b !important; 
-            border-bottom: 2px solid #f1f5f9; 
-            padding-bottom: 10px; 
-            margin-top: 40px !important; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .capsula-contexto { 
-            background: #f8fafc; 
-            border-left: 5px solid #1e293b; 
-            padding: 15px; 
-            margin: 10px 0 25px 0; 
-            font-size: 10pt; 
-            color: #64748b; 
-            font-style: italic;
-        }
-
-        /* TABLAS LIMPIAS Y JUSTIFICADAS */
-        table { 
-            width: 100% !important; 
-            border-collapse: collapse !important; 
-            margin: 20px 0 !important; 
-            table-layout: auto !important;
-        }
-        th { 
-            background-color: #f1f5f9 !important; 
-            color: #1e293b !important; 
-            border: 1px solid #cbd5e1 !important; 
-            padding: 12px !important; 
-            text-align: left !important;
-        }
-        td { 
-            border: 1px solid #e2e8f0 !important; 
-            padding: 12px !important; 
-            text-align: justify !important; 
-            vertical-align: top !important;
-            font-size: 9.5pt !important;
-        }
-
-        /* VIÑETAS ALINEADAS */
-        ul, ol { padding-left: 25px !important; }
-        li { margin-bottom: 10px !important; list-style-position: outside !important; }
-
-        @media print {
-            .no-print { display: none; }
-            table { page-break-inside: avoid; }
-        }
+        body { background: #0f172a; color: white; font-family: sans-serif; padding: 40px; text-align: center; }
+        .container { max-width: 800px; margin: auto; background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 80%; padding: 15px; border-radius: 6px; border: none; margin-bottom: 20px; font-size: 16px; background: #f8fafc; color: #1e293b; }
+        button { background: #10b981; color: white; border: none; padding: 15px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        button:hover { background: #059669; }
+        #status { margin-top: 30px; color: #94a3b8; font-family: monospace; }
+        #reporte-final { display: none; }
     </style>
 </head>
 <body>
-    <div class="no-print">
-        <h1>PredictaCore Titán</h1>
-        <input type="text" id="dna" placeholder="URL del activo..." style="width:70%; padding:10px;">
-        <button onclick="start()" style="padding:10px 20px; cursor:pointer;">Disparar Auditoría</button>
-        <div id="status" style="margin-top:20px; font-weight:bold; color:#64748b;"></div>
+    <div class="container">
+        <h1 style="color:#10b981">PREDICTACORE TITÁN</h1>
+        <p>Búnker 28 - Inteligencia Forense de Activos</p>
+        <input type="text" id="dna" placeholder="Introduce la URL del activo (ej. pamandander.com)">
+        <br>
+        <button onclick="start()">DISPARAR AUDITORÍA</button>
+        <div id="status">Esperando órdenes...</div>
     </div>
     <div id="reporte-final">${content}</div>
-    
     <script>
-        // Lógica de polling y visualización intacta...
+        async function start() {
+            const dna = document.getElementById('dna').value;
+            if(!dna) return alert("Falta URL");
+            document.getElementById('status').innerText = "Iniciando secuencia de abordaje...";
+            const res = await fetch('/start', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({dna}) });
+            const { jobId } = await res.json();
+            poll(jobId);
+        }
+
+        async function poll(jobId) {
+            const res = await fetch('/poll?jobId=' + jobId);
+            const data = await res.json();
+            if(data.status === 'running') {
+                document.getElementById('status').innerText = "Procesando etapa: " + data.currentEtapa;
+                setTimeout(() => poll(jobId), 3000);
+            } else if(data.status === 'done') {
+                document.getElementById('status').innerText = "Auditoría completada. Generando Reporte Ejecutivo...";
+                // Lógica de visualización y PDF...
+            }
+        }
     </script>
 </body>
 </html>
 `;
-
 module.exports = { getHTML };
