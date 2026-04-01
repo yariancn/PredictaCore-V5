@@ -1,18 +1,11 @@
-// cerebro_tactico.js - MEJORAS DE PRECISIÓN (SIN TOCAR ARCHIVOS BASE)
-
+// CerebroTactico.js - BALANCE TÉCNICO-VISUAL
 const PROMPTS_MEJORADOS = {
-    BENCHMARK_PRO: (url, d) => `USE THE GOOGLE SEARCH TOOL to identify 3 REAL competitors of ${url} in the baby personalized clothing niche. 
-    Compare them against ${url} in this table:
-    1. Value Proposition.
-    2. Authority Level.
-    3. Mobile Experience.
-    4. Trust Signals.
-    Dossier: ${d}`,
+    BENCHMARK_PRO: (url, d) => `USE GOOGLE SEARCH to find 3 real baby apparel competitors for ${url}. 
+    Compare them in a table focusing on REAL market positioning and trust signals. Dossier: ${d}`,
 
-    FUGAS_PRO: (d) => `Identify 15 critical friction leaks. 
-    INSTRUCTION: You MUST reference specific visual details from the Desktop and Mobile screenshots provided. 
-    Mention colors, layout overlaps, or button clarity. Mark the worst as **[CRITICAL HEMORRHAGE]**.
-    Dossier: ${d}`
+    FUGAS_PRO: (d) => `Identify 15 critical friction findings. 
+    INSTRUCTION: You MUST combine TECHNICAL DATA (Check the 'TIEMPO DE CARGA' and 'ERRORES CONSOLA' in the dossier text) with VISUAL EVIDENCE from the screenshots. 
+    If Shop Pay or checkout errors are present in the text, report them with high priority. 
+    Mark the most damaging as **[HEMORRAGIA CRÍTICA]**. Dossier: ${d}`
 };
-
 module.exports = { PROMPTS_MEJORADOS };
