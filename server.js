@@ -7,6 +7,7 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 
+// Importamos solo lo necesario para el diseño ejecutivo
 const { CONTEXTOS } = require('./guia_ejecutiva');
 const { CSS_TITAN } = require('./estilos_titan');
 
@@ -53,7 +54,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId;
         try {
-            // REGRESO AL CEREBRO ORIGINAL (Reporte 6)
+            // REGRESO AL CEREBRO DEL REPORTE 6 (Potencia pura sin guías de mano)
             let promptFinal = PROMPTS[etapaId] ? PROMPTS[etapaId](datosTarget.texto) : `Analyze ${etapaId}`;
 
             let partesMensaje = [ { text: IDIOMA }, { text: REGLA_NUCLEAR }, { text: `DOSSIER FORENSE:\n${datosTarget.texto}` } ];
@@ -83,13 +84,13 @@ app.post('/generate-pdf', async (req, res) => {
         const page = await browser.newPage();
         let htmlFinal = html;
 
-        // INYECTOR INFALIBLE: Mapea por orden de aparición en el reporte
+        // INYECTOR DE CAPAS: Mapea por orden de secciones para inglés
         const titulos = htmlFinal.match(/<h3.*?>.*?<\/h3>/gi) || [];
-        const guias = Object.values(CONTEXTOS);
+        const descripciones = Object.values(CONTEXTOS);
         
         titulos.forEach((tituloOriginal, index) => {
-            if (guias[index]) {
-                const tituloConCapsula = `${tituloOriginal}<div class="capsula-contexto">${guias[index]}</div>`;
+            if (descripciones[index]) {
+                const tituloConCapsula = `${tituloOriginal}<div class="capsula-contexto">${descripciones[index]}</div>`;
                 htmlFinal = htmlFinal.replace(tituloOriginal, tituloConCapsula);
             }
         });
