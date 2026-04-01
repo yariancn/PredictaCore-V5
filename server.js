@@ -1,4 +1,3 @@
-// server.js - BÚNKER 26: RESTAURACIÓN TOTAL Y MAQUETACIÓN EJECUTIVA
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -8,8 +7,6 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 
-// --- IMPORTACIÓN DE CAPAS TÁCTICAS (MINÚSCULAS) ---
-const { PROMPTS_MEJORADOS } = require('./cerebro_tactico');
 const { CONTEXTOS } = require('./guia_ejecutiva');
 const { CSS_TITAN } = require('./estilos_titan');
 
@@ -18,7 +15,7 @@ const port = process.env.PORT || 8080;
 app.use(express.json({ limit: '50mb' }));
 
 const jobs = {}; 
-const ETAPAS_ORDEN = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
+const ETAPAS_ORDEN = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FRICTION', 'TACTICAL', 'SCALING', 'ROADMAP'];
 
 app.get('/', (req, res) => res.send(getHTML()));
 
@@ -56,10 +53,8 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId;
         try {
-            let promptFinal;
-            if (etapaId === 'BENCHMARK') { promptFinal = PROMPTS_MEJORADOS.BENCHMARK_PRO(targetUrl, datosTarget.texto); }
-            else if (etapaId === 'FUGAS') { promptFinal = PROMPTS_MEJORADOS.FUGAS_PRO(datosTarget.texto); }
-            else { promptFinal = PROMPTS[etapaId](datosTarget.texto); }
+            // REGRESO AL CEREBRO DEL REPORTE 6 (Potencia Pura)
+            let promptFinal = PROMPTS[etapaId] ? PROMPTS[etapaId](datosTarget.texto) : `Analyze ${etapaId}`;
 
             let partesMensaje = [ { text: IDIOMA }, { text: REGLA_NUCLEAR }, { text: `DOSSIER FORENSE:\n${datosTarget.texto}` } ];
             if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
@@ -87,11 +82,16 @@ app.post('/generate-pdf', async (req, res) => {
         browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
         const page = await browser.newPage();
         let htmlFinal = html;
-        // INYECCIÓN DE CÁPSULAS: Ahora busca etiquetas HTML <h3> reales
-        for (const [etapa, explicacion] of Object.entries(CONTEXTOS)) {
-            const regex = new RegExp(`(<h3.*?>.*?${etapa}.*?</h3>)`, 'gi');
-            htmlFinal = htmlFinal.replace(regex, `$1<div class="capsula-contexto">${explicacion}</div>`);
-        }
+
+        // INYECTOR INFALIBLE: Mapea por número de sección
+        const titulos = htmlFinal.match(/<h3.*?>.*?<\/h3>/gi) || [];
+        titulos.forEach((tituloOriginal, index) => {
+            if (CONTEXTOS[index]) {
+                const tituloConCapsula = `${tituloOriginal}<div class="capsula-contexto">${CONTEXTOS[index]}</div>`;
+                htmlFinal = htmlFinal.replace(tituloOriginal, tituloConCapsula);
+            }
+        });
+
         const htmlConEstilos = htmlFinal.replace('</head>', `${CSS_TITAN}</head>`);
         await page.setContent(htmlConEstilos, { waitUntil: 'networkidle0' });
         const pdf = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '1.5cm', bottom: '1.5cm', left: '1.2cm', right: '1.2cm' } });
@@ -100,4 +100,4 @@ app.post('/generate-pdf', async (req, res) => {
     } catch (e) { if(browser) await browser.close(); res.status(500).send("Fallo en cristalización."); }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`TITÁN BÚNKER 26: OPERATIVO`));
+app.listen(port, "0.0.0.0", () => console.log(`TITÁN BÚNKER 28: CLEAN CORE OPERATIVO`));
