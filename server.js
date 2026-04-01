@@ -1,31 +1,33 @@
-// server.js - BÚNKER 22: RECTIFICACIÓN LÍNEA POR LÍNEA (2.5 PRO)
+// server.js - BÚNKER 7 RESTAURADO (SIN FILTROS NI REDUNDANCIAS)
 const express = require('express');
-const { GoogleGenerativeAI } = require('@google/generative-ai'); 
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
+const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 
 const app = express();
 const port = process.env.PORT || 8080;
-
-// Aumentamos el límite para que las capturas de pantalla no bloqueen el servidor
-app.use(express.json({ limit: '50mb' }));
+app.use(express.json({ limit: '10mb' }));
 
 const jobs = {}; 
+const dossierCache = {};
+const ETAPAS_ORDEN = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
 
 app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
-    if (!dna) return res.status(400).json({ error: "Falta DNA" });
-    const jobId = `job_${Date.now()}`; 
-    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: dna.trim() };
+    let targetUrl = dna.trim();
+    if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
     
-    ejecutarAuditoriaFondo(dna.trim(), jobId).catch(e => {
-        console.error("[-] Error en Búnker 22:", e.message);
+    const jobId = targetUrl; 
+    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO' };
+    
+    ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
+        console.error("Fallo crítico:", e);
         if(jobs[jobId]) jobs[jobId].status = 'error';
     });
     
@@ -39,78 +41,59 @@ app.get('/poll', (req, res) => {
 });
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
-    const ETAPAS = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
-    
-    // 1. Scraping Multimodal (Ojos del Titán)
     let datosTarget = await captureAndScrape(targetUrl);
 
-    // 2. Selección de Cerebro Estratégico
-    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com');
-    const cerebro = isSocialMedia ? cerebroSocial : cerebroWeb;
+    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
+    const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
+    const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
 
-    // 3. Motor de Élite: Gemini 2.5 Pro
-    const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-    const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.5-pro", 
-        systemInstruction: FIREWALL_IA
+    const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
+    const auth = new GoogleAuth({
+        credentials: credenciales,
+        scopes: ['https://www.googleapis.com/auth/cloud-platform']
     });
+    
+    const client = await auth.getClient();
+    const tokenResponse = await client.getAccessToken();
+    // RECTIFICACIÓN: Endpoint estable para Gemini 2.5 Pro en Vertex
+    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
-    for (const etapaId of ETAPAS) {
+    for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId;
         try {
-            const promptFinal = cerebro.PROMPTS[etapaId](datosTarget.texto);
-            
-            // Construcción del Mensaje Forense
-            let msgParts = [
-                { text: `SISTEMA_IDIOMA: ${cerebro.IDIOMA}` },
-                { text: `REGLA_NUCLEAR: ${cerebro.REGLA_NUCLEAR}` },
-                { text: `DOSSIER_AUDITORIA: ${datosTarget.texto}` }
+            const promptFinal = PROMPTS[etapaId](datosTarget.texto);
+            let partesMensaje = [
+                { text: IDIOMA }, { text: REGLA_NUCLEAR },
+                { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` }
             ];
 
-            // Inyección de Visión (Desktop + Mobile) con calidad optimizada
-            if (datosTarget.desktopBase64 && datosTarget.mobileBase64) {
-                msgParts.push({ inlineData: { data: datosTarget.desktopBase64, mimeType: "image/jpeg" } });
-                msgParts.push({ inlineData: { data: datosTarget.mobileBase64, mimeType: "image/jpeg" } });
+            if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
+                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
+                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
             }
+            partesMensaje.push({ text: promptFinal });
 
-            msgParts.push({ text: promptFinal });
+            const payload = {
+                systemInstruction: { parts: [{ text: FIREWALL_IA }] },
+                contents: [{ role: "user", parts: partesMensaje }],
+                generationConfig: { temperature: 0.15 } 
+            };
 
-            // Herramientas de búsqueda solo para etapas específicas
-            const tools = (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') 
-                ? [{ googleSearchRetrieval: {} }] 
-                : [];
+            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
-            const result = await model.generateContent({
-                contents: [{ role: 'user', parts: msgParts }],
-                generationConfig: { temperature: 0.15 },
-                tools: tools,
-                safetySettings: [
-                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-                ]
+            const vertexRes = await fetch(vertexUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` },
+                body: JSON.stringify(payload)
             });
 
-            const response = await result.response;
-            const text = response.text();
-
-            if (!text) throw new Error("IA_SILENT_ERROR");
-
-            jobs[jobId].progress[etapaId] = text;
-            
-            // Pausa estratégica de 4.5s para blindar la cuota de la API
-            await new Promise(r => setTimeout(r, 4500)); 
+            const vertexData = await vertexRes.json();
+            jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
+            await new Promise(r => setTimeout(r, 3500));
 
         } catch (error) {
-            console.error(`[-] Fallo en ${etapaId}:`, error.message);
-            // Reintento de seguridad sin herramientas de búsqueda si estas fallan
-            try {
-                const retry = await model.generateContent([{ text: cerebro.PROMPTS[etapaId](datosTarget.texto) }]);
-                jobs[jobId].progress[etapaId] = retry.response.text();
-            } catch (e2) {
-                jobs[jobId].progress[etapaId] = `### ERROR FORENSE\nFallo en el nodo ${etapaId}. Detalle técnico: ${error.message}`;
-            }
+            // ELIMINADA LA REDUNDANCIA: Regresamos a la verdad forense
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\n${error.message}`;
         }
     }
     jobs[jobId].status = 'done';
@@ -128,11 +111,8 @@ app.post('/generate-pdf', async (req, res) => {
         res.contentType("application/pdf").send(pdf);
     } catch (e) {
         if(browser) await browser.close();
-        res.status(500).send("Fallo en cristalización PDF.");
+        res.status(500).send("Fallo PDF");
     }
 });
 
-// El servidor debe escuchar en 0.0.0.0 para que Railway lo detecte como vivo
-app.listen(port, "0.0.0.0", () => {
-    console.log(`TITÁN BÚNKER 22: MOTOR 2.5 PRO DESPLEGADO EN PUERTO ${port}`);
-});
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN RESTAURADO`));
