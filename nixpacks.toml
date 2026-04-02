@@ -1,0 +1,10 @@
+providers = ["npm"]
+
+[phases.setup]
+nixPkgs = ["nodejs_18", "npm", "chromium", "nss", "freetype", "harfbuzz", "pango", "libdrm", "mesa"]
+
+[phases.build]
+cmds = ["npm install"]
+
+[start]
+cmd = "npm start"
