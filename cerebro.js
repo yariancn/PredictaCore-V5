@@ -1,20 +1,30 @@
-// cerebro.js - BÚNKER 2: MULTILINGÜE ESTRICTO, SEO TRADUCIDO Y LISTAS BLINDADAS
-const IDIOMA = "INSTRUCCIÓN CRÍTICA Y ABSOLUTA: Detecta el idioma principal del sitio web analizado (basado en el Dossier y las Imágenes). DEBES redactar tu respuesta COMPLETA (incluyendo el encabezado, el análisis, las tablas y las viñetas) ESTRICTAMENTE en ese idioma detectado. Cero mezclas.";
-const REGLA_NUCLEAR = "REGLA NUCLEAR DE AUDITORÍA: TIENES ESTRICTAMENTE PROHIBIDO mencionar reseñas de clientes, testimonios, o quejas (como manchas o defectos) en NINGUNA PARTE del reporte, CON EXCEPCIÓN ÚNICA de la Sección IV (Visibilidad y SEO).";
-const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO FATAL: TIENES ESTRICTAMENTE PROHIBIDO usar viñetas simples (bullets como • o -). DEBES iniciar cada punto OBLIGATORIAMENTE con un NÚMERO seguido de un PUNTO y un ESPACIO. Ejemplo CORRECTO: '1. [Texto]'. Ejemplo INCORRECTO: '• [Texto]'.";
+// cerebro.js - ELITE CORE V.30
+const IDIOMA = "Detecta el idioma principal del activo y redacta TODO el reporte (encabezados, tablas, listas) estrictamente en ese idioma. Cero mezclas.";
+const REGLA_NUCLEAR = "REGLA NUCLEAR: Prohibido mencionar testimonios o quejas, excepto en la Sección IV para probar fallas de autoridad.";
+const FORMATO_ELITE = "INSTRUCCIÓN DE FORMATO FATAL: DEBES usar OBLIGATORIAMENTE numeración (1., 2., 3.). Prohibido usar guiones o bullets.";
 
 const PROMPTS = {
-  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### I. INTRODUCCIÓN Y RADIOGRAFÍA DEL ACTIVO\nRedacta esta sección estructurada estrictamente en dos partes:\nPÁRRAFO 1 (Nuestra Identidad): Explica con autoridad, agresividad y un tono de élite quiénes somos (PredictaCore). DEBES mencionar que simulamos más de 9,000 interacciones de fricción. PÁRRAFO 2 (El Negocio): Describe profundamente el activo analizado basado en el Dossier. ¿Qué venden? ¿A quién? ¿Cuál es su modelo? Dossier: ${d}`,
-  GEMELOS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### II. GEMELOS SINTÉTICOS Y PSICOLOGÍA DE COMPRA\nDefine 4 perfiles mentales (Buyer Personas) que visitan este sitio. Para cada uno indica: 1. Perfil. 2. Motivación. 3. Barrera de compra (basada en el dossier). Dossier: ${d}`,
-  SCORECARD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### III. SCORECARD DE SALUD COMERCIAL\nCrea una tabla con 10 pilares (UX, Confianza, Oferta, Cierre, etc.). Califica de 1 a 10 y justifica brevemente. Dossier: ${d}`,
-  VISIBILIDAD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### IV. VISIBILIDAD Y AUTORIDAD DE MERCADO\nAnaliza el SEO y la autoridad. Aquí SÍ puedes mencionar qué dice la gente o cómo se ve el sitio en el mercado. Dossier: ${d}`,
-  BENCHMARK: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### V. BENCHMARK COMPETITIVO\nCrea una tabla comparativa con 3 competidores reales del nicho detectado. Dossier: ${d}`,
-  SWOT: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### VI. MATRIZ FODA TÁCTICA\nAnaliza Fortalezas, Oportunidades, Debilidades y Amenazas. Dossier: ${d}`,
-  WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### VII. LISTA DE DESEOS\n10 características tácticas de alto valor (3 a 5 líneas). ${FORMATO_LISTAS} (Numera del 1 al 10). Dossier: ${d}`,
-  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### VIII. 15 PUNTOS DE FUGA\nIdentifica 15 hallazgos críticos de fricción. Marca las peores como **[HEMORRAGIA CRÍTICA]**. REGLAS: 1. ${FORMATO_LISTAS} (Numera del 1 al 15). 2. Evalúa ERRORES MICRO (botones, usabilidad, contraste, carga). Dossier: ${d}`,
-  ACCIONES: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### IX. 15 ACCIONES TÁCTICAS\nProporciona la solución exacta a las 15 fugas. REGLA: ${FORMATO_LISTAS} (Numera del 1 al 15). Incluye acciones claras de rediseño UX/UI. Dossier: ${d}`,
-  HERRAMIENTAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### X. HERRAMIENTAS DE ESCALA\n5 soluciones SaaS (3 a 5 líneas cada una). Dossier: ${d}`,
-  OMNI: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### XI. HOJA DE RUTA OMNICANAL (21 DÍAS)\nDivide en 3 fases de 7 días cada una. Explica qué hacer día por día para corregir el activo. Dossier: ${d}`
+  INTRO: (d) => `${IDIOMA}\n### I. INTRODUCTION AND ASSET RADIOGRAPHY\nPÁRRAFO 1: Preséntanos como PredictaCore Titán, la máquina definitiva de auditoría forense. Menciona que simulamos 9,000 interacciones de fricción para cuantificar el derrame de capital. PÁRRAFO 2: Disecciona el activo. ¿Qué venden? ¿Cuál es su modelo? Dossier: ${d}`,
+  
+  GEMELOS: (d) => `${IDIOMA}\n### II. PSYCHOLOGICAL PROFILES & BUYER ARCHETYPES\nDiseña 4 perfiles de Gemelos Sintéticos. Identifica su motivación visceral y su barrera técnica de compra. Sé letal en la descripción. Dossier: ${d}`,
+  
+  SCORECARD: (d) => `${IDIOMA}\n### III. COMMERCIAL HEALTH SCORECARD\nTabla de 10 pilares. Calificación 1-10. Diagnóstico Forense de 3 líneas. Evalúa Fricción, Tangibilidad y Autoridad. Dossier: ${d}`,
+  
+  VISIBILIDAD: (d) => `${IDIOMA}\n### IV. EXTERNAL VISIBILITY & FORENSIC SEO\nEnsayo agresivo sobre:\n- Market Share Leakage (entrega de capital a la competencia).\n- Authority Friction: Usa las reseñas de fallos (ej. manchas en productos) para probar la erosión de confianza.\n- Technical Hemorrhage: Explica Crawl Budget, Canibalización y falta de Silos H1/H2 con metáforas financieras. Dossier: ${d}`,
+  
+  BENCHMARK: (d) => `${IDIOMA}\n### V. STRATEGIC X-RAY (BENCHMARK)\nTabla comparativa con 3 rivales reales. Máximo 2 oraciones por celda. Dossier: ${d}`,
+  
+  SWOT: (d) => `${IDIOMA}\n### VI. STRATEGIC MATRIX (SWOT)\nFortalezas, Oportunidades, Debilidades y Amenazas. ${FORMATO_ELITE} Analiza riesgos de IP y saturación. Dossier: ${d}`,
+  
+  WISHLIST: (d) => `${IDIOMA}\n### VII. OPTIMIZATION WISH LIST\n10 funciones de élite (3 a 5 líneas cada una). ${FORMATO_ELITE} Enfócate en AR, personalización en vivo y bundles. Dossier: ${d}`,
+  
+  FUGAS: (d) => `${IDIOMA}\n### VIII. 15 FRICTION POINTS & CAPITAL LEAKS\nIdentifica 15 hallazgos críticos de fricción. Marca las peores como **[CRITICAL HEMORRHAGE]**. ${FORMATO_ELITE} Evalúa errores micro en botones y carga. Dossier: ${d}`,
+  
+  ACCIONES: (d) => `${IDIOMA}\n### IX. 15 TACTICAL EXECUTION ACTIONS\nSolución exacta a las 15 fugas. ${FORMATO_ELITE} Veredictos claros de rediseño UX/UI. Dossier: ${d}`,
+  
+  HERRAMIENTAS: (d) => `${IDIOMA}\n### X. TECHNOLOGICAL ARSENAL (SCALING)\n5 soluciones SaaS justificando el ROI estratégico. ${FORMATO_ELITE} Dossier: ${d}`,
+  
+  OMNI: (d) => `${IDIOMA}\n### XI. EXECUTIVE ROADMAP (21 DAYS)\nPlan de cirugía de 3 fases (7 días c/u). Acción pura día por día para sellar las fugas. ${FORMATO_ELITE} Dossier: ${d}`
 };
 
 module.exports = { PROMPTS, IDIOMA, REGLA_NUCLEAR };
