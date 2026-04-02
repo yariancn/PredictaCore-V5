@@ -1,3 +1,4 @@
+// visual.js - DASHBOARD CON BARRA DE PROGRESO
 const getHTML = () => `
 <!DOCTYPE html>
 <html lang="en">
@@ -53,7 +54,7 @@ const getHTML = () => `
                 const done = Object.keys(data.progress).length;
                 const pc = Math.round((done / 11) * 100);
                 document.getElementById('progress-bar').style.width = pc + "%";
-                document.getElementById('status-text').innerText = "Procesando: " + data.currentEtapa;
+                document.getElementById('status-text').innerText = "Analizando: " + data.currentEtapa + " (" + pc + "%)";
                 setTimeout(() => poll(jobId), 3500);
             } else if(data.status === 'done') {
                 buildReport(data.progress);
@@ -77,7 +78,7 @@ const getHTML = () => `
             const res = await fetch('/generate-pdf', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({html: reportHTML}) });
             const blob = await res.blob();
             const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = 'Reporte_Titan.pdf'; a.click();
+            const a = document.createElement('a'); a.href = url; a.download = 'PredictaCore_Report.pdf'; a.click();
         }
     </script>
 </body>
