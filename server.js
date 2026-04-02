@@ -1,3 +1,4 @@
+// server.js - BÚNKER 30: NÚCLEO PREDICTACORE
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -6,10 +7,8 @@ const { captureAndScrape } = require('./motor');
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
-
-// Corregido: apunta a visual_pro.js que es donde tienes los estilos
-const { ESTILOS_PRO } = require('./visual_pro');
 const { CONTEXTOS } = require('./guia_ejecutiva');
+const { ESTILOS_PRO } = require('./visual_pro');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -22,7 +21,7 @@ app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
-    if (!dna) return res.status(400).json({ error: "Falta DNA" });
+    if (!dna) return res.status(400).json({ error: "DNA Missing" });
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
     const jobId = `job_${Date.now()}`; 
@@ -53,20 +52,24 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
         jobs[jobId].currentEtapa = etapaId;
         try {
             let promptFinal = PROMPTS[etapaId](datosTarget.texto);
-            let partesMensaje = [ { text: IDIOMA }, { text: REGLA_NUCLEAR }, { text: `DOSSIER:\n${datosTarget.texto}` } ];
+            let partesMensaje = [ { text: IDIOMA }, { text: REGLA_NUCLEAR }, { text: `DOSSIER FORENSE:\n${datosTarget.texto}` } ];
             if (datosTarget.desktopBase64) {
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
             }
             partesMensaje.push({ text: promptFinal });
+
             const payload = { systemInstruction: { parts: [{ text: FIREWALL_IA }] }, contents: [{ role: "user", parts: partesMensaje }], generationConfig: { temperature: 0.15 } };
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
             const vertexRes = await fetch(vertexUrl, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` }, body: JSON.stringify(payload) });
             const vertexData = await vertexRes.json();
             jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
-            await new Promise(r => setTimeout(r, 4000));
-        } catch (error) { jobs[jobId].progress[etapaId] = "### " + etapaId + "\\nError técnico."; }
+            // TIEMPO DE ENFRIAMIENTO PARA EVITAR ATASCO
+            await new Promise(r => setTimeout(r, 4500));
+        } catch (error) { 
+            jobs[jobId].progress[etapaId] = `### ${etapaId}\n[CRITICAL ERROR IN ANALYTICAL NODE]`; 
+        }
     }
     jobs[jobId].status = 'done';
 }
@@ -91,7 +94,7 @@ app.post('/generate-pdf', async (req, res) => {
         const pdf = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '1.5cm', bottom: '1.5cm', left: '1.2cm', right: '1.2cm' } });
         await browser.close();
         res.contentType("application/pdf").send(pdf);
-    } catch (e) { if(browser) await browser.close(); res.status(500).send("Fallo."); }
+    } catch (e) { if(browser) await browser.close(); res.status(500).send("Fallo PDF"); }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`TITÁN OPERATIVO`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN OPERATIVO`));
