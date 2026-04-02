@@ -7,15 +7,15 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 
+// Corregido: apunta a visual_pro.js que es donde tienes los estilos
+const { ESTILOS_PRO } = require('./visual_pro');
 const { CONTEXTOS } = require('./guia_ejecutiva');
-const { CSS_TITAN } = require('./estilos_titan');
 
 const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json({ limit: '50mb' }));
 
 const jobs = {}; 
-// LLAVES SINCRONIZADAS CON TU CEREBRO.JS
 const ETAPAS_ORDEN = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
 
 app.get('/', (req, res) => res.send(getHTML()));
@@ -26,9 +26,8 @@ app.post('/start', async (req, res) => {
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
     const jobId = `job_${Date.now()}`; 
-    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: targetUrl };
+    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INIT', url: targetUrl };
     ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
-        console.error("[-] Fallo crítico:", e);
         if(jobs[jobId]) jobs[jobId].status = 'error';
     });
     res.json({ jobId });
@@ -48,38 +47,26 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     const auth = new GoogleAuth({ credentials: credenciales, scopes: ['https://www.googleapis.com/auth/cloud-platform'] });
     const client = await auth.getClient();
     const tokenResponse = await client.getAccessToken();
-    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
+    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
     for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId;
         try {
-            // USAMOS LOS PROMPTS QUE SÍ FUNCIONAN EN CEREBRO.JS
             let promptFinal = PROMPTS[etapaId](datosTarget.texto);
-
-            let partesMensaje = [ { text: IDIOMA }, { text: REGLA_NUCLEAR }, { text: `DOSSIER FORENSE:\n${datosTarget.texto}` } ];
+            let partesMensaje = [ { text: IDIOMA }, { text: REGLA_NUCLEAR }, { text: `DOSSIER:\n${datosTarget.texto}` } ];
             if (datosTarget.desktopBase64) {
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
             }
             partesMensaje.push({ text: promptFinal });
-
-            const payload = { 
-                systemInstruction: { parts: [{ text: FIREWALL_IA }] }, 
-                contents: [{ role: "user", parts: partesMensaje }], 
-                generationConfig: { temperature: 0.15 } 
-            };
+            const payload = { systemInstruction: { parts: [{ text: FIREWALL_IA }] }, contents: [{ role: "user", parts: partesMensaje }], generationConfig: { temperature: 0.15 } };
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
-            const vertexRes = await fetch(vertexUrl, { 
-                method: "POST", 
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` }, 
-                body: JSON.stringify(payload) 
-            });
-
+            const vertexRes = await fetch(vertexUrl, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` }, body: JSON.stringify(payload) });
             const vertexData = await vertexRes.json();
             jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
-            await new Promise(r => setTimeout(r, 4500));
-        } catch (error) { jobs[jobId].progress[etapaId] = `### FALLA EN ${etapaId}`; }
+            await new Promise(r => setTimeout(r, 4000));
+        } catch (error) { jobs[jobId].progress[etapaId] = "### " + etapaId + "\\nError técnico."; }
     }
     jobs[jobId].status = 'done';
 }
@@ -88,27 +75,23 @@ app.post('/generate-pdf', async (req, res) => {
     const { html } = req.body;
     let browser;
     try {
-        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
+        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
         let htmlFinal = html;
-
-        // INYECTOR DE CAPAS POR ORDEN ESTRICTO (INGLÉS)
         const titulos = htmlFinal.match(/<h3.*?>.*?<\/h3>/gi) || [];
         const guias = Object.values(CONTEXTOS);
-        
         titulos.forEach((tituloOriginal, index) => {
             if (guias[index]) {
                 const tituloConCapsula = `${tituloOriginal}<div class="capsula-contexto">${guias[index]}</div>`;
                 htmlFinal = htmlFinal.replace(tituloOriginal, tituloConCapsula);
             }
         });
-
-        const htmlConEstilos = htmlFinal.replace('</head>', `${CSS_TITAN}</head>`);
+        const htmlConEstilos = htmlFinal.replace('</head>', `${ESTILOS_PRO}</head>`);
         await page.setContent(htmlConEstilos, { waitUntil: 'networkidle0' });
         const pdf = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '1.5cm', bottom: '1.5cm', left: '1.2cm', right: '1.2cm' } });
         await browser.close();
         res.contentType("application/pdf").send(pdf);
-    } catch (e) { if(browser) await browser.close(); res.status(500).send("Fallo en cristalización."); }
+    } catch (e) { if(browser) await browser.close(); res.status(500).send("Fallo."); }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`TITÁN OPERATIVO: NÚCLEO SINCRONIZADO`));
+app.listen(port, "0.0.0.0", () => console.log(`TITÁN OPERATIVO`));
