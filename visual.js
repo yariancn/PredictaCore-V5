@@ -1,16 +1,16 @@
+// visual.js - DASHBOARD DE CONTROL
 const getHTML = (content = "") => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PredictaCore Titán - Control</title>
+    <title>PredictaCore Titán</title>
     <style>
-        body { background: #0f172a; color: white; font-family: 'Inter', sans-serif; padding: 40px; text-align: center; }
+        body { background: #0f172a; color: white; font-family: sans-serif; padding: 40px; text-align: center; }
         .container { max-width: 800px; margin: auto; background: #1e293b; padding: 50px; border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); border: 1px solid #334155; }
-        h1 { color: #10b981; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 5px; }
+        h1 { color: #10b981; letter-spacing: 3px; text-transform: uppercase; }
         input { width: 85%; padding: 18px; border-radius: 10px; border: none; margin-bottom: 30px; font-size: 16px; background: #f8fafc; color: #1e293b; outline: none; }
-        button { background: #10b981; color: white; border: none; padding: 18px 45px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; text-transform: uppercase; transition: 0.3s; }
-        button:hover { background: #059669; transform: translateY(-2px); }
+        button { background: #10b981; color: white; border: none; padding: 18px 45px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; text-transform: uppercase; }
         #progress-wrapper { display: none; margin-top: 40px; }
         #progress-container { width: 100%; background: #334155; height: 12px; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
         #progress-bar { width: 0%; background: #10b981; height: 100%; transition: width 0.8s ease; }
@@ -22,7 +22,6 @@ const getHTML = (content = "") => `
 <body>
     <div class="container">
         <h1>PREDICTACORE TITÁN</h1>
-        <p style="color: #64748b; margin-bottom: 30px;">Professional Forensic Asset Audit</p>
         <div id="ui-input">
             <input type="text" id="dna" placeholder="Asset URL (e.g., pamandander.com)">
             <br>
@@ -56,17 +55,16 @@ const getHTML = (content = "") => `
                 const done = Object.keys(data.progress).length;
                 const pc = Math.round((done / totalSteps) * 100);
                 document.getElementById('progress-bar').style.width = pc + "%";
-                document.getElementById('status-text').innerText = "Analyzing: " + data.currentEtapa + " (" + pc + "%)";
+                document.getElementById('status-text').innerText = "Analyzing Node: " + data.currentEtapa + " (" + pc + "%)";
                 setTimeout(() => poll(jobId), 3500);
             } else if(data.status === 'done') {
                 document.getElementById('progress-bar').style.width = "100%";
-                document.getElementById('status-text').innerText = "Report Crystallized.";
                 buildHTML(data.progress);
             }
         }
         function buildHTML(progress) {
             let html = "<html><head><title>Report</title></head><body>";
-            const steps = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FRICTION', 'TACTICAL', 'SCALING', 'ROADMAP'];
+            const steps = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
             steps.forEach(s => {
                 if(progress[s]) {
                     let txt = progress[s].replace(/### (.*)/g, '<h3>$1</h3>').replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>').replace(/\\n/g, '<br>');
