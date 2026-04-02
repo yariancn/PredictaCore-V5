@@ -6,8 +6,6 @@ const { captureAndScrape } = require('./motor');
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
-
-// Importamos solo lo necesario para el diseño ejecutivo
 const { CONTEXTOS } = require('./guia_ejecutiva');
 const { CSS_TITAN } = require('./estilos_titan');
 
@@ -22,13 +20,12 @@ app.get('/', (req, res) => res.send(getHTML()));
 
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
-    if (!dna) return res.status(400).json({ error: "Falta DNA" });
+    if (!dna) return res.status(400).json({ error: "DNA Missing" });
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
     const jobId = `job_${Date.now()}`; 
-    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO', url: targetUrl };
+    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INIT', url: targetUrl };
     ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
-        console.error("[-] Fallo crítico:", e);
         if(jobs[jobId]) jobs[jobId].status = 'error';
     });
     res.json({ jobId });
@@ -42,8 +39,7 @@ app.get('/poll', (req, res) => {
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     let datosTarget = await captureAndScrape(targetUrl);
-    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com');
-    const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
+    const cerebroActivo = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') ? cerebroSocial : cerebroWeb;
     const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
     const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
     const auth = new GoogleAuth({ credentials: credenciales, scopes: ['https://www.googleapis.com/auth/cloud-platform'] });
@@ -54,16 +50,14 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
     for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId;
         try {
-            // REGRESO AL CEREBRO DEL REPORTE 6 (Potencia pura sin guías de mano)
-            let promptFinal = PROMPTS[etapaId] ? PROMPTS[etapaId](datosTarget.texto) : `Analyze ${etapaId}`;
-
+            // REGRESO AL CEREBRO ORIGINAL (REPORTE 6)
+            let promptFinal = PROMPTS[etapaId](datosTarget.texto);
             let partesMensaje = [ { text: IDIOMA }, { text: REGLA_NUCLEAR }, { text: `DOSSIER FORENSE:\n${datosTarget.texto}` } ];
-            if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
+            if (datosTarget.desktopBase64) {
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
                 partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
             }
             partesMensaje.push({ text: promptFinal });
-
             const payload = { systemInstruction: { parts: [{ text: FIREWALL_IA }] }, contents: [{ role: "user", parts: partesMensaje }], generationConfig: { temperature: 0.15 } };
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
@@ -71,7 +65,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             const vertexData = await vertexRes.json();
             jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
             await new Promise(r => setTimeout(r, 4000));
-        } catch (error) { jobs[jobId].progress[etapaId] = `### FALLA EN NODO\n${error.message}`; }
+        } catch (error) { jobs[jobId].progress[etapaId] = `### NODE ERROR`; }
     }
     jobs[jobId].status = 'done';
 }
@@ -80,27 +74,23 @@ app.post('/generate-pdf', async (req, res) => {
     const { html } = req.body;
     let browser;
     try {
-        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
+        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
         let htmlFinal = html;
-
-        // INYECTOR DE CAPAS: Mapea por orden de secciones para inglés
         const titulos = htmlFinal.match(/<h3.*?>.*?<\/h3>/gi) || [];
         const descripciones = Object.values(CONTEXTOS);
-        
         titulos.forEach((tituloOriginal, index) => {
             if (descripciones[index]) {
                 const tituloConCapsula = `${tituloOriginal}<div class="capsula-contexto">${descripciones[index]}</div>`;
                 htmlFinal = htmlFinal.replace(tituloOriginal, tituloConCapsula);
             }
         });
-
         const htmlConEstilos = htmlFinal.replace('</head>', `${CSS_TITAN}</head>`);
         await page.setContent(htmlConEstilos, { waitUntil: 'networkidle0' });
         const pdf = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '1.5cm', bottom: '1.5cm', left: '1.2cm', right: '1.2cm' } });
         await browser.close();
         res.contentType("application/pdf").send(pdf);
-    } catch (e) { if(browser) await browser.close(); res.status(500).send("Fallo en cristalización."); }
+    } catch (e) { if(browser) await browser.close(); res.status(500).send("Error"); }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`TITÁN BÚNKER 28: CLEAN CORE OPERATIVO`));
+app.listen(port, "0.0.0.0", () => console.log(`TITÁN BÚNKER 28 OPERATIVO`));
