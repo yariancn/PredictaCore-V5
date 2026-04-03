@@ -1,7 +1,6 @@
-// server.js - HUB CENTRAL PREDICTACORE TITÁN (COMUNICACIÓN ORIGINAL)
+// server.js - HUB CENTRAL PREDICTACORE TITÁN
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
-const cerebroSocial = require('./cerebro_social'); 
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
@@ -36,11 +35,14 @@ app.post('/start', async (req, res) => {
 async function ejecutarAuditoriaFondo(url, jobId) {
     const data = await captureAndScrape(url);
     
+    // REPARACIÓN DE ENCENDIDO: Usamos el JSON de la variable para evitar el error de credenciales
+    const creds = JSON.parse(process.env.GOOGLE_CREDS);
     const auth = new GoogleAuth({
+        credentials: creds,
         scopes: 'https://www.googleapis.com/auth/cloud-platform'
     });
+    
     const client = await auth.getClient();
-    const creds = await client.getCredentials();
     const tokenResponse = await client.getAccessToken();
     const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${creds.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
