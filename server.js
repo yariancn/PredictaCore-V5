@@ -1,4 +1,4 @@
-// server.js - HUB CENTRAL PREDICTACORE TITÁN
+// server.js - HUB CENTRAL PREDICTACORE TITÁN (COMUNICACIÓN ORIGINAL)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -97,4 +97,4 @@ app.post('/generate-pdf', async (req, res) => {
 
 app.get('/poll', (req, res) => res.json(jobs[req.query.jobId]));
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN RESTAURADO EN PUERTO ${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`TITÁN OPERATIVO EN PUERTO ${port}`));
