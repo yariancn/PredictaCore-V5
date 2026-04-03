@@ -10,115 +10,204 @@ function getHTML() {
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-            body { background: #050505; color: #d1d5db; font-family: 'Inter', sans-serif; }
+
+            :root {
+                --pc-green: #10b981;
+                --pc-gold: #d4af37;
+                --pc-crimson: #991b1b;
+                --pc-crimson-bg: #fef2f2;
+                --pc-dark: #0f172a;
+                --pc-table-head: #1e293b;
+                --pc-border: #e2e8f0;
+            }
+
+            body { background: #050505; color: #d1d5db; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
             .terminal-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; }
-            .report-section { page-break-before: always; padding-top: 2rem; border-top: 1px solid #1e293b; margin-bottom: 4rem; }
-            h3 { color: #10b981; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; }
-            table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; background: #09090b; }
-            th { background: #1e293b; color: white; padding: 1rem; text-align: left; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
-            td { border: 1px solid #27272a; padding: 1rem; font-size: 0.875rem; text-align: justify; }
-            .capsula-contexto { background: #1e293b; border-left: 4px solid #10b981; padding: 1rem; margin-bottom: 2rem; font-size: 0.875rem; color: #94a3b8; font-style: italic; border-radius: 0 8px 8px 0; }
-            #btn-pdf { background: #10b981; transition: 0.3s; }
-            #btn-pdf:hover { background: #059669; transform: translateY(-2px); }
+
+            @media print {
+                @page { size: A4; margin: 1in; }
+                body { background: #ffffff !important; color: var(--pc-dark) !important; padding: 0 !important; }
+                .no-print { display: none !important; }
+
+                /* Ralla de Autoridad Derecha */
+                body::after {
+                    content: ""; position: fixed; right: -0.7in; top: -1in; bottom: -1in; width: 6px;
+                    background: var(--pc-gold); z-index: 999; -webkit-print-color-adjust: exact;
+                }
+
+                .cover-page { height: 9in; display: flex; flex-direction: column; justify-content: center; page-break-after: always; }
+                .cover-title { font-size: 3.5rem; font-weight: 800; color: var(--pc-dark) !important; text-transform: uppercase; line-height: 1.1; }
+                .cover-accent { width: 100px; height: 8px; background: var(--pc-green); margin: 2rem 0; -webkit-print-color-adjust: exact; }
+
+                /* CADA SECCIÓN EN PÁGINA NUEVA */
+                .report-section { 
+                    page-break-before: always; 
+                    clear: both;
+                }
+                #section-INTRO { page-break-before: avoid; }
+
+                .markdown-content h3 { 
+                    color: var(--pc-dark) !important; font-size: 1.6rem !important; font-weight: 800 !important;
+                    border-bottom: 2px solid var(--pc-green); padding-bottom: 0.5rem; margin: 0 0 2rem 0 !important;
+                    text-transform: uppercase; page-break-after: avoid; -webkit-print-color-adjust: exact;
+                }
+
+                /* Alineación Perfecta de Viñetas */
+                .markdown-content ul, .markdown-content ol { 
+                    padding-left: 1.5rem !important; 
+                    margin-bottom: 1.5rem !important; 
+                    list-style-position: outside !important;
+                }
+                .markdown-content li { 
+                    margin-bottom: 0.8rem !important; 
+                    line-height: 1.6 !important; 
+                    color: var(--pc-dark) !important; 
+                    padding-left: 0.5rem;
+                }
+
+                .markdown-content p { font-size: 11pt; line-height: 1.6; color: var(--pc-dark) !important; text-align: justify; margin-bottom: 1.2rem; }
+
+                /* Tablas sin cortes feos */
+                table { width: 100%; border-collapse: collapse; margin: 2rem 0; border: 1px solid var(--pc-border) !important; page-break-inside: auto; }
+                tr { page-break-inside: avoid !important; }
+                th { 
+                    background: var(--pc-table-head) !important; color: #ffffff !important; padding: 14px !important; 
+                    text-transform: uppercase; font-size: 9pt; text-align: left; border: none !important; -webkit-print-color-adjust: exact; 
+                }
+                td { padding: 12px !important; border-bottom: 1px solid var(--pc-border) !important; color: var(--pc-dark) !important; font-size: 10pt; }
+                tr:nth-child(even) td { background: #f8fafc !important; -webkit-print-color-adjust: exact; }
+            }
         </style>
     </head>
-    <body class="p-4 md:p-8">
-        <div class="max-w-5xl mx-auto">
-            <div class="flex justify-between items-center mb-8">
-                <h1 class="text-3xl font-800 text-white tracking-widest">PREDICTACORE <span class="text-emerald-500">TITÁN</span></h1>
-                <button id="btn-pdf" onclick="descargarPDF()" class="hidden px-6 py-2 rounded-lg text-white font-bold text-sm uppercase">Exportar Reporte Titán</button>
-            </div>
-
-            <div id="setup-area" class="terminal-box p-8 mb-8">
-                <input type="text" id="dna" placeholder="Introduce la URL del activo digital..." class="w-full bg-slate-900 border border-slate-700 p-4 rounded-lg text-white mb-4 outline-none focus:border-emerald-500">
-                <button onclick="iniciarAuditoria()" class="w-full bg-emerald-600 p-4 rounded-lg text-white font-bold uppercase hover:bg-emerald-500">Disparar Auditoría Forense</button>
-            </div>
-
-            <div id="progress-area" class="hidden mb-8">
-                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                    <div id="bar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+    <body class="p-6 md:p-20">
+        <div class="max-w-6xl mx-auto">
+            <header class="mb-16 flex justify-between items-end no-print">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-white uppercase tracking-tighter">PREDICTACORE <span class="text-emerald-500">TITÁN</span></h1>
+                    <p class="text-zinc-500 text-[10px] uppercase tracking-[0.4em]">Forensic Audit Intelligence</p>
                 </div>
-                <p id="status" class="text-center mt-4 text-sm font-mono text-emerald-400">INICIALIZANDO SONDA...</p>
+                <button id="btn-pdf" onclick="descargarPDFBackend()" class="hidden border border-emerald-500 text-emerald-500 px-6 py-2 text-xs uppercase hover:bg-emerald-500 hover:text-black transition-all">
+                    Exportar Reporte Titán
+                </button>
+            </header>
+
+            <div id="impresion-area">
+                <div class="hidden print:flex cover-page">
+                    <div class="text-emerald-500 font-bold uppercase tracking-[0.5em] mb-4">Forensic Conversion Report</div>
+                    <div class="cover-accent"></div>
+                    <div class="cover-title">PredictaCore<br>Titán Intelligence</div>
+                    <div class="text-2xl text-gray-500 mt-8" id="pdf-domain">Asset Analysis</div>
+                    <div class="mt-auto pt-10 border-t border-gray-200 flex justify-between items-end">
+                        <span class="font-bold text-gray-900 uppercase text-xs tracking-widest">Altamente Confidencial</span>
+                        <span id="pdf-date" class="font-bold text-gray-900"></span>
+                    </div>
+                </div>
+                <div id="reporte"></div>
             </div>
 
-            <div id="impresion-area" class="markdown-content"></div>
+            <div class="terminal-box p-10 mt-20 no-print">
+                <input type="text" id="dna" placeholder="Ingresa dominio..." class="w-full bg-transparent text-2xl text-white border-b border-zinc-800 pb-2 focus:outline-none focus:border-emerald-500">
+                <button onclick="ejecutar()" id="btn-ejecutar" class="mt-8 bg-emerald-600 text-white font-bold py-4 px-8 text-xs uppercase hover:bg-emerald-400 w-full md:w-auto transition-all">Ejecutar Auditoría</button>
+                <div id="status" class="mt-6 text-[10px] text-zinc-500 uppercase tracking-widest">Esperando secuencia...</div>
+            </div>
         </div>
 
         <script>
-            const etapasDesc = {
-                INTRO: "I. RADIOGRAFÍA INICIAL", GEMELOS: "II. GEMELOS SINTÉTICOS", SCORECARD: "III. COMERCIAL HEALTH SCORECARD",
-                VISIBILIDAD: "IV. FORENSIC SEO", BENCHMARK: "V. BENCHMARK", SWOT: "VI. SWOT",
-                WISHLIST: "VII. WISH LIST", FUGAS: "VIII. 15 PUNTOS DE FUGA", ACCIONES: "IX. 15 ACCIONES",
-                HERRAMIENTAS: "X. ARSENAL TECNOLÓGICO", OMNI: "XI. HOJA DE RUTA"
-            };
+            document.getElementById('pdf-date').innerText = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            const contextos = {
-                INTRO: "Radiografía inicial: Quiénes somos y cómo desmantelamos la arquitectura de tu negocio.",
-                GEMELOS: "Psicología de Compra: Identificamos los 4 perfiles mentales que visitan tu sitio y qué necesitan ver para decir 'sí'.",
-                SCORECARD: "Signos Vitales: Una calificación cruda de los 10 pilares que sostienen (o hunden) tu rentabilidad.",
-                FUGAS: "Detección de Hemorragias: Los 15 puntos exactos donde tu dinero se está escapando hoy mismo.",
-                OMNI: "Hoja de Ruta (21 Días): El plan de ejecución inmediata. Sin teoría, solo acción día por día."
-            };
-
-            async function iniciarAuditoria() {
-                const dna = document.getElementById('dna').value;
-                if(!dna) return;
-                document.getElementById('setup-area').classList.add('hidden');
-                document.getElementById('progress-area').classList.remove('hidden');
-                
-                const res = await fetch('/start', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ dna })
-                });
-                const { jobId } = await res.json();
-                poll(jobId);
+            // (Mantener las funciones auxiliares suavizarMayusculas y aplicarSemaforos igual)
+            function suavizarMayusculas(texto) {
+                const lineas = texto.split('\\n');
+                return lineas.map(linea => {
+                    if (linea.startsWith('###')) return linea; 
+                    if (linea.trim().startsWith('|')) {
+                        let celdas = linea.split('|').map(c => {
+                            let t = c.trim();
+                            if (t.length > 15 && (t.replace(/[^A-Z]/g, '').length / t.length) > 0.45) return ' ' + t.charAt(0).toUpperCase() + t.slice(1).toLowerCase() + ' ';
+                            return c;
+                        });
+                        return celdas.join('|');
+                    }
+                    return linea;
+                }).join('\\n');
             }
 
-            async function poll(jobId) {
-                const res = await fetch('/poll?jobId=' + jobId);
-                const data = await res.json();
-                
-                if(data.status === 'running') {
-                    const completadas = Object.keys(data.progress).length;
-                    document.getElementById('bar').style.width = (completadas / 11 * 100) + '%';
-                    document.getElementById('status').innerText = "PROCESANDO: " + (etapasDesc[data.currentEtapa] || data.currentEtapa);
-                    setTimeout(() => poll(jobId), 3000);
-                } else if(data.status === 'done') {
-                    document.getElementById('progress-area').classList.add('hidden');
-                    document.getElementById('btn-pdf').classList.remove('hidden');
-                    renderizar(data.progress);
-                }
-            }
-
-            function renderizar(progress) {
-                const area = document.getElementById('impresion-area');
-                let html = "";
-                const orden = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
-                
-                orden.forEach(id => {
-                    if(progress[id]) {
-                        let contenido = marked.parse(progress[id]);
-                        let contexto = contextos[id] ? \`<div class="capsula-contexto">\${contextos[id]}</div>\` : "";
-                        html += \`<div class="report-section">\${contexto}\${contenido}</div>\`;
+            function aplicarSemaforos(html) {
+                const d = document.createElement('div'); d.innerHTML = html;
+                d.querySelectorAll('td').forEach(td => {
+                    const m = td.textContent.trim().match(/^(\\d+)/);
+                    if (m) {
+                        const v = parseInt(m[1]);
+                        td.style.fontWeight = '800';
+                        td.style.color = v <= 5 ? '#ef4444' : v <= 7 ? '#f59e0b' : '#10b981';
                     }
                 });
-                area.innerHTML = html;
+                return d.innerHTML;
             }
 
-            async function descargarPDF() {
-                const btn = document.getElementById('btn-pdf');
-                btn.innerText = "GENERANDO PDF..."; btn.disabled = true;
-                const html = document.documentElement.outerHTML;
-                const res = await fetch('/generate-pdf', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ html })
+            let paintedEtapas = new Set();
+            async function ejecutar() {
+                const dna = document.getElementById('dna').value; if (!dna) return;
+                document.getElementById('pdf-domain').innerText = 'Analysis: ' + dna;
+                const btn = document.getElementById('btn-ejecutar');
+                const btnPdf = document.getElementById('btn-pdf');
+                const reporte = document.getElementById('reporte');
+                btn.disabled = true; btnPdf.classList.add('hidden'); reporte.innerHTML = '';
+                document.getElementById('status').innerText = '>>> ESTABLECIENDO CONEXIÓN SIMBIÓPTICA...';
+                
+                const etapas = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
+                etapas.forEach(e => {
+                    const d = document.createElement('div'); d.id = 'section-' + e; d.className = 'report-section';
+                    d.innerHTML = '<div id="content-'+e+'" class="text-zinc-700 italic text-xs animate-pulse p-4">Procesando nodo...</div>';
+                    reporte.appendChild(d);
                 });
-                const blob = await res.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a'); a.href = url; a.download = 'PredictaCore_Reporte_' + Date.now() + '.pdf'; a.click();
-                btn.innerText = "Exportar Reporte Titán"; btn.disabled = false;
+
+                const res = await fetch('/start', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ dna: dna }) });
+                const data = await res.json();
+                
+                const interval = setInterval(async () => {
+                    const pRes = await fetch('/poll?jobId=' + encodeURIComponent(data.jobId));
+                    const info = await pRes.json();
+                    for (const eid in info.progress) {
+                        if (!paintedEtapas.has(eid)) {
+                            const cDiv = document.getElementById('content-' + eid);
+                            let h = marked.parse(suavizarMayusculas(info.progress[eid]));
+                            if (h.includes('table')) h = aplicarSemaforos(h);
+                            h = h.replace(/\\[HEMORRAGIA CRÍTICA\\]/gi, '<span class="hemorragia-critica text-red-500 font-bold">[HEMORRAGIA CRÍTICA]</span>');
+                            cDiv.innerHTML = '<div class="markdown-content">' + h + '</div>';
+                            cDiv.classList.remove('animate-pulse', 'italic', 'text-xs');
+                            cDiv.classList.add('text-zinc-300');
+                            paintedEtapas.add(eid);
+                        }
+                    }
+                    if (info.status === 'done') { clearInterval(interval); document.getElementById('status').innerText = '>>> SELLADO.'; btn.disabled = false; btnPdf.classList.remove('hidden'); }
+                }, 4000);
+            }
+
+            async function descargarPDFBackend() {
+                const btn = document.getElementById('btn-pdf');
+                btn.innerText = "CRISTALIZANDO..."; btn.disabled = true;
+                
+                // Enviar solo el área de impresión para evitar saturación
+                const contenido = document.getElementById('impresion-area').innerHTML;
+                const estilos = document.querySelector('style').innerHTML;
+                const htmlFinal = \`<html><head><style>\${estilos}</style></head><body><div class="print-container">\${contenido}</div></body></html>\`;
+                
+                try {
+                    const res = await fetch('/generate-pdf', { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ html: htmlFinal }) 
+                    });
+                    if (!res.ok) throw new Error();
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = 'PREDICTACORE_TITAN_REPORT.pdf'; a.click();
+                } catch (e) {
+                    alert("Error al cristalizar. Reintenta.");
+                } finally {
+                    btn.innerText = "Exportar Reporte Titán"; btn.disabled = false;
+                }
             }
         </script>
     </body>
