@@ -1,33 +1,33 @@
-// cerebro.js - BÚNKER 2: MULTILINGÜE ESTRICTO Y LISTAS BLINDADAS (DNA NIVEL 6)
+// cerebro.js - BÚNKER 2: MULTILINGÜE ESTRICTO Y VISIÓN 360 (DNA NIVEL 6)
 
-const IDIOMA = "INSTRUCCIÓN CRÍTICA Y ABSOLUTA: Detecta el idioma principal del sitio web analizado (basado en el Dossier y las Imágenes). DEBES redactar tu respuesta COMPLETA (incluyendo el encabezado, el análisis, las tablas y las viñetas) ESTRICTAMENTE en ese idioma detectado. Cero mezclas.";
+const IDIOMA = "INSTRUCCIÓN CRÍTICA Y ABSOLUTA: Detecta el idioma principal del sitio web analizado. DEBES redactar tu respuesta COMPLETA (incluyendo el encabezado, el análisis, las tablas y las viñetas) ESTRICTAMENTE en ese idioma detectado. Cero mezclas.";
 
-const REGLA_NUCLEAR = "REGLA NUCLEAR DE AUDITORÍA: TIENES ESTRICTAMENTE PROHIBIDO mencionar reseñas de clientes, testimonios, o quejas (como manchas o defectos) en NINGUNA PARTE del reporte, CON EXCEPCIÓN ÚNICA de la Sección IV (Visibilidad y SEO).";
+const REGLA_NUCLEAR = "REGLA NUCLEAR DE AUDITORÍA: TIENES ESTRICTAMENTE PROHIBIDO mencionar reseñas de clientes o quejas en NINGUNA PARTE del reporte, EXCEPTO en la Sección IV (Visibilidad y SEO) si revelan defectos del activo.";
 
-const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO FATAL: DEBES usar el símbolo de guion (-) al inicio de cada punto, seguido de un espacio. Prohibido numerar.";
+const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO: DEBES usar el símbolo de guion (-) al inicio de cada punto, seguido de un espacio. Prohibido usar números.";
 
 const PROMPTS = {
-  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### I. INTRODUCTION AND ASSET X-RAY\nRedacta esta sección estructurada estrictamente en dos partes:\nPÁRRAFO 1 (Nuestra Identidad): Explica con autoridad, agresividad y un tono de élite quiénes somos (PredictaCore). DEBES mencionar OBLIGATORIAMENTE que utilizamos "modelos simbiópticos" y que hemos ejecutado "más de 9,000 simulaciones de fricción transaccional".\nPÁRRAFO 2 (El Activo): Describe profundamente el negocio basado en el dossier e imágenes. Dossier: ${d}`,
+  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### I. INTRODUCTION AND ASSET X-RAY\nRedacta en dos partes:\nPÁRRAFO 1: Explica que somos PredictaCore Titán, usamos "modelos simbiópticos" y hemos ejecutado "9,000 simulaciones de fricción".\nPÁRRAFO 2: Describe profundamente el activo analizado (negocio, mercado y modelo). Dossier: ${d}`,
 
-  GEMELOS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### II. SYNTHETIC TWINS & PURCHASING PSYCHOLOGY\nMapea 4 perfiles mentales (Gemelos Sintéticos). Identifica su motivación visceral y el punto exacto de fricción donde deciden retirar su capital. ${FORMATO_LISTAS} Dossier: ${d}`,
+  GEMELOS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### II. SYNTHETIC TWINS & PURCHASING PSYCHOLOGY\nMapea 4 perfiles mentales (Gemelos Sintéticos). Identifica su motivación y el punto exacto de fricción donde deciden retirar su capital. ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  SCORECARD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### III. COMMERCIAL HEALTH SCORECARD\nGenera una TABLA MARKDOWN con 10 pilares. Califica de 1 a 10. EVALUACIÓN UNIVERSAL: Analiza con rigor la integridad del "Nodo de Cierre"; identifica si elementos de pago rápido o pasarelas externas están canibalizando el botón de compra o creando una ruptura en la psicología del cliente. Dossier: ${d}`,
+  SCORECARD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### III. COMMERCIAL HEALTH SCORECARD\nGenera una TABLA MARKDOWN con 10 pilares. Califica de 1 a 10. EVALUACIÓN ESPECIAL: Analiza la integridad del "Nodo de Cierre". Identifica si elementos de pago rápido o pasarelas externas están canibalizando la intención de compra o creando una ruptura en el ecosistema visual. Dossier: ${d}`,
 
-  VISIBILIDAD: (d) => `${IDIOMA}\n### IV. MARKET AUTHORITY & FORENSIC SEO\nAnaliza la "Hemorragia de Autoridad". Explica cómo el desorden técnico es un impuesto a la conversión. En esta sección SÍ puedes mencionar la voz del cliente si revela defectos estructurales. Dossier: ${d}`,
+  VISIBILIDAD: (d) => `${IDIOMA}\n### IV. MARKET AUTHORITY & FORENSIC SEO\nAnaliza la "Hemorragia de Autoridad". Explica cómo el desorden técnico es un impuesto a la conversión. Dossier: ${d}`,
 
-  BENCHMARK: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### V. STRATEGIC X-RAY (BENCHMARK)\nGenera una TABLA MARKDOWN comparando el activo contra 3 competidores reales. Identifica por qué los rivales están capturando el capital que este activo pierde. Dossier: ${d}`,
+  BENCHMARK: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### V. STRATEGIC X-RAY (BENCHMARK)\nGenera una TABLA MARKDOWN comparando el activo contra 3 competidores reales. Dossier: ${d}`,
 
-  SWOT: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### VI. TACTICAL MATRIX (SWOT)\nAnaliza Fortalezas, Oportunidades, Debilidades y Amenazas (3 a 5 líneas cada una). ${FORMATO_LISTAS} Dossier: ${d}`,
+  SWOT: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### VI. TACTICAL MATRIX (SWOT)\nFortalezas, Oportunidades, Debilidades y Amenazas. ${FORMATO_LISTAS} Dossier: ${d}`,
 
   WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### VII. ELITE OPTIMIZATION WISH LIST\n10 funciones tácticas de alto valor para transmutar el activo en oro. ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### VIII. 15 FRICTION POINTS & CAPITAL LEAKS\nIdentifica 15 hallazgos críticos de fricción. Marca las peores como **[HEMORRAGIA CRÍTICA]**. REGLA UNIVERSAL: Audita si el proceso de pago rápido o elementos externos están bloqueando la visibilidad del botón principal o forzando saltos de ecosistema innecesarios que detienen la venta. Dossier: ${d}`,
+  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### VIII. 15 FRICTION POINTS & CAPITAL LEAKS\nIdentifica 15 hallazgos críticos. Marca las peores como **[HEMORRAGIA CRÍTICA]**. REGLA UNIVERSAL: Identifica si el proceso de pago rápido o elementos externos están bloqueando la visibilidad del botón principal o forzando saltos de ecosistema innecesarios. ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  ACCIONES: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### IX. 15 TACTICAL EXECUTION ACTIONS\nProporciona la solución exacta a las 15 fugas. REGLA: ${FORMATO_LISTAS}. Usa el título del hallazgo en **negritas** y luego tu explicación. Dossier: ${d}`,
+  ACCIONES: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### IX. 15 TACTICAL EXECUTION ACTIONS\nLa solución exacta a las 15 fugas. Usa el título del hallazgo en **negritas** y luego tu explicación. ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  HERRAMIENTAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### X. TECHNOLOGICAL ARSENAL (SCALING)\n5 soluciones SaaS justificando el ROI estratégico de cada una. ${FORMATO_LISTAS} Dossier: ${d}`,
+  HERRAMIENTAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### X. TECHNOLOGICAL ARSENAL (SCALING)\n5 soluciones SaaS justificando el ROI estratégico. ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  OMNI: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### XI. EXECUTIVE ROADMAP (21 DAYS)\nPlan de choque de 3 fases (7 días c/u). Acción pura día por día para recuperar el control de la rentabilidad. ${FORMATO_LISTAS} Dossier: ${d}`
+  OMNI: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### XI. EXECUTIVE ROADMAP (21 DAYS)\nPlan de 3 fases (7 días c/u). Acción pura día por día para recuperar la rentabilidad. ${FORMATO_LISTAS} Dossier: ${d}`
 };
 
 module.exports = { PROMPTS, IDIOMA, REGLA_NUCLEAR };
