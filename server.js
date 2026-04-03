@@ -1,6 +1,7 @@
-// server.js - HUB CENTRAL PREDICTACORE TITÁN
+// server.js - BÚNKER 7 RESTAURADO (COMUNICACIÓN ORIGINAL)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
+const cerebroSocial = require('./cerebro_social'); 
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
@@ -35,14 +36,12 @@ app.post('/start', async (req, res) => {
 async function ejecutarAuditoriaFondo(url, jobId) {
     const data = await captureAndScrape(url);
     
-    // REPARACIÓN DE ENCENDIDO: Usamos el JSON de la variable para evitar el error de credenciales
-    const creds = JSON.parse(process.env.GOOGLE_CREDS);
+    // RESTAURACIÓN ABSOLUTA: Lógica de autenticación que ya te funcionaba
     const auth = new GoogleAuth({
-        credentials: creds,
         scopes: 'https://www.googleapis.com/auth/cloud-platform'
     });
-    
     const client = await auth.getClient();
+    const creds = await client.getCredentials();
     const tokenResponse = await client.getAccessToken();
     const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${creds.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
@@ -63,6 +62,8 @@ async function ejecutarAuditoriaFondo(url, jobId) {
                 contents: [{ role: "user", parts: partesMensaje }],
                 generationConfig: { temperature: 0.15 }
             };
+
+            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
             const vertexRes = await fetch(vertexUrl, {
                 method: "POST",
