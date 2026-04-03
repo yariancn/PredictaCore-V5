@@ -1,4 +1,4 @@
-// server.js - BÚNKER 7 RESTAURADO (COMUNICACIÓN ORIGINAL)
+// server.js - HUB CENTRAL PREDICTACORE TITÁN
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -13,7 +13,6 @@ const port = process.env.PORT || 8080;
 app.use(express.json({ limit: '10mb' }));
 
 const jobs = {}; 
-const dossierCache = {};
 const ETAPAS_ORDEN = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
 
 app.get('/', (req, res) => res.send(getHTML()));
@@ -37,7 +36,6 @@ app.post('/start', async (req, res) => {
 async function ejecutarAuditoriaFondo(url, jobId) {
     const data = await captureAndScrape(url);
     
-    // RESTAURACIÓN ABSOLUTA: Lógica de autenticación original de tus archivos
     const auth = new GoogleAuth({
         scopes: 'https://www.googleapis.com/auth/cloud-platform'
     });
@@ -63,8 +61,6 @@ async function ejecutarAuditoriaFondo(url, jobId) {
                 contents: [{ role: "user", parts: partesMensaje }],
                 generationConfig: { temperature: 0.15 }
             };
-
-            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
             const vertexRes = await fetch(vertexUrl, {
                 method: "POST",
@@ -101,4 +97,4 @@ app.post('/generate-pdf', async (req, res) => {
 
 app.get('/poll', (req, res) => res.json(jobs[req.query.jobId]));
 
-app.listen(port, "0.0.0.0", () => console.log(`TITÁN OPERATIVO EN PUERTO ${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN RESTAURADO EN PUERTO ${port}`));
