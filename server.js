@@ -1,9 +1,10 @@
 // server.js - BÚNKER 7 RESTAURADO (SIN FILTROS NI REDUNDANCIAS)
 const express = require('express');
-const { PROMPTS, IDIOMA } = require('./cerebro');           
-const { FIREWALL_IA } = require('./firewall');
+const cerebroWeb = require('./cerebro');           
+const cerebroSocial = require('./cerebro_social'); 
 const { getHTML } = require('./visual');
 const { captureAndScrape } = require('./motor'); 
+const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 
@@ -12,6 +13,7 @@ const port = process.env.PORT || 8080;
 app.use(express.json({ limit: '10mb' }));
 
 const jobs = {}; 
+const dossierCache = {};
 const ETAPAS_ORDEN = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
 
 app.get('/', (req, res) => res.send(getHTML()));
@@ -21,49 +23,64 @@ app.post('/start', async (req, res) => {
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
     
-    const jobId = `PC_${Date.now()}`; 
+    const jobId = targetUrl; 
     jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO' };
     
     ejecutarAuditoriaFondo(targetUrl, jobId).catch(e => {
-        console.error("Fallo Job:", e);
-        jobs[jobId].status = 'error';
+        console.error("Fallo crítico:", e);
+        if(jobs[jobId]) jobs[jobId].status = 'error';
     });
     
     res.json({ jobId });
 });
 
-async function ejecutarAuditoriaFondo(url, jobId) {
-    const data = await captureAndScrape(url);
-    
+app.get('/poll', (req, res) => {
+    const jobId = req.query.jobId;
+    if (!jobs[jobId]) return res.json({ status: 'not_found' });
+    res.json(jobs[jobId]);
+});
+
+async function ejecutarAuditoriaFondo(targetUrl, jobId) {
+    let datosTarget = await captureAndScrape(targetUrl);
+
+    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
+    const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
+    const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
+
+    // RESTAURACIÓN: Regresamos a la lógica de autenticación que SÍ te funcionaba
     const auth = new GoogleAuth({
-        scopes: 'https://www.googleapis.com/auth/cloud-platform'
+        scopes: ['https://www.googleapis.com/auth/cloud-platform']
     });
+    
     const client = await auth.getClient();
-    const creds = await client.getCredentials();
+    const creds = await client.getCredentials(); // Obtenemos las creds para extraer el project_id
     const tokenResponse = await client.getAccessToken();
+    
+    // Endpoint estable para Gemini 2.5 Pro en Vertex
     const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${creds.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
     for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId;
         try {
+            const promptFinal = PROMPTS[etapaId](datosTarget.texto);
             let partesMensaje = [
-                { text: `DOSSIER FORENSE: ${data.texto}` },
-                { text: PROMPTS[etapaId](data.texto) }
+                { text: IDIOMA }, { text: REGLA_NUCLEAR },
+                { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` }
             ];
 
-            if (data.desktopBase64) {
-                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: data.desktopBase64 } });
+            if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
+                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
+                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
             }
+            partesMensaje.push({ text: promptFinal });
 
             const payload = {
                 systemInstruction: { parts: [{ text: FIREWALL_IA }] },
                 contents: [{ role: "user", parts: partesMensaje }],
-                generationConfig: { temperature: 0.15 }
+                generationConfig: { temperature: 0.15 } 
             };
 
-            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') {
-                payload.tools = [{ googleSearch: {} }];
-            }
+            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
 
             const vertexRes = await fetch(vertexUrl, {
                 method: "POST",
@@ -76,7 +93,7 @@ async function ejecutarAuditoriaFondo(url, jobId) {
             await new Promise(r => setTimeout(r, 3500));
 
         } catch (error) {
-            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA EN ${etapaId}\n${error.message}`;
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\n${error.message}`;
         }
     }
     jobs[jobId].status = 'done';
@@ -89,19 +106,13 @@ app.post('/generate-pdf', async (req, res) => {
         browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
         await page.setContent(html, { waitUntil: 'networkidle0' });
-        const pdf = await page.pdf({ 
-            format: 'A4', 
-            printBackground: true,
-            margin: { top: '20px', bottom: '20px', left: '20px', right: '20px' }
-        });
+        const pdf = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
         res.contentType("application/pdf").send(pdf);
     } catch (e) {
         if(browser) await browser.close();
-        res.status(500).send("Fallo al generar PDF");
+        res.status(500).send("Fallo PDF");
     }
 });
 
-app.get('/poll', (req, res) => res.json(jobs[req.query.jobId]));
-
-app.listen(port, "0.0.0.0", () => console.log(`TITÁN B34 OPERATIVO EN PUERTO ${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN RESTAURADO`));
