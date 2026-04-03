@@ -1,0 +1,36 @@
+providers = ["npm"]
+
+[phases.setup]
+nixPkgs = [
+  "nodejs_18",
+  "npm",
+  "chromium",
+  "nss",
+  "freetype",
+  "harfbuzz",
+  "pango",
+  "xorg.libX11",
+  "xorg.libXext",
+  "xorg.libXrender",
+  "xorg.libXfixes",
+  "xorg.libXcomposite",
+  "xorg.libXcursor",
+  "xorg.libXdamage",
+  "xorg.libXrandr",
+  "xorg.libXi",
+  "xorg.libXtst",
+  "cups",
+  "libxkbcommon",
+  "alsa-lib",
+  "atk",
+  "at-spi2-atk",
+  "at-spi2-core",
+  "libdrm",
+  "mesa"
+]
+
+[phases.build]
+cmds = ["npm install"]
+
+[start]
+cmd = "npm start"
