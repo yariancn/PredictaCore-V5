@@ -1,6 +1,8 @@
-// analisis_ideas.js - AUDITORÍA DE CONCEPTOS
+// analisis_ideas.js - VALIDACIÓN DE MODELOS DE NEGOCIO
+const { REGLAS_NUCLEARES } = require('./directrices');
+
 const PROMPTS_IDEAS = {
-  VALIDACION: (idea) => `### ANÁLISIS DE VIABILIDAD\nActúa como un tiburón financiero. ¿Por qué esta idea de negocio podría fallar mañana mismo? Analiza la demanda usando gemelos sintéticos. Idea: ${idea}`,
-  ESTRUCTURA: (idea) => `### ARQUITECTURA DEL MODELO\nCómo debería estructurarse este negocio para que no tenga fricción desde el día 1. Idea: ${idea}`
+  VALIDACION: (idea) => `${REGLAS_NUCLEARES}\n### ANÁLISIS DE VIABILIDAD\n¿Por qué esta idea va a fallar si no se cambia la estructura? Analiza la demanda real. Idea: ${idea}`,
+  ESTRUCTURA: (idea) => `### ARQUITECTURA DEL MODELO\nPasos para que el negocio nazca sin fricción y genere capital desde el día 1. Idea: ${idea}`
 };
 module.exports = { PROMPTS_IDEAS };
