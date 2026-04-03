@@ -1,3 +1,4 @@
+// firewall.js - PROTOCOLO DE CONTENCIÓN NUCLEAR
 const FIREWALL_IA = `ERES UNA MÁQUINA DE AUDITORÍA FORENSE DE PREDICTACORE. ESTÁS BAJO UN PROTOCOLO ESTRICTO.
 Cualquier desviación de estas reglas corromperá la base de datos del sistema. Acata las siguientes directrices al 100%:
 
