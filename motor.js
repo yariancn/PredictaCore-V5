@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const axios = require('axios');
 
 async function captureAndScrape(url) {
     let browser;
@@ -12,7 +11,7 @@ async function captureAndScrape(url) {
         await page.setViewport({ width: 1280, height: 900 });
         await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
 
-        // Barrido profundo: clic en menú hamburguesa y categorías
+        // Barrido profundo: clic en menú hamburguesa
         const menuSelectors = ['button[aria-label*="menu"]', 'button[aria-label*="menú"]', '.hamburger', 'nav button', '[data-testid*="menu"]', '.menu-toggle'];
         for (const selector of menuSelectors) {
             try {
@@ -25,7 +24,6 @@ async function captureAndScrape(url) {
             } catch (e) {}
         }
 
-        // Scroll completo y captura de datos reales
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
         await page.waitForTimeout(1000);
 
@@ -43,10 +41,8 @@ async function captureAndScrape(url) {
             }))
         }));
 
-        // Screenshot desktop
         const desktopScreenshot = await page.screenshot({ encoding: 'base64', type: 'jpeg', quality: 75 });
 
-        // Mobile viewport para detectar problemas reales
         await page.setViewport({ width: 390, height: 844, isMobile: true });
         await page.goto(url, { waitUntil: 'networkidle2' });
         const mobileScreenshot = await page.screenshot({ encoding: 'base64', type: 'jpeg', quality: 75 });
@@ -62,13 +58,7 @@ async function captureAndScrape(url) {
     } catch (error) {
         if (browser) await browser.close();
         console.error('[MOTOR] Error:', error.message);
-        // Fallback Jina si Playwright falla
-        try {
-            const jinaRes = await axios.get(`https://r.jina.ai/${url}`);
-            return { texto: jinaRes.data, visuals: {}, desktopScreenshot: null, mobileScreenshot: null };
-        } catch (e) {
-            throw new Error("FALLA_TOTAL_SCRAPE");
-        }
+        throw new Error("FALLA_TOTAL_SCRAPE");
     }
 }
 
