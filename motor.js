@@ -1,65 +1,69 @@
+// motor.js - BÚNKER 6.3: BIFURCACIÓN EXACTA (RESTAURADO)
 const puppeteer = require('puppeteer');
 
 async function captureAndScrape(url) {
     let browser;
     try {
+        const isSocialMedia = url.includes('instagram.com') || url.includes('facebook.com') || url.includes('tiktok.com');
+
         browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            headless: "new",
+            args: [
+                '--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', 
+                '--single-process', '--disable-gpu', '--disable-blink-features=AutomationControlled'
+            ]
         });
+        
+        const startTime = Date.now();
         const page = await browser.newPage();
-        await page.setViewport({ width: 1280, height: 900 });
-        await page.goto(url, { waitUntil: 'networkidle2', timeout: 30000 });
-
-        // Barrido profundo: clic en menú hamburguesa
-        const menuSelectors = ['button[aria-label*="menu"]', 'button[aria-label*="menú"]', '.hamburger', 'nav button', '[data-testid*="menu"]', '.menu-toggle'];
-        for (const selector of menuSelectors) {
-            try {
-                const btn = await page.$(selector);
-                if (btn) {
-                    await btn.click();
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    break;
-                }
-            } catch (e) {}
+        
+        if (isSocialMedia) {
+            await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+            await page.setExtraHTTPHeaders({ 'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8' });
+            await page.evaluateOnNewDocument(() => {
+                Object.defineProperty(navigator, 'webdriver', { get: () => false });
+            });
         }
+        
+        let consoleErrors = [];
+        page.on('pageerror', err => consoleErrors.push(err.message));
 
-        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const dataForense = await page.evaluate(() => ({
-            titulo: document.title,
-            descripcion: document.querySelector('meta[name="description"]')?.content || '',
-            cuerpo: document.body.innerText.substring(0, 60000),
-            interactores: Array.from(document.querySelectorAll('button, a, input')).map(el => ({
-                tipo: el.tagName,
-                texto: el.textContent.trim() || el.getAttribute('aria-label') || ''
-            })),
-            visuales: Array.from(document.querySelectorAll('img')).map(img => ({
-                src: img.src,
-                alt: img.alt || ''
-            }))
-        }));
-
-        const desktopScreenshot = await page.screenshot({ encoding: 'base64', type: 'jpeg', quality: 75 });
+        await page.setViewport({ width: 1280, height: 900 });
+        
+        if (isSocialMedia) {
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+            await new Promise(r => setTimeout(r, 4000)); 
+            await page.evaluate(() => window.scrollBy(0, 800));
+            await new Promise(r => setTimeout(r, 1500));
+        } else {
+            await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+        }
+        
+        const loadTime = ((Date.now() - startTime) / 1000).toFixed(2);
+        const desktopBase64 = await page.screenshot({ type: 'jpeg', quality: 60, encoding: 'base64' });
 
         await page.setViewport({ width: 390, height: 844, isMobile: true });
-        await page.goto(url, { waitUntil: 'networkidle2' });
-        const mobileScreenshot = await page.screenshot({ encoding: 'base64', type: 'jpeg', quality: 75 });
+        await new Promise(r => setTimeout(r, 1000)); 
+        const mobileBase64 = await page.screenshot({ type: 'jpeg', quality: 60, encoding: 'base64' });
+
+        const dataForense = await page.evaluate(() => {
+            const scripts = document.querySelectorAll('script, style, noscript, iframe');
+            scripts.forEach(s => s.remove());
+            const metaDesc = document.querySelector('meta[name="description"]')?.content || "";
+            const metaTitle = document.querySelector('meta[property="og:title"]')?.content || document.title;
+            const imgs = Array.from(document.querySelectorAll('img')).map(img => `[Img: ${img.alt || 'Sin alt'}]`).join(' | ');
+            const botones = Array.from(document.querySelectorAll('a, button')).map(b => b.innerText.trim()).filter(t => t.length > 2).join(' | ');
+            return { titulo: metaTitle, descripcion: metaDesc, cuerpo: document.body.innerText.substring(0, 45000), interactores: botones, visual: imgs };
+        });
 
         await browser.close();
+        const fechaHoy = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+        const dossierTexto = `FECHA: ${fechaHoy} | TITULO: ${dataForense.titulo} | CTAS: ${dataForense.interactores} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}`;
 
-        return {
-            texto: `TÍTULO: ${dataForense.titulo}\nDESCRIPCIÓN: ${dataForense.descripcion}\nCONTENIDO: ${dataForense.cuerpo}`,
-            visuals: dataForense,
-            desktopScreenshot,
-            mobileScreenshot
-        };
+        return { isUrl: true, texto: dossierTexto, desktopBase64, mobileBase64 };
     } catch (error) {
         if (browser) await browser.close();
-        console.error('[MOTOR] Error:', error.message);
-        throw new Error("FALLA_TOTAL_SCRAPE");
+        return { isUrl: false, texto: `ERROR_MOTOR: ${error.message}` };
     }
 }
-
 module.exports = { captureAndScrape };
