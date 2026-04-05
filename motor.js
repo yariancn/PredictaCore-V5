@@ -18,14 +18,14 @@ async function captureAndScrape(url) {
                 const btn = await page.$(selector);
                 if (btn) {
                     await btn.click();
-                    await new Promise(resolve => setTimeout(resolve, 1500));  // ← corrección aquí
+                    await new Promise(resolve => setTimeout(resolve, 1500));
                     break;
                 }
             } catch (e) {}
         }
 
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-        await new Promise(resolve => setTimeout(resolve, 1000));  // ← corrección aquí
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         const dataForense = await page.evaluate(() => ({
             titulo: document.title,
