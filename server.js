@@ -34,49 +34,33 @@ app.post('/start', async (req, res) => {
     res.json({ jobId });
 });
 
-app.get('/poll', (req, res) => {
-    const jobId = req.query.jobId;
-    if (!jobs[jobId]) return res.json({ status: 'not_found' });
-    res.json(jobs[jobId]);
-});
-
-async function ejecutarAuditoriaFondo(targetUrl, jobId) {
-    let datosTarget = await captureAndScrape(targetUrl);
-
-    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
-    const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
-    const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
-
-    const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
-    const auth = new GoogleAuth({
-        credentials: credenciales,
-        scopes: ['https://www.googleapis.com/auth/cloud-platform']
-    });
+async function ejecutarAuditoriaFondo(url, jobId) {
+    const data = await captureAndScrape(url);
     
+    const auth = new GoogleAuth({
+        scopes: 'https://www.googleapis.com/auth/cloud-platform'
+    });
     const client = await auth.getClient();
+    const creds = await client.getCredentials();
     const tokenResponse = await client.getAccessToken();
-    // RECTIFICACIÓN: Endpoint estable para Gemini 2.5 Pro en Vertex
-    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
+    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${creds.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
     for (const etapaId of ETAPAS_ORDEN) {
         jobs[jobId].currentEtapa = etapaId;
         try {
-            const promptFinal = PROMPTS[etapaId](datosTarget.texto);
             let partesMensaje = [
-                { text: IDIOMA }, { text: REGLA_NUCLEAR },
-                { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` }
+                { text: `DOSSIER FORENSE: ${data.texto}` },
+                { text: cerebroWeb.PROMPTS[etapaId](data.texto) }
             ];
 
-            if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
-                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
-                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
+            if (data.desktopBase64) {
+                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: data.desktopBase64 } });
             }
-            partesMensaje.push({ text: promptFinal });
 
             const payload = {
                 systemInstruction: { parts: [{ text: FIREWALL_IA }] },
                 contents: [{ role: "user", parts: partesMensaje }],
-                generationConfig: { temperature: 0.15 } 
+                generationConfig: { temperature: 0.15 }
             };
 
             if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
@@ -92,8 +76,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId) {
             await new Promise(r => setTimeout(r, 3500));
 
         } catch (error) {
-            // ELIMINADA LA REDUNDANCIA: Regresamos a la verdad forense
-            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\n${error.message}`;
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\\n${error.message}`;
         }
     }
     jobs[jobId].status = 'done';
@@ -111,8 +94,10 @@ app.post('/generate-pdf', async (req, res) => {
         res.contentType("application/pdf").send(pdf);
     } catch (e) {
         if(browser) await browser.close();
-        res.status(500).send("Fallo PDF");
+        res.status(500).send("Fallo al generar PDF");
     }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN RESTAURADO`));
+app.get('/poll', (req, res) => res.json(jobs[req.query.jobId]));
+
+app.listen(port, "0.0.0.0", () => console.log(`TITÁN OPERATIVO EN PUERTO ${port}`));
