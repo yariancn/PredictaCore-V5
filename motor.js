@@ -1,4 +1,4 @@
-// motor.js - BÚNKER 6.3: BIFURCACIÓN EXACTA (RESTAURADO)
+// motor.js - BÚNKER 6.3: BIFURCACIÓN EXACTA (RESTAURADO + INYECCIÓN FRANCOTIRADOR)
 const puppeteer = require('puppeteer');
 
 async function captureAndScrape(url) {
@@ -46,19 +46,69 @@ async function captureAndScrape(url) {
         await new Promise(r => setTimeout(r, 1000)); 
         const mobileBase64 = await page.screenshot({ type: 'jpeg', quality: 60, encoding: 'base64' });
 
+        // 1. EXTRACCIÓN BASE + SONDA DE LOGOS (SVGs y atributos ocultos)
         const dataForense = await page.evaluate(() => {
             const scripts = document.querySelectorAll('script, style, noscript, iframe');
             scripts.forEach(s => s.remove());
             const metaDesc = document.querySelector('meta[name="description"]')?.content || "";
             const metaTitle = document.querySelector('meta[property="og:title"]')?.content || document.title;
             const imgs = Array.from(document.querySelectorAll('img')).map(img => `[Img: ${img.alt || 'Sin alt'}]`).join(' | ');
-            const botones = Array.from(document.querySelectorAll('a, button')).map(b => b.innerText.trim()).filter(t => t.length > 2).join(' | ');
-            return { titulo: metaTitle, descripcion: metaDesc, cuerpo: document.body.innerText.substring(0, 45000), interactores: botones, visual: imgs };
+            
+            // Extraer botones sumando atributos "aria-label" o "title" por si son íconos
+            const botones = Array.from(document.querySelectorAll('a, button')).map(b => b.innerText.trim() || b.getAttribute('aria-label') || '').filter(t => t.length > 2).join(' | ');
+            
+            // Extraer vectores (SVGs) que suelen ser los logos de pago (Visa, Mastercard, etc.)
+            const svgs = Array.from(document.querySelectorAll('svg')).map(svg => {
+                const title = svg.querySelector('title');
+                const aria = svg.getAttribute('aria-label');
+                return title ? title.textContent : (aria ? aria : '');
+            }).filter(t => t.length > 1).join(' | ');
+            
+            return { titulo: metaTitle, descripcion: metaDesc, cuerpo: document.body.innerText.substring(0, 45000), interactores: botones, visual: imgs, svgs: svgs };
         });
+
+        // 2. SONDA DE SEGUNDO PLANO (Capturar pasarelas como Shop Pay en la página de producto)
+        let botonesProducto = "NO_DETECTADO";
+        if (!isSocialMedia) {
+            try {
+                // Buscar el primer enlace de un producto real
+                const productUrl = await page.evaluate(() => {
+                    const link = document.querySelector('a[href*="/products/"], a[href*="/product/"], a[href*="/item/"]');
+                    return link ? link.href : null;
+                });
+
+                if (productUrl) {
+                    const productPage = await browser.newPage();
+                    // BLOQUEO DE RAM: Cancelamos imágenes, css y fuentes en esta pestaña invisible
+                    await productPage.setRequestInterception(true);
+                    productPage.on('request', req => {
+                        if (['image', 'stylesheet', 'font', 'media'].includes(req.resourceType())) {
+                            req.abort();
+                        } else {
+                            req.continue();
+                        }
+                    });
+                    
+                    await productPage.goto(productUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+                    
+                    botonesProducto = await productPage.evaluate(() => {
+                        return Array.from(document.querySelectorAll('a, button, [role="button"], div[role="button"]'))
+                            .map(b => b.innerText.trim() || b.getAttribute('aria-label') || b.getAttribute('title') || '')
+                            .filter(t => t.length > 2)
+                            .join(' | ');
+                    });
+                    await productPage.close();
+                }
+            } catch (e) {
+                botonesProducto = "ERROR_AL_SONDEAR_PRODUCTO";
+            }
+        }
 
         await browser.close();
         const fechaHoy = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-        const dossierTexto = `FECHA: ${fechaHoy} | TITULO: ${dataForense.titulo} | CTAS: ${dataForense.interactores} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}`;
+        
+        // INTEGRAMOS LOS DATOS NUEVOS AL DOSSIER (El Cerebro ahora verá los logos y el Shop Pay)
+        const dossierTexto = `FECHA: ${fechaHoy} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}`;
 
         return { isUrl: true, texto: dossierTexto, desktopBase64, mobileBase64 };
     } catch (error) {
