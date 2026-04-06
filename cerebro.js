@@ -21,7 +21,7 @@ const PROMPTS = {
 
   WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### VII. LISTA DE DESEOS\n10 características tácticas de alto valor (3 a 5 líneas). ${FORMATO_LISTAS} (Numera del 1 al 10). Dossier: ${d}`,
 
-  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### VIII. 15 PUNTOS DE FUGA\nIdentifica 15 hallazgos críticos de fricción. Marca las peores como **[HEMORRAGIA CRÍTICA]**. REGLAS:\n1. ${FORMATO_LISTAS} (Numera del 1 al 15).\n2. Evalúa ERRORES MICRO (botones, usabilidad, contraste, carga) basándote en las imágenes y el dossier. Explica el impacto financiero de cada fuga. Dossier: ${d}`,
+  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### VIII. 15 PUNTOS DE FUGA\nIdentifica 15 hallazgos críticos de fricción. Marca las peores como **[HEMORRAGIA CRÍTICA]**. REGLAS:\n1. ${FORMATO_LISTAS} (Numera del 1 al 15).\n2. Evalúa ERRORES MICRO (botones, usabilidad, contraste, carga) basándote en las imágenes y el dossier. Explica el impacto financiero de cada fuga.\n3. NODO DE CIERRE (OBLIGATORIO): Detecta si las pasarelas de pago rápido o pasos extra están bloqueando la vista del botón principal o interrumpiendo al cliente. Dossier: ${d}`,
 
   ACCIONES: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido al idioma detectado: ### IX. 15 ACCIONES TÁCTICAS\nProporciona la solución exacta a las 15 fugas. REGLA: ${FORMATO_LISTAS} (Numera del 1 al 15). Incluye acciones claras de rediseño UX/UI. Dossier: ${d}`,
 
