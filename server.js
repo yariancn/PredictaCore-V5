@@ -1,4 +1,4 @@
-// server.js - BÚNKER 7 RESTAURADO (FASE 3: CEREBRO LITE Y RESEND SMTP)
+// server.js - BÚNKER 7 RESTAURADO (FASE 3: BYPASS DE FIREWALL CON RESEND API)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -9,22 +9,14 @@ const { captureAndScrape } = require('./motor');
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
-const nodemailer = require('nodemailer'); 
+const { Resend } = require('resend'); // CAMBIO QUIRÚRGICO: API de Resend
 
 const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json({ limit: '10mb' }));
 
-// CONFIGURACIÓN DE CORREO PROFESIONAL (RESEND)
-const transporter = nodemailer.createTransport({
-    host: 'smtp.resend.com',
-    port: 2525,
-    secure: true,
-    auth: {
-        user: 'resend', // Resend usa la palabra "resend" como usuario por defecto
-        pass: process.env.RESEND_API_KEY // Aquí irá tu llave secreta de Resend en Railway
-    }
-});
+// CONFIGURACIÓN DE CORREO (RESEND API - Inmune al bloqueo de puertos)
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const jobs = {}; 
 const dossierCache = {};
@@ -163,8 +155,9 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl) {
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
 
-        const mailOptions = {
-            from: '"PredictaCore Titán" <reportes@predictacore.ai>',
+        // CAMBIO QUIRÚRGICO: Envío usando la API de Resend
+        const { data, error } = await resend.emails.send({
+            from: 'PredictaCore Titán <reportes@predictacore.ai>',
             to: emailDestino,
             subject: 'Tu Auditoría Forense PredictaCore (Lite)',
             text: 'Adjunto encontrarás la radiografía de conversión de tu activo digital. Ábrelo en un ordenador para su correcta visualización.',
@@ -174,10 +167,13 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl) {
                     content: pdfBuffer
                 }
             ]
-        };
+        });
 
-        await transporter.sendMail(mailOptions);
-        console.log(`>>> Sellado. Reporte entregado con éxito a ${emailDestino}.`);
+        if (error) {
+            throw new Error(`Resend API Error: ${error.message}`);
+        }
+
+        console.log(`>>> Sellado. Reporte entregado con éxito a ${emailDestino}. ID: ${data.id}`);
     } catch (error) {
         console.error(">>> Error crítico al ensamblar o enviar correo:", error);
     }
@@ -199,4 +195,4 @@ app.post('/generate-pdf', async (req, res) => {
     }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN EN VIVO - MOTOR DE CORREO ACTIVADO`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN EN VIVO - MOTOR API ACTIVADO`));
