@@ -1,27 +1,28 @@
-// server.js - BÚNKER 7 RESTAURADO (FASE 2: ENRUTAMIENTO Y CORREO)
+// server.js - BÚNKER 7 RESTAURADO (FASE 3: CEREBRO LITE Y RESEND SMTP)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
-const { getHTML } = require('./visual'); // Molde oculto para el PDF
-const { getLandingHTML } = require('./landing'); // NUEVO: Fachada de Captura
+const { PROMPTS_LITE } = require('./cerebro_lite'); // NUEVO: Importación del Cerebro Lite
+const { getHTML } = require('./visual'); 
+const { getLandingHTML } = require('./landing'); 
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
-const nodemailer = require('nodemailer'); // NUEVO: Motor de envíos
+const nodemailer = require('nodemailer'); 
 
 const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json({ limit: '10mb' }));
 
-// NUEVO: CONFIGURACIÓN BÁSICA DE CORREO (Usa variables de entorno en producción)
+// CONFIGURACIÓN DE CORREO PROFESIONAL (RESEND)
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    host: 'smtp.resend.com',
     port: 465,
     secure: true,
     auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
+        user: 'resend', // Resend usa la palabra "resend" como usuario por defecto
+        pass: process.env.RESEND_API_KEY // Aquí irá tu llave secreta de Resend en Railway
     }
 });
 
@@ -29,10 +30,8 @@ const jobs = {};
 const dossierCache = {};
 const ETAPAS_ORDEN = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
 
-// MODIFICADO: La ruta raíz ahora muestra la Landing Page
 app.get('/', (req, res) => res.send(getLandingHTML()));
 
-// NUEVO: Ruta para el reporte gratuito (Procesamiento en segundo plano puro)
 app.post('/start-lite', async (req, res) => {
     const { dna, email } = req.body;
     let targetUrl = dna.trim();
@@ -41,17 +40,14 @@ app.post('/start-lite', async (req, res) => {
     const jobId = targetUrl + '-' + Date.now(); 
     jobs[jobId] = { status: 'running', progress: {}, email: email, type: 'lite' };
     
-    // Ejecutamos sin detener la respuesta (Fire and Forget)
     ejecutarAuditoriaFondo(targetUrl, jobId, true).catch(e => {
         console.error("Fallo crítico en Auditoría Lite:", e);
         if(jobs[jobId]) jobs[jobId].status = 'error';
     });
     
-    // Respondemos de inmediato para que la animación de la landing continúe
     res.json({ status: 'started', jobId: jobId, message: 'Auditoría en proceso' });
 });
 
-// MANTENIDO: Ruta original (por si necesitas pruebas directas)
 app.post('/start', async (req, res) => {
     const { dna } = req.body;
     let targetUrl = dna.trim();
@@ -74,13 +70,12 @@ app.get('/poll', (req, res) => {
     res.json(jobs[jobId]);
 });
 
-// MODIFICADO: Soporta modo "isLite" para usar menos etapas
 async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite = false) {
     let datosTarget = await captureAndScrape(targetUrl);
 
     const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
     const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
-    const { PROMPTS, IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
+    const { IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
 
     const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
     const auth = new GoogleAuth({
@@ -92,13 +87,14 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite = false) {
     const tokenResponse = await client.getAccessToken();
     const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
-    // Si es Lite, eventualmente usaremos menos etapas. Por ahora usa todo pero lo preparo.
-    const etapasAEjecutar = isLite ? ETAPAS_ORDEN.slice(0, 3) : ETAPAS_ORDEN; // Solo 3 para pruebas rápidas del Lite
+    // BIFURCACIÓN DE CEREBROS
+    const etapasAEjecutar = isLite ? Object.keys(PROMPTS_LITE) : ETAPAS_ORDEN;
+    const PROMPTS_ACTUALES = isLite ? PROMPTS_LITE : cerebroActivo.PROMPTS;
 
     for (const etapaId of etapasAEjecutar) {
         if(jobs[jobId]) jobs[jobId].currentEtapa = etapaId;
         try {
-            const promptFinal = PROMPTS[etapaId](datosTarget.texto);
+            const promptFinal = PROMPTS_ACTUALES[etapaId](datosTarget.texto);
             let partesMensaje = [
                 { text: IDIOMA }, { text: REGLA_NUCLEAR },
                 { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` }
@@ -116,7 +112,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite = false) {
                 generationConfig: { temperature: 0.15 } 
             };
 
-            if (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK') payload.tools = [{ googleSearch: {} }];
+            if (!isLite && (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK')) payload.tools = [{ googleSearch: {} }];
 
             const vertexRes = await fetch(vertexUrl, {
                 method: "POST",
@@ -134,28 +130,57 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite = false) {
     }
     jobs[jobId].status = 'done';
 
-    // NUEVO: Lógica de envío final si es Lite
     if (isLite) {
-        enviarReportePorCorreo(jobId, jobs[jobId].email);
+        await enviarReportePorCorreo(jobId, jobs[jobId].email, targetUrl);
     }
 }
 
-// NUEVO: Función para cristalizar y enviar
-async function enviarReportePorCorreo(jobId, emailDestino) {
-    console.log(`>>> Preparando envío de PDF para: ${emailDestino}`);
-    // AQUÍ ENSAMBLAREMOS EL PDF EN EL SERVIDOR EN LA FASE 3
-    // Por ahora, solo simula el envío exitoso en la consola.
-    /*
-    const mailOptions = {
-        from: '"PredictaCore Titán" <tu@correo.com>',
-        to: emailDestino,
-        subject: 'Tu Auditoría Forense PredictaCore',
-        text: 'Adjunto encontrarás tu reporte diagnóstico.',
-        // attachments: [{ filename: 'Reporte_Titan.pdf', path: 'ruta/al/pdf' }]
-    };
-    await transporter.sendMail(mailOptions);
-    */
-    console.log(`>>> Reporte "enviado" a ${emailDestino} con éxito.`);
+async function enviarReportePorCorreo(jobId, emailDestino, targetUrl) {
+    console.log(`>>> Cristalizando PDF forense para: ${emailDestino}`);
+    try {
+        const job = jobs[jobId];
+        const htmlBase = getHTML(); 
+        
+        const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const page = await browser.newPage();
+        await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
+
+        // Inyectamos la información cruda en el molde visual para generar el PDF
+        await page.evaluate((progressData, dominio) => {
+            const reporte = document.getElementById('reporte');
+            reporte.innerHTML = '';
+            document.getElementById('pdf-domain').innerText = 'Analysis: ' + dominio;
+            
+            for (const key in progressData) {
+                const seccion = document.createElement('div');
+                seccion.className = 'report-section';
+                let htmlGenerado = marked.parse(progressData[key]);
+                seccion.innerHTML = '<div class="markdown-content" style="color: #0f172a !important;">' + htmlGenerado + '</div>';
+                reporte.appendChild(seccion);
+            }
+        }, job.progress, targetUrl);
+
+        const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+        await browser.close();
+
+        const mailOptions = {
+            from: '"PredictaCore Titán" <reportes@predictacore.ai>',
+            to: emailDestino,
+            subject: 'Tu Auditoría Forense PredictaCore (Lite)',
+            text: 'Adjunto encontrarás la radiografía de conversión de tu activo digital. Ábrelo en un ordenador para su correcta visualización.',
+            attachments: [
+                {
+                    filename: 'PREDICTACORE_LITE.pdf',
+                    content: pdfBuffer
+                }
+            ]
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log(`>>> Sellado. Reporte entregado con éxito a ${emailDestino}.`);
+    } catch (error) {
+        console.error(">>> Error crítico al ensamblar o enviar correo:", error);
+    }
 }
 
 app.post('/generate-pdf', async (req, res) => {
@@ -174,4 +199,4 @@ app.post('/generate-pdf', async (req, res) => {
     }
 });
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN RESTAURADO Y ENRUTADO (FASE 2)`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN EN VIVO - MOTOR DE CORREO ACTIVADO`));
