@@ -1,4 +1,4 @@
-// landing.js - LA FACHADA DE ÉLITE (PREDICTACORE - BILINGÜE, HIGH-TICKET & MANIFIESTO)
+// landing.js - LA FACHADA DE ÉLITE (PREDICTACORE - IDENTIDAD AI CONSULTING)
 
 function getLandingHTML() {
     return `
@@ -92,13 +92,13 @@ function getLandingHTML() {
                 <div class="bg-black/40 border border-zinc-800 p-6 rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                     <h3 id="t-man1-title" class="text-emerald-500 font-bold uppercase tracking-widest text-xs mb-3">Who We Are & What We Do</h3>
                     <p id="t-man1-desc" class="text-sm text-zinc-400 leading-relaxed text-justify">
-                        We are not a traditional marketing agency. We are <strong class="text-white">elite forensic conversion architects</strong>. We exclusively audit, diagnose, and seal the invisible capital leaks within your digital ecosystem that are silently draining your revenue. We stop the bleeding.
+                        PredictaCore is an advanced business consulting company powered by AI. We are a forensic diagnostic engine. We audit and eliminate the exact points in your digital ecosystem where you are silently losing money and customers.
                     </p>
                 </div>
                 <div class="bg-black/40 border border-zinc-800 p-6 rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.5)]">
                     <h3 id="t-man2-title" class="text-emerald-500 font-bold uppercase tracking-widest text-xs mb-3">How We Operate & Why We Win</h3>
                     <p id="t-man2-desc" class="text-sm text-zinc-400 leading-relaxed text-justify">
-                        We deploy <strong class="text-white">Synthetic Twins</strong>. While traditional agencies guess and run A/B tests using your budget, we simulate thousands of user interactions to pinpoint exact friction. We eliminate human opinion and replace it with mathematical certainty to maximize your ROI.
+                        We operate through <strong class="text-white">Synthetic Twins</strong>. Instead of guessing or running A/B tests with your budget, we simulate thousands of virtual customers navigating your website to discover the exact critical points where you are losing sales. We replace human opinion with mathematical certainty.
                     </p>
                 </div>
             </div>
@@ -186,9 +186,9 @@ function getLandingHTML() {
                 en: {
                     subtitle: "Forensic Audit Intelligence",
                     man1Title: "Who We Are & What We Do",
-                    man1Desc: "We are not a traditional marketing agency. We are <strong class='text-white'>elite forensic conversion architects</strong>. We exclusively audit, diagnose, and seal the invisible capital leaks within your digital ecosystem that are silently draining your revenue. We stop the bleeding.",
+                    man1Desc: "PredictaCore is an advanced business consulting company powered by AI. We are a forensic diagnostic engine. We audit and eliminate the exact points in your digital ecosystem where you are silently losing money and customers.",
                     man2Title: "How We Operate & Why We Win",
-                    man2Desc: "We deploy <strong class='text-white'>Synthetic Twins</strong>. While traditional agencies guess and run A/B tests using your budget, we simulate thousands of user interactions to pinpoint exact friction. We eliminate human opinion and replace it with mathematical certainty to maximize your ROI.",
+                    man2Desc: "We operate through <strong class='text-white'>Synthetic Twins</strong>. Instead of guessing or running A/B tests with your budget, we simulate thousands of virtual customers navigating your website to discover the exact critical points where you are losing sales. We replace human opinion with mathematical certainty.",
                     formTitle: "Discover why your traffic isn't converting.",
                     formDesc: "Enter your domain and receive a free 2-page diagnostic report directly in your inbox. We will identify your worst capital hemorrhages today.",
                     lblUrl: "Digital Asset (URL)",
@@ -215,9 +215,9 @@ function getLandingHTML() {
                 es: {
                     subtitle: "Inteligencia Forense de Conversión",
                     man1Title: "Quiénes Somos & Qué Hacemos",
-                    man1Desc: "No somos una agencia de marketing tradicional. Somos <strong class='text-white'>arquitectos forenses de conversión de élite</strong>. Auditamos, diagnosticamos y sellamos las fugas de capital invisibles en tu ecosistema digital que están drenando tus ingresos. Detenemos la hemorragia.",
+                    man1Desc: "PredictaCore es una compañía de consultoría de negocio avanzada apoyada por AI. Somos un motor de diagnóstico forense de élite. Auditamos y eliminamos los puntos exactos de tu ecosistema digital donde estás perdiendo dinero y clientes en silencio.",
                     man2Title: "Cómo Operamos y Por Qué Ganamos",
-                    man2Desc: "Desplegamos <strong class='text-white'>Gemelos Sintéticos</strong>. Mientras las agencias adivinan y hacen pruebas A/B usando tu presupuesto, nosotros simulamos miles de interacciones para calcular la fricción exacta. Eliminamos la opinión humana y la reemplazamos con certeza matemática para maximizar tu ROI.",
+                    man2Desc: "Operamos a través de <strong class='text-white'>Gemelos Sintéticos</strong>. En lugar de adivinar o hacer pruebas con tu presupuesto, simulamos a miles de clientes recorriendo tu página para descubrir los puntos más críticos donde pierdes las ventas. Reemplazamos la opinión humana con certeza matemática.",
                     formTitle: "Descubre por qué tus visitantes no compran.",
                     formDesc: "Ingresa tu dominio y recibe un reporte diagnóstico gratuito de 2 páginas directamente en tu correo. Identificaremos tus peores fugas de capital hoy mismo.",
                     lblUrl: "Activo Digital (URL)",
@@ -291,11 +291,11 @@ function getLandingHTML() {
             const logs_en = [
                 "> Establishing connection with synthetic twins engine...",
                 "> Analyzing DOM architecture and render tree...",
-                "> [ALERT] Detecting friction nodes in conversion path...",
+                "> [ALERT] Simulating thousands of virtual customers...",
                 "> Evaluating the 11 Forensic Pillars...",
                 "> Simulating purchase psychologies (4 archetypes detected)...",
                 "> Compiling metrics for Vital Scorecard...",
-                "> [HEMORRHAGE DETECTED] Analyzing cart abandonment...",
+                "> [HEMORRHAGE DETECTED] Pinpointing lost sales locations...",
                 "> Projecting ideal scenario (Wishlist) and potential gap...",
                 "> Crystallizing findings. Generating Forensic PDF...",
                 "> Routing to secure email server..."
@@ -304,11 +304,11 @@ function getLandingHTML() {
             const logs_es = [
                 "> Estableciendo conexión con motor de gemelos sintéticos...",
                 "> Analizando arquitectura del DOM y arbol de renderizado...",
-                "> [ALERTA] Detectando nodos de fricción en la ruta de conversión...",
+                "> [ALERTA] Simulando miles de clientes virtuales...",
                 "> Evaluando los 11 Pilares Forenses...",
                 "> Simulando psicologías de compra (4 arquetipos detectados)...",
                 "> Compilando métricas del Scorecard Vital...",
-                "> [HEMORRAGIA DETECTADA] Analizando abandono en Check-out...",
+                "> [HEMORRAGIA DETECTADA] Localizando puntos de ventas perdidas...",
                 "> Proyectando escenario ideal (Wishlist) y brecha de potencial...",
                 "> Cristalizando hallazgos. Generando PDF Forense...",
                 "> Enrutando a servidor de correo seguro..."
