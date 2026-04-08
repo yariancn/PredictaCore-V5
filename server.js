@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
     secure: true,
     auth: {
         user: 'resend', // Resend usa la palabra "resend" como usuario por defecto
-        pass: process.env.RESEND_API_KEY // Aquí irá tu llave secreta de Resend en Railway
+        pass: 're_G2aJGo7n_6AoJGSsus36CGUmro3ihFNmJ' // Aquí irá tu llave secreta de Resend en Railway
     }
 });
 
