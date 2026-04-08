@@ -1,4 +1,4 @@
-// landing.js - LA FACHADA DE ÉLITE (PREDICTACORE - IDENTIDAD AI CONSULTING)
+// landing.js - LA FACHADA DE ÉLITE (PREDICTACORE - COPY MEJORADO Y TEASER)
 
 function getLandingHTML() {
     return `
@@ -104,9 +104,9 @@ function getLandingHTML() {
             </div>
 
             <div id="capture-stage" class="terminal-box p-8 md:p-12 text-center transition-all duration-500 block shadow-[0_0_40px_rgba(16,185,129,0.05)]">
-                <h2 id="t-form-title" class="text-2xl md:text-3xl font-bold text-white mb-4">Discover why your traffic isn't converting.</h2>
+                <h2 id="t-form-title" class="text-2xl md:text-3xl font-bold text-white mb-4">Discover exactly where your digital ecosystem is leaking money.</h2>
                 <p id="t-form-desc" class="text-zinc-400 mb-8 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
-                    Enter your domain and receive a free 2-page diagnostic report directly in your inbox. We will identify your worst capital hemorrhages today.
+                    Enter your domain below to receive a free 2-page Executive Teaser. We will run a preliminary scan and send you the top 3 critical friction points that are killing your sales right now.
                 </p>
 
                 <form id="audit-form" class="space-y-6 max-w-xl mx-auto text-left" onsubmit="iniciarAuditoria(event)">
@@ -189,8 +189,8 @@ function getLandingHTML() {
                     man1Desc: "PredictaCore is an advanced business consulting company powered by AI. We are a forensic diagnostic engine. We audit and eliminate the exact points in your digital ecosystem where you are silently losing money and customers.",
                     man2Title: "How We Operate & Why We Win",
                     man2Desc: "We operate through <strong class='text-white'>Synthetic Twins</strong>. Instead of guessing or running A/B tests with your budget, we simulate thousands of virtual customers navigating your website to discover the exact critical points where you are losing sales. We replace human opinion with mathematical certainty.",
-                    formTitle: "Discover why your traffic isn't converting.",
-                    formDesc: "Enter your domain and receive a free 2-page diagnostic report directly in your inbox. We will identify your worst capital hemorrhages today.",
+                    formTitle: "Discover exactly where your digital ecosystem is leaking money.",
+                    formDesc: "Enter your domain below to receive a free 2-page Executive Teaser. We will run a preliminary scan and send you the top 3 critical friction points that are killing your sales right now.",
                     lblUrl: "Digital Asset (URL)",
                     lblEmail: "Delivery Email",
                     btnSubmit: "Generate Free Diagnosis",
@@ -218,8 +218,8 @@ function getLandingHTML() {
                     man1Desc: "PredictaCore es una compañía de consultoría de negocio avanzada apoyada por AI. Somos un motor de diagnóstico forense de élite. Auditamos y eliminamos los puntos exactos de tu ecosistema digital donde estás perdiendo dinero y clientes en silencio.",
                     man2Title: "Cómo Operamos y Por Qué Ganamos",
                     man2Desc: "Operamos a través de <strong class='text-white'>Gemelos Sintéticos</strong>. En lugar de adivinar o hacer pruebas con tu presupuesto, simulamos a miles de clientes recorriendo tu página para descubrir los puntos más críticos donde pierdes las ventas. Reemplazamos la opinión humana con certeza matemática.",
-                    formTitle: "Descubre por qué tus visitantes no compran.",
-                    formDesc: "Ingresa tu dominio y recibe un reporte diagnóstico gratuito de 2 páginas directamente en tu correo. Identificaremos tus peores fugas de capital hoy mismo.",
+                    formTitle: "Descubre exactamente dónde está perdiendo dinero tu ecosistema digital.",
+                    formDesc: "Ingresa tu dominio para recibir un Reporte Teaser Ejecutivo de 2 páginas sin costo. Ejecutaremos un escaneo preliminar y te enviaremos los 3 puntos críticos que están matando tus ventas ahora mismo.",
                     lblUrl: "Activo Digital (URL)",
                     lblEmail: "Correo de Entrega",
                     btnSubmit: "Generar Diagnóstico Gratuito",
