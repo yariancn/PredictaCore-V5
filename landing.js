@@ -230,3 +230,165 @@ function getLandingHTML() {
                     tagDel: "Entregado",
                     liteFree: "/ Gratis",
                     liteDesc: "Diagnóstico superficial. 3 Fugas Críticas, Scorecard vital y Proyección Sintética (Wishlist).",
+                    btnLite: "Completado",
+                    titanDesc: "Análisis táctico profundo. 15 Puntos de Fuga en 11 Pilares Forenses con guías exactas de reparación.",
+                    btnTitan: "Desbloquear Titán",
+                    tagRec: "Recomendado",
+                    omniDesc: "El escaneo forense definitivo. 45 Puntos Críticos de arquitectura profunda, psicología de precios y fricción oculta.",
+                    btnOmni: "Escalar a Omnisciencias",
+                    btnReset: "Auditar Otro Dominio",
+                    targetLabel: "OBJETIVO: ",
+                    disclaimer: "<strong class='uppercase text-zinc-500'>Aviso Legal y Descargo de Responsabilidad:</strong> PredictaCore proporciona análisis basados en modelos predictivos, IA y heurísticas de conversión. Los reportes y recomendaciones generados tienen fines estrictamente estratégicos, educativos y consultivos. PredictaCore no garantiza incrementos específicos en ventas, conversiones o resultados financieros. La implementación de las estrategias sugeridas es responsabilidad absoluta y exclusiva del usuario. PredictaCore, sus fundadores y operadores no se hacen responsables por daños directos, indirectos, incidentales, pérdidas de capital o interrupciones de negocio derivadas del uso de la información proporcionada. Al utilizar esta herramienta, aceptas estos términos en su totalidad.",
+                    rights: "&copy; 2026 PredictaCore. Todos los derechos reservados."
+                }
+            };
+
+            let currentLang = 'en'; // Inglés por defecto
+            let currentTargetUrl = '';
+
+            function setLanguage(lang) {
+                currentLang = lang;
+                
+                // Actualizar botones
+                document.getElementById('btn-en').classList.remove('active');
+                document.getElementById('btn-es').classList.remove('active');
+                document.getElementById('btn-' + lang).classList.add('active');
+
+                // Inyectar textos
+                const dict = i18n[lang];
+                document.getElementById('t-subtitle').innerHTML = dict.subtitle;
+                document.getElementById('t-man1-title').innerHTML = dict.man1Title;
+                document.getElementById('t-man1-desc').innerHTML = dict.man1Desc;
+                document.getElementById('t-man2-title').innerHTML = dict.man2Title;
+                document.getElementById('t-man2-desc').innerHTML = dict.man2Desc;
+                document.getElementById('t-form-title').innerHTML = dict.formTitle;
+                document.getElementById('t-form-desc').innerHTML = dict.formDesc;
+                document.getElementById('t-lbl-url').innerHTML = dict.lblUrl;
+                document.getElementById('t-lbl-email').innerHTML = dict.lblEmail;
+                document.getElementById('t-btn-submit').innerHTML = dict.btnSubmit;
+                document.getElementById('t-confidential').innerHTML = dict.confidential;
+                document.getElementById('t-scan-title').innerHTML = dict.scanTitle;
+                document.getElementById('t-upsell-title').innerHTML = dict.upsellTitle;
+                document.getElementById('t-upsell-desc').innerHTML = dict.upsellDesc;
+                document.getElementById('t-tag-del').innerHTML = dict.tagDel;
+                document.getElementById('t-lite-free').innerHTML = dict.liteFree;
+                document.getElementById('t-lite-desc').innerHTML = dict.liteDesc;
+                document.getElementById('t-btn-lite').innerHTML = dict.btnLite;
+                document.getElementById('t-titan-desc').innerHTML = dict.titanDesc;
+                document.getElementById('t-btn-titan').innerHTML = dict.btnTitan;
+                document.getElementById('t-tag-rec').innerHTML = dict.tagRec;
+                document.getElementById('t-omni-desc').innerHTML = dict.omniDesc;
+                document.getElementById('t-btn-omni').innerHTML = dict.btnOmni;
+                document.getElementById('t-btn-reset').innerHTML = dict.btnReset;
+                document.getElementById('t-disclaimer').innerHTML = dict.disclaimer;
+                document.getElementById('t-rights').innerHTML = dict.rights;
+                
+                if (currentTargetUrl) {
+                    document.getElementById('target-display').innerText = dict.targetLabel + currentTargetUrl;
+                }
+            }
+
+            const logs_en = [
+                "> Establishing connection with synthetic twins engine...",
+                "> Analyzing DOM architecture and render tree...",
+                "> [ALERT] Detecting friction nodes in conversion path...",
+                "> Evaluating the 11 Forensic Pillars...",
+                "> Simulating purchase psychologies (4 archetypes detected)...",
+                "> Compiling metrics for Vital Scorecard...",
+                "> [HEMORRHAGE DETECTED] Analyzing cart abandonment...",
+                "> Projecting ideal scenario (Wishlist) and potential gap...",
+                "> Crystallizing findings. Generating Forensic PDF...",
+                "> Routing to secure email server..."
+            ];
+
+            const logs_es = [
+                "> Estableciendo conexión con motor de gemelos sintéticos...",
+                "> Analizando arquitectura del DOM y arbol de renderizado...",
+                "> [ALERTA] Detectando nodos de fricción en la ruta de conversión...",
+                "> Evaluando los 11 Pilares Forenses...",
+                "> Simulando psicologías de compra (4 arquetipos detectados)...",
+                "> Compilando métricas del Scorecard Vital...",
+                "> [HEMORRAGIA DETECTADA] Analizando abandono en Check-out...",
+                "> Proyectando escenario ideal (Wishlist) y brecha de potencial...",
+                "> Cristalizando hallazgos. Generando PDF Forense...",
+                "> Enrutando a servidor de correo seguro..."
+            ];
+
+            async function iniciarAuditoria(e) {
+                e.preventDefault();
+                const btnSubmit = document.getElementById('btn-submit');
+                if(btnSubmit.disabled) return;
+                
+                const url = document.getElementById('dna-url').value;
+                const email = document.getElementById('user-email').value;
+                
+                currentTargetUrl = url;
+                document.getElementById('target-display').innerText = i18n[currentLang].targetLabel + url;
+                document.getElementById('sent-email').innerText = email;
+
+                // Ocultamos el Manifiesto y la Captura, mostramos el Escáner
+                document.getElementById('manifesto-stage').classList.add('hidden-flow');
+                document.getElementById('capture-stage').classList.add('hidden-flow');
+                document.getElementById('scanner-stage').classList.remove('hidden-flow');
+
+                const terminal = document.getElementById('terminal-logs');
+                terminal.innerHTML = '';
+                btnSubmit.disabled = true;
+
+                // CONEXIÓN AL SERVIDOR
+                try {
+                    fetch('/start-lite', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ dna: url, email: email })
+                    });
+                } catch (err) {
+                    console.error("Fallo de conexión:", err);
+                }
+
+                // Seleccionar logs correctos según el idioma
+                const activeLogs = currentLang === 'en' ? logs_en : logs_es;
+                let delay = 0;
+                
+                activeLogs.forEach((log, index) => {
+                    setTimeout(() => {
+                        const p = document.createElement('p');
+                        p.innerHTML = log.replace(/\\[ALERT\\]/g, '<span class="text-yellow-500 font-bold">[ALERT]</span>')
+                                         .replace(/\\[HEMORRHAGE DETECTED\\]/g, '<span class="text-red-500 font-bold">[HEMORRHAGE DETECTED]</span>')
+                                         .replace(/\\[ALERTA\\]/g, '<span class="text-yellow-500 font-bold">[ALERTA]</span>')
+                                         .replace(/\\[HEMORRAGIA DETECTADA\\]/g, '<span class="text-red-500 font-bold">[HEMORRAGIA DETECTADA]</span>');
+                        terminal.appendChild(p);
+                        terminal.scrollTop = terminal.scrollHeight;
+                        
+                        if (index === activeLogs.length - 1) {
+                            setTimeout(() => {
+                                document.getElementById('scanner-stage').classList.add('hidden-flow');
+                                document.getElementById('upsell-stage').classList.remove('hidden-flow');
+                                btnSubmit.disabled = false;
+                            }, 2000);
+                        }
+                    }, delay);
+                    delay += Math.random() * 800 + 800; 
+                });
+            }
+
+            function resetearAuditoria() {
+                document.getElementById('dna-url').value = '';
+                document.getElementById('user-email').value = '';
+                currentTargetUrl = '';
+                
+                // Volver al estado inicial mostrando el Manifiesto y la Captura
+                document.getElementById('upsell-stage').classList.add('hidden-flow');
+                document.getElementById('manifesto-stage').classList.remove('hidden-flow');
+                document.getElementById('capture-stage').classList.remove('hidden-flow');
+            }
+
+            // Inicializar el idioma al cargar la página
+            window.onload = () => setLanguage('en');
+        </script>
+    </body>
+    </html>
+    `;
+}
+
+module.exports = { getLandingHTML };
