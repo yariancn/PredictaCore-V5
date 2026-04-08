@@ -146,7 +146,7 @@ function getLandingHTML() {
                 const terminal = document.getElementById('terminal-logs');
                 terminal.innerHTML = '';
 
-                // CONEXIÓN REAL AL SERVIDOR (AQUÍ ESTABA EL PROBLEMA)
+                // CONEXIÓN REAL AL SERVIDOR
                 try {
                     fetch('/start-lite', {
                         method: 'POST',
@@ -179,7 +179,7 @@ function getLandingHTML() {
         </script>
     </body>
     </html>
-    \`;
+    `;
 }
 
 module.exports = { getLandingHTML };
