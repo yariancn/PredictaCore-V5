@@ -1,4 +1,4 @@
-// landing.js - LA FACHADA DE ÉLITE Y CAPTURA DE LEADS (FASE 2 ACTIVA)
+// landing.js - LA FACHADA DE ÉLITE Y CAPTURA DE LEADS (FASE 4: 3 NIVELES Y SPA)
 
 function getLandingHTML() {
     return `
@@ -44,19 +44,19 @@ function getLandingHTML() {
                 100% { top: 100%; }
             }
 
-            .hidden-flow { display: none; }
+            .hidden-flow { display: none !important; }
         </style>
     </head>
-    <body class="min-h-screen flex flex-col items-center justify-center p-6 md:p-20 relative overflow-x-hidden">
+    <body class="min-h-screen flex flex-col items-center justify-center p-6 md:p-10 relative overflow-x-hidden">
         
-        <div class="max-w-4xl w-full relative z-10">
+        <div class="max-w-5xl w-full relative z-10">
             
-            <header class="mb-12 text-center">
+            <header class="mb-10 text-center">
                 <h1 class="text-4xl md:text-5xl font-extrabold text-white uppercase tracking-tighter mb-2">PREDICTACORE <span class="text-emerald-500">TITÁN</span></h1>
                 <p class="text-zinc-500 text-xs md:text-sm uppercase tracking-[0.4em]">Forensic Audit Intelligence</p>
             </header>
 
-            <div id="capture-stage" class="terminal-box p-8 md:p-12 text-center transition-all duration-500">
+            <div id="capture-stage" class="terminal-box p-8 md:p-12 text-center transition-all duration-500 block">
                 <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Descubre por qué tus visitantes no compran.</h2>
                 <p class="text-zinc-400 mb-8 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
                     No somos una consultoría; somos un motor de auditoría forense. Ingresa tu dominio y recibe un reporte diagnóstico gratuito de 2 páginas directamente en tu correo. Identificaremos las fugas críticas de capital en tu ecosistema digital.
@@ -71,11 +71,11 @@ function getLandingHTML() {
                         <label class="block text-xs uppercase tracking-widest text-emerald-500 mb-2 font-bold">Correo de Entrega</label>
                         <input type="email" id="user-email" placeholder="tu@correo.com" required class="w-full bg-zinc-900/50 text-xl text-white border border-zinc-700 rounded-lg p-4 focus:outline-none focus:border-emerald-500 transition-colors">
                     </div>
-                    <button type="submit" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-lg text-sm uppercase tracking-wider hover:bg-emerald-500 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                    <button type="submit" id="btn-submit" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-lg text-sm uppercase tracking-wider hover:bg-emerald-500 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                         Generar Diagnóstico Gratuito
                     </button>
                 </form>
-                <p class="mt-6 text-[10px] text-zinc-600 uppercase tracking-widest">100% Confidencial. Análisis impulsado por modelos simbiópticos.</p>
+                <p class="mt-6 text-[10px] text-zinc-600 uppercase tracking-widest">100% Confidencial. Análisis impulsado por gemelos sintéticos.</p>
             </div>
 
             <div id="scanner-stage" class="hidden-flow terminal-box p-8 md:p-12 relative overflow-hidden">
@@ -86,33 +86,43 @@ function getLandingHTML() {
                 </div>
                 
                 <div class="font-mono text-xs md:text-sm text-zinc-400 space-y-2 h-48 overflow-y-auto relative z-10" id="terminal-logs">
-                    </div>
+                </div>
             </div>
 
             <div id="upsell-stage" class="hidden-flow terminal-box p-8 md:p-12 text-center border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
-                <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <h2 class="text-3xl font-bold text-white mb-2">Radiografía Enviada</h2>
-                <p class="text-zinc-400 mb-8">El reporte diagnóstico inicial ha sido enviado a <span id="sent-email" class="text-white font-bold"></span>.</p>
                 
-                <div class="bg-black/50 border border-zinc-800 p-6 rounded-lg mb-8 text-left">
-                    <h3 class="text-red-500 font-bold uppercase tracking-widest text-xs mb-4 flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        Alerta del Sistema
-                    </h3>
-                    <p class="text-sm text-zinc-300">Nuestro escaneo superficial detectó altos niveles de fricción transaccional. El reporte gratuito solo muestra la superficie.</p>
+                <h2 class="text-3xl font-bold text-white mb-2">Radiografía Enviada</h2>
+                <p class="text-zinc-400 mb-8">El reporte diagnóstico LITE ha sido enviado a <span id="sent-email" class="text-white font-bold"></span>.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-left">
+                    
+                    <div class="bg-zinc-900/80 border border-zinc-700 p-6 rounded-lg relative opacity-75">
+                        <div class="absolute top-0 right-0 bg-emerald-500 text-black text-[9px] font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg uppercase tracking-widest">Entregado</div>
+                        <h3 class="text-lg font-bold text-white mb-2">LITE <span class="text-xs text-zinc-500 font-normal">/ Gratis</span></h3>
+                        <p class="text-xs text-zinc-400 mb-6 line-clamp-3">Diagnóstico superficial. 3 Fugas Críticas, Scorecard vital y Proyección Sintética (Wishlist).</p>
+                        <button disabled class="w-full bg-zinc-800 text-zinc-500 py-3 rounded-lg text-xs font-bold uppercase cursor-not-allowed">Completado</button>
+                    </div>
+
+                    <div class="bg-black border border-emerald-500/50 p-6 rounded-lg relative shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:-translate-y-1 transition-transform">
+                        <h3 class="text-lg font-bold text-emerald-400 mb-2">TITÁN <span class="text-xs text-emerald-200 font-normal">/ $15 USD</span></h3>
+                        <p class="text-xs text-zinc-300 mb-6">Análisis táctico profundo. 15 Puntos de Fuga en 11 Pilares Forenses con guías de reparación exactas.</p>
+                        <button onclick="alert('Conexión con Stripe pendiente en Fase 5')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg text-xs font-bold uppercase transition-colors">Desbloquear Titán</button>
+                    </div>
+
+                    <div class="bg-black border border-amber-500/50 p-6 rounded-lg relative shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:-translate-y-1 transition-transform">
+                        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-500 text-black text-[9px] font-bold px-4 py-1 rounded-full uppercase tracking-widest">Recomendado</div>
+                        <h3 class="text-lg font-bold text-amber-400 mb-2">OMNI <span class="text-xs text-amber-200 font-normal">/ $49 USD</span></h3>
+                        <p class="text-xs text-zinc-300 mb-6">El escaneo forense definitivo. 45 Puntos Críticos de arquitectura, psicología de precios y fricción oculta.</p>
+                        <button onclick="alert('Conexión con Stripe pendiente en Fase 5')" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 text-black py-3 rounded-lg text-xs font-bold uppercase transition-colors">Escalar a OMNI</button>
+                    </div>
+
                 </div>
 
-                <div class="border-t border-zinc-800 pt-8">
-                    <h4 class="text-xl font-bold text-white mb-4 uppercase">Desbloquea el Reporte OMNI Titán</h4>
-                    <p class="text-sm text-zinc-400 mb-6 max-w-lg mx-auto">
-                        Asciende al análisis forense completo. <strong>Identificamos 45 Puntos de Fuga Críticos</strong> exactos en tu UX, Copywriting y Arquitectura de Autoridad, con las acciones precisas para sellarlos.
-                    </p>
-                    <button class="bg-gradient-to-r from-emerald-600 to-emerald-400 text-black font-bold py-4 px-10 rounded-lg text-sm uppercase tracking-widest hover:scale-105 transition-transform shadow-[0_0_20px_rgba(16,185,129,0.4)]">
-                        Desbloquear 45 Puntos ($15)
+                <div class="border-t border-zinc-800 pt-6 mt-4">
+                    <button onclick="resetearAuditoria()" class="text-zinc-500 hover:text-emerald-400 text-xs uppercase tracking-widest transition-colors flex items-center justify-center mx-auto">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Auditar Otro Dominio
                     </button>
-                    <p class="mt-4 text-[10px] text-zinc-500 uppercase tracking-widest">Incluye hoja de ruta de ejecución y matriz táctica (SWOT).</p>
                 </div>
             </div>
 
@@ -120,31 +130,36 @@ function getLandingHTML() {
 
         <script>
             const logs = [
-                "> Estableciendo conexión segura con servidor objetivo...",
+                "> Estableciendo conexión con motor de gemelos sintéticos...",
                 "> Analizando arquitectura del DOM y arbol de renderizado...",
                 "> [ALERTA] Detectando nodos de fricción en la ruta de conversión...",
-                "> Mapeando elementos de autoridad y prueba social...",
+                "> Evaluando los 11 Pilares Forenses...",
                 "> Simulando psicologías de compra (4 arquetipos detectados)...",
-                "> Extrayendo metadatos y perfil de visibilidad orgánica...",
                 "> Compilando métricas del Scorecard Vital...",
                 "> [HEMORRAGIA DETECTADA] Analizando abandono en Check-out...",
-                "> Cristalizando hallazgos. Generando PDF...",
+                "> Proyectando escenario ideal (Wishlist) y brecha de potencial...",
+                "> Cristalizando hallazgos. Generando PDF Forense...",
                 "> Enrutando a servidor de correo seguro..."
             ];
 
             async function iniciarAuditoria(e) {
                 e.preventDefault();
+                const btnSubmit = document.getElementById('btn-submit');
+                if(btnSubmit.disabled) return;
+                
                 const url = document.getElementById('dna-url').value;
                 const email = document.getElementById('user-email').value;
                 
                 document.getElementById('target-display').innerText = \`OBJETIVO: \${url}\`;
                 document.getElementById('sent-email').innerText = email;
 
+                // Transición: Ocultar Captura -> Mostrar Escáner
                 document.getElementById('capture-stage').classList.add('hidden-flow');
                 document.getElementById('scanner-stage').classList.remove('hidden-flow');
 
                 const terminal = document.getElementById('terminal-logs');
                 terminal.innerHTML = '';
+                btnSubmit.disabled = true;
 
                 // CONEXIÓN REAL AL SERVIDOR
                 try {
@@ -157,6 +172,7 @@ function getLandingHTML() {
                     console.error("Fallo de conexión:", err);
                 }
 
+                // Animación de la Terminal
                 let delay = 0;
                 logs.forEach((log, index) => {
                     setTimeout(() => {
@@ -168,13 +184,26 @@ function getLandingHTML() {
                         
                         if (index === logs.length - 1) {
                             setTimeout(() => {
+                                // Transición: Ocultar Escáner -> Mostrar Upsell
                                 document.getElementById('scanner-stage').classList.add('hidden-flow');
                                 document.getElementById('upsell-stage').classList.remove('hidden-flow');
+                                btnSubmit.disabled = false;
                             }, 2000);
                         }
                     }, delay);
-                    delay += Math.random() * 800 + 800;
+                    delay += Math.random() * 800 + 800; // Simula procesamiento asíncrono
                 });
+            }
+
+            // FUNCIÓN DE RESETEO (Arquitectura SPA)
+            function resetearAuditoria() {
+                // 1. Limpiar los campos de texto
+                document.getElementById('dna-url').value = '';
+                document.getElementById('user-email').value = '';
+                
+                // 2. Ocultar el Upsell y volver a mostrar la Captura inicial
+                document.getElementById('upsell-stage').classList.add('hidden-flow');
+                document.getElementById('capture-stage').classList.remove('hidden-flow');
             }
         </script>
     </body>
