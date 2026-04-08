@@ -1,4 +1,4 @@
-// landing.js - LA FACHADA DE ÉLITE Y CAPTURA DE LEADS (FASE 4: 3 NIVELES Y SPA)
+// landing.js - LA FACHADA DE ÉLITE (BRANDING PREDICTA CORE + MANIFIESTO + LEGAL)
 
 function getLandingHTML() {
     return `
@@ -7,7 +7,7 @@ function getLandingHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PredictaCore Titán - Inteligencia Forense de Conversión</title>
+        <title>Predicta Core - Inteligencia Forense de Conversión</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
@@ -47,19 +47,34 @@ function getLandingHTML() {
             .hidden-flow { display: none !important; }
         </style>
     </head>
-    <body class="min-h-screen flex flex-col items-center justify-center p-6 md:p-10 relative overflow-x-hidden">
+    <body class="min-h-screen flex flex-col items-center justify-between p-6 md:p-10 relative overflow-x-hidden">
         
-        <div class="max-w-5xl w-full relative z-10">
+        <div class="max-w-5xl w-full relative z-10 mb-auto mt-8">
             
-            <header class="mb-10 text-center">
-                <h1 class="text-4xl md:text-5xl font-extrabold text-white uppercase tracking-tighter mb-2">PREDICTACORE <span class="text-emerald-500">TITÁN</span></h1>
+            <header class="mb-12 text-center">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-white uppercase tracking-tighter mb-2">PREDICTA <span class="text-emerald-500">CORE</span></h1>
                 <p class="text-zinc-500 text-xs md:text-sm uppercase tracking-[0.4em]">Forensic Audit Intelligence</p>
             </header>
 
-            <div id="capture-stage" class="terminal-box p-8 md:p-12 text-center transition-all duration-500 block">
+            <div id="manifesto-stage" class="mb-12 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div class="bg-black/40 border border-zinc-800 p-6 rounded-lg">
+                    <h3 class="text-emerald-500 font-bold uppercase tracking-widest text-xs mb-2">Quiénes Somos & Qué Hacemos</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">
+                        No somos una agencia de marketing; somos <strong class="text-white">arquitectos forenses de conversión</strong>. Nos dedicamos exclusivamente a auditar, diagnosticar y sellar las fugas invisibles de capital dentro de ecosistemas digitales que están frenando tu rentabilidad.
+                    </p>
+                </div>
+                <div class="bg-black/40 border border-zinc-800 p-6 rounded-lg">
+                    <h3 class="text-emerald-500 font-bold uppercase tracking-widest text-xs mb-2">Cómo y Por Qué Somos Superiores</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed">
+                        Operamos mediante <strong class="text-white">Gemelos Sintéticos</strong>. Mientras las agencias tradicionales adivinan y hacen pruebas A/B gastando tu presupuesto, nosotros simulamos miles de interacciones para calcular la fricción exacta. Eliminamos la opinión humana de la ecuación matemática de tus ventas.
+                    </p>
+                </div>
+            </div>
+
+            <div id="capture-stage" class="terminal-box p-8 md:p-12 text-center transition-all duration-500 block shadow-[0_0_40px_rgba(16,185,129,0.05)]">
                 <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Descubre por qué tus visitantes no compran.</h2>
                 <p class="text-zinc-400 mb-8 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
-                    No somos una consultoría; somos un motor de auditoría forense. Ingresa tu dominio y recibe un reporte diagnóstico gratuito de 2 páginas directamente en tu correo. Identificaremos las fugas críticas de capital en tu ecosistema digital.
+                    Ingresa tu dominio y recibe un reporte diagnóstico gratuito de 2 páginas directamente en tu correo. Identificaremos tus peores hemorragias de capital hoy mismo.
                 </p>
 
                 <form id="audit-form" class="space-y-6 max-w-xl mx-auto text-left" onsubmit="iniciarAuditoria(event)">
@@ -75,7 +90,6 @@ function getLandingHTML() {
                         Generar Diagnóstico Gratuito
                     </button>
                 </form>
-                <p class="mt-6 text-[10px] text-zinc-600 uppercase tracking-widest">100% Confidencial. Análisis impulsado por gemelos sintéticos.</p>
             </div>
 
             <div id="scanner-stage" class="hidden-flow terminal-box p-8 md:p-12 relative overflow-hidden">
@@ -128,6 +142,13 @@ function getLandingHTML() {
 
         </div>
 
+        <footer class="w-full max-w-5xl mt-20 pt-8 border-t border-zinc-900 text-center pb-8">
+            <p class="text-[10px] text-zinc-600 leading-relaxed max-w-4xl mx-auto text-justify md:text-center">
+                <strong class="uppercase text-zinc-500">Aviso Legal y Descargo de Responsabilidad:</strong> Predicta Core proporciona análisis basados en modelos predictivos, inteligencia artificial y heurísticas de conversión. Los reportes, puntajes y recomendaciones generados tienen fines estrictamente estratégicos, educativos y consultivos. Predicta Core no garantiza incrementos específicos en ventas, conversiones, ingresos o resultados financieros. La implementación de las estrategias y correcciones sugeridas es responsabilidad absoluta y exclusiva del cliente o usuario. Predicta Core, sus fundadores y operadores no se hacen responsables por daños directos, indirectos, incidentales, pérdidas de capital, o interrupciones de negocio derivadas del uso, interpretación o aplicación de la información proporcionada en nuestros reportes. Al utilizar esta herramienta, aceptas estos términos en su totalidad.
+            </p>
+            <p class="text-[10px] text-zinc-700 mt-4">&copy; 2026 Predicta Core. Todos los derechos reservados.</p>
+        </footer>
+
         <script>
             const logs = [
                 "> Estableciendo conexión con motor de gemelos sintéticos...",
@@ -153,7 +174,8 @@ function getLandingHTML() {
                 document.getElementById('target-display').innerText = \`OBJETIVO: \${url}\`;
                 document.getElementById('sent-email').innerText = email;
 
-                // Transición: Ocultar Captura -> Mostrar Escáner
+                // Ocultamos el Manifiesto y la Captura, mostramos el Escáner
+                document.getElementById('manifesto-stage').classList.add('hidden-flow');
                 document.getElementById('capture-stage').classList.add('hidden-flow');
                 document.getElementById('scanner-stage').classList.remove('hidden-flow');
 
@@ -161,7 +183,7 @@ function getLandingHTML() {
                 terminal.innerHTML = '';
                 btnSubmit.disabled = true;
 
-                // CONEXIÓN REAL AL SERVIDOR
+                // CONEXIÓN AL SERVIDOR
                 try {
                     fetch('/start-lite', {
                         method: 'POST',
@@ -172,7 +194,7 @@ function getLandingHTML() {
                     console.error("Fallo de conexión:", err);
                 }
 
-                // Animación de la Terminal
+                // Animación
                 let delay = 0;
                 logs.forEach((log, index) => {
                     setTimeout(() => {
@@ -184,25 +206,23 @@ function getLandingHTML() {
                         
                         if (index === logs.length - 1) {
                             setTimeout(() => {
-                                // Transición: Ocultar Escáner -> Mostrar Upsell
                                 document.getElementById('scanner-stage').classList.add('hidden-flow');
                                 document.getElementById('upsell-stage').classList.remove('hidden-flow');
                                 btnSubmit.disabled = false;
                             }, 2000);
                         }
                     }, delay);
-                    delay += Math.random() * 800 + 800; // Simula procesamiento asíncrono
+                    delay += Math.random() * 800 + 800; 
                 });
             }
 
-            // FUNCIÓN DE RESETEO (Arquitectura SPA)
             function resetearAuditoria() {
-                // 1. Limpiar los campos de texto
                 document.getElementById('dna-url').value = '';
                 document.getElementById('user-email').value = '';
                 
-                // 2. Ocultar el Upsell y volver a mostrar la Captura inicial
+                // Volver al estado inicial mostrando el Manifiesto y la Captura
                 document.getElementById('upsell-stage').classList.add('hidden-flow');
+                document.getElementById('manifesto-stage').classList.remove('hidden-flow');
                 document.getElementById('capture-stage').classList.remove('hidden-flow');
             }
         </script>
