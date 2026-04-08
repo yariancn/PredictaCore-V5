@@ -18,7 +18,7 @@ app.use(express.json({ limit: '10mb' }));
 // CONFIGURACIÓN DE CORREO PROFESIONAL (RESEND)
 const transporter = nodemailer.createTransport({
     host: 'smtp.resend.com',
-    port: 465,
+    port: 2525,
     secure: true,
     auth: {
         user: 'resend', // Resend usa la palabra "resend" como usuario por defecto
