@@ -1,4 +1,4 @@
-// landing.js - LA FACHADA DE ÉLITE Y CAPTURA DE LEADS (FASE 1)
+// landing.js - LA FACHADA DE ÉLITE Y CAPTURA DE LEADS (FASE 2 ACTIVA)
 
 function getLandingHTML() {
     return `
@@ -119,7 +119,6 @@ function getLandingHTML() {
         </div>
 
         <script>
-            // Secuencia de logs para simular el análisis forense profundo
             const logs = [
                 "> Estableciendo conexión segura con servidor objetivo...",
                 "> Analizando arquitectura del DOM y arbol de renderizado...",
@@ -133,7 +132,7 @@ function getLandingHTML() {
                 "> Enrutando a servidor de correo seguro..."
             ];
 
-            function iniciarAuditoria(e) {
+            async function iniciarAuditoria(e) {
                 e.preventDefault();
                 const url = document.getElementById('dna-url').value;
                 const email = document.getElementById('user-email').value;
@@ -141,15 +140,23 @@ function getLandingHTML() {
                 document.getElementById('target-display').innerText = \`OBJETIVO: \${url}\`;
                 document.getElementById('sent-email').innerText = email;
 
-                // Transición de Formulario a Escáner
                 document.getElementById('capture-stage').classList.add('hidden-flow');
                 document.getElementById('scanner-stage').classList.remove('hidden-flow');
 
                 const terminal = document.getElementById('terminal-logs');
                 terminal.innerHTML = '';
 
-                // Simulador visual de progreso (Fase 1 pura UI)
-                // En la Fase 2, aquí haremos el fetch('/start-lite', { method: 'POST', ... })
+                // CONEXIÓN REAL AL SERVIDOR (AQUÍ ESTABA EL PROBLEMA)
+                try {
+                    fetch('/start-lite', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ dna: url, email: email })
+                    });
+                } catch (err) {
+                    console.error("Fallo de conexión:", err);
+                }
+
                 let delay = 0;
                 logs.forEach((log, index) => {
                     setTimeout(() => {
@@ -159,7 +166,6 @@ function getLandingHTML() {
                         terminal.appendChild(p);
                         terminal.scrollTop = terminal.scrollHeight;
                         
-                        // Si es el último log, pasamos a la pantalla de upsell
                         if (index === logs.length - 1) {
                             setTimeout(() => {
                                 document.getElementById('scanner-stage').classList.add('hidden-flow');
@@ -167,13 +173,13 @@ function getLandingHTML() {
                             }, 2000);
                         }
                     }, delay);
-                    delay += Math.random() * 800 + 800; // Entre 0.8s y 1.6s por línea
+                    delay += Math.random() * 800 + 800;
                 });
             }
         </script>
     </body>
     </html>
-    `;
+    \`;
 }
 
 module.exports = { getLandingHTML };
