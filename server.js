@@ -1,15 +1,16 @@
-// server.js - BÚNKER 7 RESTAURADO (FASE 3: BYPASS DE FIREWALL CON RESEND API)
+// server.js - BÚNKER 7 RESTAURADO (FASE 3: LITE Y RESEND API)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
-const { PROMPTS_LITE } = require('./cerebro_lite'); // NUEVO: Importación del Cerebro Lite
+const { PROMPTS_LITE } = require('./cerebro_lite'); // Importación del Cerebro Lite
 const { getHTML } = require('./visual'); 
+const { getHTMLLite } = require('./visual_lite'); // NUEVO: Importación del molde visual Lite
 const { getLandingHTML } = require('./landing'); 
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
-const { Resend } = require('resend'); // CAMBIO QUIRÚRGICO: API de Resend
+const { Resend } = require('resend'); // API de Resend
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -131,7 +132,8 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl) {
     console.log(`>>> Cristalizando PDF forense para: ${emailDestino}`);
     try {
         const job = jobs[jobId];
-        const htmlBase = getHTML(); 
+        // CAMBIO: Ahora usamos el molde Lite exclusivamente para el correo gratuito
+        const htmlBase = getHTMLLite(); 
         
         const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
@@ -155,7 +157,6 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl) {
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
 
-        // CAMBIO QUIRÚRGICO: Envío usando la API de Resend
         const { data, error } = await resend.emails.send({
             from: 'PredictaCore Titán <reportes@predictacore.ai>',
             to: emailDestino,
