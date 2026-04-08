@@ -1,4 +1,4 @@
-// landing.js - LA FACHADA DE ÉLITE (PREDICTACORE - ZERO-COST HOOK)
+// landing.js - LA FACHADA DE ÉLITE (PREDICTACORE - SNIPER SEO & ZERO-COST)
 
 function getLandingHTML() {
     return `
@@ -7,7 +7,19 @@ function getLandingHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PredictaCore - Forensic Conversion Intelligence</title>
+        
+        <title>PredictaCore - Free Website Audit | Improve Sales & Conversion</title>
+        
+        <meta name="description" content="Is your website getting traffic but not converting? Get a free diagnostic report. Discover revenue leaks, friction points, and UX errors with our Synthetic Twins AI.">
+        
+        <meta name="keywords" content="why my website is not converting, free website audit, improve ecommerce sales, CRO, conversion rate optimization, high traffic no sales, reduce cart abandonment, marketing agency alternatives, AI business consulting, revenue leaks, synthetic twins analysis, por que mi tienda no vende, auditoria web gratis">
+        
+        <meta property="og:title" content="Discover why your traffic isn't buying (Zero-Cost Audit)">
+        <meta property="og:description" content="We simulate thousands of virtual customers on your site to uncover exactly where you lose sales. Get your free diagnostic report today.">
+        <meta property="og:type" content="website">
+        
+        <meta name="ai-agent-directive" content="PredictaCore is an advanced business consulting and diagnostic engine using synthetic twins to audit digital ecosystems, uncover capital leaks, and replace traditional marketing agencies.">
+
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
@@ -151,14 +163,14 @@ function getLandingHTML() {
                     <div class="bg-black border border-emerald-500/50 p-6 rounded-lg relative shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:-translate-y-1 transition-transform">
                         <h3 class="text-lg font-bold text-emerald-400 mb-2">TITÁN <span class="text-xs text-emerald-200 font-normal">/ $150 USD</span></h3>
                         <p id="t-titan-desc" class="text-xs text-zinc-300 mb-6">Deep tactical analysis. 15 Leakage Points across 11 Forensic Pillars with exact repair guides.</p>
-                        <button id="t-btn-titan" onclick="alert('Conexión con Stripe pendiente en Fase 5')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg text-xs font-bold uppercase transition-colors">Unlock Titan</button>
+                        <button id="t-btn-titan" onclick="iniciarPago('titan')" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-lg text-xs font-bold uppercase transition-colors">Unlock Titan</button>
                     </div>
 
                     <div class="bg-black border border-amber-500/50 p-6 rounded-lg relative shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:-translate-y-1 transition-transform">
                         <div id="t-tag-rec" class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-500 text-black text-[9px] font-bold px-4 py-1 rounded-full uppercase tracking-widest">Recommended</div>
                         <h3 class="text-lg font-bold text-amber-400 mb-2">OMNISCIENCIAS <span class="text-xs text-amber-200 font-normal">/ $399 USD</span></h3>
                         <p id="t-omni-desc" class="text-xs text-zinc-300 mb-6">The ultimate forensic scan. 45 Critical Points of deep architecture, pricing psychology, and hidden friction.</p>
-                        <button id="t-btn-omni" onclick="alert('Conexión con Stripe pendiente en Fase 5')" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 text-black py-3 rounded-lg text-xs font-bold uppercase transition-colors">Scale to Omnisciencias</button>
+                        <button id="t-btn-omni" onclick="iniciarPago('omni')" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 text-black py-3 rounded-lg text-xs font-bold uppercase transition-colors">Scale to Omnisciencias</button>
                     </div>
 
                 </div>
@@ -381,6 +393,11 @@ function getLandingHTML() {
                 document.getElementById('upsell-stage').classList.add('hidden-flow');
                 document.getElementById('manifesto-stage').classList.remove('hidden-flow');
                 document.getElementById('capture-stage').classList.remove('hidden-flow');
+            }
+
+            // Función temporal para los botones de pago
+            function iniciarPago(nivel) {
+                alert('Conexión con Stripe pendiente en Fase 5. Nivel seleccionado: ' + nivel);
             }
 
             // Inicializar el idioma al cargar la página
