@@ -53,8 +53,6 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, tipo) {
         const client = await auth.getClient();
         const tokenResponse = await client.getAccessToken();
         
-        // RECOMENDACIÓN: Usamos 1.5 Flash por su velocidad y estabilidad en reportes largos (45 puntos).
-        // Cambiar a 'gemini-1.5-pro' si prefieres más profundidad a costa de más lentitud y riesgo de timeout.
         const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent`;
 
         for (const etapaId in promptsSeleccionados) {
@@ -68,7 +66,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, tipo) {
                     { text: `TARGET CONTEXT:\n${datosTarget.texto}` }, 
                     { text: promptFinal }
                 ]}],
-                // CAMBIO RECOMENDADO: Desactivar filtros para que no bloqueen el lenguaje "forense"
+                // CONFIGURACIÓN CLAVE: Desactiva los filtros que bloquean el reporte OMNI
                 safetySettings: [
                     { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
                     { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -76,7 +74,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, tipo) {
                     { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
                 ],
                 generationConfig: { 
-                    temperature: 0.12, // Temperatura baja para mayor precisión matemática
+                    temperature: 0.12,
                     maxOutputTokens: 2500 
                 } 
             };
@@ -93,8 +91,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, tipo) {
                 jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
                 console.log(`  [OK] Etapa ${etapaId} completada.`);
             } else {
-                // LOG DE GUERRA: Nos dice exactamente por qué Google rechazó la petición
-                console.error(`  [!] ERROR EN VERTEX (${etapaId}):`, JSON.stringify(vertexData));
+                console.error(`  [!] BLOQUEO DE SEGURIDAD EN ETAPA (${etapaId}):`, JSON.stringify(vertexData));
                 jobs[jobId].progress[etapaId] = "### SECTION ANALYSIS UNAVAILABLE\nThe deep scan for this specific pillar was interrupted by the safety protocol. Please retry.";
             }
             await new Promise(r => setTimeout(r, 3000));
@@ -125,7 +122,6 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, tipo) {
             for (const key in progressData) {
                 const div = document.createElement('div');
                 div.className = 'report-section';
-                // Usamos la librería marked (cargada en el visual) para convertir Markdown a HTML
                 div.innerHTML = typeof marked !== 'undefined' ? marked.parse(progressData[key]) : progressData[key];
                 reporte.appendChild(div);
             }
