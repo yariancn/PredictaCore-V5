@@ -1,7 +1,7 @@
 {
   "name": "predictacore-titan",
-  "version": "36.0.0",
-  "description": "PredictaCore Titán - Motor Pro Restaurado",
+  "version": "37.0.0",
+  "description": "PredictaCore Titán - Restauración de Estabilidad",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
