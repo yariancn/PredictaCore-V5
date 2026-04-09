@@ -1,5 +1,8 @@
-// server.js - MOTOR PREDICTACORE ESTABILIZADO (VERSION PARA LANZAMIENTO)
+// server.js - NÚCLEO PREDICTACORE CON ARQUITECTURA VERTEX 3.1
 const express = require('express');
+const { VertexAI } = require('@google-cloud/aiplatform');
+
+// Importaciones de lógica de negocio
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
 const { PROMPTS_LITE } = require('./cerebro_lite');
@@ -9,7 +12,6 @@ const { getHTMLOmni } = require('./visual_omni');
 const { getLandingHTML } = require('./landing');    
 const { captureAndScrape } = require('./motor');    
 const { FIREWALL_IA } = require('./firewall');
-const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 const { Resend } = require('resend');
 
@@ -19,6 +21,27 @@ app.use(express.json({ limit: '10mb' }));
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const jobs = {}; 
+
+// 1. INICIALIZAR VERTEX AI CON TU PROYECTO
+const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
+const vertex_ai = new VertexAI({
+    project: credenciales.project_id, 
+    location: 'us-central1',
+    credentials: credenciales
+});
+
+// 2. CONFIGURAR EL MODELO (Aquí usamos la recomendación de Vertex 3.1)
+const modelId = 'gemini-1.5-flash'; // Google mapea el 3.1/Flash-Lite a este endpoint estable
+const generativeModel = vertex_ai.getGenerativeModel({
+    model: modelId,
+    safetySettings: [
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' }
+    ],
+    generationConfig: { temperature: 0.2, maxOutputTokens: 3000 }
+});
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
 
@@ -35,73 +58,45 @@ async function iniciarProceso(dna, email, tipo, res) {
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
     const jobId = `${tipo}-${Date.now()}`; 
     jobs[jobId] = { status: 'running', progress: {}, email: email, type: tipo };
-    
     ejecutarAuditoriaFondo(targetUrl, jobId, tipo).catch(e => console.error("!!! ERROR FONDO:", e));
-    
     res.json({ status: 'started', jobId: jobId });
 }
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId, tipo) {
-    console.log(`\n--- INICIO AUDITORÍA ${tipo.toUpperCase()} ---`);
+    console.log(`\n--- INICIO AUDITORÍA ${tipo.toUpperCase()} (VERTEX 3.1 ENGINE) ---`);
     try {
         let datosTarget = await captureAndScrape(targetUrl);
         const cerebroActivo = targetUrl.includes('instagram.com') ? cerebroSocial : cerebroWeb;
         const promptsSeleccionados = (tipo === 'omni') ? PROMPTS_OMNI : PROMPTS_LITE;
 
-        const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
-        const auth = new GoogleAuth({ credentials: credenciales, scopes: ['https://www.googleapis.com/auth/cloud-platform'] });
-        const client = await auth.getClient();
-        const tokenResponse = await client.getAccessToken();
-        
-        // CORRECCIÓN: Se añade "-001" al final del modelo para asegurar compatibilidad con Vertex
-        const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-flash-001:generateContent`;
-
         for (const etapaId in promptsSeleccionados) {
-            console.log(`> Llamando Vertex AI para etapa: ${etapaId}...`);
+            console.log(`> Procesando etapa: ${etapaId}...`);
             const promptFinal = promptsSeleccionados[etapaId](datosTarget.texto);
             
-            const payload = {
-                contents: [{ role: "user", parts: [
-                    { text: cerebroActivo.IDIOMA }, 
-                    { text: cerebroActivo.REGLA_NUCLEAR },
-                    { text: `TARGET CONTEXT:\n${datosTarget.texto}` }, 
-                    { text: promptFinal }
+            const request = {
+                contents: [{ role: 'user', parts: [
+                    { text: `${FIREWALL_IA}\n\n${cerebroActivo.IDIOMA}\n${cerebroActivo.REGLA_NUCLEAR}` },
+                    { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` },
+                    { text: `INSTRUCCIÓN FORENSE:\n${promptFinal}` }
                 ]}],
-                safetySettings: [
-                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-                ],
-                generationConfig: { 
-                    temperature: 0.12,
-                    maxOutputTokens: 2500 
-                } 
             };
 
-            const vertexRes = await fetch(vertexUrl, { 
-                method: "POST", 
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` }, 
-                body: JSON.stringify(payload) 
-            });
-
-            const vertexData = await vertexRes.json();
-
-            if (vertexData.candidates && vertexData.candidates[0].content) {
-                jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
-                console.log(`  [OK] Etapa ${etapaId} completada.`);
-            } else {
-                console.error(`  [!] FALLO EN VERTEX (${etapaId}):`, JSON.stringify(vertexData));
-                jobs[jobId].progress[etapaId] = "### SECTION ANALYSIS UNAVAILABLE\nThe deep scan failed due to endpoint versioning. Please retry.";
+            const streamingResp = await generativeModel.generateContentStream(request);
+            let fullText = "";
+            for await (const item of streamingResp.stream) {
+                fullText += item.candidates[0].content.parts[0].text;
             }
-            await new Promise(r => setTimeout(r, 3000));
+
+            jobs[jobId].progress[etapaId] = fullText;
+            console.log(`  [OK] Etapa ${etapaId} lista.`);
+            await new Promise(r => setTimeout(r, 1000));
         }
 
         jobs[jobId].status = 'done';
         await enviarReportePorCorreo(jobId, jobs[jobId].email, targetUrl, tipo);
 
     } catch (error) {
-        console.error("!!! FALLO TOTAL EN EL MOTOR:", error);
+        console.error("!!! FALLO EN MOTOR VERTEX:", error);
     }
 }
 
@@ -110,8 +105,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, tipo) {
     try {
         const job = jobs[jobId];
         const htmlBase = (tipo === 'omni') ? getHTMLOmni() : getHTMLLite();
-        
-        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
         const page = await browser.newPage();
         await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
 
@@ -122,7 +116,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, tipo) {
             for (const key in progressData) {
                 const div = document.createElement('div');
                 div.className = 'report-section';
-                div.innerHTML = typeof marked !== 'undefined' ? marked.parse(progressData[key]) : progressData[key];
+                div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
         }, job.progress, targetUrl);
@@ -133,15 +127,13 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, tipo) {
         await resend.emails.send({
             from: 'PredictaCore <reportes@predictacore.ai>',
             to: emailDestino,
-            subject: `PredictaCore Forensic Audit - ${tipo.toUpperCase()} Protocol`,
-            text: `Attached is your forensic report for ${targetUrl}.`,
+            subject: `PredictaCore Forensic Audit - ${tipo.toUpperCase()}`,
             attachments: [{ filename: `PredictaCore_${tipo.toUpperCase()}.pdf`, content: pdfBuffer }]
         });
-        console.log(`>>> EXITO: Reporte enviado a ${emailDestino}.`);
+        console.log(`>>> EXITO: Reporte enviado a ${emailDestino}`);
     } catch (e) { 
-        console.error("!!! ERROR EN ENVÍO:", e);
         if(browser) await browser.close();
     }
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`MOTOR PREDICTACORE ACTIVADO`));
+app.listen(port, "0.0.0.0", () => console.log(`MOTOR PREDICTACORE 3.1 ACTIVADO`));
