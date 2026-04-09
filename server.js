@@ -1,4 +1,4 @@
-// server.js - MOTOR PREDICTACORE PRO (CORRECCIÓN FINAL DE ENDPOINT)
+// server.js - MOTOR PREDICTACORE PRO (CORRECCIÓN DEFINITIVA DE ENDPOINT)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -52,7 +52,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, tipo) {
         const client = await auth.getClient();
         const tokenResponse = await client.getAccessToken();
         
-        // CAMBIO CRÍTICO: Se añade -002 al final. Google Vertex requiere la versión exacta en muchas regiones.
+        // CORRECCIÓN CLAVE: Usamos gemini-1.5-pro-002 que es la versión más inteligente y estable aceptada por Vertex AI
         const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro-002:generateContent`;
 
         for (const etapaId in promptsSeleccionados) {
@@ -71,7 +71,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, tipo) {
                     { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
                     { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
                 ],
-                generationConfig: { temperature: 0.15, maxOutputTokens: 2500 } 
+                generationConfig: { temperature: 0.15, maxOutputTokens: 3000 } 
             };
 
             const vertexRes = await fetch(vertexUrl, { 
@@ -86,10 +86,11 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, tipo) {
                 jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
                 console.log(`  [OK] ${etapaId} completada.`);
             } else {
-                console.error(`  [!] Error detectado:`, JSON.stringify(vertexData));
-                jobs[jobId].progress[etapaId] = "Análisis temporalmente no disponible por restricción de modelo.";
+                console.error(`  [!] Error detectado en Vertex:`, JSON.stringify(vertexData));
+                jobs[jobId].progress[etapaId] = "Análisis de sección no disponible.";
             }
-            await new Promise(r => setTimeout(r, 3000));
+            // Pausa de seguridad para evitar límites de cuota (Rate Limits)
+            await new Promise(r => setTimeout(r, 4000));
         }
 
         jobs[jobId].status = 'done';
@@ -116,7 +117,8 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, tipo) {
             for (const key in progressData) {
                 const div = document.createElement('div');
                 div.className = 'report-section';
-                div.innerHTML = marked.parse(progressData[key]);
+                // Usamos la librería marked para transformar el markdown de la IA a HTML visual
+                div.innerHTML = typeof marked !== 'undefined' ? marked.parse(progressData[key]) : progressData[key];
                 reporte.appendChild(div);
             }
         }, job.progress, targetUrl);
@@ -130,10 +132,11 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, tipo) {
             subject: `PredictaCore Forensic Audit - ${tipo.toUpperCase()}`,
             attachments: [{ filename: `PredictaCore_${tipo.toUpperCase()}.pdf`, content: pdfBuffer }]
         });
-        console.log(`>>> REPORTE ENTREGADO: ${emailDestino}`);
+        console.log(`>>> REPORTE ENTREGADO CON ÉXITO: ${emailDestino}`);
     } catch (e) { 
         if(browser) await browser.close();
+        console.error("Error en envío:", e);
     }
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE ONLINE`));
+app.listen(port, "0.0.0.0", () => console.log(`MOTOR PREDICTACORE EN LÍNEA`));
