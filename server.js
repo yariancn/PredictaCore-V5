@@ -1,4 +1,4 @@
-// server.js - RESTAURACIÓN MECÁNICA PREDICTACORE
+// server.js - RESTAURACIÓN FINAL (RUTA DE MODELO CORREGIDA)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -58,23 +58,20 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
     
     const client = await auth.getClient();
     const tokenResponse = await client.getAccessToken();
-    // ESTA ES LA URL QUE FUNCIONA: Apunta al modelo Pro estable
-    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
+
+    // RUTA CORREGIDA: Se usa gemini-1.5-pro-001 que es el ID de recurso universal en Vertex AI
+    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro-001:streamGenerateContent`;
 
     const PROMPTS_ACTUALES = isLite ? PROMPTS_LITE : PROMPTS_OMNI;
 
     for (const etapaId in PROMPTS_ACTUALES) {
         try {
             const promptFinal = PROMPTS_ACTUALES[etapaId](datosTarget.texto);
-            let partesMensaje = [
-                { text: cerebroActivo.IDIOMA }, { text: cerebroActivo.REGLA_NUCLEAR },
-                { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` },
-                { text: promptFinal }
-            ];
-
+            
             const payload = {
-                systemInstruction: { parts: [{ text: FIREWALL_IA }] },
-                contents: [{ role: "user", parts: partesMensaje }],
+                contents: [{ role: "user", parts: [
+                    { text: `${FIREWALL_IA}\n\n${cerebroActivo.IDIOMA}\n${cerebroActivo.REGLA_NUCLEAR}\n\nCONTEXTO:\n${datosTarget.texto}\n\nINSTRUCCIÓN:\n${promptFinal}` }
+                ]}],
                 safetySettings: [
                     { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
                     { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -91,16 +88,21 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
             });
 
             const vertexData = await vertexRes.json();
-            if (vertexData.candidates && vertexData.candidates[0].content) {
+            
+            // Procesar respuesta (Vertex devuelve un array cuando es streamGenerateContent)
+            if (Array.isArray(vertexData) && vertexData[0].candidates) {
+                jobs[jobId].progress[etapaId] = vertexData[0].candidates[0].content.parts[0].text;
+            } else if (vertexData.candidates) {
                 jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
             } else {
                 console.error("Error en respuesta de Vertex:", JSON.stringify(vertexData));
-                jobs[jobId].progress[etapaId] = "Error en análisis.";
+                jobs[jobId].progress[etapaId] = "Error en análisis de sección.";
             }
-            await new Promise(r => setTimeout(r, 3000));
+            await new Promise(r => setTimeout(r, 2000));
 
         } catch (error) {
-            jobs[jobId].progress[etapaId] = `Falla técnica: ${error.message}`;
+            console.error("Error en etapa:", error);
+            jobs[jobId].progress[etapaId] = "Error técnico en esta sección.";
         }
     }
 
@@ -119,7 +121,8 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
 
         await page.evaluate((progressData, dominio) => {
             const reporte = document.getElementById('reporte');
-            document.getElementById('pdf-domain').innerText = 'Analysis: ' + dominio;
+            const dEl = document.getElementById('pdf-domain');
+            if(dEl) dEl.innerText = 'Analysis: ' + dominio;
             for (const key in progressData) {
                 const div = document.createElement('div');
                 div.className = 'report-section';
@@ -131,14 +134,12 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
 
-        const filename = isLite ? 'PREDICTACORE_LITE.pdf' : 'PREDICTACORE_OMNI.pdf';
-        const subject = isLite ? 'Tu Auditoría PredictaCore (Lite)' : 'Protocolo OMNISCIENCIAS: Auditoría Forense Completa';
+        const filename = isLite ? 'PredictaCore_LITE.pdf' : 'PredictaCore_OMNI.pdf';
 
         await resend.emails.send({
             from: 'PredictaCore <reportes@predictacore.ai>',
             to: emailDestino,
-            subject: subject,
-            text: 'Adjunto enviamos el análisis de tu activo digital.',
+            subject: `PredictaCore Forensic Audit - ${targetUrl}`,
             attachments: [{ filename: filename, content: pdfBuffer }]
         });
         console.log(`>>> Reporte enviado con éxito a ${emailDestino}`);
@@ -147,4 +148,4 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
     }
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE SISTEMA RESTAURADO EN PUERTO ${port}`));
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE ONLINE`));
