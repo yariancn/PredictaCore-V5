@@ -1,12 +1,12 @@
-// server.js - MOTOR UNIFICADO (LITE + TITÁN + PRUEBA OMNI)
+// server.js - MOTOR UNIFICADO RESTAURADO (LITE + TITÁN + PRUEBA OMNI)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
 const { PROMPTS_LITE } = require('./cerebro_lite');
-const { PROMPTS_OMNI } = require('./cerebro_omni'); // NUEVO: Cerebro Omni
+const { PROMPTS_OMNI } = require('./cerebro_omni'); 
 const { getHTML } = require('./visual'); 
 const { getHTMLLite } = require('./visual_lite');
-const { getHTMLOmni } = require('./visual_omni'); // NUEVO: Visual Omni
+const { getHTMLOmni } = require('./visual_omni'); 
 const { getLandingHTML } = require('./landing'); 
 const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
@@ -25,19 +25,16 @@ app.get('/', (req, res) => res.send(getLandingHTML()));
 
 // --- RUTAS DE ENTRADA ---
 
-// 1. Ruta Teaser (Lite)
 app.post('/start-lite', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, 'lite');
     res.json({ status: 'started' });
 });
 
-// 2. Ruta de Prueba OMNI (NUEVA)
 app.post('/start-omni', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, 'omni');
     res.json({ status: 'started' });
 });
 
-// 3. Ruta Estándar (Titán)
 app.post('/start', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, 'titan');
     res.json({ status: 'started' });
@@ -59,32 +56,35 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
         let datosTarget = await captureAndScrape(targetUrl);
         const cerebroActivo = targetUrl.includes('instagram.com') ? cerebroSocial : cerebroWeb;
         
-        // Selección de Prompts según el modo
         let promptsAUsar;
         if (modo === 'lite') promptsAUsar = PROMPTS_LITE;
         else if (modo === 'omni') promptsAUsar = PROMPTS_OMNI;
-        else promptsAUsar = cerebroActivo.PROMPTS; // Titán original
+        else promptsAUsar = cerebroActivo.PROMPTS;
 
         const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
         const auth = new GoogleAuth({ credentials: credenciales, scopes: ['https://www.googleapis.com/auth/cloud-platform'] });
         const client = await auth.getClient();
         const tokenResponse = await client.getAccessToken();
         
+        // URL original validada que SÍ funciona
         const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
 
         for (const etapaId in promptsAUsar) {
             console.log(`> Generando sección: ${etapaId}`);
             const promptFinal = promptsAUsar[etapaId](datosTarget.texto);
             
+            // AJUSTE CRÍTICO: Se eliminó systemInstruction y se integró al flujo normal para evitar el 404
             const payload = {
-                systemInstruction: { parts: [{ text: FIREWALL_IA }] },
-                contents: [{ role: "user", parts: [
-                    { text: cerebroActivo.IDIOMA }, 
-                    { text: cerebroActivo.REGLA_NUCLEAR },
-                    { text: `CONTEXTO:\n${datosTarget.texto}` }, 
-                    { text: promptFinal }
-                ]}],
-                // SEGURIDAD: BLOCK_NONE para evitar el error de "sección no disponible"
+                contents: [{ 
+                    role: "user", 
+                    parts: [
+                        { text: FIREWALL_IA },
+                        { text: cerebroActivo.IDIOMA }, 
+                        { text: cerebroActivo.REGLA_NUCLEAR },
+                        { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` }, 
+                        { text: promptFinal }
+                    ]
+                }],
                 safetySettings: [
                     { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
                     { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -105,7 +105,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
                 jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
             } else {
                 console.error(`Error en ${etapaId}:`, JSON.stringify(vertexData));
-                jobs[jobId].progress[etapaId] = "### ANÁLISIS INTERRUMPIDO\nReintentar escaneo.";
+                jobs[jobId].progress[etapaId] = "### ANÁLISIS NO DISPONIBLE";
             }
             await new Promise(r => setTimeout(r, 2000));
         }
@@ -123,7 +123,6 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
     try {
         const job = jobs[jobId];
         
-        // Selección de Molde Visual
         let htmlBase;
         if (modo === 'lite') htmlBase = getHTMLLite();
         else if (modo === 'omni') htmlBase = getHTMLOmni();
@@ -140,7 +139,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             for (const key in progressData) {
                 const div = document.createElement('div');
                 div.className = 'report-section';
-                // Usamos marked que ya está en todos los visuales
+                // Usamos la librería marked que ya está en los visuales
                 div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
