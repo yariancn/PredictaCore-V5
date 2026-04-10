@@ -1,132 +1,199 @@
-// server.js - MOTOR PREDICTACORE RESTAURADO (ESTABLE)
+// server.js - BÚNKER 7 RESTAURADO (FASE 3: LITE Y RESEND API)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
-const { PROMPTS_LITE } = require('./cerebro_lite');
-const { PROMPTS_OMNI } = require('./cerebro_omni');
-const { getHTMLLite } = require('./visual_lite');
-const { getHTMLOmni } = require('./visual_omni');
-const { getLandingHTML } = require('./landing');    
-const { captureAndScrape } = require('./motor');    
+const { PROMPTS_LITE } = require('./cerebro_lite'); // Importación del Cerebro Lite
+const { getHTML } = require('./visual'); 
+const { getHTMLLite } = require('./visual_lite'); // NUEVO: Importación del molde visual Lite
+const { getLandingHTML } = require('./landing'); 
+const { captureAndScrape } = require('./motor'); 
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
-const { Resend } = require('resend');
+const { Resend } = require('resend'); // API de Resend
 
 const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json({ limit: '10mb' }));
 
+// CONFIGURACIÓN DE CORREO (RESEND API - Inmune al bloqueo de puertos)
 const resend = new Resend(process.env.RESEND_API_KEY);
+
 const jobs = {}; 
+const dossierCache = {};
+const ETAPAS_ORDEN = ['INTRO', 'GEMELOS', 'SCORECARD', 'VISIBILIDAD', 'BENCHMARK', 'SWOT', 'WISHLIST', 'FUGAS', 'ACCIONES', 'HERRAMIENTAS', 'OMNI'];
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
 
 app.post('/start-lite', async (req, res) => {
-    iniciarProceso(req.body.dna, req.body.email, 'lite', res);
-});
-
-app.post('/start-omni', async (req, res) => {
-    iniciarProceso(req.body.dna, req.body.email, 'omni', res);
-});
-
-async function iniciarProceso(dna, email, tipo, res) {
+    const { dna, email } = req.body;
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
-    const jobId = `${tipo}-${Date.now()}`; 
-    jobs[jobId] = { status: 'running', progress: {}, email: email, type: tipo };
     
-    ejecutarAuditoriaFondo(targetUrl, jobId, tipo).catch(e => console.error("!!! ERROR FONDO:", e));
-    res.json({ status: 'started', jobId: jobId });
-}
+    const jobId = targetUrl + '-' + Date.now(); 
+    jobs[jobId] = { status: 'running', progress: {}, email: email, type: 'lite' };
+    
+    ejecutarAuditoriaFondo(targetUrl, jobId, true).catch(e => {
+        console.error("Fallo crítico en Auditoría Lite:", e);
+        if(jobs[jobId]) jobs[jobId].status = 'error';
+    });
+    
+    res.json({ status: 'started', jobId: jobId, message: 'Auditoría en proceso' });
+});
 
-async function ejecutarAuditoriaFondo(targetUrl, jobId, tipo) {
-    try {
-        let datosTarget = await captureAndScrape(targetUrl);
-        const cerebroActivo = targetUrl.includes('instagram.com') ? cerebroSocial : cerebroWeb;
-        const promptsSeleccionados = (tipo === 'omni') ? PROMPTS_OMNI : PROMPTS_LITE;
+app.post('/start', async (req, res) => {
+    const { dna } = req.body;
+    let targetUrl = dna.trim();
+    if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
+    
+    const jobId = targetUrl; 
+    jobs[jobId] = { status: 'running', progress: {}, currentEtapa: 'INICIANDO' };
+    
+    ejecutarAuditoriaFondo(targetUrl, jobId, false).catch(e => {
+        console.error("Fallo crítico:", e);
+        if(jobs[jobId]) jobs[jobId].status = 'error';
+    });
+    
+    res.json({ jobId });
+});
 
-        const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
-        const auth = new GoogleAuth({ credentials: credenciales, scopes: ['https://www.googleapis.com/auth/cloud-platform'] });
-        const client = await auth.getClient();
-        const tokenResponse = await client.getAccessToken();
-        
-        const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
+app.get('/poll', (req, res) => {
+    const jobId = req.query.jobId;
+    if (!jobs[jobId]) return res.json({ status: 'not_found' });
+    res.json(jobs[jobId]);
+});
 
-        for (const etapaId in promptsSeleccionados) {
-            const promptFinal = promptsSeleccionados[etapaId](datosTarget.texto);
+async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite = false) {
+    let datosTarget = await captureAndScrape(targetUrl);
+
+    const isSocialMedia = targetUrl.includes('instagram.com') || targetUrl.includes('facebook.com') || targetUrl.includes('tiktok.com');
+    const cerebroActivo = isSocialMedia ? cerebroSocial : cerebroWeb;
+    const { IDIOMA, REGLA_NUCLEAR } = cerebroActivo;
+
+    const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
+    const auth = new GoogleAuth({
+        credentials: credenciales,
+        scopes: ['https://www.googleapis.com/auth/cloud-platform']
+    });
+    
+    const client = await auth.getClient();
+    const tokenResponse = await client.getAccessToken();
+    const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
+
+    // BIFURCACIÓN DE CEREBROS
+    const etapasAEjecutar = isLite ? Object.keys(PROMPTS_LITE) : ETAPAS_ORDEN;
+    const PROMPTS_ACTUALES = isLite ? PROMPTS_LITE : cerebroActivo.PROMPTS;
+
+    for (const etapaId of etapasAEjecutar) {
+        if(jobs[jobId]) jobs[jobId].currentEtapa = etapaId;
+        try {
+            const promptFinal = PROMPTS_ACTUALES[etapaId](datosTarget.texto);
+            let partesMensaje = [
+                { text: IDIOMA }, { text: REGLA_NUCLEAR },
+                { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` }
+            ];
+
+            if (datosTarget.isUrl && datosTarget.desktopBase64 && datosTarget.mobileBase64) {
+                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.desktopBase64 } });
+                partesMensaje.push({ inlineData: { mimeType: "image/jpeg", data: datosTarget.mobileBase64 } });
+            }
+            partesMensaje.push({ text: promptFinal });
+
             const payload = {
                 systemInstruction: { parts: [{ text: FIREWALL_IA }] },
-                contents: [{ role: "user", parts: [
-                    { text: cerebroActivo.IDIOMA }, 
-                    { text: cerebroActivo.REGLA_NUCLEAR },
-                    { text: `CONTEXTO:\n${datosTarget.texto}` }, 
-                    { text: promptFinal }
-                ]}],
-                // BLINDAJE CONTRA EL ERROR DE "SAFETY PROTOCOL"
-                safetySettings: [
-                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-                ],
-                generationConfig: { temperature: 0.15, maxOutputTokens: 2048 } 
+                contents: [{ role: "user", parts: partesMensaje }],
+                generationConfig: { temperature: 0.15 } 
             };
 
-            const vertexRes = await fetch(vertexUrl, { 
-                method: "POST", 
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` }, 
-                body: JSON.stringify(payload) 
+            if (!isLite && (etapaId === 'VISIBILIDAD' || etapaId === 'BENCHMARK')) payload.tools = [{ googleSearch: {} }];
+
+            const vertexRes = await fetch(vertexUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${tokenResponse.token}` },
+                body: JSON.stringify(payload)
             });
 
             const vertexData = await vertexRes.json();
-            if (vertexData.candidates && vertexData.candidates[0].content) {
-                jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
-            } else {
-                jobs[jobId].progress[etapaId] = "### SECTION ANALYSIS UNAVAILABLE\nPlease retry.";
-            }
-            await new Promise(r => setTimeout(r, 3000));
-        }
+            jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
+            await new Promise(r => setTimeout(r, 3500));
 
-        jobs[jobId].status = 'done';
-        await enviarReportePorCorreo(jobId, jobs[jobId].email, targetUrl, tipo);
-    } catch (error) {
-        console.error("!!! FALLO MOTOR:", error);
+        } catch (error) {
+            jobs[jobId].progress[etapaId] = `### FALLA TÉCNICA\n${error.message}`;
+        }
+    }
+    jobs[jobId].status = 'done';
+
+    if (isLite) {
+        await enviarReportePorCorreo(jobId, jobs[jobId].email, targetUrl);
     }
 }
 
-async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, tipo) {
-    let browser;
+async function enviarReportePorCorreo(jobId, emailDestino, targetUrl) {
+    console.log(`>>> Cristalizando PDF forense para: ${emailDestino}`);
     try {
         const job = jobs[jobId];
-        const htmlBase = (tipo === 'omni') ? getHTMLOmni() : getHTMLLite();
-        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        // CAMBIO: Ahora usamos el molde Lite exclusivamente para el correo gratuito
+        const htmlBase = getHTMLLite(); 
+        
+        const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
         await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
 
+        // Inyectamos la información cruda en el molde visual para generar el PDF
         await page.evaluate((progressData, dominio) => {
             const reporte = document.getElementById('reporte');
-            const dEl = document.getElementById('pdf-domain');
-            if(dEl) dEl.innerText = 'Analysis: ' + dominio;
+            reporte.innerHTML = '';
+            document.getElementById('pdf-domain').innerText = 'Analysis: ' + dominio;
+            
             for (const key in progressData) {
-                const div = document.createElement('div');
-                div.className = 'report-section';
-                // Usamos marked que ya está cargado en el visual
-                div.innerHTML = marked.parse(progressData[key]);
-                reporte.appendChild(div);
+                const seccion = document.createElement('div');
+                seccion.className = 'report-section';
+                let htmlGenerado = marked.parse(progressData[key]);
+                seccion.innerHTML = '<div class="markdown-content" style="color: #0f172a !important;">' + htmlGenerado + '</div>';
+                reporte.appendChild(seccion);
             }
         }, job.progress, targetUrl);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
 
-        await resend.emails.send({
-            from: 'PredictaCore <reportes@predictacore.ai>',
+        const { data, error } = await resend.emails.send({
+            from: 'PredictaCore Titán <reportes@predictacore.ai>',
             to: emailDestino,
-            subject: `PredictaCore Forensic Audit - ${tipo.toUpperCase()}`,
-            attachments: [{ filename: `PredictaCore_${tipo.toUpperCase()}.pdf`, content: pdfBuffer }]
+            subject: 'Tu Auditoría Forense PredictaCore (Lite)',
+            text: 'Adjunto encontrarás la radiografía de conversión de tu activo digital. Ábrelo en un ordenador para su correcta visualización.',
+            attachments: [
+                {
+                    filename: 'PREDICTACORE_LITE.pdf',
+                    content: pdfBuffer
+                }
+            ]
         });
-    } catch (e) { if(browser) await browser.close(); }
+
+        if (error) {
+            throw new Error(`Resend API Error: ${error.message}`);
+        }
+
+        console.log(`>>> Sellado. Reporte entregado con éxito a ${emailDestino}. ID: ${data.id}`);
+    } catch (error) {
+        console.error(">>> Error crítico al ensamblar o enviar correo:", error);
+    }
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`MOTOR RESTAURADO EN PUERTO ${port}`));
+app.post('/generate-pdf', async (req, res) => {
+    const { html } = req.body;
+    let browser;
+    try {
+        browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        const pdf = await page.pdf({ format: 'A4', printBackground: true });
+        await browser.close();
+        res.contentType("application/pdf").send(pdf);
+    } catch (e) {
+        if(browser) await browser.close();
+        res.status(500).send("Fallo PDF");
+    }
+});
+
+app.listen(port, "0.0.0.0", () => console.log(`PREDICTACORE TITÁN EN VIVO - MOTOR API ACTIVADO`));
