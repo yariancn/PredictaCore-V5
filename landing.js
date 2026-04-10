@@ -1,4 +1,4 @@
-// landing.js - INTERFAZ DE COMANDO TRIPLE (TEASER | TITÁN | OMNI)
+// landing.js - INTERFAZ ACTUALIZADA CON OPCIONES DE REPORTE
 
 function getLandingHTML() {
     return `
@@ -7,7 +7,7 @@ function getLandingHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PredictaCore - Centro de Comando</title>
+        <title>PredictaCore Titán - Centro de Comando</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
@@ -29,11 +29,11 @@ function getLandingHTML() {
                 <div class="space-y-4">
                     <div>
                         <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-2 block">Dominio del Activo (DNA)</label>
-                        <input type="text" id="target-url" placeholder="ejemplo.com" class="w-full bg-black/50 border border-gray-800 rounded-lg p-3 text-white focus:outline-none focus:border-green-500 transition-all">
+                        <input type="text" id="dna-url" placeholder="ejemplo.com" class="w-full bg-black/50 border border-gray-800 rounded-lg p-3 text-white focus:outline-none focus:border-green-500 transition-all">
                     </div>
                     <div>
                         <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-2 block">Canal de Entrega (Email)</label>
-                        <input type="email" id="target-email" placeholder="tu@email.com" class="w-full bg-black/50 border border-gray-800 rounded-lg p-3 text-white focus:outline-none focus:border-green-500 transition-all">
+                        <input type="email" id="user-email" placeholder="tu@email.com" class="w-full bg-black/50 border border-gray-800 rounded-lg p-3 text-white focus:outline-none focus:border-green-500 transition-all">
                     </div>
                     <button onclick="prepararProtocolo()" class="w-full bg-white text-black font-bold py-4 rounded-lg hover:bg-green-500 hover:text-white transition-all">
                         INICIALIZAR SECUENCIA
@@ -42,29 +42,27 @@ function getLandingHTML() {
             </div>
 
             <div id="selection-stage" class="hidden-flow space-y-4">
-                <div class="terminal-box p-6 text-center border-green-500/30">
-                    <p class="text-green-500 font-mono text-xs mb-4 animate-pulse">>>> SISTEMA LISTO. SELECCIONE NIVEL DE PENETRACIÓN:</p>
+                <div class="terminal-box p-6 text-center">
+                    <p class="text-green-500 font-mono text-xs mb-4">>>> SELECCIONE NIVEL DE PENETRACIÓN:</p>
                     <div class="grid grid-cols-1 gap-4">
                         <button onclick="ejecutar('lite')" class="btn-elite bg-gray-900 p-4 rounded-xl text-left">
-                            <span class="text-green-500 font-bold block">01. REPORTE TEASER (LITE)</span>
-                            <span class="text-[10px] text-gray-500">5 Puntos de fricción. Entrega rápida para captura de leads.</span>
+                            <span class="text-green-500 font-bold block">REPORTE TEASER (LITE)</span>
+                            <span class="text-[10px] text-gray-500">5 Puntos críticos. Entrega vía Email.</span>
                         </button>
                         <button onclick="ejecutar('titan')" class="btn-elite bg-gray-900 p-4 rounded-xl text-left">
-                            <span class="text-blue-500 font-bold block">02. REPORTE TITÁN (STÁNDAR)</span>
-                            <span class="text-[10px] text-gray-500">15 Puntos forenses. El modelo de negocio validado.</span>
+                            <span class="text-blue-500 font-bold block">REPORTE TITÁN (STÁNDAR)</span>
+                            <span class="text-[10px] text-gray-500">15 Puntos forenses. Análisis en pantalla.</span>
                         </button>
-                        <button onclick="ejecutar('omni')" class="btn-elite bg-gray-900 p-4 rounded-xl text-left border-gold-500/50">
-                            <span class="text-yellow-500 font-bold block">03. PROTOCOLO OMNI (FULL SCAN)</span>
-                            <span class="text-[10px] text-gray-500">45 Puntos críticos en 3 matrices. Inteligencia máxima.</span>
+                        <button onclick="ejecutar('omni')" class="btn-elite bg-gray-900 p-4 rounded-xl text-left">
+                            <span class="text-yellow-500 font-bold block">PROTOCOLO OMNI (FULL SCAN)</span>
+                            <span class="text-[10px] text-gray-500">45 Puntos críticos. Escaneo de 3 matrices.</span>
                         </button>
                     </div>
                 </div>
             </div>
 
             <div id="status-stage" class="hidden-flow terminal-box p-6 mt-4 font-mono text-[11px]">
-                <div id="terminal-logs" class="space-y-1 text-gray-400">
-                    <p class="text-green-500">>> Injecting Synthetic Twins...</p>
-                </div>
+                <div id="terminal-logs" class="space-y-1 text-gray-400"></div>
             </div>
         </div>
 
@@ -72,8 +70,8 @@ function getLandingHTML() {
             let targetData = { url: '', email: '' };
 
             function prepararProtocolo() {
-                targetData.url = document.getElementById('target-url').value;
-                targetData.email = document.getElementById('target-email').value;
+                targetData.url = document.getElementById('dna-url').value;
+                targetData.email = document.getElementById('user-email').value;
                 if(!targetData.url || !targetData.email) return alert("Faltan datos.");
                 
                 document.getElementById('setup-stage').classList.add('hidden-flow');
@@ -83,28 +81,21 @@ function getLandingHTML() {
             async function ejecutar(modo) {
                 document.getElementById('selection-stage').classList.add('hidden-flow');
                 document.getElementById('status-stage').classList.remove('hidden-flow');
+                const logs = document.getElementById('terminal-logs');
+                logs.innerHTML = '<p class="text-green-500">>> Lanzando protocolo ' + modo.toUpperCase() + '...</p>';
+
+                // Aquí es donde llamamos a la ruta correspondiente en server.js
+                const endpoint = modo === 'titan' ? '/start' : '/start-' + modo;
                 
-                const logCont = document.getElementById('terminal-logs');
-                const addLog = (txt) => {
-                    const p = document.createElement('p');
-                    p.innerText = ">> " + txt;
-                    logCont.appendChild(p);
-                };
-
-                addLog(\`Iniciando protocolo \${modo.toUpperCase()} para \${targetData.url}...\`);
-
                 try {
-                    const endpoint = modo === 'titan' ? '/start' : '/start-' + modo;
                     await fetch(endpoint, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ dna: targetData.url, email: targetData.email })
                     });
-                    addLog("Petición aceptada por el servidor.");
-                    addLog("Analizando gemelos sintéticos...");
-                    addLog("Generando reporte forense... El email llegará en breve.");
+                    logs.innerHTML += '<p>>> Petición aceptada. Procesando...</p>';
                 } catch (e) {
-                    addLog("ERROR DE CONEXIÓN.");
+                    logs.innerHTML += '<p class="text-red-500">>> ERROR DE CONEXIÓN.</p>';
                 }
             }
         </script>
