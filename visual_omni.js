@@ -1,40 +1,77 @@
-// visual_omni.js - MOLDE CORPORATIVO PREMIUM PARA OMNISCIENCIAS ($399)
+// visual_omni.js - MOLDE PARA EL REPORTE FORENSE OMNI (45 PUNTOS)
 
 function getHTMLOmni() {
     return `
     <!DOCTYPE html>
-    <html lang="en">
+    <html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PredictaCore OMNI - Auditoría Forense Total</title>
+        <script src="https://cdn.tailwindcss.com"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-            @page { size: A4; margin: 20mm 20mm; }
-            body { font-family: 'Inter', sans-serif; background: #ffffff; color: #111827; margin: 0; padding: 0; -webkit-print-color-adjust: exact; }
-            .header-info { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 3px solid #f59e0b; display: flex; justify-content: space-between; align-items: flex-end; }
-            .cover-title { font-size: 2.2rem; font-weight: 800; color: #111827; text-transform: uppercase; line-height: 1; }
-            .cover-subtitle { font-size: 1.2rem; color: #f59e0b; font-weight: 700; letter-spacing: 1px; margin-top: 5px; }
-            .badge { background: #111827; color: #f59e0b; padding: 5px 12px; font-size: 8pt; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; border-radius: 4px; }
-            .markdown-content h3 { color: #ffffff; background: #111827; font-size: 1.1rem; font-weight: 700; padding: 10px 15px; margin: 25px 0 15px 0; text-transform: uppercase; border-left: 5px solid #f59e0b; }
-            .markdown-content p { font-size: 9.5pt; line-height: 1.6; color: #374151; text-align: justify; margin-bottom: 1rem; }
-            table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; border: 1px solid #d1d5db; }
-            th { background: #f3f4f6; color: #111827; padding: 10px; text-transform: uppercase; font-size: 8pt; text-align: left; border-bottom: 2px solid #111827; }
-            td { padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 8.5pt; color: #4b5563; }
+            :root {
+                --pc-green: #10b981;
+                --pc-gold: #d4af37;
+                --pc-crimson: #991b1b;
+                --pc-dark: #0f172a;
+            }
+            body { background: #050505; color: #d1d5db; font-family: 'Inter', sans-serif; }
+            .terminal-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; }
+            @media print {
+                body { background: white; color: black; }
+                .no-print { display: none; }
+                .terminal-box { border: none; background: white; }
+                .page-break { page-break-before: always; }
+            }
+            .report-section { margin-bottom: 2rem; padding: 1.5rem; border-left: 4px solid var(--pc-green); background: rgba(30, 41, 59, 0.5); }
         </style>
     </head>
-    <body>
-        <div class="header-info">
-            <div>
-                <div class="cover-title">PREDICTACORE</div>
-                <div class="cover-subtitle">OMNISCIENCIAS PROTOCOL</div>
+    <body class="p-4 md:p-8">
+        <div id="impresion-area" class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-end border-b border-gray-800 pb-6 mb-8">
+                <div>
+                    <h1 class="text-4xl font-800 text-white tracking-tighter">PREDICTACORE <span class="text-green-500">OMNI</span></h1>
+                    <p class="text-xs text-gray-500 font-mono mt-1" id="pdf-domain">PROTOCOL: FULL FORENSIC SCAN / 45 NODES</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-gray-500 font-mono uppercase">Status: Finalizado</p>
+                    <p class="text-[10px] text-gray-500 font-mono uppercase">Nivel: Inteligencia Máxima</p>
+                </div>
             </div>
-            <div style="text-align: right;">
-                <div class="badge">Deep Forensic Scan</div>
-                <div style="font-size: 9pt; color: #6b7280; font-weight: 600; margin-top: 8px;" id="pdf-domain">Asset Analysis</div>
-            </div>
+
+            <div id="reporte" class="space-y-6">
+                </div>
         </div>
-        <div id="reporte" class="markdown-content"></div>
+
+        <div class="text-center mt-12 no-print">
+            <button id="btn-pdf" onclick="descargarPDFOmni()" class="bg-green-600 hover:bg-green-500 text-white px-8 py-3 rounded-full font-bold transition-all">
+                Exportar Auditoría OMNI
+            </button>
+        </div>
+
+        <script>
+            async function descargarPDFOmni() {
+                const btn = document.getElementById('btn-pdf');
+                btn.innerText = "CRISTALIZANDO OMNI..."; btn.disabled = true;
+                const contenido = document.getElementById('impresion-area').innerHTML;
+                const estilos = document.querySelector('style').innerHTML;
+                const htmlFinal = \`<html><head><style>\${estilos}</style></head><body>\${contenido}</body></html>\`;
+                
+                try {
+                    const res = await fetch('/generate-pdf', { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ html: htmlFinal }) 
+                    });
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = 'PREDICTACORE_OMNI.pdf'; a.click();
+                } catch (e) { alert("Error al generar."); } finally { btn.innerText = "Exportar Auditoría OMNI"; btn.disabled = false; }
+            }
+        </script>
     </body>
     </html>
     `;
