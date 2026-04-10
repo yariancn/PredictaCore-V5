@@ -1,4 +1,4 @@
-// server.js - MOTOR UNIFICADO RESTAURADO (LITE + TITÁN + PRUEBA OMNI)
+// server.js - MOTOR UNIFICADO (ESTRUCTURA DE PETICIÓN LITE PARA TODO EL SISTEMA)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -13,6 +13,7 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 const { Resend } = require('resend');
+const marked = require('marked');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -22,8 +23,6 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const jobs = {}; 
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
-
-// --- RUTAS DE ENTRADA ---
 
 app.post('/start-lite', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, 'lite');
@@ -43,10 +42,8 @@ app.post('/start', async (req, res) => {
 async function iniciarAuditoria(dna, email, modo) {
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
-    
     const jobId = `${modo}-${Date.now()}`; 
     jobs[jobId] = { status: 'running', progress: {}, email: email, modo: modo };
-    
     console.log(`>>> Lanzando Auditoría [${modo.toUpperCase()}]: ${targetUrl}`);
     ejecutarAuditoriaFondo(targetUrl, jobId, modo).catch(e => console.error("!!! ERROR:", e));
 }
@@ -66,14 +63,14 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
         const client = await auth.getClient();
         const tokenResponse = await client.getAccessToken();
         
-        // URL original validada que SÍ funciona
+        // URL ORIGINAL (La que sí te funciona)
         const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
 
         for (const etapaId in promptsAUsar) {
             console.log(`> Generando sección: ${etapaId}`);
             const promptFinal = promptsAUsar[etapaId](datosTarget.texto);
             
-            // AJUSTE CRÍTICO: Se eliminó systemInstruction y se integró al flujo normal para evitar el 404
+            // PAYLOAD CORREGIDO: Eliminamos systemInstruction y usamos la estructura plana del Lite
             const payload = {
                 contents: [{ 
                     role: "user", 
@@ -81,7 +78,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
                         { text: FIREWALL_IA },
                         { text: cerebroActivo.IDIOMA }, 
                         { text: cerebroActivo.REGLA_NUCLEAR },
-                        { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` }, 
+                        { text: `CONTEXTO:\n${datosTarget.texto}` }, 
                         { text: promptFinal }
                     ]
                 }],
@@ -112,7 +109,6 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
 
         jobs[jobId].status = 'done';
         await enviarReportePorCorreo(jobId, jobs[jobId].email, targetUrl, modo);
-
     } catch (error) {
         console.error("!!! FALLO MOTOR:", error);
     }
@@ -122,11 +118,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
     let browser;
     try {
         const job = jobs[jobId];
-        
-        let htmlBase;
-        if (modo === 'lite') htmlBase = getHTMLLite();
-        else if (modo === 'omni') htmlBase = getHTMLOmni();
-        else htmlBase = getHTML();
+        let htmlBase = (modo === 'lite') ? getHTMLLite() : (modo === 'omni' ? getHTMLOmni() : getHTML());
 
         browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox'] });
         const page = await browser.newPage();
@@ -139,7 +131,6 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             for (const key in progressData) {
                 const div = document.createElement('div');
                 div.className = 'report-section';
-                // Usamos la librería marked que ya está en los visuales
                 div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
@@ -148,19 +139,13 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
 
-        const subjects = {
-            lite: 'Tu Auditoría PredictaCore (Teaser)',
-            titan: 'Auditoría Forense Titán: 15 Puntos Críticos',
-            omni: 'PROTOCOL OMNI: Escaneo Forense Completo (45 Puntos)'
-        };
-
         await resend.emails.send({
             from: 'PredictaCore <reportes@predictacore.ai>',
             to: emailDestino,
-            subject: subjects[modo],
+            subject: `PredictaCore Audit - ${modo.toUpperCase()}`,
             attachments: [{ filename: `PredictaCore_${modo.toUpperCase()}.pdf`, content: pdfBuffer }]
         });
-        console.log(`>>> REPORTE ${modo.toUpperCase()} ENVIADO A ${emailDestino}`);
+        console.log(`>>> REPORTE ${modo.toUpperCase()} ENVIADO`);
     } catch (e) { if(browser) await browser.close(); console.error(e); }
 }
 
