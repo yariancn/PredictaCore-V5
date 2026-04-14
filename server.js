@@ -1,4 +1,4 @@
-// server.js - MOTOR UNIFICADO (MANTIENE LÓGICA DE ÉXITO DEL TEASER)
+// server.js - NÚCLEO RESTAURADO Y UNIFICADO (SIN DEPENDENCIAS EXTERNAS)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -11,7 +11,8 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 const { Resend } = require('resend');
-const marked = require('marked');
+
+// ELIMINADA LA LÍNEA DE MARKED QUE CAUSABA EL CRASH
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -22,13 +23,11 @@ const jobs = {};
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
 
-// RUTA 1: TEASER (YA FUNCIONA)
 app.post('/start-lite', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, true);
     res.json({ status: 'started' });
 });
 
-// RUTA 2: TITÁN (NUEVA CONEXIÓN)
 app.post('/start', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, false);
     res.json({ status: 'started' });
@@ -93,10 +92,14 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
         const page = await browser.newPage();
         await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
 
+        // IMPORTANTE: El procesamiento de Markdown se delega al navegador (Puppeteer) 
+        // porque allí SÍ tienes cargada la librería marked vía CDN.
         await page.evaluate((progressData) => {
             const reporte = document.getElementById('reporte');
             for (const key in progressData) {
                 const div = document.createElement('div');
+                div.className = 'report-section';
+                // marked.parse funcionará aquí porque visual.js carga el script desde CDN
                 div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
@@ -111,7 +114,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
             subject: isLite ? 'Radiografía Forense PredictaCore' : 'Auditoría Titán Completa',
             attachments: [{ filename: 'PredictaCore.pdf', content: pdfBuffer }]
         });
-        console.log(`>>> [EXITO] Reporte enviado a ${emailDestino}`);
+        console.log(`>>> [EXITO] Reporte enviado.`);
     } catch (e) { if(browser) await browser.close(); console.error(e); }
 }
 
