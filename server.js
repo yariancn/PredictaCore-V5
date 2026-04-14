@@ -1,4 +1,4 @@
-// server.js - NÚCLEO PREDICTACORE UNIFICADO (MODELO VALIDADO)
+// server.js - MOTOR UNIFICADO (MANTIENE LÓGICA DE ÉXITO DEL TEASER)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -11,6 +11,7 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 const { Resend } = require('resend');
+const marked = require('marked');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -21,15 +22,13 @@ const jobs = {};
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
 
-// --- RUTAS DE ACTIVACIÓN ---
-
-// Reporte Gratuito (Lite)
+// RUTA 1: TEASER (YA FUNCIONA)
 app.post('/start-lite', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, true);
     res.json({ status: 'started' });
 });
 
-// Reporte Titán (Pago $239 + Suscripción)
+// RUTA 2: TITÁN (NUEVA CONEXIÓN)
 app.post('/start', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, false);
     res.json({ status: 'started' });
@@ -38,11 +37,9 @@ app.post('/start', async (req, res) => {
 async function iniciarAuditoria(dna, email, isLite) {
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
-    const modo = isLite ? 'LITE' : 'TITAN';
-    const jobId = `${modo}-${Date.now()}`; 
+    const jobId = `${isLite ? 'LITE' : 'TITAN'}-${Date.now()}`; 
     jobs[jobId] = { status: 'running', progress: {}, email: email, isLite: isLite };
-    console.log(`>>> [SISTEMA] Iniciando Reporte ${modo} para: ${targetUrl}`);
-    ejecutarAuditoriaFondo(targetUrl, jobId, isLite).catch(e => console.error("!!! ERROR:", e));
+    ejecutarAuditoriaFondo(targetUrl, jobId, isLite).catch(e => console.error(e));
 }
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
@@ -56,23 +53,18 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
         const client = await auth.getClient();
         const tokenResponse = await client.getAccessToken();
         
-        // URL VALIDADA (LA QUE YA CORRE EN TU PROYECTO)
         const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
 
         for (const etapaId in promptsAUsar) {
-            console.log(`> Generando sección: ${etapaId}`);
             const promptFinal = promptsAUsar[etapaId](datosTarget.texto);
             const payload = {
-                contents: [{ 
-                    role: "user", 
-                    parts: [
-                        { text: FIREWALL_IA },
-                        { text: cerebroActivo.IDIOMA }, 
-                        { text: cerebroActivo.REGLA_NUCLEAR },
-                        { text: `CONTEXTO ESTRATÉGICO:\n${datosTarget.texto}` }, 
-                        { text: promptFinal }
-                    ]
-                }],
+                contents: [{ role: "user", parts: [
+                    { text: FIREWALL_IA },
+                    { text: cerebroActivo.IDIOMA }, 
+                    { text: cerebroActivo.REGLA_NUCLEAR },
+                    { text: `CONTEXTO:\n${datosTarget.texto}` }, 
+                    { text: promptFinal }
+                ]}],
                 generationConfig: { temperature: 0.15, maxOutputTokens: 2500 } 
             };
 
@@ -83,15 +75,13 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
             });
 
             const vertexData = await vertexRes.json();
-            if (vertexData.candidates && vertexData.candidates[0].content) {
+            if (vertexData.candidates) {
                 jobs[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
             }
             await new Promise(r => setTimeout(r, 2000));
         }
-
-        jobs[jobId].status = 'done';
         await enviarReportePorCorreo(jobId, jobs[jobId].email, targetUrl, isLite);
-    } catch (error) { console.error("!!! FALLO MOTOR:", error); }
+    } catch (error) { console.error("!!! ERROR MOTOR:", error); }
 }
 
 async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
@@ -103,13 +93,10 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
         const page = await browser.newPage();
         await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
 
-        // El procesamiento de marked se hace en el cliente del PDF para evitar errores de módulos en server
         await page.evaluate((progressData) => {
             const reporte = document.getElementById('reporte');
             for (const key in progressData) {
                 const div = document.createElement('div');
-                div.className = 'report-section';
-                // Usamos la librería marked ya cargada en los archivos visual.js/visual_lite.js
                 div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
@@ -121,10 +108,10 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
         await resend.emails.send({
             from: 'PredictaCore <reportes@predictacore.ai>',
             to: emailDestino,
-            subject: isLite ? 'Tu Auditoría Forense (Teaser)' : 'Tu Auditoría Forense Titán Completa',
-            attachments: [{ filename: `PredictaCore_${isLite ? 'LITE' : 'TITAN'}.pdf`, content: pdfBuffer }]
+            subject: isLite ? 'Radiografía Forense PredictaCore' : 'Auditoría Titán Completa',
+            attachments: [{ filename: 'PredictaCore.pdf', content: pdfBuffer }]
         });
-        console.log(`>>> [EXITO] Reporte enviado.`);
+        console.log(`>>> [EXITO] Reporte enviado a ${emailDestino}`);
     } catch (e) { if(browser) await browser.close(); console.error(e); }
 }
 
