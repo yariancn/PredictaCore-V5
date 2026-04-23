@@ -1,4 +1,4 @@
-// server.js - NÚCLEO RESTAURADO (TEASER + TITÁN)
+// server.js - NÚCLEO BLINDADO PREDICTACORE (LITE + TITÁN)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -21,13 +21,13 @@ const jobs = {};
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
 
-// 1. CARRIL TEASER (EL QUE YA FUNCIONABA)
+// RUTA TEASER (GRATIS)
 app.post('/start-lite', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, true);
     res.json({ status: 'started' });
 });
 
-// 2. CARRIL TITÁN (NUEVO, USANDO LA MISMA LÓGICA)
+// RUTA TITÁN (PAGO $239 + SUSCRIPCIÓN)
 app.post('/start', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, false);
     res.json({ status: 'started' });
@@ -39,7 +39,8 @@ async function iniciarAuditoria(dna, email, isLite) {
     const modo = isLite ? 'LITE' : 'TITAN';
     const jobId = `${modo}-${Date.now()}`; 
     jobs[jobId] = { status: 'running', progress: {}, email: email, isLite: isLite };
-    ejecutarAuditoriaFondo(targetUrl, jobId, isLite).catch(e => console.error(e));
+    console.log(`>>> [SISTEMA] Iniciando Reporte ${modo} para: ${targetUrl}`);
+    ejecutarAuditoriaFondo(targetUrl, jobId, isLite).catch(e => console.error("!!! ERROR:", e));
 }
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
@@ -53,8 +54,8 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
         const client = await auth.getClient();
         const tokenResponse = await client.getAccessToken();
         
-        // URL DE GEMINI 1.5 PRO (LA QUE USABA TU TEASER CON ÉXITO)
-        const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
+        // RESTAURADO AL MODELO 2.5 (La ruta original que sí te corre)
+        const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
         for (const etapaId in promptsAUsar) {
             const promptFinal = promptsAUsar[etapaId](datosTarget.texto);
@@ -66,7 +67,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
                     { text: `CONTEXTO:\n${datosTarget.texto}` }, 
                     { text: promptFinal }
                 ]}],
-                generationConfig: { temperature: 0.15, maxOutputTokens: 2500 } 
+                generationConfig: { temperature: 0.1, maxOutputTokens: 2500 } 
             };
 
             const vertexRes = await fetch(vertexUrl, { 
@@ -82,7 +83,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
             await new Promise(r => setTimeout(r, 2000));
         }
         await enviarReportePorCorreo(jobId, jobs[jobId].email, targetUrl, isLite);
-    } catch (error) { console.error("!!! ERROR MOTOR:", error); }
+    } catch (error) { console.error("!!! FALLO MOTOR:", error); }
 }
 
 async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
@@ -99,7 +100,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
             for (const key in progressData) {
                 const div = document.createElement('div');
                 div.className = 'report-section';
-                // marked.parse funcionará aquí porque tus visuales cargan el CDN
+                // Usamos la librería marked que ya cargan tus archivos visuales vía CDN
                 div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
@@ -114,8 +115,8 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
             subject: isLite ? 'Radiografía Forense PredictaCore' : 'Auditoría Titán Completa',
             attachments: [{ filename: 'PredictaCore.pdf', content: pdfBuffer }]
         });
-        console.log(`>>> [EXITO] Reporte enviado.`);
+        console.log(`>>> [EXITO] Reporte enviado a ${emailDestino}`);
     } catch (e) { if(browser) await browser.close(); console.error(e); }
 }
 
-app.listen(port, "0.0.0.0", () => console.log(`MOTOR UNIFICADO ONLINE`));
+app.listen(port, "0.0.0.0", () => console.log(`MOTOR UNIFICADO ONLINE - MODELO 2.5`));
