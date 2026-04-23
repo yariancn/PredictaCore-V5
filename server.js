@@ -95,15 +95,18 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
         const page = await browser.newPage();
         await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
 
-        await page.evaluate((progressData) => {
+        await page.evaluate((progressData, dominio) => {
             const reporte = document.getElementById('reporte');
+            const dEl = document.getElementById('pdf-domain');
+            if(dEl && dominio) dEl.innerText = 'Analysis: ' + dominio;
+            
             for (const key in progressData) {
                 const div = document.createElement('div');
                 div.className = 'report-section';
                 div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
-        }, job.progress);
+        }, job.progress, targetUrl);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
