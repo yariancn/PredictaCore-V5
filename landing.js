@@ -58,7 +58,7 @@ function getLandingHTML() {
                     <h4 class="text-4xl font-extrabold text-white mb-2 tracking-tighter">$239 <span class="text-sm text-zinc-500 line-through font-normal">$700 USD</span></h4>
                     <p class="text-xs text-emerald-500 font-bold uppercase tracking-widest mb-6 tracking-[0.2em]">Incluye Suscripción Titán ($15/mes)</p>
                     
-                    <button class="w-full bg-emerald-600 text-white font-bold py-4 px-12 rounded-lg text-sm uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)] mb-4">
+                    <button onclick="comprarTitan()" class="w-full bg-emerald-600 text-white font-bold py-4 px-12 rounded-lg text-sm uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)] mb-4">
                         Activar Protección Titán
                     </button>
 
@@ -91,7 +91,6 @@ function getLandingHTML() {
                     ">> Enviando reporte al canal de entrega..."
                 ];
 
-                // Llamada real al servidor
                 fetch('/start-lite', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
@@ -112,6 +111,19 @@ function getLandingHTML() {
                         }, 2000);
                     }
                 }, 1000);
+            }
+
+            async function comprarTitan() {
+                const url = document.getElementById('dna-url').value;
+                const email = document.getElementById('user-email').value;
+                
+                alert("¡Procesando! Tu Auditoría Titán ha comenzado. El reporte completo llegará a " + email + " en unos minutos.");
+                
+                fetch('/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dna: url, email: email })
+                });
             }
         </script>
     </body>
