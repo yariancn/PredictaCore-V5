@@ -1,4 +1,4 @@
-// server.js - NÚCLEO RESTAURADO Y UNIFICADO (SIN DEPENDENCIAS EXTERNAS)
+// server.js - NÚCLEO RESTAURADO (TEASER + TITÁN)
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -12,8 +12,6 @@ const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 const { Resend } = require('resend');
 
-// ELIMINADA LA LÍNEA DE MARKED QUE CAUSABA EL CRASH
-
 const app = express();
 const port = process.env.PORT || 8080;
 app.use(express.json({ limit: '10mb' }));
@@ -23,11 +21,13 @@ const jobs = {};
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
 
+// 1. CARRIL TEASER (EL QUE YA FUNCIONABA)
 app.post('/start-lite', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, true);
     res.json({ status: 'started' });
 });
 
+// 2. CARRIL TITÁN (NUEVO, USANDO LA MISMA LÓGICA)
 app.post('/start', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, false);
     res.json({ status: 'started' });
@@ -36,7 +36,8 @@ app.post('/start', async (req, res) => {
 async function iniciarAuditoria(dna, email, isLite) {
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
-    const jobId = `${isLite ? 'LITE' : 'TITAN'}-${Date.now()}`; 
+    const modo = isLite ? 'LITE' : 'TITAN';
+    const jobId = `${modo}-${Date.now()}`; 
     jobs[jobId] = { status: 'running', progress: {}, email: email, isLite: isLite };
     ejecutarAuditoriaFondo(targetUrl, jobId, isLite).catch(e => console.error(e));
 }
@@ -52,6 +53,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
         const client = await auth.getClient();
         const tokenResponse = await client.getAccessToken();
         
+        // URL DE GEMINI 1.5 PRO (LA QUE USABA TU TEASER CON ÉXITO)
         const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-1.5-pro:generateContent`;
 
         for (const etapaId in promptsAUsar) {
@@ -92,14 +94,12 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
         const page = await browser.newPage();
         await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
 
-        // IMPORTANTE: El procesamiento de Markdown se delega al navegador (Puppeteer) 
-        // porque allí SÍ tienes cargada la librería marked vía CDN.
         await page.evaluate((progressData) => {
             const reporte = document.getElementById('reporte');
             for (const key in progressData) {
                 const div = document.createElement('div');
                 div.className = 'report-section';
-                // marked.parse funcionará aquí porque visual.js carga el script desde CDN
+                // marked.parse funcionará aquí porque tus visuales cargan el CDN
                 div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
