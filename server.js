@@ -1,4 +1,4 @@
-// server.js - NÚCLEO BLINDADO PREDICTACORE (LITE + TITÁN) CON RESEND CORREGIDO
+// server.js - NÚCLEO BLINDADO PREDICTACORE (LITE + TITÁN) CON CAPACIDAD EXTENDIDA
 const express = require('express');
 const cerebroWeb = require('./cerebro');           
 const cerebroSocial = require('./cerebro_social'); 
@@ -67,7 +67,8 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
                     { text: `CONTEXTO:\n${datosTarget.texto}` }, 
                     { text: promptFinal }
                 ]}],
-                generationConfig: { temperature: 0.1, maxOutputTokens: 2500 } 
+                // EXPANSIÓN APROBADA: 8192 TOKENS PARA EVITAR CORTES EN REPORTES MASIVOS
+                generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } 
             };
 
             const vertexRes = await fetch(vertexUrl, { 
