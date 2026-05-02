@@ -1,4 +1,4 @@
-// landing.js - INTERFAZ FORENSE BILINGÜE + LENGUAJE DE NEGOCIOS
+// landing.js - INTERFAZ FORENSE BILINGÜE + LOGOTIPO Y GANCHO PSICOLÓGICO
 
 function getLandingHTML() {
     return `
@@ -29,13 +29,27 @@ function getLandingHTML() {
         </div>
 
         <div class="max-w-2xl w-full">
-            <div id="setup-stage" class="terminal-box p-8 text-center">
-                <h1 class="text-3xl font-800 text-white mb-6 tracking-tighter text-left uppercase">PREDICTACORE <span class="text-emerald-500 font-black">TITÁN</span></h1>
+            <div id="setup-stage" class="terminal-box p-8 text-center shadow-[0_0_30px_rgba(15,23,42,0.8)]">
+                
+                <div class="flex items-center justify-center space-x-3 mb-6">
+                    <div class="w-12 h-12 border border-emerald-500/50 bg-emerald-950/30 rounded flex items-center justify-center">
+                        <svg class="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                    </div>
+                    <h1 class="text-3xl font-800 text-white tracking-tighter uppercase">PREDICTA<span class="text-emerald-500 font-black">CORE</span></h1>
+                </div>
+                
+                <div class="mb-8 text-left border-l-2 border-emerald-500 pl-4">
+                    <h2 id="intro-heading" class="text-sm text-emerald-500 font-bold tracking-widest uppercase mb-2">Auditoría Forense de Conversión</h2>
+                    <p id="intro-desc" class="text-sm text-zinc-400 leading-relaxed">
+                        El tráfico no garantiza rentabilidad. Su ecosistema digital posee fugas de capital estructurales invisibles al análisis tradicional. Nuestro motor inyecta modelos simbiópticos para colisionar contra su arquitectura, detectando y cuantificando la hemorragia operativa en tiempo real.
+                    </p>
+                </div>
+
                 <div class="space-y-4">
-                    <input type="text" id="dna-url" placeholder="URL del Activo (ej. tunegocio.com)" class="w-full bg-black/50 border border-zinc-800 rounded-lg p-4 text-white focus:outline-none focus:border-emerald-500 transition-all">
-                    <input type="email" id="user-email" placeholder="Canal de Entrega (Email)" class="w-full bg-black/50 border border-zinc-800 rounded-lg p-4 text-white focus:outline-none focus:border-emerald-500 transition-all">
-                    <button id="btn-start" onclick="iniciarEscaneo()" class="w-full bg-white text-black font-bold py-4 rounded-lg hover:bg-emerald-500 hover:text-white transition-all uppercase tracking-widest text-sm">
-                        Iniciar Escaneo Forense Gratis
+                    <input type="text" id="dna-url" placeholder="URL del Activo (ej. empresa.com)" class="w-full bg-black/50 border border-zinc-800 rounded-lg p-4 text-white focus:outline-none focus:border-emerald-500 transition-all">
+                    <input type="email" id="user-email" placeholder="Canal de Entrega (Email Ejecutivo)" class="w-full bg-black/50 border border-zinc-800 rounded-lg p-4 text-white focus:outline-none focus:border-emerald-500 transition-all">
+                    <button id="btn-start" onclick="iniciarEscaneo()" class="w-full bg-white text-black font-bold py-4 rounded-lg hover:bg-emerald-500 hover:text-white transition-all uppercase tracking-widest text-sm shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                        Iniciar Diagnóstico Gratuito
                     </button>
                 </div>
             </div>
@@ -60,7 +74,7 @@ function getLandingHTML() {
                         <span id="box-tag">Vectores de Optimización Detectados</span>
                     </h3>
                     <p class="text-sm text-zinc-300 leading-relaxed" id="box-text">
-                        El escaneo inicial muestra que tu página tiene cuellos de botella invisibles. Estás atrayendo visitas, pero no se están convirtiendo en clientes al ritmo que deberían. El Reporte Titán te muestra exactamente dónde se caen las ventas y cómo arreglarlo.
+                        El escaneo inicial muestra que su plataforma tiene cuellos de botella invisibles. Está atrayendo usuarios, pero la fricción operativa impide que se conviertan al ritmo que deberían. El Reporte Titán diseca su arquitectura para mostrarle exactamente dónde se cae la rentabilidad y cómo sellar esas fugas.
                     </p>
                 </div>
 
@@ -83,34 +97,38 @@ function getLandingHTML() {
             let currentLang = 'es';
             const dictionary = {
                 es: {
-                    placeholderUrl: "URL del Activo (ej. tunegocio.com)",
-                    placeholderEmail: "Canal de Entrega (Email)",
-                    btnStart: "Iniciar Escaneo Forense Gratis",
+                    introHeading: "Auditoría Forense de Conversión",
+                    introDesc: "El tráfico no garantiza rentabilidad. Su ecosistema digital posee fugas de capital estructurales invisibles al análisis tradicional. Nuestro motor inyecta modelos simbiópticos para colisionar contra su arquitectura, detectando y cuantificando la hemorragia operativa en tiempo real.",
+                    placeholderUrl: "URL del Activo (ej. empresa.com)",
+                    placeholderEmail: "Canal de Entrega (Email Ejecutivo)",
+                    btnStart: "Iniciar Diagnóstico Gratuito",
                     logInit: ">> INICIALIZANDO NÚCLEO PREDICTACORE...",
                     upsellTitle: "Radiografía Enviada",
                     upsellSub: "El reporte inicial ha sido entregado a",
                     boxTag: "Vectores de Optimización Detectados",
-                    boxText: "El escaneo inicial muestra que tu página tiene cuellos de botella invisibles. Estás atrayendo visitas, pero no se están convirtiendo en clientes al ritmo que deberían. El Reporte Titán te muestra exactamente dónde se caen las ventas y cómo arreglarlo.",
+                    boxText: "El escaneo inicial muestra que su plataforma tiene cuellos de botella invisibles. Está atrayendo usuarios, pero la fricción operativa impide que se conviertan al ritmo que deberían. El Reporte Titán diseca su arquitectura para mostrarle exactamente dónde se cae la rentabilidad y cómo sellar esas fugas.",
                     subPrice: "Incluye Suscripción Titán ($15/mes)",
                     btnTitan: "Activar Protección Titán",
                     disclaimer: "Analizado mediante la colisión de 9,000 modelos simbiópticos. Cargo único de $239 y suscripción de $15/mes.",
-                    alertProcess: "¡Procesando! Tu Auditoría Titán ha comenzado. El reporte completo llegará a su email en unos minutos.",
-                    alertError: "Faltan datos"
+                    alertProcess: "¡Procesamiento en curso! El motor ha iniciado la auditoría Titán. Recibirá el reporte completo en su correo en breve.",
+                    alertError: "Faltan datos operativos."
                 },
                 en: {
-                    placeholderUrl: "Asset URL (e.g., yourbusiness.com)",
-                    placeholderEmail: "Delivery Channel (Email)",
-                    btnStart: "Start Free Forensic Scan",
+                    introHeading: "Forensic Conversion Audit",
+                    introDesc: "Traffic does not guarantee profitability. Your digital ecosystem has structural capital leaks invisible to traditional analysis. Our engine injects symbioptic models to collide against your architecture, detecting and quantifying operational hemorrhage in real time.",
+                    placeholderUrl: "Asset URL (e.g., enterprise.com)",
+                    placeholderEmail: "Delivery Channel (Executive Email)",
+                    btnStart: "Start Free Diagnostic",
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
                     upsellTitle: "X-Ray Sent",
                     upsellSub: "The initial report has been delivered to",
                     boxTag: "Optimization Vectors Detected",
-                    boxText: "The initial scan shows your page has invisible bottlenecks. You're attracting visitors, but they aren't converting at the rate they should. The Titan Report shows you exactly where sales are dropping and how to fix it.",
+                    boxText: "The initial scan shows your platform has invisible bottlenecks. You are attracting users, but operational friction prevents them from converting at the required rate. The Titan Report dissects your architecture to show exactly where profitability drops and how to seal those leaks.",
                     subPrice: "Includes Titan Subscription ($15/mo)",
                     btnTitan: "Activate Titan Protection",
                     disclaimer: "Analyzed through the collision of 9,000 symbioptic models. One-time $239 charge and $15/mo subscription.",
-                    alertProcess: "Processing! Your Titan Audit has started. The full report will arrive in your email shortly.",
-                    alertError: "Missing data"
+                    alertProcess: "Processing in progress! The engine has started the Titan audit. You will receive the full report in your email shortly.",
+                    alertError: "Operational data missing."
                 }
             };
 
@@ -120,6 +138,8 @@ function getLandingHTML() {
                 document.getElementById('lang-en').classList.toggle('active', lang === 'en');
                 
                 const d = dictionary[lang];
+                document.getElementById('intro-heading').innerText = d.introHeading;
+                document.getElementById('intro-desc').innerText = d.introDesc;
                 document.getElementById('dna-url').placeholder = d.placeholderUrl;
                 document.getElementById('user-email').placeholder = d.placeholderEmail;
                 document.getElementById('btn-start').innerText = d.btnStart;
@@ -144,8 +164,8 @@ function getLandingHTML() {
 
                 const terminal = document.getElementById('terminal-output');
                 const logs = currentLang === 'es' ? 
-                    [">> Conectando con nodos forenses...", ">> Inyectando Gemelos Sintéticos...", ">> Analizando jerarquía visual...", ">> Sellando radiografía Lite...", ">> Enviando reporte..."] :
-                    [">> Connecting forensic nodes...", ">> Injecting Synthetic Twins...", ">> Analyzing visual hierarchy...", ">> Sealing Lite X-ray...", ">> Sending report..."];
+                    [">> Conectando con nodos forenses...", ">> Inyectando Gemelos Sintéticos...", ">> Analizando fricción de arquitectura...", ">> Sellando radiografía Lite...", ">> Entregando veredicto..."] :
+                    [">> Connecting forensic nodes...", ">> Injecting Synthetic Twins...", ">> Analyzing architectural friction...", ">> Sealing Lite X-ray...", ">> Delivering verdict..."];
 
                 fetch('/start-lite', {
                     method: 'POST',
