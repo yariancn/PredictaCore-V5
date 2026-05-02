@@ -41,7 +41,7 @@ function getLandingHTML() {
                 <div class="mb-8 text-left border-l-2 border-emerald-500 pl-4">
                     <h2 id="intro-heading" class="text-sm text-emerald-500 font-bold tracking-widest uppercase mb-2">Auditoría Forense de Conversión</h2>
                     <p id="intro-desc" class="text-sm text-zinc-400 leading-relaxed">
-                        El tráfico no garantiza rentabilidad. Su ecosistema digital posee fugas de capital estructurales invisibles al análisis tradicional. Nuestro motor inyecta modelos simbiópticos para colisionar contra su arquitectura, detectando y cuantificando la hemorragia operativa en tiempo real.
+                        Tener tráfico no sirve de nada si tu página no convierte. Tu negocio está perdiendo ventas todos los días por errores de navegación y fricción invisibles al ojo humano. No somos una agencia con opiniones subjetivas ni una IA genérica. Nuestro motor inyecta 9,000 "gemelos sintéticos" que simulan navegar y comprar en tu sitio, detectando el punto exacto donde los clientes abandonan.
                     </p>
                 </div>
 
@@ -74,7 +74,7 @@ function getLandingHTML() {
                         <span id="box-tag">Vectores de Optimización Detectados</span>
                     </h3>
                     <p class="text-sm text-zinc-300 leading-relaxed" id="box-text">
-                        El escaneo inicial muestra que su plataforma tiene cuellos de botella invisibles. Está atrayendo usuarios, pero la fricción operativa impide que se conviertan al ritmo que deberían. El Reporte Titán diseca su arquitectura para mostrarle exactamente dónde se cae la rentabilidad y cómo sellar esas fugas.
+                        El escaneo inicial muestra que tu página tiene cuellos de botella invisibles. Estás atrayendo visitas, pero no se están convirtiendo en clientes al ritmo que deberían. El Reporte Titán te muestra exactamente dónde se caen las ventas y cómo arreglarlo.
                     </p>
                 </div>
 
@@ -98,7 +98,7 @@ function getLandingHTML() {
             const dictionary = {
                 es: {
                     introHeading: "Auditoría Forense de Conversión",
-                    introDesc: "El tráfico no garantiza rentabilidad. Su ecosistema digital posee fugas de capital estructurales invisibles al análisis tradicional. Nuestro motor inyecta modelos simbiópticos para colisionar contra su arquitectura, detectando y cuantificando la hemorragia operativa en tiempo real.",
+                    introDesc: "Tener tráfico no sirve de nada si tu página no convierte. Tu negocio está perdiendo ventas todos los días por errores de navegación y fricción invisibles al ojo humano. No somos una agencia con opiniones subjetivas ni una IA genérica. Nuestro motor inyecta 9,000 \\"gemelos sintéticos\\" que simulan navegar y comprar en tu sitio, detectando el punto exacto donde los clientes abandonan.",
                     placeholderUrl: "URL del Activo (ej. empresa.com)",
                     placeholderEmail: "Canal de Entrega (Email Ejecutivo)",
                     btnStart: "Iniciar Diagnóstico Gratuito",
@@ -106,7 +106,7 @@ function getLandingHTML() {
                     upsellTitle: "Radiografía Enviada",
                     upsellSub: "El reporte inicial ha sido entregado a",
                     boxTag: "Vectores de Optimización Detectados",
-                    boxText: "El escaneo inicial muestra que su plataforma tiene cuellos de botella invisibles. Está atrayendo usuarios, pero la fricción operativa impide que se conviertan al ritmo que deberían. El Reporte Titán diseca su arquitectura para mostrarle exactamente dónde se cae la rentabilidad y cómo sellar esas fugas.",
+                    boxText: "El escaneo inicial muestra que tu página tiene cuellos de botella invisibles. Estás atrayendo visitas, pero no se están convirtiendo en clientes al ritmo que deberían. El Reporte Titán te muestra exactamente dónde se caen las ventas y cómo arreglarlo.",
                     subPrice: "Incluye Suscripción Titán ($15/mes)",
                     btnTitan: "Activar Protección Titán",
                     disclaimer: "Analizado mediante la colisión de 9,000 modelos simbiópticos. Cargo único de $239 y suscripción de $15/mes.",
@@ -115,7 +115,7 @@ function getLandingHTML() {
                 },
                 en: {
                     introHeading: "Forensic Conversion Audit",
-                    introDesc: "Traffic does not guarantee profitability. Your digital ecosystem has structural capital leaks invisible to traditional analysis. Our engine injects symbioptic models to collide against your architecture, detecting and quantifying operational hemorrhage in real time.",
+                    introDesc: "Traffic is useless if your page doesn't convert. Your business is losing sales every day due to navigation errors and friction invisible to the human eye. We are not an agency with subjective opinions or a generic AI. Our engine injects 9,000 \\"synthetic twins\\" that simulate navigating and buying on your site, detecting the exact point where customers drop off.",
                     placeholderUrl: "Asset URL (e.g., enterprise.com)",
                     placeholderEmail: "Delivery Channel (Executive Email)",
                     btnStart: "Start Free Diagnostic",
@@ -123,7 +123,7 @@ function getLandingHTML() {
                     upsellTitle: "X-Ray Sent",
                     upsellSub: "The initial report has been delivered to",
                     boxTag: "Optimization Vectors Detected",
-                    boxText: "The initial scan shows your platform has invisible bottlenecks. You are attracting users, but operational friction prevents them from converting at the required rate. The Titan Report dissects your architecture to show exactly where profitability drops and how to seal those leaks.",
+                    boxText: "The initial scan shows your page has invisible bottlenecks. You are attracting visitors, but they are not converting into customers at the rate they should. The Titan Report shows you exactly where sales drop off and how to fix it.",
                     subPrice: "Includes Titan Subscription ($15/mo)",
                     btnTitan: "Activate Titan Protection",
                     disclaimer: "Analyzed through the collision of 9,000 symbioptic models. One-time $239 charge and $15/mo subscription.",
