@@ -1,6 +1,6 @@
 // server.js - NÚCLEO BLINDADO PREDICTACORE (LITE + TITÁN) CON CAPACIDAD EXTENDIDA
 const express = require('express');
-const cerebroWeb = require('./cerebro');           
+const cerebroWeb = require('./cerebro');          
 const cerebroSocial = require('./cerebro_social'); 
 const { PROMPTS_LITE } = require('./cerebro_lite');
 const { getHTML } = require('./visual'); 
@@ -12,12 +12,84 @@ const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 const { Resend } = require('resend');
 
+// LIBRERÍAS DE PAGOS Y BASE DE DATOS
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { Pool } = require('pg');
+
+// CONEXIÓN A NEON.TECH (PostgreSQL)
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
+
 const app = express();
 const port = process.env.PORT || 8080;
-app.use(express.json({ limit: '10mb' }));
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const jobs = {}; 
+
+// ============================================================================
+// WEBHOOK DE STRIPE (DEBE IR ANTES DEL EXPRESS.JSON PARA LEER LA FIRMA CRUDA)
+// ============================================================================
+app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    let event;
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+        console.error(`!!! Webhook Error: ${err.message}`);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        const { dna, email, refCode } = session.metadata;
+
+        console.log(`>>> [PAGO EXITOSO] Recibido de ${email}. Despertando IA Titán...`);
+
+        // 1. DESPERTAR A LA IA
+        iniciarAuditoria(dna, email, false);
+
+        // 2. REGISTRAR COMISIONES EN NEON
+        try {
+            if (refCode && refCode !== 'null' && refCode !== '') {
+                const res1 = await pool.query('SELECT id, sponsor_id FROM afiliados WHERE codigo_ref = $1', [refCode]);
+                if (res1.rows.length > 0) {
+                    const nivel1_id = res1.rows[0].id;
+                    const nivel2_id = res1.rows[0].sponsor_id;
+                    let nivel3_id = null;
+
+                    if (nivel2_id) {
+                        const res2 = await pool.query('SELECT sponsor_id FROM afiliados WHERE id = $1', [nivel2_id]);
+                        if (res2.rows.length > 0) {
+                            nivel3_id = res2.rows[0].sponsor_id;
+                        }
+                    }
+
+                    await pool.query(`
+                        INSERT INTO ventas_comisiones
+                        (id_venta_stripe, cliente_email, monto_total, afiliado_nivel_1_id, comision_nivel_1, afiliado_nivel_2_id, comision_nivel_2, afiliado_nivel_3_id, comision_nivel_3)
+                        VALUES ($1, $2, 349.00, $3, 104.70, $4, 34.90, $5, 17.45)
+                    `, [session.id, email, nivel1_id, nivel2_id, nivel3_id]);
+                    console.log(`>>> [AFILIADOS] Comisiones registradas para la red de: ${refCode}`);
+                }
+            } else {
+                await pool.query(`
+                    INSERT INTO ventas_comisiones (id_venta_stripe, cliente_email, monto_total)
+                    VALUES ($1, $2, 349.00)
+                `, [session.id, email]);
+            }
+        } catch (dbError) {
+            console.error("!!! Error registrando comisiones en la BD:", dbError);
+        }
+    }
+    res.json({ received: true });
+});
+
+// ============================================================================
+// CONFIGURACIÓN ORIGINAL (PARSEO JSON)
+// ============================================================================
+app.use(express.json({ limit: '10mb' }));
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
 
@@ -27,12 +99,49 @@ app.post('/start-lite', async (req, res) => {
     res.json({ status: 'started' });
 });
 
-// RUTA TITÁN (PAGO $239)
+// RUTA TITÁN (PAGO $349 + $15/mes) - SESIÓN DE STRIPE
 app.post('/start', async (req, res) => {
-    iniciarAuditoria(req.body.dna, req.body.email, false);
-    res.json({ status: 'started' });
+    try {
+        const { dna, email, refCode } = req.body;
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            customer_email: email,
+            mode: 'subscription',
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: { name: 'Reporte Titán (Auditoría Forense)' },
+                        unit_amount: 34900,
+                    },
+                    quantity: 1,
+                },
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: { name: 'Suscripción Protección Titán' },
+                        unit_amount: 1500,
+                        recurring: { interval: 'month' }
+                    },
+                    quantity: 1,
+                }
+            ],
+            success_url: `https://${req.get('host')}/?success=true`,
+            cancel_url: `https://${req.get('host')}/`,
+            metadata: { dna, email, refCode: refCode || '' } 
+        });
+
+        res.json({ status: 'checkout', url: session.url });
+    } catch (error) {
+        console.error("!!! Error creando sesión de Stripe:", error);
+        res.status(500).json({ error: 'Error interno en la pasarela de pagos' });
+    }
 });
 
+// ============================================================================
+// NÚCLEO DE INTELIGENCIA ARTIFICIAL Y SCRAPING
+// ============================================================================
 async function iniciarAuditoria(dna, email, isLite) {
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
@@ -54,7 +163,6 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
         const client = await auth.getClient();
         const tokenResponse = await client.getAccessToken();
         
-        // EL MODELO 2.5-PRO QUE YA TE FUNCIONABA
         const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
         for (const etapaId in promptsAUsar) {
@@ -67,7 +175,6 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
                     { text: `CONTEXTO:\n${datosTarget.texto}` }, 
                     { text: promptFinal }
                 ]}],
-                // EXPANSIÓN APROBADA: 8192 TOKENS PARA EVITAR CORTES EN REPORTES MASIVOS
                 generationConfig: { temperature: 0.1, maxOutputTokens: 8192 } 
             };
 
@@ -112,7 +219,6 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
 
-        // EL BLOQUE QUE DEVUELVE LA VIDA AL ENVÍO (CON EL CAMPO TEXT OBLIGATORIO)
         const { data, error } = await resend.emails.send({
             from: 'PredictaCore Titán <reportes@predictacore.ai>',
             to: emailDestino,
