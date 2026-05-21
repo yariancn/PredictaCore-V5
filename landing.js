@@ -254,7 +254,7 @@ function getLandingHTML() {
                     heroTitle: "TRAFFIC DOES NOT GUARANTEE <br><span class='text-emerald-500'>PROFITABILITY.</span>",
                     heroDesc: "Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We track those flaws and deliver the exact forensic verdict to fix them.",
                     dosTitle: "Vital Signs", dosP1: "Pillar 02: UX/UI Friction", dosS1: "4/10 [Leak]", dosP2: "Pillar 05: Authority Arch.", dosS2: "3/10 [Leak]", dosP3: "Pillar 07: Checkout Velocity", dosS3: "9/10 [Optimized]",
-                    dosMeat: `"Critical Flaw 04: Main CTA button suffers a 1.2s delay on mobile devices, causing an 18% hidden drop-off rate. Immediate action: Modify LCP rendering priority."`,
+                    dosMeat: '"Critical Flaw 04: Main CTA button suffers a 1.2s delay on mobile devices, causing an 18% hidden drop-off rate. Immediate action: Modify LCP rendering priority."',
                     offerTitle: "What we deliver", offerSub: "A Boardroom Level Report.", offerDesc: "We don't do automatic fixes or generic opinions. The Titan Report gives you the exact code and structural changes needed so your team can seal the leaks immediately.",
                     li1: "Identification of Hidden Drop-off Points.", li2: "Exact Actionable Code [COPY-PASTE].", li3: "Black Box Aesthetic & Executive Priority.",
                     methodTitle: "Our Technology",
@@ -276,7 +276,7 @@ function getLandingHTML() {
                     heroTitle: "TENER TRÁFICO NO GARANTIZA <br><span class='text-emerald-500'>RENTABILIDAD.</span>",
                     heroDesc: "Tu activo digital podría estar perdiendo ventas diarias por errores invisibles en la navegación que ni tú ni tu equipo conocen. Nosotros rastreamos esas fallas y te dictamos el veredicto forense para sellarlas.",
                     dosTitle: "Signos Vitales", dosP1: "Pilar 02: Fricción UX/UI", dosS1: "4/10 [Fuga]", dosP2: "Pilar 05: Arq. de Autoridad", dosS2: "3/10 [Fuga]", dosP3: "Pilar 07: Vel. de Checkout", dosS3: "9/10 [Optimizado]",
-                    dosMeat: `"Falla Crítica 04: El botón principal de compra sufre un retraso de 1.2s en la versión móvil, provocando una tasa de abandono oculta del 18%. Acción inmediata: Modificar prioridad de renderizado (LCP)."`,
+                    dosMeat: '"Falla Crítica 04: El botón principal de compra sufre un retraso de 1.2s en la versión móvil, provocando una tasa de abandono oculta del 18%. Acción inmediata: Modificar prioridad de renderizado (LCP)."',
                     offerTitle: "Lo que entregamos", offerSub: "Un Reporte de Nivel Boardroom.", offerDesc: "No hacemos arreglos automáticos ni damos opiniones genéricas. El Reporte Titán le da a tu equipo el código exacto y los cambios estructurales para sellar las fugas de inmediato.",
                     li1: "Identificación de Puntos de Abandono Ocultos.", li2: "Código Exacto Accionable [COPY-PASTE].", li3: "Estética Black Box y Prioridad Ejecutiva.",
                     methodTitle: "Nuestra Tecnología",
@@ -335,7 +335,10 @@ function getLandingHTML() {
                 document.getElementById('log-init').innerText = d.logInit;
                 
                 document.getElementById('up-t').innerText = d.upT;
-                document.getElementById('up-st').innerHTML = \`\${d.upSt} <span id="sent-email" class="text-white font-bold">\${document.getElementById('user-email').value}</span>.\`;
+                
+                // Corrección de sintaxis de concatenación
+                document.getElementById('up-st').innerHTML = d.upSt + ' <span id="sent-email" class="text-white font-bold">' + document.getElementById('user-email').value + '</span>.';
+                
                 document.getElementById('box-text').innerText = d.boxText;
                 document.getElementById('sub-price').innerText = d.subPrice;
                 document.getElementById('btn-titan').innerText = d.btnTitan;
