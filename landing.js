@@ -1,4 +1,4 @@
-// landing.js - REDISEÑO DE ÉLITE: NARRATIVA FORENSE, GEO/SEO Y MURO DE PAGO
+// landing.js - REDISEÑO DE ÉLITE: CERO FRICCIÓN, FIX DE CARGA, TEXTOS PRECISOS
 
 function getLandingHTML() {
     return `
@@ -8,27 +8,16 @@ function getLandingHTML() {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
-        <title>PredictaCore | AI Forensic Website Audits & CRO</title>
-        <meta name="description" content="PredictaCore is the premier AI forensic audit platform. We simulate your exact customer profiles to uncover hidden UX friction and deliver precise, code-level instructions to seal conversion leaks and increase sales.">
-        <meta name="keywords" content="Conversion Rate Optimization, CRO audit, AI business audit, forensic website analysis, sales funnel optimization, fix UX friction, ecommerce conversion analysis">
-        <meta name="author" content="PredictaCore">
-        
-        <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "PredictaCore Titan",
-          "applicationCategory": "BusinessApplication",
-          "operatingSystem": "Web",
-          "description": "AI-driven forensic analysis tool that identifies website conversion bottlenecks through synthetic user simulation. Delivers exact actionable code and architectural instructions to optimize sales.",
-          "offers": {
-            "@type": "Offer",
-            "price": "349.00",
-            "priceCurrency": "USD"
-          }
-        }
+        <script>
+            window.history.scrollRestoration = 'manual';
+            window.onload = function() {
+                setTimeout(function() { window.scrollTo(0, 0); }, 10);
+            };
         </script>
 
+        <title>PredictaCore | AI Forensic Website Audits & CRO</title>
+        <meta name="description" content="PredictaCore is the premier AI forensic audit platform. We uncover hidden UX friction and deliver precise architectural instructions to seal conversion leaks.">
+        
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -87,12 +76,12 @@ function getLandingHTML() {
                 <span class="font-black tracking-tighter text-xl text-white uppercase">PREDICTA<span class="text-emerald-500">CORE</span></span>
             </div>
             <div class="flex items-center space-x-6">
-                <div class="flex space-x-3 text-[10px] tracking-widest border border-zinc-800 px-3 py-1 rounded-full">
+                <div class="flex space-x-3 text-[10px] tracking-widest border border-zinc-800 px-3 py-1 rounded-full bg-black/50">
                     <span onclick="setLanguage('en')" id="lang-en" class="lang-btn active">EN</span>
                     <span class="text-zinc-700">/</span>
                     <span onclick="setLanguage('es')" id="lang-es" class="lang-btn">ES</span>
                 </div>
-                <a href="#terminal-section" id="nav-access" class="text-[10px] uppercase font-bold tracking-widest text-emerald-500 border-b border-emerald-500/30">Node Access</a>
+                <a href="#terminal-section" id="nav-access" class="text-[10px] uppercase font-bold tracking-widest text-emerald-500 border-b border-emerald-500/30 hover:text-emerald-400 transition-colors">Node Access</a>
             </div>
         </nav>
 
@@ -100,11 +89,11 @@ function getLandingHTML() {
             <div class="max-w-6xl mx-auto w-full">
                 <h1 id="hero-title" class="text-huge text-white mb-8">TRAFFIC DOES NOT GUARANTEE <br><span class="text-emerald-500">PROFITABILITY.</span></h1>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <p id="hero-desc" class="text-xl text-zinc-400 leading-tight border-l-4 border-emerald-500 pl-6">
-                        Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We track those flaws and deliver the exact forensic verdict to fix them.
+                    <p id="hero-desc" class="text-xl text-zinc-300 leading-tight border-l-4 border-emerald-500 pl-6">
+                        Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We identify those flaws and deliver the exact forensic blueprint to fix them.
                     </p>
                     <div class="flex items-end justify-start md:justify-end">
-                        <div class="text-[10px] uppercase tracking-[0.3em] text-zinc-600 font-mono">
+                        <div class="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-mono">
                             // Ecosistema Blindado v.2.5
                         </div>
                     </div>
@@ -133,8 +122,8 @@ function getLandingHTML() {
                                     <span id="dos-s3" class="text-emerald-600 font-bold">9/10 [Optimized]</span>
                                 </div>
                             </div>
-                            <div id="dos-meat" class="mt-8 p-4 bg-zinc-100 rounded text-[9px] leading-relaxed border-l-2 border-red-500 font-bold">
-                                "Critical Flaw 04: Main CTA button suffers a 1.2s delay on mobile devices, causing an 18% hidden drop-off rate. Immediate action: Modify LCP rendering priority."
+                            <div id="dos-meat" class="mt-8 p-4 bg-zinc-100 rounded text-[9px] leading-relaxed border-l-2 border-red-500 font-bold text-zinc-800">
+                                "Critical Flaw 04: Main CTA button suffers a 1.2s visual delay on mobile. Immediate action: Restructure LCP rendering priority to prevent hidden 18% drop-off."
                             </div>
                             <div class="mt-8 pt-6 border-t border-zinc-200">
                                 <div class="h-2 bg-zinc-200 w-full mb-2"></div>
@@ -144,13 +133,13 @@ function getLandingHTML() {
                     </div>
                     <div class="order-1 lg:order-2">
                         <h2 id="offer-title" class="text-xs text-emerald-500 font-bold tracking-[0.3em] uppercase mb-4">What we deliver</h2>
-                        <h3 id="offer-sub" class="text-4xl font-extrabold text-white mb-6 leading-none">A Boardroom Level Report.</h3>
-                        <p id="offer-desc" class="text-zinc-400 mb-8 leading-relaxed">
-                            We don't do automatic fixes or generic opinions. The Titan Report gives you the exact code and structural changes needed so your team can seal the leaks immediately.
+                        <h3 id="offer-sub" class="text-4xl font-extrabold text-white mb-6 leading-none">A Boardroom Level Blueprint.</h3>
+                        <p id="offer-desc" class="text-zinc-300 mb-8 leading-relaxed">
+                            We don't do generic opinions. The Titan Report gives your team the exact architectural directives needed to seal the leaks immediately.
                         </p>
                         <ul class="space-y-4 font-mono text-[11px] text-zinc-300">
                             <li class="flex items-center"><span class="w-1.5 h-1.5 bg-emerald-500 mr-3"></span> <span id="li-1">Identification of Hidden Drop-off Points.</span></li>
-                            <li class="flex items-center"><span class="w-1.5 h-1.5 bg-emerald-500 mr-3"></span> <span id="li-2">Exact Actionable Code [COPY-PASTE].</span></li>
+                            <li class="flex items-center"><span class="w-1.5 h-1.5 bg-emerald-500 mr-3"></span> <span id="li-2">Precise Architectural Instructions [Ready to Implement].</span></li>
                             <li class="flex items-center"><span class="w-1.5 h-1.5 bg-emerald-500 mr-3"></span> <span id="li-3">Black Box Aesthetic & Executive Priority.</span></li>
                         </ul>
                     </div>
@@ -162,20 +151,20 @@ function getLandingHTML() {
             <div class="max-w-6xl mx-auto px-6 text-center">
                 <h2 id="method-title" class="text-xs text-emerald-500 font-bold tracking-[0.3em] uppercase mb-12">Our Technology</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left">
+                    <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left hover:bg-white/10 transition-colors">
                         <div class="text-3xl font-black text-white mb-2">9,000+</div>
                         <div id="m1" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Synthetic Twins</div>
-                        <p id="m1-desc" class="text-[10px] mt-4 text-zinc-400 leading-relaxed">We don't use random traffic. We clone the specific profile of your ideal customer and collide them against your asset to find invisible drop-off points.</p>
+                        <p id="m1-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">We don't use random traffic. We clone the specific profile of your ideal customer and collide them against your asset to find invisible drop-off points.</p>
                     </div>
-                    <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left">
+                    <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left hover:bg-white/10 transition-colors">
                         <div class="text-3xl font-black text-white mb-2">11</div>
                         <div id="m2" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Forensic Pillars</div>
-                        <p id="m2-desc" class="text-[10px] mt-4 text-zinc-400 leading-relaxed">We audit Checkout Velocity, UX/UI Friction, Authority Architecture, Pricing Psychology, Cognitive Load, Trust Signals, and technical SEO structure.</p>
+                        <p id="m2-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">We audit Checkout Velocity, UX/UI Friction, Authority Architecture, Pricing Psychology, Cognitive Load, Trust Signals, and technical SEO structure.</p>
                     </div>
-                    <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left">
+                    <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left hover:bg-white/10 transition-colors">
                         <div class="text-3xl font-black text-white mb-2">0</div>
                         <div id="m3" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Subjective Opinions</div>
-                        <p id="m3-desc" class="text-[10px] mt-4 text-zinc-400 leading-relaxed">No guesswork. We deliver the exact line of code or structural change needed to seal the leak, based purely on mathematical behavior.</p>
+                        <p id="m3-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">No guesswork. We deliver the exact structural directive needed to seal the leak, based purely on mathematical behavior.</p>
                     </div>
                 </div>
             </div>
@@ -190,8 +179,8 @@ function getLandingHTML() {
                     </div>
                     <h2 id="term-title" class="text-2xl font-black text-white mt-4 mb-6 uppercase tracking-tighter text-center">Start Forensic Diagnostic</h2>
                     <div class="space-y-4">
-                        <input type="text" id="dna-url" placeholder="Asset URL (e.g. yourbusiness.com)" class="w-full bg-black border border-zinc-800 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs uppercase tracking-widest">
-                        <input type="email" id="user-email" placeholder="Executive Email" class="w-full bg-black border border-zinc-800 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs uppercase tracking-widest">
+                        <input type="text" id="dna-url" placeholder="Asset URL (e.g. yourbusiness.com)" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs uppercase tracking-widest">
+                        <input type="email" id="user-email" placeholder="Executive Email" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs uppercase tracking-widest">
                         <button id="btn-start" onclick="iniciarEscaneo()" class="w-full bg-emerald-600 text-white font-black py-4 rounded hover:bg-emerald-500 transition-all uppercase tracking-[0.2em] text-xs">
                             Execute Free Scan
                         </button>
@@ -210,20 +199,22 @@ function getLandingHTML() {
                         <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                     <h2 id="up-t" class="text-2xl font-black text-white mb-2 uppercase tracking-tighter">X-Ray Sealed</h2>
-                    <p class="text-zinc-500 text-xs mb-8" id="up-st">Successfully sent to <span id="sent-email" class="text-white font-bold"></span>.</p>
+                    <p class="text-zinc-400 text-xs mb-8" id="up-st">Successfully sent to <span id="sent-email" class="text-white font-bold"></span>.</p>
                     
-                    <div class="bg-zinc-900 border border-zinc-800 p-6 rounded mb-8 text-left">
-                        <p id="box-text" class="text-[11px] text-zinc-400 leading-relaxed">
+                    <div class="bg-zinc-900 border border-zinc-700 p-6 rounded mb-8 text-left">
+                        <p id="box-text" class="text-[11px] text-zinc-300 leading-relaxed">
                             Initial scan shows critical bottlenecks. You are losing sales today due to UX friction. The Titan Report dissects your architecture and delivers the exact instructions to seal these leaks.
                         </p>
                     </div>
 
                     <div class="border-t border-zinc-800 pt-8">
                         <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$349 <span class="text-xs text-zinc-600 line-through font-normal">$700 USD</span></h4>
-                        <p id="sub-price" class="text-[9px] text-emerald-500 font-bold uppercase tracking-widest mb-6">+ Titan Subscription ($15/mo)</p>
-                        <button onclick="comprarTitan()" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-4" id="btn-titan">
+                        <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-6">+ Titan Subscription ($25/mo for Continuous Monitoring)</p>
+                        
+                        <button onclick="comprarTitan()" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2" id="btn-titan">
                             Activate Titan Protection
                         </button>
+                        <p id="cancel-badge" class="text-[9px] text-zinc-500 uppercase tracking-widest mb-4">(Cancel any time)</p>
                     </div>
                 </div>
             </div>
@@ -232,17 +223,16 @@ function getLandingHTML() {
         <footer class="py-12 bg-black border-t border-zinc-900 text-center">
             <div class="max-w-4xl mx-auto px-6">
                 <p id="footer-text" class="text-[10px] text-emerald-600 uppercase tracking-[0.2em] mb-6">Consultant or Agency? Join our Forensic Audit network.</p>
-                <p id="disclaimer-text" class="text-[9px] text-zinc-600 leading-relaxed mb-6 max-w-2xl mx-auto">
-                    Disclaimer: PredictaCore provides AI-driven technical and UX analysis. We deliver exact instructions, but we do not implement changes directly on your site. Results depend on your team's execution. This service does not constitute legal or financial advice.
+                <p id="disclaimer-text" class="text-[9px] text-zinc-500 leading-relaxed mb-6 max-w-2xl mx-auto">
+                    Disclaimer: PredictaCore provides AI-driven technical and UX analysis. We deliver exact structural instructions, but we do not implement changes directly on your site. Subscription cancellations must be requested at least 5 days prior to the next billing cycle.
                 </p>
-                <div class="text-[9px] text-zinc-800 font-mono">
+                <div class="text-[9px] text-zinc-700 font-mono">
                     © 2026 PREDICTACORE // NODE_STATUS: OPERATIONAL
                 </div>
             </div>
         </footer>
 
         <script>
-            // RASTREO FANTASMA DE AFILIADOS
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref') || '';
 
@@ -252,50 +242,49 @@ function getLandingHTML() {
                 en: {
                     navAccess: "Node Access",
                     heroTitle: "TRAFFIC DOES NOT GUARANTEE <br><span class='text-emerald-500'>PROFITABILITY.</span>",
-                    heroDesc: "Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We track those flaws and deliver the exact forensic verdict to fix them.",
+                    heroDesc: "Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We identify those flaws and deliver the exact forensic blueprint to fix them.",
                     dosTitle: "Vital Signs", dosP1: "Pillar 02: UX/UI Friction", dosS1: "4/10 [Leak]", dosP2: "Pillar 05: Authority Arch.", dosS2: "3/10 [Leak]", dosP3: "Pillar 07: Checkout Velocity", dosS3: "9/10 [Optimized]",
-                    dosMeat: '"Critical Flaw 04: Main CTA button suffers a 1.2s delay on mobile devices, causing an 18% hidden drop-off rate. Immediate action: Modify LCP rendering priority."',
-                    offerTitle: "What we deliver", offerSub: "A Boardroom Level Report.", offerDesc: "We don't do automatic fixes or generic opinions. The Titan Report gives you the exact code and structural changes needed so your team can seal the leaks immediately.",
-                    li1: "Identification of Hidden Drop-off Points.", li2: "Exact Actionable Code [COPY-PASTE].", li3: "Black Box Aesthetic & Executive Priority.",
+                    dosMeat: '"Critical Flaw 04: Main CTA button suffers a 1.2s visual delay on mobile. Immediate action: Restructure LCP rendering priority to prevent hidden 18% drop-off."',
+                    offerTitle: "What we deliver", offerSub: "A Boardroom Level Blueprint.", offerDesc: "We don't do generic opinions. The Titan Report gives your team the exact architectural directives needed to seal the leaks immediately.",
+                    li1: "Identification of Hidden Drop-off Points.", li2: "Precise Architectural Instructions [Ready to Implement].", li3: "Black Box Aesthetic & Executive Priority.",
                     methodTitle: "Our Technology",
                     m1: "Synthetic Twins", m1Desc: "We don't use random traffic. We clone the specific profile of your ideal customer and collide them against your asset to find invisible drop-off points.",
                     m2: "Forensic Pillars", m2Desc: "We audit Checkout Velocity, UX/UI Friction, Authority Architecture, Pricing Psychology, Cognitive Load, Trust Signals, and technical SEO structure.",
-                    m3: "Zero Opinions", m3Desc: "No guesswork. We deliver the exact line of code or structural change needed to seal the leak, based purely on mathematical behavior.",
+                    m3: "Zero Opinions", m3Desc: "No guesswork. We deliver the exact structural directive needed to seal the leak, based purely on mathematical behavior.",
                     termTitle: "Start Forensic Diagnostic", btnStart: "Execute Free Scan",
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
                     upT: "X-Ray Sealed", upSt: "Successfully sent to",
                     boxText: "Initial scan shows critical bottlenecks. You are losing sales today due to UX friction. The Titan Report dissects your architecture and delivers the exact instructions to seal these leaks.",
-                    subPrice: "+ Titan Subscription ($15/mo)", btnTitan: "Activate Titan Protection",
+                    subPrice: "+ Titan Subscription ($25/mo for Continuous Monitoring)", btnTitan: "Activate Titan Protection", cancelBadge: "(Cancel any time)",
                     footerText: "Consultant or Agency? Join our Forensic Audit network.",
-                    disclaimerText: "Disclaimer: PredictaCore provides AI-driven technical and UX analysis. We deliver exact instructions, but we do not implement changes directly on your site. Results depend on your team's execution. This service does not constitute legal or financial advice.",
+                    disclaimerText: "Disclaimer: PredictaCore provides AI-driven technical and UX analysis. We deliver exact structural instructions, but we do not implement changes directly on your site. Subscription cancellations must be requested at least 5 days prior to the next billing cycle.",
                     alertProcess: "Redirecting to secure payment gateway...", alertError: "Required data missing.", successPayment: "Payment confirmed! Your Titan report is being processed by the AI and will arrive in your email shortly.",
                     phUrl: "Asset URL (e.g. yourbusiness.com)", phEmail: "Executive Email"
                 },
                 es: {
                     navAccess: "Acceso Nodo",
                     heroTitle: "TENER TRÁFICO NO GARANTIZA <br><span class='text-emerald-500'>RENTABILIDAD.</span>",
-                    heroDesc: "Tu activo digital podría estar perdiendo ventas diarias por errores invisibles en la navegación que ni tú ni tu equipo conocen. Nosotros rastreamos esas fallas y te dictamos el veredicto forense para sellarlas.",
+                    heroDesc: "Tu activo digital podría estar perdiendo ventas diarias por errores invisibles en la navegación que ni tú ni tu equipo conocen. Nosotros rastreamos esas fallas y te entregamos la directiva forense exacta para sellarlas.",
                     dosTitle: "Signos Vitales", dosP1: "Pilar 02: Fricción UX/UI", dosS1: "4/10 [Fuga]", dosP2: "Pilar 05: Arq. de Autoridad", dosS2: "3/10 [Fuga]", dosP3: "Pilar 07: Vel. de Checkout", dosS3: "9/10 [Optimizado]",
-                    dosMeat: '"Falla Crítica 04: El botón principal de compra sufre un retraso de 1.2s en la versión móvil, provocando una tasa de abandono oculta del 18%. Acción inmediata: Modificar prioridad de renderizado (LCP)."',
-                    offerTitle: "Lo que entregamos", offerSub: "Un Reporte de Nivel Boardroom.", offerDesc: "No hacemos arreglos automáticos ni damos opiniones genéricas. El Reporte Titán le da a tu equipo el código exacto y los cambios estructurales para sellar las fugas de inmediato.",
-                    li1: "Identificación de Puntos de Abandono Ocultos.", li2: "Código Exacto Accionable [COPY-PASTE].", li3: "Estética Black Box y Prioridad Ejecutiva.",
+                    dosMeat: '"Falla Crítica 04: El botón principal de compra sufre un retraso de 1.2s en la versión móvil. Acción inmediata: Reestructurar prioridad de renderizado (LCP) para evitar fuga del 18%."',
+                    offerTitle: "Lo que entregamos", offerSub: "Un Reporte de Nivel Boardroom.", offerDesc: "No damos opiniones genéricas. El Reporte Titán le da a tu equipo las directivas arquitectónicas exactas para sellar las fugas de inmediato.",
+                    li1: "Identificación de Puntos de Abandono Ocultos.", li2: "Instrucciones Arquitectónicas Precisas [Acción Inmediata].", li3: "Estética Black Box y Prioridad Ejecutiva.",
                     methodTitle: "Nuestra Tecnología",
                     m1: "Gemelos Sintéticos", m1Desc: "No usamos tráfico al azar. Clonamos el perfil exacto de tu cliente ideal y lo colisionamos contra tu activo para encontrar puntos de fuga invisibles.",
                     m2: "Pilares Forenses", m2Desc: "Auditamos Velocidad de Checkout, Fricción UX/UI, Arquitectura de Autoridad, Psicología de Precios, Carga Cognitiva, Señales de Confianza y estructura SEO técnica.",
-                    m3: "Cero Opiniones", m3Desc: "Sin adivinanzas. Entregamos la línea de código o el cambio estructural exacto para sellar la fuga, basados puramente en comportamiento matemático.",
+                    m3: "Cero Opiniones", m3Desc: "Sin adivinanzas. Entregamos la directiva estructural exacta para sellar la fuga, basados puramente en comportamiento matemático.",
                     termTitle: "Iniciar Diagnóstico Forense", btnStart: "Ejecutar Escaneo Gratuito",
                     logInit: ">> INICIALIZANDO NÚCLEO PREDICTACORE...",
                     upT: "Radiografía Sellada", upSt: "Enviado con éxito a",
                     boxText: "El escaneo inicial muestra cuellos de botella críticos. Estás perdiendo ventas hoy por fricción UX. El Reporte Titán disecta tu arquitectura y entrega las instrucciones exactas para sellar estas fugas.",
-                    subPrice: "+ Suscripción Titán ($15/mes)", btnTitan: "Activar Protección Titán",
+                    subPrice: "+ Suscripción Titán ($25/mes por Monitoreo Continuo)", btnTitan: "Activar Protección Titán", cancelBadge: "(Cancela cuando quieras)",
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
-                    disclaimerText: "Descargo de responsabilidad: PredictaCore provee análisis técnico y UX impulsado por IA. Entregamos instrucciones exactas, pero no implementamos cambios directamente en su sitio. Los resultados dependen de la ejecución de su equipo. Este servicio no constituye asesoramiento legal o financiero.",
+                    disclaimerText: "Descargo de responsabilidad: PredictaCore provee análisis técnico y UX impulsado por IA. Entregamos directivas estructurales exactas, pero no implementamos cambios directamente en su sitio. Las cancelaciones de suscripción deben solicitarse al menos 5 días antes del siguiente ciclo de facturación.",
                     alertProcess: "Redirigiendo a la pasarela segura de pago...", alertError: "Faltan datos requeridos.", successPayment: "¡Pago confirmado! Tu reporte Titán está siendo procesado por la IA y llegará a tu correo a la brevedad.",
                     phUrl: "URL del Activo (ej. tunegocio.com)", phEmail: "Email Ejecutivo"
                 }
             };
 
-            // Alerta si regresa de un pago exitoso
             if (urlParams.get('success') === 'true') {
                 alert(dictionary[currentLang].successPayment);
             }
@@ -335,13 +324,12 @@ function getLandingHTML() {
                 document.getElementById('log-init').innerText = d.logInit;
                 
                 document.getElementById('up-t').innerText = d.upT;
-                
-                // Corrección de sintaxis de concatenación
                 document.getElementById('up-st').innerHTML = d.upSt + ' <span id="sent-email" class="text-white font-bold">' + document.getElementById('user-email').value + '</span>.';
                 
                 document.getElementById('box-text').innerText = d.boxText;
                 document.getElementById('sub-price').innerText = d.subPrice;
                 document.getElementById('btn-titan').innerText = d.btnTitan;
+                document.getElementById('cancel-badge').innerText = d.cancelBadge;
                 
                 document.getElementById('footer-text').innerText = d.footerText;
                 document.getElementById('disclaimer-text').innerText = d.disclaimerText;
