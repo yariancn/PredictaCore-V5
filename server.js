@@ -12,11 +12,9 @@ const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 const { Resend } = require('resend');
 
-// LIBRERÍAS DE PAGOS Y BASE DE DATOS
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const { Pool } = require('pg');
 
-// CONEXIÓN A NEON.TECH (PostgreSQL)
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -28,9 +26,6 @@ const port = process.env.PORT || 8080;
 const resend = new Resend(process.env.RESEND_API_KEY);
 const jobs = {}; 
 
-// ============================================================================
-// WEBHOOK DE STRIPE (DEBE IR ANTES DEL EXPRESS.JSON PARA LEER LA FIRMA CRUDA)
-// ============================================================================
 app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
@@ -47,10 +42,8 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
 
         console.log(`>>> [PAGO EXITOSO] Recibido de ${email}. Despertando IA Titán...`);
 
-        // 1. DESPERTAR A LA IA
         iniciarAuditoria(dna, email, false);
 
-        // 2. REGISTRAR COMISIONES EN NEON
         try {
             if (refCode && refCode !== 'null' && refCode !== '') {
                 const res1 = await pool.query('SELECT id, sponsor_id FROM afiliados WHERE codigo_ref = $1', [refCode]);
@@ -71,7 +64,6 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
                         (id_venta_stripe, cliente_email, monto_total, afiliado_nivel_1_id, comision_nivel_1, afiliado_nivel_2_id, comision_nivel_2, afiliado_nivel_3_id, comision_nivel_3)
                         VALUES ($1, $2, 349.00, $3, 104.70, $4, 34.90, $5, 17.45)
                     `, [session.id, email, nivel1_id, nivel2_id, nivel3_id]);
-                    console.log(`>>> [AFILIADOS] Comisiones registradas para la red de: ${refCode}`);
                 }
             } else {
                 await pool.query(`
@@ -86,20 +78,15 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
     res.json({ received: true });
 });
 
-// ============================================================================
-// CONFIGURACIÓN ORIGINAL (PARSEO JSON)
-// ============================================================================
 app.use(express.json({ limit: '10mb' }));
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
 
-// RUTA TEASER (GRATIS)
 app.post('/start-lite', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, true);
     res.json({ status: 'started' });
 });
 
-// RUTA TITÁN (PAGO $349 + $15/mes) - SESIÓN DE STRIPE
 app.post('/start', async (req, res) => {
     try {
         const { dna, email, refCode } = req.body;
@@ -120,8 +107,8 @@ app.post('/start', async (req, res) => {
                 {
                     price_data: {
                         currency: 'usd',
-                        product_data: { name: 'Suscripción Protección Titán' },
-                        unit_amount: 1500,
+                        product_data: { name: 'Suscripción Monitoreo Titán' },
+                        unit_amount: 2500, // ACTUALIZADO A $25 USD
                         recurring: { interval: 'month' }
                     },
                     quantity: 1,
@@ -139,9 +126,6 @@ app.post('/start', async (req, res) => {
     }
 });
 
-// ============================================================================
-// NÚCLEO DE INTELIGENCIA ARTIFICIAL Y SCRAPING
-// ============================================================================
 async function iniciarAuditoria(dna, email, isLite) {
     let targetUrl = dna.trim();
     if (!targetUrl.startsWith('http') && targetUrl.includes('.')) targetUrl = `https://${targetUrl}`;
@@ -232,10 +216,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
             ]
         });
 
-        if (error) {
-            throw new Error(`Resend API Error: ${error.message}`);
-        }
-
+        if (error) { throw new Error(`Resend API Error: ${error.message}`); }
         console.log(`>>> Sellado. Reporte entregado con éxito a ${emailDestino}. ID: ${data.id}`);
     } catch (error) { 
         if(browser) await browser.close(); 
