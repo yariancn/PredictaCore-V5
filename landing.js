@@ -89,7 +89,10 @@ function getLandingHTML() {
             <div class="max-w-6xl mx-auto w-full">
                 <h1 id="hero-title" class="text-huge text-white mb-8">TRAFFIC DOES NOT GUARANTEE <br><span class="text-emerald-500">PROFITABILITY.</span></h1>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <p id="hero-desc" class="text-xl text-zinc-300 leading-tight border-l-4 border-emerald-500 pl-6">
+                    <p id="hero-desc-left" class="text-xl text-zinc-300 leading-tight border-l-4 border-emerald-500 pl-6">
+                        Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We identify those flaws and deliver the exact forensic blueprint to fix them.
+                    </p>
+                    <p id="hero-desc-right" class="text-sm text-zinc-400 leading-relaxed bg-white/5 p-6 rounded border border-zinc-800">
                         We are PredictaCore. Agencies charge thousands for opinions; generic AI gives basic advice. We run thousands of simulations on your website to reveal the invisible errors driving your customers away, and tell you exactly how to fix them.
                     </p>
                 </div>
@@ -100,18 +103,35 @@ function getLandingHTML() {
             <div class="max-w-6xl mx-auto px-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div class="order-2 lg:order-1">
-                        <div class="dossier-preview p-8 md:p-12 rounded-sm aspect-[3/4] max-w-md mx-auto relative">
+                        <div class="dossier-preview p-8 md:p-12 rounded-sm aspect-[3/4] max-w-md mx-auto relative flex flex-col">
                             <div class="absolute top-4 right-4 text-[8px] font-bold text-zinc-400 uppercase">TITAN REPORT // CONFIDENTIAL</div>
-                            <h4 id="dos-title" class="text-2xl font-black mb-6 uppercase tracking-tighter">Vital Signs</h4>
                             
-                            <div id="dos-meat" class="mt-4 p-4 bg-zinc-100 rounded text-[10px] leading-relaxed border-l-4 border-red-600 font-medium text-zinc-900 shadow-sm">
-                                <strong>[ Critical Flaw 09 ] - Checkout Obstacles:</strong><br>
-                                The scanner detects 4 unnecessary clicks during mobile payment. Hidden drop-off rate: 68%.<br>
-                                <span class="text-emerald-700 font-bold">>> Action Required:</span> Implement 1-click Express Checkout and consolidate shipping fields.<br><br>
+                            <div class="flex items-center space-x-2 mb-6 border-b border-zinc-200 pb-4 mt-4">
+                                <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </div>
+                                <span class="font-black tracking-tighter text-lg text-black uppercase">PREDICTA<span class="text-emerald-600">CORE</span></span>
+                                <span id="dos-sample" class="text-[9px] text-zinc-400 ml-auto uppercase font-bold tracking-widest bg-zinc-100 px-2 py-1 rounded">SAMPLE EXTRACT</span>
+                            </div>
+
+                            <h4 id="dos-title" class="text-2xl font-black mb-4 uppercase tracking-tighter">Vital Signs</h4>
+                            
+                            <div id="dos-meat" class="flex-grow space-y-4">
+                                <div class="p-4 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm">
+                                    <p class="text-[10px] text-zinc-900 leading-relaxed font-medium">
+                                        <strong>[ Critical Flaw 09 ] - Checkout Obstacles:</strong><br>
+                                        The scanner detects 4 unnecessary clicks during mobile payment. Hidden drop-off rate: 68%.<br>
+                                        <span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Implement 1-click Express Checkout and consolidate shipping fields.
+                                    </p>
+                                </div>
                                 
-                                <strong>[ Critical Flaw 10 ] - Visual Overload:</strong><br>
-                                Severe distraction before the main "Buy" button.<br>
-                                <span class="text-emerald-700 font-bold">>> Action Required:</span> Elevate the Call to Action above the fold and isolate customer reviews.
+                                <div class="p-4 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm">
+                                    <p class="text-[10px] text-zinc-900 leading-relaxed font-medium">
+                                        <strong>[ Critical Flaw 10 ] - Visual Overload:</strong><br>
+                                        Severe distraction before the main "Buy" button.<br>
+                                        <span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Elevate the Call to Action above the fold and isolate customer reviews.
+                                    </p>
+                                </div>
                             </div>
                             
                             <div class="mt-8 pt-6 border-t border-zinc-200">
@@ -231,9 +251,11 @@ function getLandingHTML() {
                 en: {
                     navAccess: "Node Access",
                     heroTitle: "TRAFFIC DOES NOT GUARANTEE <br><span class='text-emerald-500'>PROFITABILITY.</span>",
-                    heroDesc: "We are PredictaCore. Agencies charge thousands for opinions; generic AI gives basic advice. We run thousands of simulations on your website to reveal the invisible errors driving your customers away, and tell you exactly how to fix them.",
+                    heroDescLeft: "Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We identify those flaws and deliver the exact forensic blueprint to fix them.",
+                    heroDescRight: "We are PredictaCore. Agencies charge thousands for opinions; generic AI gives basic advice. We run thousands of simulations on your website to reveal the invisible errors driving your customers away, and tell you exactly how to fix them.",
+                    dosSample: "SAMPLE EXTRACT",
                     dosTitle: "Vital Signs",
-                    dosMeat: '<strong>[ Critical Flaw 09 ] - Checkout Obstacles:</strong><br>The scanner detects 4 unnecessary clicks during mobile payment. Hidden drop-off rate: 68%.<br><span class="text-emerald-700 font-bold">>> Action Required:</span> Implement 1-click Express Checkout and consolidate shipping fields.<br><br><strong>[ Critical Flaw 10 ] - Visual Overload:</strong><br>Severe distraction before the main "Buy" button.<br><span class="text-emerald-700 font-bold">>> Action Required:</span> Elevate the Call to Action above the fold and isolate customer reviews.',
+                    dosMeat: '<div class="p-4 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[10px] text-zinc-900 leading-relaxed font-medium"><strong>[ Critical Flaw 09 ] - Checkout Obstacles:</strong><br>The scanner detects 4 unnecessary clicks during mobile payment. Hidden drop-off rate: 68%.<br><span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Implement 1-click Express Checkout and consolidate shipping fields.</p></div><div class="p-4 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[10px] text-zinc-900 leading-relaxed font-medium"><strong>[ Critical Flaw 10 ] - Visual Overload:</strong><br>Severe distraction before the main "Buy" button.<br><span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Elevate the Call to Action above the fold and isolate customer reviews.</p></div>',
                     offerTitle: "What we deliver", offerSub: "A Boardroom Level Blueprint.", offerDesc: "We don't give you technical riddles. The Titan Report gives you and your team a clear, step-by-step action plan to remove buying obstacles immediately.",
                     li1: "1. Drop-off Point X-Ray (Where do they leave?).", li2: "2. Direct Action Plan (What to change today).", li3: "3. Hidden Competition Analysis (Why do they buy elsewhere?).",
                     methodTitle: "Our Technology",
@@ -253,9 +275,11 @@ function getLandingHTML() {
                 es: {
                     navAccess: "Acceso Nodo",
                     heroTitle: "TENER TRÁFICO NO GARANTIZA <br><span class='text-emerald-500'>RENTABILIDAD.</span>",
-                    heroDesc: "Somos PredictaCore. Las agencias cobran miles por opiniones; la IA genérica da consejos básicos. Nosotros colisionamos miles de simulaciones contra tu página para revelar los errores invisibles que ahuyentan a tus clientes, y te decimos exactamente cómo solucionarlos.",
+                    heroDescLeft: "Tu activo digital podría estar perdiendo ventas diarias por errores invisibles en la navegación que ni tú ni tu equipo conocen. Nosotros rastreamos esas fallas y te entregamos la directiva forense exacta para sellarlas.",
+                    heroDescRight: "Somos PredictaCore. Las agencias cobran miles por opiniones; la IA genérica da consejos básicos. Nosotros colisionamos miles de simulaciones contra tu página para revelar los errores invisibles que ahuyentan a tus clientes, y te decimos exactamente cómo solucionarlos.",
+                    dosSample: "EXTRACTO DE MUESTRA",
                     dosTitle: "Signos Vitales",
-                    dosMeat: '<strong>[ Falla Crítica 09 ] - Obstáculos de Pago:</strong><br>El escáner detecta 4 clics innecesarios en el pago móvil. Tasa de abandono oculta: 68%.<br><span class="text-emerald-700 font-bold">>> Acción Exigida:</span> Implementar pasarela de 1-clic (Express Checkout) y consolidar campos de envío.<br><br><strong>[ Falla Crítica 10 ] - Saturación Visual:</strong><br>Distracción severa antes del botón principal de compra.<br><span class="text-emerald-700 font-bold">>> Acción Exigida:</span> Elevar el llamado a la acción (Call to Action) por encima del pliegue y aislar reseñas.',
+                    dosMeat: '<div class="p-4 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[10px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla Crítica 09 ] - Obstáculos de Pago:</strong><br>El escáner detecta 4 clics innecesarios en el pago móvil. Tasa de abandono oculta: 68%.<br><span class="text-emerald-700 font-bold block mt-1">>> Acción Exigida:</span> Implementar pasarela de 1-clic (Express Checkout) y consolidar campos de envío.</p></div><div class="p-4 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[10px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla Crítica 10 ] - Saturación Visual:</strong><br>Distracción severa antes del botón principal de compra.<br><span class="text-emerald-700 font-bold block mt-1">>> Acción Exigida:</span> Elevar el llamado a la acción (Call to Action) por encima del pliegue y aislar reseñas.</p></div>',
                     offerTitle: "Lo que entregamos", offerSub: "Un Mapa de Acción Definitivo.", offerDesc: "No entregamos acertijos técnicos. El Reporte Titán le da a tu equipo instrucciones precisas paso a paso para eliminar los obstáculos de compra de inmediato.",
                     li1: "1. Radiografía de Puntos de Abandono (¿Dónde se van?).", li2: "2. Plan de Acción Directo (¿Qué cambiar hoy?).", li3: "3. Análisis de Competencia Oculta (¿Por qué compran en otro lado?).",
                     methodTitle: "Nuestra Tecnología",
@@ -286,8 +310,10 @@ function getLandingHTML() {
                 
                 document.getElementById('nav-access').innerText = d.navAccess;
                 document.getElementById('hero-title').innerHTML = d.heroTitle;
-                document.getElementById('hero-desc').innerText = d.heroDesc;
+                document.getElementById('hero-desc-left').innerText = d.heroDescLeft;
+                document.getElementById('hero-desc-right').innerText = d.heroDescRight;
                 
+                document.getElementById('dos-sample').innerText = d.dosSample;
                 document.getElementById('dos-title').innerText = d.dosTitle;
                 document.getElementById('dos-meat').innerHTML = d.dosMeat;
 
