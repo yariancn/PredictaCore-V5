@@ -124,25 +124,23 @@ function getLandingHTML() {
                             <div id="dos-meat" class="flex-grow space-y-3">
                                 <div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm">
                                     <p class="text-[9px] text-zinc-900 leading-relaxed font-medium">
-                                        <strong>[ Flaw 02 ] - Checkout Obstacles:</strong><br>
-                                        Scanner detects 4 unnecessary clicks during mobile payment.<br>
-                                        <span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Implement 1-click Express Checkout.
+                                        <strong>[ Flaw 01 ] - Checkout Friction:</strong><br>
+                                        Express payment buttons bypass cart and reduce AOV.<br>
+                                        <span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Restrict express buttons to final screen.
                                     </p>
                                 </div>
-                                
                                 <div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm">
                                     <p class="text-[9px] text-zinc-900 leading-relaxed font-medium">
-                                        <strong>[ Flaw 05 ] - Visual Overload:</strong><br>
-                                        Severe distraction before the main "Buy" button.<br>
-                                        <span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Elevate the CTA above the fold.
+                                        <strong>[ Flaw 02 ] - Authority Weakness:</strong><br>
+                                        Website disconnected from positive external reviews.<br>
+                                        <span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Inject dynamic social proof carousel.
                                     </p>
                                 </div>
-
                                 <div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm">
                                     <p class="text-[9px] text-zinc-900 leading-relaxed font-medium">
-                                        <strong>[ Flaw 09 ] - Trust Signal Deficit:</strong><br>
-                                        Lack of security anchors near the payment input. 42% hidden drop-off.<br>
-                                        <span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Inject dynamic SSL badges below the CTA.
+                                        <strong>[ Flaw 03 ] - Visual Paralysis:</strong><br>
+                                        Cluttered main menu fragments user attention.<br>
+                                        <span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Consolidate navigation into "Shop By Item".
                                     </p>
                                 </div>
                             </div>
@@ -204,17 +202,17 @@ function getLandingHTML() {
                 <div class="bg-black/50 border border-zinc-800 p-8 rounded-xl text-left max-w-4xl mx-auto">
                     <h3 id="pillars-title" class="text-emerald-500 font-bold tracking-[0.2em] uppercase mb-6 text-[10px] border-b border-zinc-800 pb-4">The 11 Pillars of our Forensic Audit</h3>
                     <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-8 font-mono text-[10px] text-zinc-400">
-                        <li id="p-1"><span class="text-emerald-600 mr-2">01</span> UX/UI Friction Analysis</li>
-                        <li id="p-2"><span class="text-emerald-600 mr-2">02</span> Checkout Velocity</li>
-                        <li id="p-3"><span class="text-emerald-600 mr-2">03</span> Authority Architecture</li>
-                        <li id="p-4"><span class="text-emerald-600 mr-2">04</span> Pricing Psychology</li>
-                        <li id="p-5"><span class="text-emerald-600 mr-2">05</span> Cognitive Load Metrics</li>
-                        <li id="p-6"><span class="text-emerald-600 mr-2">06</span> Trust Signal Placement</li>
-                        <li id="p-7"><span class="text-emerald-600 mr-2">07</span> Mobile Interaction Delays</li>
-                        <li id="p-8"><span class="text-emerald-600 mr-2">08</span> Call-to-Action Visibility</li>
-                        <li id="p-9"><span class="text-emerald-600 mr-2">09</span> Navigation Complexity</li>
-                        <li id="p-10"><span class="text-emerald-600 mr-2">10</span> Hidden Drop-off Points</li>
-                        <li id="p-11"><span class="text-emerald-600 mr-2">11</span> Value Proposition Clarity</li>
+                        <li id="p-1"><span class="text-emerald-600 mr-2">01</span> Asset X-Ray</li>
+                        <li id="p-2"><span class="text-emerald-600 mr-2">02</span> Psychological Profiles</li>
+                        <li id="p-3"><span class="text-emerald-600 mr-2">03</span> Health Scorecard</li>
+                        <li id="p-4"><span class="text-emerald-600 mr-2">04</span> Visibility & SEO</li>
+                        <li id="p-5"><span class="text-emerald-600 mr-2">05</span> Competitive Benchmark</li>
+                        <li id="p-6"><span class="text-emerald-600 mr-2">06</span> SWOT Matrix</li>
+                        <li id="p-7"><span class="text-emerald-600 mr-2">07</span> Wishlist</li>
+                        <li id="p-8"><span class="text-emerald-600 mr-2">08</span> 15 Drop-off Points</li>
+                        <li id="p-9"><span class="text-emerald-600 mr-2">09</span> 15 Tactical Actions</li>
+                        <li id="p-10"><span class="text-emerald-600 mr-2">10</span> Scaling Tools</li>
+                        <li id="p-11"><span class="text-emerald-600 mr-2">11</span> 21-Day Roadmap</li>
                     </ul>
                 </div>
             </div>
@@ -296,7 +294,7 @@ function getLandingHTML() {
                     heroDescRight: "We are PredictaCore. Agencies charge thousands for opinions; generic AI gives basic advice. We run thousands of simulations on your website to reveal the invisible errors driving your customers away, and tell you exactly how to fix them.",
                     dosSample: "SAMPLE EXTRACT",
                     dosTitle: "Vital Signs",
-                    dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 02 ] - Checkout Obstacles:</strong><br>Scanner detects 4 unnecessary clicks during mobile payment.<br><span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Implement 1-click Express Checkout.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 05 ] - Visual Overload:</strong><br>Severe distraction before the main "Buy" button.<br><span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Elevate the CTA above the fold.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 09 ] - Trust Signal Deficit:</strong><br>Lack of security anchors near the payment input. 42% hidden drop-off.<br><span class="text-emerald-700 font-bold block mt-1">>> Action Required:</span> Inject dynamic SSL badges below the CTA.</p></div>',
+                    dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 01 ] - Checkout Friction:</strong><br>Express payment buttons bypass cart and reduce AOV.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Restrict express buttons to final screen.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 02 ] - Authority Weakness:</strong><br>Website disconnected from positive external reviews.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Inject dynamic social proof carousel.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 03 ] - Visual Paralysis:</strong><br>Cluttered main menu fragments user attention.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Consolidate navigation into "Shop By Item".</p></div>',
                     offerTitle: "What we deliver", offerSub: "A Boardroom Level Blueprint.", offerDesc: "We don't give you technical riddles. The Titan Report gives you and your team a clear, step-by-step action plan to remove buying obstacles immediately.",
                     li1: "1. Drop-off Point X-Ray<br><span class='text-[10px] text-zinc-500'>(Where exactly do they leave?)</span>", 
                     li2: "2. Direct Action Plan<br><span class='text-[10px] text-zinc-500'>(What to change today)</span>", 
@@ -306,7 +304,7 @@ function getLandingHTML() {
                     m2: "Forensic Pillars", m2Desc: "We audit every critical aspect of your digital asset, leaving no blind spots in your conversion funnel.",
                     m3: "Zero Opinions", m3Desc: "No guesswork. We deliver the exact instructions needed to seal the leak, based purely on real customer behavior.",
                     pillarsTitle: "The 11 Pillars of our Forensic Audit",
-                    p1: "UX/UI Friction Analysis", p2: "Checkout Velocity", p3: "Authority Architecture", p4: "Pricing Psychology", p5: "Cognitive Load Metrics", p6: "Trust Signal Placement", p7: "Mobile Interaction Delays", p8: "Call-to-Action Visibility", p9: "Navigation Complexity", p10: "Hidden Drop-off Points", p11: "Value Proposition Clarity",
+                    p1: "Asset X-Ray", p2: "Psychological Profiles", p3: "Health Scorecard", p4: "Visibility & SEO", p5: "Competitive Benchmark", p6: "SWOT Matrix", p7: "Wishlist", p8: "15 Drop-off Points", p9: "15 Tactical Actions", p10: "Scaling Tools", p11: "21-Day Roadmap",
                     termTitle: "Start Forensic Diagnostic", btnStart: "Execute Free Scan",
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
                     upT: "X-Ray Sealed", upSt: "Successfully sent to",
@@ -324,7 +322,7 @@ function getLandingHTML() {
                     heroDescRight: "Somos PredictaCore. Las agencias cobran miles por opiniones; la IA genérica da consejos básicos. Nosotros colisionamos miles de simulaciones contra tu página para revelar los errores invisibles que ahuyentan a tus clientes, y te decimos exactamente cómo solucionarlos.",
                     dosSample: "EXTRACTO DE MUESTRA",
                     dosTitle: "Signos Vitales",
-                    dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 02 ] - Obstáculos de Pago:</strong><br>El escáner detecta 4 clics innecesarios en el pago móvil.<br><span class="text-emerald-700 font-bold block mt-1">>> Acción Exigida:</span> Implementar pasarela Express de 1-clic.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 05 ] - Saturación Visual:</strong><br>Distracción severa antes del botón principal de compra.<br><span class="text-emerald-700 font-bold block mt-1">>> Acción Exigida:</span> Elevar el llamado a la acción (CTA) principal.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 09 ] - Falta de Confianza:</strong><br>Faltan anclajes de seguridad en el pago. Abandono del 42%.<br><span class="text-emerald-700 font-bold block mt-1">>> Acción Exigida:</span> Inyectar sellos dinámicos SSL bajo el CTA.</p></div>',
+                    dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 01 ] - Fricción de Checkout:</strong><br>Botones de pago rápido saltan el carrito y reducen el Ticket Promedio.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Restringir botones express a la pantalla final.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 02 ] - Debilidad de Autoridad:</strong><br>Sitio web desconectado de reseñas externas positivas.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Inyectar carrusel dinámico de prueba social.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 03 ] - Parálisis Visual:</strong><br>Menú principal saturado fragmenta la atención.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Consolidar navegación en "Shop By Item".</p></div>',
                     offerTitle: "Lo que entregamos", offerSub: "Un Mapa de Acción Definitivo.", offerDesc: "No entregamos acertijos técnicos. El Reporte Titán le da a tu equipo instrucciones precisas paso a paso para eliminar los obstáculos de compra de inmediato.",
                     li1: "1. Radiografía de Abandono<br><span class='text-[10px] text-zinc-500'>(¿Dónde exactamente se van?)</span>", 
                     li2: "2. Plan de Acción Directo<br><span class='text-[10px] text-zinc-500'>(¿Qué cambiar hoy mismo?)</span>", 
@@ -334,7 +332,7 @@ function getLandingHTML() {
                     m2: "Pilares Forenses", m2Desc: "Auditamos cada aspecto crítico de tu activo digital, sin dejar puntos ciegos en tu embudo de conversión.",
                     m3: "Cero Opiniones", m3Desc: "Sin adivinanzas. Entregamos las instrucciones exactas para sellar la fuga, basados puramente en el comportamiento real del cliente.",
                     pillarsTitle: "Los 11 Pilares de nuestra Auditoría Forense",
-                    p1: "Análisis de Fricción UX/UI", p2: "Velocidad de Checkout", p3: "Arquitectura de Autoridad", p4: "Psicología de Precios", p5: "Métricas de Carga Cognitiva", p6: "Señales de Confianza", p7: "Retrasos de Interacción Móvil", p8: "Visibilidad de Llamados a la Acción", p9: "Complejidad de Navegación", p10: "Puntos de Abandono Ocultos", p11: "Claridad de Oferta de Valor",
+                    p1: "Radiografía del Activo", p2: "Perfiles Psicológicos", p3: "Scorecard de Salud", p4: "Visibilidad y SEO", p5: "Benchmark Competitivo", p6: "Matriz Estratégica", p7: "Lista de Deseos", p8: "15 Puntos de Fuga", p9: "15 Acciones Tácticas", p10: "Herramientas de Escala", p11: "Hoja de Ruta a 21 Días",
                     termTitle: "Iniciar Diagnóstico Forense", btnStart: "Ejecutar Escaneo Gratuito",
                     logInit: ">> INICIALIZANDO NÚCLEO PREDICTACORE...",
                     upT: "Radiografía Sellada", upSt: "Enviado con éxito a",
