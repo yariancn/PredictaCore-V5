@@ -346,7 +346,7 @@ function getLandingHTML() {
             };
 
             if (urlParams.get('success') === 'true') {
-                alert(dictionary[currentLang].successPayment);
+                window.location.replace('/exito' + (currentLang === 'es' ? '?lang=es' : ''));
             }
 
             function setLanguage(lang) {

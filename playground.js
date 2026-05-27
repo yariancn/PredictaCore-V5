@@ -1,0 +1,108 @@
+function getPlaygroundHTML() {
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>PredictaCore Playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #050505; color: #d1d5db; font-family: ui-monospace, monospace; font-size: 12px; }
+        pre { background: #0f172a; border: 1px solid #1e293b; padding: 12px; border-radius: 8px; overflow: auto; max-height: 240px; }
+    </style>
+</head>
+<body class="p-6 max-w-3xl mx-auto">
+    <div class="flex items-center justify-between mb-8 border-b border-zinc-800 pb-4">
+        <div>
+            <h1 class="text-emerald-500 font-black text-lg tracking-tighter">PREDICTA<span class="text-white">CORE</span> // PLAYGROUND</h1>
+            <p class="text-zinc-500 text-[10px] mt-1">Entorno de pruebas — no indexado</p>
+        </div>
+        <span class="text-[10px] text-amber-500 border border-amber-500/30 px-2 py-1 rounded">STAGING ONLY</span>
+    </div>
+
+    <section class="mb-8">
+        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">01 — System Health</h2>
+        <button onclick="runHealth()" class="bg-emerald-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">Run /health</button>
+        <pre id="out-health" class="mt-3 text-emerald-400">—</pre>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">02 — Lite Scan (sin pago)</h2>
+        <div class="grid gap-2 mb-2">
+            <input id="pg-url" placeholder="URL (ej. example.com)" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
+            <input id="pg-email" placeholder="Email de prueba" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
+        </div>
+        <button onclick="runLite()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /start-lite</button>
+        <pre id="out-lite" class="mt-3 text-zinc-400">—</pre>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">03 — Checkout Stripe (test)</h2>
+        <p class="text-zinc-500 text-[10px] mb-2">Usa tarjeta test 4242 4242 4242 4242 en modo test de Stripe.</p>
+        <button onclick="runCheckout()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /start</button>
+        <pre id="out-checkout" class="mt-3 text-zinc-400">—</pre>
+    </section>
+
+    <section class="mb-8">
+        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">04 — Portal Cliente</h2>
+        <button onclick="runPortal()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /portal-cliente</button>
+        <pre id="out-portal" class="mt-3 text-zinc-400">—</pre>
+    </section>
+
+    <section>
+        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">05 — DB Snapshot</h2>
+        <button onclick="runDb()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">GET /playground/db</button>
+        <pre id="out-db" class="mt-3 text-zinc-400">—</pre>
+    </section>
+
+    <script>
+        const apiKey = new URLSearchParams(window.location.search).get('key') || '';
+        const headers = { 'Content-Type': 'application/json', 'X-API-Key': apiKey };
+
+        async function api(path, opts = {}) {
+            const url = path + (path.includes('?') ? '&' : '?') + 'key=' + encodeURIComponent(apiKey);
+            const res = await fetch(url, { ...opts, headers: { ...headers, ...(opts.headers || {}) } });
+            const text = await res.text();
+            try { return { status: res.status, data: JSON.parse(text) }; }
+            catch { return { status: res.status, data: text }; }
+        }
+
+        async function runHealth() {
+            const r = await api('/health');
+            document.getElementById('out-health').textContent = JSON.stringify(r.data, null, 2);
+        }
+
+        async function runLite() {
+            const dna = document.getElementById('pg-url').value;
+            const email = document.getElementById('pg-email').value;
+            const r = await api('/start-lite', { method: 'POST', body: JSON.stringify({ dna, email }) });
+            document.getElementById('out-lite').textContent = JSON.stringify(r.data, null, 2);
+        }
+
+        async function runCheckout() {
+            const dna = document.getElementById('pg-url').value;
+            const email = document.getElementById('pg-email').value;
+            localStorage.setItem('pc_email', email);
+            const r = await api('/start', { method: 'POST', body: JSON.stringify({ dna, email, refCode: '' }) });
+            document.getElementById('out-checkout').textContent = JSON.stringify(r.data, null, 2);
+            if (r.data?.url) window.open(r.data.url, '_blank');
+        }
+
+        async function runPortal() {
+            const email = document.getElementById('pg-email').value;
+            const r = await api('/portal-cliente', { method: 'POST', body: JSON.stringify({ email }) });
+            document.getElementById('out-portal').textContent = JSON.stringify(r.data, null, 2);
+            if (r.data?.url) window.open(r.data.url, '_blank');
+        }
+
+        async function runDb() {
+            const r = await api('/playground/db');
+            document.getElementById('out-db').textContent = JSON.stringify(r.data, null, 2);
+        }
+    </script>
+</body>
+</html>`;
+}
+
+module.exports = { getPlaygroundHTML };
