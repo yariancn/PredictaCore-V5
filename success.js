@@ -2,19 +2,23 @@ function getSuccessHTML(lang = 'en') {
     const t = lang === 'es' ? {
         title: 'Pago confirmado',
         headline: 'PROTECCIÓN TITÁN ACTIVADA',
-        body: 'Tu pago fue procesado con éxito. Nuestro motor forense ya está analizando tu activo digital.',
-        email: 'Recibirás el reporte completo en tu correo en los próximos minutos.',
-        sub: 'La suscripción de monitoreo mensual ($25/mes) también quedó activa.',
+        body: 'Tu pago de USD $349 fue procesado con éxito. Nuestro motor forense ya está analizando tu activo digital.',
+        email: 'Recibirás el Reporte Titán completo en tu correo en los próximos minutos.',
+        sub: 'La suscripción de monitoreo ($25/mes) quedó activa. El primer cobro mensual será en aproximadamente 30 días. Puedes cancelar desde el portal al menos 5 días hábiles antes de cada renovación. Ventas finales — sin reembolsos.',
         portal: 'Gestionar suscripción',
         home: 'Volver al inicio',
+        terms: 'Términos',
+        privacy: 'Privacidad',
     } : {
         title: 'Payment confirmed',
         headline: 'TITAN PROTECTION ACTIVATED',
-        body: 'Your payment was processed successfully. Our forensic engine is now analyzing your digital asset.',
-        email: 'You will receive the full report in your email within the next few minutes.',
-        sub: 'Your monthly monitoring subscription ($25/mo) is also active.',
+        body: 'Your USD $349 payment was processed successfully. Our forensic engine is now analyzing your digital asset.',
+        email: 'You will receive the full Titan Report in your email within the next few minutes.',
+        sub: 'Your monitoring subscription ($25/mo) is active. The first monthly charge will occur in approximately 30 days. Cancel via the portal at least 5 business days before each renewal. All sales final — no refunds.',
         portal: 'Manage subscription',
         home: 'Back to home',
+        terms: 'Terms',
+        privacy: 'Privacy',
     };
 
     return `<!DOCTYPE html>
@@ -38,10 +42,13 @@ function getSuccessHTML(lang = 'en') {
         <h1 class="text-2xl font-black text-white mb-4 tracking-tighter">${t.headline}</h1>
         <p class="text-zinc-300 text-sm mb-4 leading-relaxed">${t.body}</p>
         <p class="text-emerald-500 text-xs font-bold uppercase tracking-widest mb-2">${t.email}</p>
-        <p class="text-zinc-500 text-[10px] mb-8">${t.sub}</p>
+        <p class="text-zinc-500 text-[10px] mb-8 leading-relaxed">${t.sub}</p>
         <div class="space-y-3">
             <button onclick="abrirPortal()" class="w-full bg-zinc-900 border border-zinc-700 text-white py-3 rounded text-xs uppercase tracking-widest hover:border-emerald-500 transition-colors">${t.portal}</button>
             <a href="/" class="block w-full text-zinc-500 text-[10px] uppercase tracking-widest hover:text-emerald-500">${t.home}</a>
+            <p class="text-[9px] text-zinc-600 pt-2">
+                <a href="/terminos" class="text-emerald-600 hover:underline">${t.terms}</a> · <a href="/privacidad" class="text-emerald-600 hover:underline">${t.privacy}</a>
+            </p>
         </div>
     </div>
     <script>

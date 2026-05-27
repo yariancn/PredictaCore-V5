@@ -37,11 +37,60 @@ async function getClienteByEmail(email) {
     const pool = getPool();
     if (!pool) return null;
     const result = await pool.query(
-        `SELECT id, email, url_sitio, stripe_customer_id, stripe_subscription_id, subscription_status
+        `SELECT id, email, url_sitio, stripe_customer_id, stripe_subscription_id,
+                subscription_status, ref_code_usado
          FROM clientes WHERE email = $1`,
         [email]
     );
     return result.rows[0] || null;
+}
+
+async function getLatestTitanReport(clienteId) {
+    const pool = getPool();
+    if (!pool || !clienteId) return null;
+    const result = await pool.query(
+        `SELECT secciones_json, dossier_scrape, url_sitio
+         FROM reportes WHERE cliente_id = $1 AND tipo = 'titan'
+         ORDER BY creado_en DESC LIMIT 1`,
+        [clienteId]
+    );
+    return result.rows[0] || null;
+}
+
+async function registrarComisionRecurrente(invoiceId, email, refCode) {
+    const pool = getPool();
+    if (!pool) return;
+
+    try {
+        if (refCode && refCode !== 'null' && refCode !== '') {
+            const res1 = await pool.query(
+                'SELECT id, sponsor_id FROM afiliados WHERE codigo_ref = $1',
+                [refCode]
+            );
+            if (res1.rows.length > 0) {
+                const nivel1_id = res1.rows[0].id;
+                const nivel2_id = res1.rows[0].sponsor_id;
+                let nivel3_id = null;
+                if (nivel2_id) {
+                    const res2 = await pool.query(
+                        'SELECT sponsor_id FROM afiliados WHERE id = $1',
+                        [nivel2_id]
+                    );
+                    if (res2.rows.length > 0) nivel3_id = res2.rows[0].sponsor_id;
+                }
+                await pool.query(`
+                    INSERT INTO comisiones_recurrentes
+                    (stripe_invoice_id, cliente_email, monto_base, afiliado_nivel_1_id, comision_nivel_1,
+                     afiliado_nivel_2_id, comision_nivel_2, afiliado_nivel_3_id, comision_nivel_3)
+                    VALUES ($1, $2, 25.00, $3, 3.75, $4, 2.50, $5, 1.25)
+                    ON CONFLICT (stripe_invoice_id) DO NOTHING
+                `, [invoiceId, email, nivel1_id, nivel2_id, nivel3_id]);
+                return;
+            }
+        }
+    } catch (err) {
+        console.error('!!! Error registrando comisión recurrente:', err);
+    }
 }
 
 async function saveReporte({ email, urlSitio, tipo, jobId, secciones, dossier }) {
@@ -52,7 +101,7 @@ async function saveReporte({ email, urlSitio, tipo, jobId, secciones, dossier })
     const cliente = await getClienteByEmail(email);
     if (cliente) {
         clienteId = cliente.id;
-    } else if (tipo === 'titan') {
+    } else if (tipo === 'titan' || tipo === 'delta') {
         clienteId = await upsertCliente({
             email,
             urlSitio,
@@ -91,5 +140,7 @@ module.exports = {
     normalizeUrl,
     upsertCliente,
     getClienteByEmail,
+    getLatestTitanReport,
+    registrarComisionRecurrente,
     saveReporte,
 };

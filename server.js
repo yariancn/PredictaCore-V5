@@ -1,13 +1,16 @@
-// server.js - NÚCLEO BLINDADO PREDICTACORE (LITE + TITÁN) CON CAPACIDAD EXTENDIDA
+// server.js - PredictaCore (Lite + Titán + Seguimiento mensual)
 const express = require('express');
 const cerebroWeb = require('./cerebro');
 const cerebroSocial = require('./cerebro_social');
 const { PROMPTS_LITE } = require('./cerebro_lite');
+const { PROMPTS_DELTA, extractInitialSummary } = require('./cerebro_delta');
 const { getHTML } = require('./visual');
 const { getHTMLLite } = require('./visual_lite');
+const { getHTMLDelta } = require('./visual_delta');
 const { getLandingHTML } = require('./landing');
 const { getSuccessHTML } = require('./success');
 const { getPlaygroundHTML } = require('./playground');
+const { getTerminosHTML, getPrivacidadHTML } = require('./legal');
 const { captureAndScrape } = require('./motor');
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
@@ -24,7 +27,14 @@ const {
     getJobProgress,
     healthCheck,
 } = require('./db/init');
-const { normalizeUrl, upsertCliente, saveReporte } = require('./db/comercial');
+const {
+    normalizeUrl,
+    upsertCliente,
+    getClienteByEmail,
+    getLatestTitanReport,
+    registrarComisionRecurrente,
+    saveReporte,
+} = require('./db/comercial');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
@@ -100,7 +110,7 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
             const session = event.data.object;
             const { dna, email, refCode } = session.metadata || {};
 
-            console.log(`>>> [PAGO EXITOSO] Recibido de ${email}. Despertando IA Titán...`);
+            console.log(`>>> [PAGO INICIAL $349] ${email}. Activando Titán + suscripción...`);
 
             await upsertCliente({
                 email,
@@ -110,8 +120,12 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
                 refCode,
             });
 
-            iniciarAuditoria(dna, email, false);
+            iniciarAuditoria(dna, email, 'TITAN');
             await registrarVentaComisiones(session, email, refCode);
+        }
+
+        if (event.type === 'invoice.paid') {
+            await handleInvoicePaid(event.data.object);
         }
     } catch (err) {
         console.error('!!! Error procesando webhook:', err);
@@ -120,6 +134,27 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
 
     res.json({ received: true });
 });
+
+async function handleInvoicePaid(invoice) {
+    if (invoice.amount_paid !== 2500) return;
+
+    let email = invoice.customer_email;
+    if (!email && invoice.customer) {
+        const customer = await stripe.customers.retrieve(invoice.customer);
+        email = customer.email;
+    }
+    if (!email) return;
+
+    console.log(`>>> [COBRO MENSUAL $25] ${email}. Iniciando reporte de seguimiento...`);
+
+    const cliente = await getClienteByEmail(email);
+    if (cliente?.ref_code_usado) {
+        await registrarComisionRecurrente(invoice.id, email, cliente.ref_code_usado);
+    }
+
+    const urlSitio = cliente?.url_sitio || email;
+    iniciarAuditoria(urlSitio, email, 'DELTA');
+}
 
 async function registrarVentaComisiones(session, email, refCode) {
     const pool = getPool();
@@ -141,9 +176,7 @@ async function registrarVentaComisiones(session, email, refCode) {
                         'SELECT sponsor_id FROM afiliados WHERE id = $1',
                         [nivel2_id]
                     );
-                    if (res2.rows.length > 0) {
-                        nivel3_id = res2.rows[0].sponsor_id;
-                    }
+                    if (res2.rows.length > 0) nivel3_id = res2.rows[0].sponsor_id;
                 }
 
                 await pool.query(`
@@ -173,7 +206,7 @@ app.get('/health', async (req, res) => {
     res.status(db.ok ? 200 : 503).json({
         status: db.ok ? 'ok' : 'degraded',
         service: 'predictacore-titan',
-        phase: '1',
+        phase: '2',
         database: db,
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
         playground: !!process.env.API_KEY,
@@ -182,6 +215,8 @@ app.get('/health', async (req, res) => {
 });
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
+app.get('/terminos', (req, res) => res.send(getTerminosHTML()));
+app.get('/privacidad', (req, res) => res.send(getPrivacidadHTML()));
 
 app.get('/exito', (req, res) => {
     const lang = req.query.lang === 'es' ? 'es' : 'en';
@@ -199,13 +234,13 @@ app.get('/playground/db', requirePlayground, async (req, res) => {
     try {
         const [clientes, reportes, ventas, jobs] = await Promise.all([
             pool.query('SELECT COUNT(*)::int AS n FROM clientes'),
-            pool.query('SELECT COUNT(*)::int AS n FROM reportes'),
+            pool.query(`SELECT tipo, COUNT(*)::int AS n FROM reportes GROUP BY tipo`),
             pool.query('SELECT COUNT(*)::int AS n FROM ventas_comisiones'),
             pool.query(`SELECT estado, COUNT(*)::int AS n FROM jobs_auditoria GROUP BY estado`),
         ]);
         res.json({
             clientes: clientes.rows[0].n,
-            reportes: reportes.rows[0].n,
+            reportes: reportes.rows,
             ventas: ventas.rows[0].n,
             jobs: jobs.rows,
         });
@@ -250,7 +285,7 @@ app.post('/playground/titan', requirePlayground, async (req, res) => {
     }
 
     console.log(`>>> [PLAYGROUND] Titán sin cobro para ${email} — ${dna}`);
-    iniciarAuditoria(dna, email, false);
+    iniciarAuditoria(dna, email, 'TITAN');
 
     res.json({
         status: 'started',
@@ -260,7 +295,7 @@ app.post('/playground/titan', requirePlayground, async (req, res) => {
 });
 
 app.post('/start-lite', async (req, res) => {
-    iniciarAuditoria(req.body.dna, req.body.email, true);
+    iniciarAuditoria(req.body.dna, req.body.email, 'LITE');
     res.json({ status: 'started' });
 });
 
@@ -277,7 +312,19 @@ app.post('/start', async (req, res) => {
             customer_email: email,
             mode: 'subscription',
             line_items: buildCheckoutLineItems(),
-            success_url: `${host}/exito?email=${encodeURIComponent(email)}&lang=en`,
+            subscription_data: {
+                trial_period_days: 30,
+                metadata: { dna, email, refCode: refCode || '' },
+            },
+            consent_collection: {
+                terms_of_service: 'required',
+            },
+            custom_text: {
+                submit: {
+                    message: 'Al pagar USD $349 acepto los Términos en predictacore.ai/terminos y autorizo la suscripción de monitoreo USD $25/mes (primer cobro en ~30 días). Ventas finales.',
+                },
+            },
+            success_url: `${host}/exito?email=${encodeURIComponent(email)}&lang=es`,
             cancel_url: `${host}/`,
             metadata: { dna, email, refCode: refCode || '' },
         });
@@ -289,30 +336,40 @@ app.post('/start', async (req, res) => {
     }
 });
 
-async function iniciarAuditoria(dna, email, isLite) {
+async function iniciarAuditoria(dna, email, modo) {
     const targetUrl = normalizeUrl(dna);
     if (!targetUrl) return;
 
-    const modo = isLite ? 'LITE' : 'TITAN';
     const jobId = `${modo}-${Date.now()}`;
 
-    jobsMemoria[jobId] = { status: 'running', progress: {}, email, isLite, dossier: null };
+    jobsMemoria[jobId] = {
+        status: 'running',
+        progress: {},
+        email,
+        modo,
+        dossier: null,
+        initialSummary: null,
+    };
+
+    if (modo === 'DELTA') {
+        const cliente = await getClienteByEmail(email);
+        const titan = await getLatestTitanReport(cliente?.id);
+        jobsMemoria[jobId].initialSummary = extractInitialSummary(titan?.secciones_json);
+    }
+
     await createJob(jobId, email, targetUrl, modo);
 
     console.log(`>>> [SISTEMA] Iniciando Reporte ${modo} para: ${targetUrl}`);
-    ejecutarAuditoriaFondo(targetUrl, jobId, isLite).catch(async (e) => {
+    ejecutarAuditoriaFondo(targetUrl, jobId, modo).catch(async (e) => {
         console.error('!!! ERROR:', e);
         await failJob(jobId, e.message);
     });
 }
 
-async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
+async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
     try {
         const datosTarget = await captureAndScrape(targetUrl);
         jobsMemoria[jobId].dossier = datosTarget.texto;
-
-        const cerebroActivo = targetUrl.includes('instagram.com') ? cerebroSocial : cerebroWeb;
-        const promptsAUsar = isLite ? PROMPTS_LITE : cerebroActivo.PROMPTS;
 
         const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
         const auth = new GoogleAuth({
@@ -324,20 +381,46 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
 
         const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
+        let promptsAUsar;
+        let idioma;
+        let regla;
+        const inicial = jobsMemoria[jobId].initialSummary || '';
+
+        if (modo === 'DELTA') {
+            promptsAUsar = PROMPTS_DELTA;
+            idioma = 'INSTRUCCIÓN: Redacta en el idioma del sitio analizado.';
+            regla = 'REGLA: Reporte de seguimiento mensual comparativo.';
+        } else if (modo === 'LITE') {
+            promptsAUsar = PROMPTS_LITE;
+            idioma = 'INSTRUCCIÓN: Redacta en el idioma del sitio analizado.';
+            regla = '';
+        } else {
+            const cerebroActivo = targetUrl.includes('instagram.com') ? cerebroSocial : cerebroWeb;
+            promptsAUsar = cerebroActivo.PROMPTS;
+            idioma = cerebroActivo.IDIOMA;
+            regla = cerebroActivo.REGLA_NUCLEAR;
+        }
+
         for (const etapaId in promptsAUsar) {
-            const promptFinal = promptsAUsar[etapaId](datosTarget.texto);
+            const promptFinal = modo === 'DELTA'
+                ? promptsAUsar[etapaId](datosTarget.texto, inicial)
+                : promptsAUsar[etapaId](datosTarget.texto);
+
             const payload = {
                 contents: [{
                     role: 'user',
                     parts: [
                         { text: FIREWALL_IA },
-                        { text: cerebroActivo.IDIOMA },
-                        { text: cerebroActivo.REGLA_NUCLEAR },
+                        { text: idioma },
+                        { text: regla },
                         { text: `CONTEXTO:\n${datosTarget.texto}` },
                         { text: promptFinal },
                     ],
                 }],
-                generationConfig: { temperature: 0.1, maxOutputTokens: 8192 },
+                generationConfig: {
+                    temperature: 0.1,
+                    maxOutputTokens: modo === 'DELTA' ? 4096 : 8192,
+                },
             };
 
             const vertexRes = await fetch(vertexUrl, {
@@ -357,13 +440,23 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
             await new Promise((r) => setTimeout(r, 2000));
         }
 
-        await enviarReportePorCorreo(jobId, jobsMemoria[jobId].email, targetUrl, isLite);
+        await enviarReportePorCorreo(jobId, jobsMemoria[jobId].email, targetUrl, modo);
 
-        if (!isLite) {
+        if (modo === 'TITAN') {
             await saveReporte({
                 email: jobsMemoria[jobId].email,
                 urlSitio: targetUrl,
                 tipo: 'titan',
+                jobId,
+                secciones: jobsMemoria[jobId].progress,
+                dossier: jobsMemoria[jobId].dossier,
+            });
+        }
+        if (modo === 'DELTA') {
+            await saveReporte({
+                email: jobsMemoria[jobId].email,
+                urlSitio: targetUrl,
+                tipo: 'delta',
                 jobId,
                 secciones: jobsMemoria[jobId].progress,
                 dossier: jobsMemoria[jobId].dossier,
@@ -377,17 +470,38 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, isLite) {
     }
 }
 
-async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
+async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
     let browser;
     try {
         const jobDb = await getJobProgress(jobId);
         const job = jobsMemoria[jobId] || {
             progress: jobDb?.progress || {},
             email: jobDb?.email || emailDestino,
-            isLite: jobDb?.isLite ?? isLite,
+            modo,
         };
 
-        const htmlBase = job.isLite ? getHTMLLite() : getHTML();
+        let htmlBase;
+        let subject;
+        let filename;
+        let textBody;
+
+        if (modo === 'LITE') {
+            htmlBase = getHTMLLite();
+            subject = 'Tu Auditoría Forense PredictaCore (Lite)';
+            filename = 'PREDICTACORE_LITE.pdf';
+            textBody = 'Adjunto encontrarás tu radiografía inicial PredictaCore.';
+        } else if (modo === 'DELTA') {
+            htmlBase = getHTMLDelta();
+            subject = 'PredictaCore — Reporte de Seguimiento Mensual';
+            filename = 'PREDICTACORE_SEGUIMIENTO.pdf';
+            textBody = 'Adjunto encontrarás su reporte de seguimiento mensual comparativo.';
+        } else {
+            htmlBase = getHTML();
+            subject = 'Auditoría Forense Titán Completa';
+            filename = 'PREDICTACORE_TITAN.pdf';
+            textBody = 'Adjunto encontrarás la radiografía de conversión de su activo digital.';
+        }
+
         browser = await puppeteer.launch({
             headless: 'new',
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -398,7 +512,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
         await page.evaluate((progressData, dominio) => {
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
-            if (dEl && dominio) dEl.innerText = 'Analysis: ' + dominio;
+            if (dEl && dominio) dEl.innerText = dominio.replace(/^https?:\/\//, '');
 
             for (const key in progressData) {
                 const div = document.createElement('div');
@@ -414,18 +528,13 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, isLite) {
         const { data, error } = await resend.emails.send({
             from: 'PredictaCore Titán <reportes@predictacore.ai>',
             to: emailDestino,
-            subject: job.isLite
-                ? 'Tu Auditoría Forense PredictaCore (Lite)'
-                : 'Auditoría Forense Titán Completa',
-            text: 'Adjunto encontrarás la radiografía de conversión de tu activo digital. Ábrelo en un ordenador para su correcta visualización.',
-            attachments: [{
-                filename: job.isLite ? 'PREDICTACORE_LITE.pdf' : 'PREDICTACORE_TITAN.pdf',
-                content: pdfBuffer,
-            }],
+            subject,
+            text: textBody,
+            attachments: [{ filename, content: pdfBuffer }],
         });
 
         if (error) throw new Error(`Resend API Error: ${error.message}`);
-        console.log(`>>> Sellado. Reporte entregado con éxito a ${emailDestino}. ID: ${data.id}`);
+        console.log(`>>> Sellado. Reporte ${modo} entregado a ${emailDestino}. ID: ${data.id}`);
     } catch (error) {
         if (browser) await browser.close();
         console.error('>>> Error crítico al ensamblar o enviar correo:', error);
@@ -437,11 +546,9 @@ async function startServer() {
     await initDatabase();
 
     app.listen(port, '0.0.0.0', () => {
-        console.log(`MOTOR UNIFICADO ONLINE - MODELO 2.5 - Puerto ${port}`);
-        console.log(`>>> Health check: http://0.0.0.0:${port}/health`);
-        if (process.env.API_KEY) {
-            console.log('>>> Playground activo: /playground?key=***');
-        }
+        console.log(`MOTOR UNIFICADO ONLINE - FASE 2 - Puerto ${port}`);
+        console.log(`>>> Health: http://0.0.0.0:${port}/health`);
+        if (process.env.API_KEY) console.log('>>> Playground: /playground?key=***');
     });
 }
 

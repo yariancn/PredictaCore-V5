@@ -257,12 +257,13 @@ function getLandingHTML() {
 
                     <div class="border-t border-zinc-800 pt-8">
                         <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$349 <span class="text-xs text-zinc-600 line-through font-normal">$700 USD</span></h4>
-                        <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-6">+ Titan Subscription ($25/mo for Continuous Monitoring)</p>
+                        <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-2">Charged today: USD $349 (Titan Report)</p>
+                        <p id="sub-price-2" class="text-[9px] text-zinc-400 mb-6 leading-relaxed">Monitoring subscription ($25/mo) activates now; first monthly charge in ~30 days. Cancel at least 5 business days before renewal. All sales final — no refunds.</p>
                         
                         <button onclick="comprarTitan()" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2" id="btn-titan">
                             Activate Titan Protection
                         </button>
-                        <p id="cancel-badge" class="text-[9px] text-zinc-500 uppercase tracking-widest mb-4">(Cancel any time)</p>
+                        <p id="cancel-badge" class="text-[9px] text-zinc-500 uppercase tracking-widest mb-4">By paying you agree to our <a href="/terminos" class="text-emerald-600 underline">Terms</a> and <a href="/privacidad" class="text-emerald-600 underline">Privacy Policy</a></p>
                     </div>
                 </div>
             </div>
@@ -271,11 +272,14 @@ function getLandingHTML() {
         <footer class="py-12 bg-black border-t border-zinc-900 text-center">
             <div class="max-w-4xl mx-auto px-6">
                 <p id="footer-text" class="text-[10px] text-emerald-600 uppercase tracking-[0.2em] mb-6">Consultant or Agency? Join our Forensic Audit network.</p>
-                <p id="disclaimer-text" class="text-[9px] text-zinc-500 leading-relaxed mb-6 max-w-2xl mx-auto">
-                    Disclaimer: PredictaCore provides AI-driven technical and business analysis. We deliver exact instructions, but we do not implement changes directly on your site. Subscription cancellations must be requested at least 5 days prior to the next billing cycle.
+                <p id="disclaimer-text" class="text-[9px] text-zinc-500 leading-relaxed mb-4 max-w-2xl mx-auto">
+                    PredictaCore is operated by Regenoxy LLC. AI-driven analysis only — we do not implement changes on your site. USD $349 initial payment and processed monthly charges are non-refundable. Cancel subscription at least 5 business days before the next billing cycle via the customer portal.
+                </p>
+                <p class="text-[9px] text-zinc-600 mb-6">
+                    <a href="/terminos" class="text-emerald-600 hover:underline">Terms of Service</a> · <a href="/privacidad" class="text-emerald-600 hover:underline">Privacy Policy</a>
                 </p>
                 <div class="text-[9px] text-zinc-700 font-mono">
-                    © 2026 PREDICTACORE // NODE_STATUS: OPERATIONAL
+                    © 2026 REGENOXY LLC · PREDICTACORE // NODE_STATUS: OPERATIONAL
                 </div>
             </div>
         </footer>
@@ -309,9 +313,12 @@ function getLandingHTML() {
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
                     upT: "X-Ray Sealed", upSt: "Successfully sent to",
                     boxText: "Initial scan shows critical bottlenecks. You are losing sales today due to purchasing obstacles. The Titan Report dissects your website and delivers the exact instructions to fix these leaks.",
-                    subPrice: "+ Titan Subscription ($25/mo for Continuous Monitoring)", btnTitan: "Activate Titan Protection", cancelBadge: "(Cancel any time)",
+                    subPrice: "Charged today: USD $349 (Titan Report)",
+                    subPrice2: "Monitoring subscription ($25/mo) activates now; first monthly charge in ~30 days. Cancel at least 5 business days before renewal. All sales final — no refunds.",
+                    btnTitan: "Activate Titan Protection",
+                    cancelBadge: 'By paying you agree to our <a href="/terminos" class="text-emerald-600 underline">Terms</a> and <a href="/privacidad" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "Consultant or Agency? Join our Forensic Audit network.",
-                    disclaimerText: "Disclaimer: PredictaCore provides AI-driven technical and business analysis. We deliver exact instructions, but we do not implement changes directly on your site. Subscription cancellations must be requested at least 5 days prior to the next billing cycle.",
+                    disclaimerText: "PredictaCore is operated by Regenoxy LLC. AI-driven analysis only — we do not implement changes on your site. USD $349 initial payment and processed monthly charges are non-refundable. Cancel subscription at least 5 business days before the next billing cycle via the customer portal.",
                     alertProcess: "Redirecting to secure payment gateway...", alertError: "Required data missing.", successPayment: "Payment confirmed! Your Titan report is being processed by the AI and will arrive in your email shortly.",
                     phUrl: "Website URL (e.g. yourbusiness.com)", phEmail: "Your Email"
                 },
@@ -337,9 +344,12 @@ function getLandingHTML() {
                     logInit: ">> INICIALIZANDO NÚCLEO PREDICTACORE...",
                     upT: "Radiografía Sellada", upSt: "Enviado con éxito a",
                     boxText: "El escaneo inicial muestra cuellos de botella críticos. Estás perdiendo ventas hoy por obstáculos de compra. El Reporte Titán disecta tu sitio y entrega las instrucciones exactas para arreglar estas fugas.",
-                    subPrice: "+ Suscripción Titán ($25/mes por Monitoreo Continuo)", btnTitan: "Activar Protección Titán", cancelBadge: "(Cancela cuando quieras)",
+                    subPrice: "Cobro hoy: USD $349 (Reporte Titán)",
+                    subPrice2: "La suscripción de monitoreo ($25/mes) se activa ahora; el primer cobro mensual será en ~30 días. Cancela al menos 5 días hábiles antes de la renovación. Ventas finales — sin reembolsos.",
+                    btnTitan: "Activar Protección Titán",
+                    cancelBadge: 'Al pagar aceptas nuestros <a href="/terminos" class="text-emerald-600 underline">Términos</a> y <a href="/privacidad" class="text-emerald-600 underline">Privacidad</a>',
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
-                    disclaimerText: "Descargo de responsabilidad: PredictaCore provee análisis técnico y de negocios impulsado por IA. Entregamos instrucciones exactas, pero no implementamos cambios directamente en su sitio. Las cancelaciones de suscripción deben solicitarse al menos 5 días antes del siguiente ciclo de facturación.",
+                    disclaimerText: "PredictaCore es operado por Regenoxy LLC. Solo análisis con IA — no implementamos cambios en su sitio. El pago inicial de USD $349 y los cobros mensuales procesados no son reembolsables. Cancele la suscripción al menos 5 días hábiles antes del siguiente ciclo desde el portal de cliente.",
                     alertProcess: "Redirigiendo a la pasarela segura de pago...", alertError: "Faltan datos requeridos.", successPayment: "¡Pago confirmado! Tu reporte Titán está siendo procesado por la IA y llegará a tu correo a la brevedad.",
                     phUrl: "URL del Sitio (ej. tunegocio.com)", phEmail: "Tu Email"
                 }
@@ -394,8 +404,9 @@ function getLandingHTML() {
                 
                 document.getElementById('box-text').innerText = d.boxText;
                 document.getElementById('sub-price').innerText = d.subPrice;
+                document.getElementById('sub-price-2').innerText = d.subPrice2;
                 document.getElementById('btn-titan').innerText = d.btnTitan;
-                document.getElementById('cancel-badge').innerText = d.cancelBadge;
+                document.getElementById('cancel-badge').innerHTML = d.cancelBadge;
                 
                 document.getElementById('footer-text').innerText = d.footerText;
                 document.getElementById('disclaimer-text').innerText = d.disclaimerText;
