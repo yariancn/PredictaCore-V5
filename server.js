@@ -243,6 +243,22 @@ app.post('/portal-cliente', async (req, res) => {
     }
 });
 
+app.post('/playground/titan', requirePlayground, async (req, res) => {
+    const { dna, email } = req.body;
+    if (!dna || !email) {
+        return res.status(400).json({ error: 'URL y email requeridos' });
+    }
+
+    console.log(`>>> [PLAYGROUND] Titán sin cobro para ${email} — ${dna}`);
+    iniciarAuditoria(dna, email, false);
+
+    res.json({
+        status: 'started',
+        mode: 'TITAN',
+        message: 'Auditoría Titán completa iniciada. El PDF llegará por email en ~10-20 min.',
+    });
+});
+
 app.post('/start-lite', async (req, res) => {
     iniciarAuditoria(req.body.dna, req.body.email, true);
     res.json({ status: 'started' });

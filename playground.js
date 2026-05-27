@@ -27,14 +27,23 @@ function getPlaygroundHTML() {
         <pre id="out-health" class="mt-3 text-emerald-400">—</pre>
     </section>
 
+    <div class="grid gap-2 mb-8">
+        <input id="pg-url" placeholder="URL (ej. example.com)" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
+        <input id="pg-email" placeholder="Email de prueba" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
+    </div>
+
     <section class="mb-8">
         <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">02 — Lite Scan (sin pago)</h2>
-        <div class="grid gap-2 mb-2">
-            <input id="pg-url" placeholder="URL (ej. example.com)" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
-            <input id="pg-email" placeholder="Email de prueba" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
-        </div>
+        <p class="text-zinc-500 text-[10px] mb-2">Teaser PDF — 5 secciones. ~5 min.</p>
         <button onclick="runLite()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /start-lite</button>
         <pre id="out-lite" class="mt-3 text-zinc-400">—</pre>
+    </section>
+
+    <section class="mb-8 border border-emerald-500/30 bg-emerald-950/10 p-4 rounded">
+        <h2 class="text-emerald-500 text-[10px] uppercase tracking-widest mb-3">02b — Titán Completo (sin pago)</h2>
+        <p class="text-zinc-400 text-[10px] mb-2">Reporte forense completo — 11 secciones. Mismo motor que producción. ~10-20 min. Revisa el PDF y luego ajusta código en GitHub.</p>
+        <button onclick="runTitan()" class="bg-emerald-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/titan</button>
+        <pre id="out-titan" class="mt-3 text-emerald-400">—</pre>
     </section>
 
     <section class="mb-8">
@@ -78,6 +87,17 @@ function getPlaygroundHTML() {
             const email = document.getElementById('pg-email').value;
             const r = await api('/start-lite', { method: 'POST', body: JSON.stringify({ dna, email }) });
             document.getElementById('out-lite').textContent = JSON.stringify(r.data, null, 2);
+        }
+
+        async function runTitan() {
+            const dna = document.getElementById('pg-url').value;
+            const email = document.getElementById('pg-email').value;
+            if (!dna || !email) {
+                document.getElementById('out-titan').textContent = 'URL y email requeridos';
+                return;
+            }
+            const r = await api('/playground/titan', { method: 'POST', body: JSON.stringify({ dna, email }) });
+            document.getElementById('out-titan').textContent = JSON.stringify(r.data, null, 2);
         }
 
         async function runCheckout() {
