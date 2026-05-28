@@ -36,6 +36,15 @@ const {
     saveReporte,
 } = require('./db/comercial');
 
+const {
+    BRAND,
+    TERMS_URL,
+    buildCheckoutSessionParams,
+    isPredictacoreCheckoutSession,
+    isPredictacoreInvoice,
+    expandCheckoutSession,
+} = require('./stripe-predictacore');
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
@@ -57,38 +66,6 @@ function requirePlayground(req, res, next) {
     next();
 }
 
-function buildCheckoutLineItems() {
-    const priceTitan = process.env.STRIPE_PRICE_TITAN;
-    const priceSub = process.env.STRIPE_PRICE_SUBSCRIPTION;
-
-    if (priceTitan && priceSub) {
-        return [
-            { price: priceTitan, quantity: 1 },
-            { price: priceSub, quantity: 1 },
-        ];
-    }
-
-    return [
-        {
-            price_data: {
-                currency: 'usd',
-                product_data: { name: 'Reporte Titán (Auditoría Forense)' },
-                unit_amount: 34900,
-            },
-            quantity: 1,
-        },
-        {
-            price_data: {
-                currency: 'usd',
-                product_data: { name: 'Suscripción Monitoreo Titán' },
-                unit_amount: 2500,
-                recurring: { interval: 'month' },
-            },
-            quantity: 1,
-        },
-    ];
-}
-
 app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
@@ -107,8 +84,19 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
         }
 
         if (event.type === 'checkout.session.completed') {
-            const session = event.data.object;
+            let session = event.data.object;
+            session = await expandCheckoutSession(stripe, session);
+
+            if (!isPredictacoreCheckoutSession(session)) {
+                console.log(`>>> [WEBHOOK] checkout ignorado — no es producto ${BRAND}`);
+                return res.json({ received: true, skipped: 'not_predictacore' });
+            }
+
             const { dna, email, refCode } = session.metadata || {};
+            if (!dna || !email) {
+                console.warn('>>> [WEBHOOK] PredictaCore checkout sin metadata dna/email');
+                return res.json({ received: true, skipped: 'missing_metadata' });
+            }
 
             console.log(`>>> [PAGO INICIAL $349] ${email}. Activando Titán + suscripción...`);
 
@@ -138,9 +126,30 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
 async function handleInvoicePaid(invoice) {
     if (invoice.amount_paid !== 2500) return;
 
-    let email = invoice.customer_email;
-    if (!email && invoice.customer) {
-        const customer = await stripe.customers.retrieve(invoice.customer);
+    let fullInvoice = invoice;
+    if (!invoice.lines?.data?.length) {
+        fullInvoice = await stripe.invoices.retrieve(invoice.id, {
+            expand: ['lines.data.price', 'subscription'],
+        });
+    }
+
+    let subscriptionMeta = fullInvoice.subscription?.metadata;
+    if (!subscriptionMeta && fullInvoice.subscription) {
+        const subId = typeof fullInvoice.subscription === 'string'
+            ? fullInvoice.subscription
+            : fullInvoice.subscription.id;
+        const sub = await stripe.subscriptions.retrieve(subId);
+        subscriptionMeta = sub.metadata;
+    }
+
+    if (!isPredictacoreInvoice(fullInvoice, subscriptionMeta)) {
+        console.log(`>>> [WEBHOOK] invoice.paid ignorado — no es monitoreo ${BRAND}`);
+        return;
+    }
+
+    let email = fullInvoice.customer_email;
+    if (!email && fullInvoice.customer) {
+        const customer = await stripe.customers.retrieve(fullInvoice.customer);
         email = customer.email;
     }
     if (!email) return;
@@ -149,7 +158,7 @@ async function handleInvoicePaid(invoice) {
 
     const cliente = await getClienteByEmail(email);
     if (cliente?.ref_code_usado) {
-        await registrarComisionRecurrente(invoice.id, email, cliente.ref_code_usado);
+        await registrarComisionRecurrente(fullInvoice.id, email, cliente.ref_code_usado);
     }
 
     const urlSitio = cliente?.url_sitio || email;
@@ -209,6 +218,8 @@ app.get('/health', async (req, res) => {
         phase: '2',
         database: db,
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
+        stripe_brand: BRAND,
+        stripe_terms_url: TERMS_URL,
         playground: !!process.env.API_KEY,
         timestamp: new Date().toISOString(),
     });
@@ -301,33 +312,15 @@ app.post('/start-lite', async (req, res) => {
 
 app.post('/start', async (req, res) => {
     try {
-        const { dna, email, refCode } = req.body;
+        const { dna, email, refCode, lang } = req.body;
         if (!dna || !email) {
             return res.status(400).json({ error: 'URL y email requeridos' });
         }
 
         const host = baseUrl(req);
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            customer_email: email,
-            mode: 'subscription',
-            line_items: buildCheckoutLineItems(),
-            subscription_data: {
-                trial_period_days: 30,
-                metadata: { dna, email, refCode: refCode || '' },
-            },
-            consent_collection: {
-                terms_of_service: 'required',
-            },
-            custom_text: {
-                submit: {
-                    message: 'Al pagar USD $349 acepto los Términos en predictacore.ai/terminos y autorizo la suscripción de monitoreo USD $25/mes (primer cobro en ~30 días). Ventas finales.',
-                },
-            },
-            success_url: `${host}/exito?email=${encodeURIComponent(email)}&lang=es`,
-            cancel_url: `${host}/`,
-            metadata: { dna, email, refCode: refCode || '' },
-        });
+        const session = await stripe.checkout.sessions.create(
+            buildCheckoutSessionParams({ host, dna, email, refCode, lang })
+        );
 
         res.json({ status: 'checkout', url: session.url });
     } catch (error) {

@@ -13,6 +13,11 @@ function getTerminosHTML() {
     <h1 class="text-2xl font-black text-white mt-6 mb-2">Términos y Condiciones de Servicio</h1>
     <p class="text-zinc-500 text-xs mb-8">Última actualización: 27 de mayo de 2026 · Regenoxy LLC</p>
 
+    <div class="border border-amber-900/50 bg-amber-950/20 p-4 rounded mb-8 text-xs text-amber-200/90">
+        <strong>Alcance:</strong> Estos términos aplican <strong>exclusivamente</strong> a productos y servicios PredictaCore en predictacore.ai.
+        Otros productos comercializados por Regenoxy LLC (incluida cámara hiperbárica y demás líneas) tienen condiciones, precios y políticas de reembolso distintas.
+    </div>
+
     <section class="space-y-6 text-zinc-300">
         <div>
             <h2 class="text-white font-bold mb-2">1. Identidad del prestador</h2>
@@ -76,6 +81,10 @@ function getPrivacidadHTML() {
     <a href="/" class="text-emerald-500 text-xs uppercase tracking-widest">← PredictaCore</a>
     <h1 class="text-2xl font-black text-white mt-6 mb-2">Política de Privacidad</h1>
     <p class="text-zinc-500 text-xs mb-8">Última actualización: 27 de mayo de 2026 · Regenoxy LLC</p>
+
+    <div class="border border-zinc-800 bg-zinc-900/40 p-4 rounded mb-8 text-xs text-zinc-400">
+        Esta política aplica solo al servicio PredictaCore. Otros sitios o marcas de Regenoxy LLC pueden tener políticas separadas.
+    </div>
 
     <section class="space-y-6 text-zinc-300">
         <div>

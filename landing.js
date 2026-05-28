@@ -449,7 +449,7 @@ function getLandingHTML() {
                     const res = await fetch('/start', { 
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' }, 
-                        body: JSON.stringify({ dna: url, email: email, refCode: refCode }) 
+                        body: JSON.stringify({ dna: url, email: email, refCode: refCode, lang: currentLang }) 
                     });
                     const data = await res.json();
                     
