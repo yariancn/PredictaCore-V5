@@ -239,14 +239,19 @@ app.get('/health', async (req, res) => {
 app.get('/', (req, res) => res.send(getLandingHTML()));
 app.get('/legal', (req, res) => res.redirect(301, REGENOXY_HUB_PATH));
 app.get('/legal/regenoxy', (req, res) => res.send(getLegalHubHTML()));
-app.get('/legal/servicios-clinicos', (req, res) => res.send(getServiciosClinicosHTML()));
+app.get('/terms', (req, res) => res.send(getTerminosHTML()));
+app.get('/privacy', (req, res) => res.send(getPrivacidadHTML()));
+app.get('/legal/clinical-services', (req, res) => res.send(getServiciosClinicosHTML()));
+app.get('/legal/payments', (req, res) => res.send(getPagosHTML()));
+app.get('/legal/privacy', (req, res) => res.send(getPrivacidadRegenoxyHTML()));
 app.get('/static/oxyhyperbaric-legal-hub.html', (req, res) => {
     res.sendFile(require('path').join(__dirname, 'static', 'oxyhyperbaric-legal-hub.html'));
 });
-app.get('/legal/pagos', (req, res) => res.send(getPagosHTML()));
-app.get('/legal/privacidad', (req, res) => res.send(getPrivacidadRegenoxyHTML()));
-app.get('/terminos', (req, res) => res.send(getTerminosHTML()));
-app.get('/privacidad', (req, res) => res.send(getPrivacidadHTML()));
+app.get('/terminos', (req, res) => res.redirect(301, '/terms'));
+app.get('/privacidad', (req, res) => res.redirect(301, '/privacy'));
+app.get('/legal/servicios-clinicos', (req, res) => res.redirect(301, '/legal/clinical-services'));
+app.get('/legal/pagos', (req, res) => res.redirect(301, '/legal/payments'));
+app.get('/legal/privacidad', (req, res) => res.redirect(301, '/legal/privacy'));
 
 app.get('/exito', (req, res) => {
     const lang = req.query.lang === 'es' ? 'es' : 'en';

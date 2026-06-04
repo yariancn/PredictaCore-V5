@@ -5,17 +5,17 @@
 
 const BRAND = 'predictacore';
 /** Checkout PredictaCore — términos específicos del producto */
-const TERMS_URL = 'https://predictacore.ai/terminos';
-const PRIVACY_URL = 'https://predictacore.ai/privacidad';
+const TERMS_URL = 'https://predictacore.ai/terms';
+const PRIVACY_URL = 'https://predictacore.ai/privacy';
 /**
  * Stripe Public details — usar URL en dominio clínico cuando exista:
  *   REGENOXY_CLINICAL_TERMS_URL=https://oxyhyperbaric.com/legal
- * Mientras tanto: hub neutro Regenoxy (no /terminos de PredictaCore).
+ * Until clinical site is ready: neutral hub (not /terms for PredictaCore).
  */
 const LEGAL_HUB_URL = process.env.REGENOXY_CLINICAL_TERMS_URL
     || 'https://predictacore.ai/legal/regenoxy';
 const PRIVACY_REGENOXY_URL = process.env.REGENOXY_CLINICAL_PRIVACY_URL
-    || 'https://predictacore.ai/legal/privacidad';
+    || 'https://predictacore.ai/legal/privacy';
 
 const PRICE_TITAN = () => process.env.STRIPE_PRICE_TITAN || '';
 const PRICE_SUB = () => process.env.STRIPE_PRICE_SUBSCRIPTION || '';
@@ -80,30 +80,23 @@ function buildCheckoutLineItems() {
     ];
 }
 
-function getCheckoutCustomText(lang) {
-    const es = lang === 'es';
-    const termsLink = `[Términos de PredictaCore](${TERMS_URL})`;
-    const privacyLink = `[Privacidad](${PRIVACY_URL})`;
-    const termsLinkEn = `[PredictaCore Terms of Service](${TERMS_URL})`;
-    const privacyLinkEn = `[Privacy Policy](${PRIVACY_URL})`;
+function getCheckoutCustomText() {
+    const termsLink = `[PredictaCore Terms of Service](${TERMS_URL})`;
+    const privacyLink = `[Privacy Policy](${PRIVACY_URL})`;
 
     return {
         terms_of_service_acceptance: {
-            message: es
-                ? `Acepto los ${termsLink} y ${privacyLink} (solo productos PredictaCore). Entiendo: cobro hoy USD $349 por el Reporte Titán; suscripción de monitoreo USD $25/mes activa ahora con primer cobro mensual en ~30 días; ventas finales sin reembolso; cancelación con al menos 5 días hábiles antes del siguiente ciclo.`
-                : `I agree to the ${termsLinkEn} and ${privacyLinkEn} (PredictaCore products only). I understand: USD $349 Titan Report charged today; USD $25/mo monitoring subscription active now with first monthly charge in ~30 days; all sales final; cancel at least 5 business days before renewal.`,
+            message: `I agree to the ${termsLink} and ${privacyLink} (PredictaCore products only). I understand: USD $349 Titan Report charged today; USD $25/mo monitoring subscription active now with first monthly charge in ~30 days; all sales final; cancel at least 5 business days before renewal.`,
         },
         submit: {
-            message: es
-                ? 'Regenoxy LLC · PredictaCore — No es un periodo de prueba: el Reporte Titán (USD $349) se cobra hoy. El monitoreo (USD $25/mes) inicia su facturación en aproximadamente 30 días.'
-                : 'Regenoxy LLC · PredictaCore — Not a free trial: Titan Report (USD $349) is charged today. Monitoring (USD $25/mo) billing starts in approximately 30 days.',
+            message: 'Regenoxy LLC · PredictaCore — Not a free trial: Titan Report (USD $349) is charged today. Monitoring (USD $25/mo) billing starts in approximately 30 days.',
         },
     };
 }
 
 function buildCheckoutSessionParams({ host, dna, email, refCode, lang }) {
-    const locale = lang === 'es' ? 'es' : 'en';
-    const meta = checkoutMetadata({ dna, email, refCode, lang });
+    const locale = 'en';
+    const meta = checkoutMetadata({ dna, email, refCode, lang: 'en' });
 
     return {
         payment_method_types: ['card'],
@@ -113,13 +106,13 @@ function buildCheckoutSessionParams({ host, dna, email, refCode, lang }) {
         locale,
         subscription_data: {
             trial_period_days: 30,
-            metadata: subscriptionMetadata({ dna, email, refCode, lang }),
+            metadata: subscriptionMetadata({ dna, email, refCode, lang: 'en' }),
         },
         consent_collection: {
             terms_of_service: 'required',
         },
-        custom_text: getCheckoutCustomText(locale),
-        success_url: `${host}/exito?email=${encodeURIComponent(email)}&lang=${locale}`,
+        custom_text: getCheckoutCustomText(),
+        success_url: `${host}/exito?email=${encodeURIComponent(email)}&lang=en`,
         cancel_url: `${host}/`,
         metadata: meta,
     };

@@ -1,0 +1,90 @@
+═══════════════════════════════════════════════════════════════
+PAGE 1 — Canva page title: "Legal"  →  URL: /legal
+═══════════════════════════════════════════════════════════════
+
+Title (large text):
+Legal center — Regenoxy LLC
+
+Subtitle:
+Oxy Hyperbaric · Clinical & wellness services
+
+Paragraph:
+Regenoxy LLC operates independent brands. Open the legal document for the service you purchased. Hyperbaric terms do NOT apply to PredictaCore software, and vice versa.
+
+─── Block: Oxy Hyperbaric (your service) ───
+
+Title:
+Clinical services terms
+
+Text:
+Applies to hyperbaric chamber, consultations, CarePatron bookings, calendar, phone, or in-office payment.
+
+Button or link:
+→ View full clinical terms
+(Link to PAGE 2 in Canva: /clinical-terms
+ OR external backup: https://predictacore.ai/legal/clinical-services )
+
+─── Block: PredictaCore (NOT hyperbaric) ───
+
+Title:
+PredictaCore — web audits (separate site)
+
+Text:
+AI digital audit software. Not a clinical treatment.
+
+Links (add as buttons in Canva):
+Terms: https://predictacore.ai/terms
+Privacy: https://predictacore.ai/privacy
+
+Footer:
+Last updated: May 2026 · Regenoxy LLC
+Clinical contact: [your Oxy Hyperbaric phone or email]
+
+═══════════════════════════════════════════════════════════════
+PAGE 2 — Canva: "Clinical terms"
+         Suggested URL: /clinical-terms
+═══════════════════════════════════════════════════════════════
+
+Title:
+Terms and Conditions — Oxy Hyperbaric clinical services
+
+Notice (highlight box):
+Clinical services at oxyhyperbaric.com only. Does NOT apply to PredictaCore (predictacore.ai).
+
+1. Nature of service
+Health and wellness services provided by Regenoxy LLC. Not a substitute for emergency care.
+
+2. Appointments
+Confirmed via CarePatron, online calendar, or phone. Arrive on time. Cancel at least 24–48 hours in advance unless otherwise stated when booking.
+
+3. Payment
+Price is quoted when you book. Payment may be via CarePatron, Stripe, or phone. Payment means you accept these terms.
+
+4. Refunds and cancellations
+Depend on the service booked. Services already provided or not canceled on time may be non-refundable except where required by law.
+
+5. Informed consent
+Some treatments require additional forms in clinic or on CarePatron.
+
+6. Limitation of liability
+To the maximum extent permitted by law, Regenoxy LLC is not liable for indirect damages. Liability is limited to amounts paid for the service that gave rise to the claim.
+
+7. Governing law
+State of Delaware, USA, without prejudice to mandatory consumer rights.
+
+Contact:
+[Your Oxy Hyperbaric email and phone]
+
+Link back to Legal hub page in Canva.
+
+═══════════════════════════════════════════════════════════════
+STRIPE — Public details (after publishing in Canva)
+═══════════════════════════════════════════════════════════════
+
+Website: https://oxyhyperbaric.com
+Terms:   https://oxyhyperbaric.com/legal  (your exact Canva URL)
+Privacy: create "Privacy" page in Canva OR temporary:
+         https://predictacore.ai/legal/privacy
+
+PredictaCore Stripe checkout uses (automatic):
+         https://predictacore.ai/terms

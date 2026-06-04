@@ -49,7 +49,7 @@ function getSuccessHTML(lang = 'en') {
             <button onclick="abrirPortal()" class="w-full bg-zinc-900 border border-zinc-700 text-white py-3 rounded text-xs uppercase tracking-widest hover:border-emerald-500 transition-colors">${t.portal}</button>
             <a href="/" class="block w-full text-zinc-500 text-[10px] uppercase tracking-widest hover:text-emerald-500">${t.home}</a>
             <p class="text-[9px] text-zinc-600 pt-2">
-                <a href="/terminos" class="text-emerald-600 hover:underline">${t.terms}</a> · <a href="/privacidad" class="text-emerald-600 hover:underline">${t.privacy}</a> · <a href="/legal" class="text-emerald-600 hover:underline">${t.legalHub}</a>
+                <a href="/terms" class="text-emerald-600 hover:underline">${t.terms}</a> · <a href="/privacy" class="text-emerald-600 hover:underline">${t.privacy}</a> · <a href="/legal/regenoxy" class="text-emerald-600 hover:underline">${t.legalHub}</a>
             </p>
         </div>
     </div>
