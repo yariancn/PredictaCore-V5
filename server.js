@@ -11,14 +11,9 @@ const { getLandingHTML } = require('./landing');
 const { getSuccessHTML } = require('./success');
 const { getPlaygroundHTML } = require('./playground');
 const {
-    CLINICAL_WEB,
-    REGENOXY_HUB_PATH,
-    getLegalHubHTML,
+    CLINICAL_LEGAL_URL,
     getTerminosHTML,
     getPrivacidadHTML,
-    getServiciosClinicosHTML,
-    getPagosHTML,
-    getPrivacidadRegenoxyHTML,
 } = require('./legal');
 const { captureAndScrape } = require('./motor');
 const { FIREWALL_IA } = require('./firewall');
@@ -229,29 +224,28 @@ app.get('/health', async (req, res) => {
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
         stripe_brand: BRAND,
         stripe_terms_url: TERMS_URL,
-        legal_hub_regenoxy: `https://predictacore.ai${REGENOXY_HUB_PATH}`,
-        clinical_web: CLINICAL_WEB,
+        clinical_legal_url: CLINICAL_LEGAL_URL,
         playground: !!process.env.API_KEY,
         timestamp: new Date().toISOString(),
     });
 });
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
-app.get('/legal', (req, res) => res.redirect(301, REGENOXY_HUB_PATH));
-app.get('/legal/regenoxy', (req, res) => res.send(getLegalHubHTML()));
 app.get('/terms', (req, res) => res.send(getTerminosHTML()));
 app.get('/privacy', (req, res) => res.send(getPrivacidadHTML()));
-app.get('/legal/clinical-services', (req, res) => res.send(getServiciosClinicosHTML()));
-app.get('/legal/payments', (req, res) => res.send(getPagosHTML()));
-app.get('/legal/privacy', (req, res) => res.send(getPrivacidadRegenoxyHTML()));
-app.get('/static/oxyhyperbaric-legal-hub.html', (req, res) => {
-    res.sendFile(require('path').join(__dirname, 'static', 'oxyhyperbaric-legal-hub.html'));
-});
 app.get('/terminos', (req, res) => res.redirect(301, '/terms'));
 app.get('/privacidad', (req, res) => res.redirect(301, '/privacy'));
-app.get('/legal/servicios-clinicos', (req, res) => res.redirect(301, '/legal/clinical-services'));
-app.get('/legal/pagos', (req, res) => res.redirect(301, '/legal/payments'));
-app.get('/legal/privacidad', (req, res) => res.redirect(301, '/legal/privacy'));
+
+/** Clinical legal belongs on oxyhyperbaric.com — redirect old paths off predictacore.ai */
+const redirectClinicalLegal = (req, res) => res.redirect(301, CLINICAL_LEGAL_URL);
+app.get('/legal', redirectClinicalLegal);
+app.get('/legal/regenoxy', redirectClinicalLegal);
+app.get('/legal/clinical-services', redirectClinicalLegal);
+app.get('/legal/servicios-clinicos', redirectClinicalLegal);
+app.get('/legal/payments', redirectClinicalLegal);
+app.get('/legal/pagos', redirectClinicalLegal);
+app.get('/legal/privacy', redirectClinicalLegal);
+app.get('/legal/privacidad', redirectClinicalLegal);
 
 app.get('/exito', (req, res) => {
     const lang = req.query.lang === 'es' ? 'es' : 'en';

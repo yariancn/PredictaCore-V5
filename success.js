@@ -9,7 +9,6 @@ function getSuccessHTML(lang = 'en') {
         home: 'Volver al inicio',
         terms: 'Términos',
         privacy: 'Privacidad',
-        legalHub: 'Centro legal',
     } : {
         title: 'Payment confirmed',
         headline: 'TITAN PROTECTION ACTIVATED',
@@ -20,7 +19,6 @@ function getSuccessHTML(lang = 'en') {
         home: 'Back to home',
         terms: 'Terms',
         privacy: 'Privacy',
-        legalHub: 'Legal hub',
     };
 
     return `<!DOCTYPE html>
@@ -49,7 +47,7 @@ function getSuccessHTML(lang = 'en') {
             <button onclick="abrirPortal()" class="w-full bg-zinc-900 border border-zinc-700 text-white py-3 rounded text-xs uppercase tracking-widest hover:border-emerald-500 transition-colors">${t.portal}</button>
             <a href="/" class="block w-full text-zinc-500 text-[10px] uppercase tracking-widest hover:text-emerald-500">${t.home}</a>
             <p class="text-[9px] text-zinc-600 pt-2">
-                <a href="/terms" class="text-emerald-600 hover:underline">${t.terms}</a> · <a href="/privacy" class="text-emerald-600 hover:underline">${t.privacy}</a> · <a href="/legal/regenoxy" class="text-emerald-600 hover:underline">${t.legalHub}</a>
+                <a href="/terms" class="text-emerald-600 hover:underline">${t.terms}</a> · <a href="/privacy" class="text-emerald-600 hover:underline">${t.privacy}</a>
             </p>
         </div>
     </div>

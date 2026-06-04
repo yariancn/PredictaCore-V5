@@ -273,10 +273,10 @@ function getLandingHTML() {
             <div class="max-w-4xl mx-auto px-6">
                 <p id="footer-text" class="text-[10px] text-emerald-600 uppercase tracking-[0.2em] mb-6">Consultant or Agency? Join our Forensic Audit network.</p>
                 <p id="disclaimer-text" class="text-[9px] text-zinc-500 leading-relaxed mb-4 max-w-2xl mx-auto">
-                    PredictaCore is operated by Regenoxy LLC. AI-driven analysis only — we do not implement changes on your site. USD $349 initial payment and processed monthly charges are non-refundable. Cancel subscription at least 5 business days before the next billing cycle via the customer portal.
+                    PredictaCore is operated by Regenoxy LLC (merchant of record). AI website audits only — not hyperbaric therapy. USD $349 initial payment and processed monthly charges are non-refundable. Cancel at least 5 business days before renewal via the customer portal.
                 </p>
                 <p class="text-[9px] text-zinc-600 mb-6">
-                    <a href="/terms" class="text-emerald-600 hover:underline">PredictaCore Terms</a> · <a href="/privacy" class="text-emerald-600 hover:underline">Privacy</a> · <a href="/legal/regenoxy" class="text-zinc-500 hover:underline">Regenoxy (other services)</a>
+                    <a href="/terms" class="text-emerald-600 hover:underline">Terms</a> · <a href="/privacy" class="text-emerald-600 hover:underline">Privacy</a>
                 </p>
                 <div class="text-[9px] text-zinc-700 font-mono">
                     © 2026 REGENOXY LLC · PREDICTACORE // NODE_STATUS: OPERATIONAL
@@ -349,7 +349,7 @@ function getLandingHTML() {
                     btnTitan: "Activar Protección Titán",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
-                    disclaimerText: "PredictaCore es operado por Regenoxy LLC. Solo análisis con IA — no implementamos cambios en su sitio. El pago inicial de USD $349 y los cobros mensuales procesados no son reembolsables. Cancele la suscripción al menos 5 días hábiles antes del siguiente ciclo desde el portal de cliente.",
+                    disclaimerText: "PredictaCore is operated by Regenoxy LLC (merchant of record). AI website audits only — not hyperbaric therapy. USD $349 and processed monthly charges are non-refundable. Cancel at least 5 business days before renewal.",
                     alertProcess: "Redirigiendo a la pasarela segura de pago...", alertError: "Faltan datos requeridos.", successPayment: "¡Pago confirmado! Tu reporte Titán está siendo procesado por la IA y llegará a tu correo a la brevedad.",
                     phUrl: "URL del Sitio (ej. tunegocio.com)", phEmail: "Tu Email"
                 }
