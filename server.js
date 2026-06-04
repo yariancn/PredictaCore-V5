@@ -10,7 +10,14 @@ const { getHTMLDelta } = require('./visual_delta');
 const { getLandingHTML } = require('./landing');
 const { getSuccessHTML } = require('./success');
 const { getPlaygroundHTML } = require('./playground');
-const { getTerminosHTML, getPrivacidadHTML } = require('./legal');
+const {
+    getLegalHubHTML,
+    getTerminosHTML,
+    getPrivacidadHTML,
+    getServiciosClinicosHTML,
+    getPagosHTML,
+    getPrivacidadRegenoxyHTML,
+} = require('./legal');
 const { captureAndScrape } = require('./motor');
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
@@ -220,12 +227,17 @@ app.get('/health', async (req, res) => {
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
         stripe_brand: BRAND,
         stripe_terms_url: TERMS_URL,
+        legal_hub: 'https://predictacore.ai/legal',
         playground: !!process.env.API_KEY,
         timestamp: new Date().toISOString(),
     });
 });
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
+app.get('/legal', (req, res) => res.send(getLegalHubHTML()));
+app.get('/legal/servicios-clinicos', (req, res) => res.send(getServiciosClinicosHTML()));
+app.get('/legal/pagos', (req, res) => res.send(getPagosHTML()));
+app.get('/legal/privacidad', (req, res) => res.send(getPrivacidadRegenoxyHTML()));
 app.get('/terminos', (req, res) => res.send(getTerminosHTML()));
 app.get('/privacidad', (req, res) => res.send(getPrivacidadHTML()));
 

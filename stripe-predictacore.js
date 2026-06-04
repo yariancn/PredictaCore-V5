@@ -4,8 +4,12 @@
  */
 
 const BRAND = 'predictacore';
+/** Checkout PredictaCore — términos específicos del producto */
 const TERMS_URL = 'https://predictacore.ai/terminos';
 const PRIVACY_URL = 'https://predictacore.ai/privacidad';
+/** Stripe Public details (cuenta Regenoxy) — hub multi-servicio */
+const LEGAL_HUB_URL = 'https://predictacore.ai/legal';
+const PRIVACY_REGENOXY_URL = 'https://predictacore.ai/legal/privacidad';
 
 const PRICE_TITAN = () => process.env.STRIPE_PRICE_TITAN || '';
 const PRICE_SUB = () => process.env.STRIPE_PRICE_SUBSCRIPTION || '';
@@ -161,6 +165,8 @@ module.exports = {
     BRAND,
     TERMS_URL,
     PRIVACY_URL,
+    LEGAL_HUB_URL,
+    PRIVACY_REGENOXY_URL,
     predictacorePriceIds,
     buildCheckoutSessionParams,
     isPredictacoreCheckoutSession,

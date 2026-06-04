@@ -276,7 +276,7 @@ function getLandingHTML() {
                     PredictaCore is operated by Regenoxy LLC. AI-driven analysis only — we do not implement changes on your site. USD $349 initial payment and processed monthly charges are non-refundable. Cancel subscription at least 5 business days before the next billing cycle via the customer portal.
                 </p>
                 <p class="text-[9px] text-zinc-600 mb-6">
-                    <a href="/terminos" class="text-emerald-600 hover:underline">Terms of Service</a> · <a href="/privacidad" class="text-emerald-600 hover:underline">Privacy Policy</a>
+                    <a href="/terminos" class="text-emerald-600 hover:underline">PredictaCore Terms</a> · <a href="/privacidad" class="text-emerald-600 hover:underline">Privacy</a> · <a href="/legal" class="text-emerald-600 hover:underline">Regenoxy Legal Hub</a>
                 </p>
                 <div class="text-[9px] text-zinc-700 font-mono">
                     © 2026 REGENOXY LLC · PREDICTACORE // NODE_STATUS: OPERATIONAL
