@@ -89,6 +89,7 @@ function stripeKeyDiagnostics() {
         return {
             mode: 'missing',
             prefix: null,
+            restricted: false,
             hint: 'Set STRIPE_SECRET_KEY in Railway (Stripe Dashboard → Developers → API keys → Secret key).',
         };
     }
@@ -100,27 +101,32 @@ function stripeKeyDiagnostics() {
         return {
             mode: 'unknown',
             prefix,
-            hint: 'Publishable key (pk_) detected. Use the Secret key (sk_test_… or sk_live_…), not pk_.',
+            restricted: false,
+            hint: 'Publishable key (pk_) detected. Use sk_test_, rk_test_, sk_live_, or rk_live_, not pk_.',
         };
     }
-    if (key.startsWith('rk_')) {
+    if (key.startsWith('rk_test_') || key.startsWith('sk_test_')) {
         return {
-            mode: 'unknown',
-            prefix,
-            hint: 'Restricted key (rk_) detected. Use a standard Secret key sk_test_… or sk_live_… from API keys.',
+            mode: 'test',
+            prefix: key.startsWith('rk_') ? 'rk_test_' : 'sk_test_',
+            restricted: key.startsWith('rk_'),
+            hint: null,
         };
     }
-    if (key.startsWith('sk_test_')) {
-        return { mode: 'test', prefix: 'sk_test_', hint: null };
-    }
-    if (key.startsWith('sk_live_')) {
-        return { mode: 'live', prefix: 'sk_live_', hint: null };
+    if (key.startsWith('rk_live_') || key.startsWith('sk_live_')) {
+        return {
+            mode: 'live',
+            prefix: key.startsWith('rk_') ? 'rk_live_' : 'sk_live_',
+            restricted: key.startsWith('rk_'),
+            hint: null,
+        };
     }
 
     return {
         mode: 'unknown',
         prefix,
-        hint: `Secret key must start with sk_test_ or sk_live_. Check for typos, spaces, or quotes in Railway.`,
+        restricted: false,
+        hint: 'Key must start with sk_test_, rk_test_, sk_live_, or rk_live_. Check typos, spaces, or quotes in Railway.',
     };
 }
 
