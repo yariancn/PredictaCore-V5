@@ -40,14 +40,15 @@ const {
     BRAND,
     TERMS_URL,
     buildCheckoutSessionParams,
-    stripeKeyMode,
+    normalizeStripeSecretKey,
+    stripeKeyDiagnostics,
     validateCheckoutPrices,
     isPredictacoreCheckoutSession,
     isPredictacoreInvoice,
     expandCheckoutSession,
 } = require('./stripe-predictacore');
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require('stripe')(normalizeStripeSecretKey(process.env.STRIPE_SECRET_KEY));
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -220,7 +221,7 @@ app.get('/health', async (req, res) => {
         phase: '2',
         database: db,
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
-        stripe_key_mode: stripeKeyMode(),
+        stripe: stripeKeyDiagnostics(),
         stripe_brand: BRAND,
         stripe_terms_url: TERMS_URL,
         stripe_statement_descriptor: process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE',
@@ -334,6 +335,11 @@ app.post('/start', async (req, res) => {
         const { dna, email, refCode, lang } = req.body;
         if (!dna || !email) {
             return res.status(400).json({ error: 'URL y email requeridos' });
+        }
+
+        const keyDiag = stripeKeyDiagnostics();
+        if (keyDiag.mode === 'missing' || keyDiag.mode === 'unknown') {
+            return res.status(400).json({ error: keyDiag.hint });
         }
 
         const host = baseUrl(req);

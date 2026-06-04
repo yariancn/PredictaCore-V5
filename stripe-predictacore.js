@@ -78,11 +78,54 @@ function getCheckoutCustomText() {
     };
 }
 
+function normalizeStripeSecretKey(raw) {
+    if (raw == null || raw === '') return '';
+    return String(raw).trim().replace(/^['"]|['"]$/g, '');
+}
+
+function stripeKeyDiagnostics() {
+    const raw = process.env.STRIPE_SECRET_KEY;
+    if (!normalizeStripeSecretKey(raw)) {
+        return {
+            mode: 'missing',
+            prefix: null,
+            hint: 'Set STRIPE_SECRET_KEY in Railway (Stripe Dashboard → Developers → API keys → Secret key).',
+        };
+    }
+
+    const key = normalizeStripeSecretKey(raw);
+    const prefix = key.slice(0, 8);
+
+    if (key.startsWith('pk_')) {
+        return {
+            mode: 'unknown',
+            prefix,
+            hint: 'Publishable key (pk_) detected. Use the Secret key (sk_test_… or sk_live_…), not pk_.',
+        };
+    }
+    if (key.startsWith('rk_')) {
+        return {
+            mode: 'unknown',
+            prefix,
+            hint: 'Restricted key (rk_) detected. Use a standard Secret key sk_test_… or sk_live_… from API keys.',
+        };
+    }
+    if (key.startsWith('sk_test_')) {
+        return { mode: 'test', prefix: 'sk_test_', hint: null };
+    }
+    if (key.startsWith('sk_live_')) {
+        return { mode: 'live', prefix: 'sk_live_', hint: null };
+    }
+
+    return {
+        mode: 'unknown',
+        prefix,
+        hint: `Secret key must start with sk_test_ or sk_live_. Check for typos, spaces, or quotes in Railway.`,
+    };
+}
+
 function stripeKeyMode() {
-    const key = process.env.STRIPE_SECRET_KEY || '';
-    if (key.startsWith('sk_test_')) return 'test';
-    if (key.startsWith('sk_live_')) return 'live';
-    return 'unknown';
+    return stripeKeyDiagnostics().mode;
 }
 
 async function validateCheckoutPrices(stripe) {
@@ -125,9 +168,12 @@ async function validateCheckoutPrices(stripe) {
     } catch (err) {
         const msg = err?.raw?.message || err?.message || 'Stripe price validation failed';
         if (/no such price/i.test(msg)) {
+            const modeHint = mode === 'unknown' || mode === 'missing'
+                ? 'Fix STRIPE_SECRET_KEY first (must be sk_test_ or sk_live_, no quotes).'
+                : `Stripe is in ${mode} mode — use matching Test or Live Price IDs in Railway.`;
             return {
                 ok: false,
-                errors: [`Price ID not found in Stripe (${mode} key). Check STRIPE_PRICE_TITAN and STRIPE_PRICE_SUBSCRIPTION in Railway.`],
+                errors: [`Price ID not found. ${modeHint}`],
                 mode,
                 usingEnvPrices: true,
             };
@@ -204,7 +250,9 @@ module.exports = {
     TERMS_URL,
     PRIVACY_URL,
     STATEMENT_SUFFIX,
+    normalizeStripeSecretKey,
     stripeKeyMode,
+    stripeKeyDiagnostics,
     validateCheckoutPrices,
     predictacorePriceIds,
     buildCheckoutSessionParams,
