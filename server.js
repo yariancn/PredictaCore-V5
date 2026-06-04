@@ -10,11 +10,7 @@ const { getHTMLDelta } = require('./visual_delta');
 const { getLandingHTML } = require('./landing');
 const { getSuccessHTML } = require('./success');
 const { getPlaygroundHTML } = require('./playground');
-const {
-    CLINICAL_LEGAL_URL,
-    getTerminosHTML,
-    getPrivacidadHTML,
-} = require('./legal');
+const { getTerminosHTML, getPrivacidadHTML } = require('./legal');
 const { captureAndScrape } = require('./motor');
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
@@ -224,7 +220,7 @@ app.get('/health', async (req, res) => {
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
         stripe_brand: BRAND,
         stripe_terms_url: TERMS_URL,
-        clinical_legal_url: CLINICAL_LEGAL_URL,
+        stripe_statement_descriptor: process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE',
         playground: !!process.env.API_KEY,
         timestamp: new Date().toISOString(),
     });
@@ -236,16 +232,14 @@ app.get('/privacy', (req, res) => res.send(getPrivacidadHTML()));
 app.get('/terminos', (req, res) => res.redirect(301, '/terms'));
 app.get('/privacidad', (req, res) => res.redirect(301, '/privacy'));
 
-/** Clinical legal belongs on oxyhyperbaric.com — redirect old paths off predictacore.ai */
-const redirectClinicalLegal = (req, res) => res.redirect(301, CLINICAL_LEGAL_URL);
-app.get('/legal', redirectClinicalLegal);
-app.get('/legal/regenoxy', redirectClinicalLegal);
-app.get('/legal/clinical-services', redirectClinicalLegal);
-app.get('/legal/servicios-clinicos', redirectClinicalLegal);
-app.get('/legal/payments', redirectClinicalLegal);
-app.get('/legal/pagos', redirectClinicalLegal);
-app.get('/legal/privacy', redirectClinicalLegal);
-app.get('/legal/privacidad', redirectClinicalLegal);
+app.get('/legal', (req, res) => res.redirect(301, '/'));
+app.get('/legal/regenoxy', (req, res) => res.redirect(301, '/'));
+app.get('/legal/clinical-services', (req, res) => res.redirect(301, '/'));
+app.get('/legal/servicios-clinicos', (req, res) => res.redirect(301, '/'));
+app.get('/legal/payments', (req, res) => res.redirect(301, '/'));
+app.get('/legal/pagos', (req, res) => res.redirect(301, '/'));
+app.get('/legal/privacy', (req, res) => res.redirect(301, '/privacy'));
+app.get('/legal/privacidad', (req, res) => res.redirect(301, '/privacy'));
 
 app.get('/exito', (req, res) => {
     const lang = req.query.lang === 'es' ? 'es' : 'en';
@@ -295,10 +289,14 @@ app.post('/portal-cliente', async (req, res) => {
             return res.status(404).json({ error: 'Cliente sin suscripción activa en Stripe' });
         }
 
-        const session = await stripe.billingPortal.sessions.create({
+        const portalParams = {
             customer: customerId,
             return_url: `${baseUrl(req)}/`,
-        });
+        };
+        if (process.env.STRIPE_PORTAL_CONFIG) {
+            portalParams.configuration = process.env.STRIPE_PORTAL_CONFIG;
+        }
+        const session = await stripe.billingPortal.sessions.create(portalParams);
 
         res.json({ url: session.url });
     } catch (error) {
@@ -498,19 +496,19 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
 
         if (modo === 'LITE') {
             htmlBase = getHTMLLite();
-            subject = 'Tu Auditoría Forense PredictaCore (Lite)';
+            subject = 'Your PredictaCore Lite Audit';
             filename = 'PREDICTACORE_LITE.pdf';
-            textBody = 'Adjunto encontrarás tu radiografía inicial PredictaCore.';
+            textBody = 'Your PredictaCore Lite audit is attached.';
         } else if (modo === 'DELTA') {
             htmlBase = getHTMLDelta();
-            subject = 'PredictaCore — Reporte de Seguimiento Mensual';
-            filename = 'PREDICTACORE_SEGUIMIENTO.pdf';
-            textBody = 'Adjunto encontrarás su reporte de seguimiento mensual comparativo.';
+            subject = 'PredictaCore — Monthly Monitoring Report';
+            filename = 'PREDICTACORE_MONITORING.pdf';
+            textBody = 'Your monthly PredictaCore monitoring report is attached.';
         } else {
             htmlBase = getHTML();
-            subject = 'Auditoría Forense Titán Completa';
+            subject = 'Your PredictaCore Titan Report';
             filename = 'PREDICTACORE_TITAN.pdf';
-            textBody = 'Adjunto encontrarás la radiografía de conversión de su activo digital.';
+            textBody = 'Your PredictaCore Titan forensic audit is attached.';
         }
 
         browser = await puppeteer.launch({
@@ -537,7 +535,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         await browser.close();
 
         const { data, error } = await resend.emails.send({
-            from: 'PredictaCore Titán <reportes@predictacore.ai>',
+            from: 'PredictaCore <reportes@predictacore.ai>',
             to: emailDestino,
             subject,
             text: textBody,

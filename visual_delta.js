@@ -24,7 +24,7 @@ function getHTMLDelta() {
             <div class="text-[10px] text-emerald-600 font-bold tracking-widest uppercase">PredictaCore // Seguimiento Mensual</div>
             <h1 class="text-2xl font-black text-slate-900 mt-2">REPORTE DE SEGUIMIENTO</h1>
             <p id="pdf-domain" class="text-xs text-slate-500 mt-1 font-mono"></p>
-            <p class="text-[9px] text-slate-400 mt-2">Regenoxy LLC · PredictaCore Titán</p>
+            <p class="text-[9px] text-slate-400 mt-2">PredictaCore · predictacore.ai</p>
         </header>
         <div id="reporte" class="markdown-content"></div>
     </body>

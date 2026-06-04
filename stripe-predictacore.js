@@ -1,14 +1,12 @@
 /**
- * PredictaCore — configuración Stripe compartida con otras líneas Regenoxy LLC.
- * Misma cuenta Stripe: filtrar webhooks por metadata/price IDs para no mezclar productos.
+ * PredictaCore Stripe checkout — shared Regenoxy LLC account, isolated by metadata + price IDs.
+ * Customer-facing copy and descriptors use PredictaCore only.
  */
 
 const BRAND = 'predictacore';
-/** Checkout PredictaCore — términos específicos del producto */
 const TERMS_URL = 'https://predictacore.ai/terms';
 const PRIVACY_URL = 'https://predictacore.ai/privacy';
-/** Stripe account Public details (clinical brand) → oxyhyperbaric.com only */
-const CLINICAL_LEGAL_URL = (process.env.REGENOXY_CLINICAL_TERMS_URL || 'https://oxyhyperbaric.com/legal').replace(/\/$/, '');
+const STATEMENT_SUFFIX = () => (process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE').slice(0, 22);
 
 const PRICE_TITAN = () => process.env.STRIPE_PRICE_TITAN || '';
 const PRICE_SUB = () => process.env.STRIPE_PRICE_SUBSCRIPTION || '';
@@ -17,7 +15,7 @@ function predictacorePriceIds() {
     return [PRICE_TITAN(), PRICE_SUB()].filter(Boolean);
 }
 
-function checkoutMetadata({ dna, email, refCode, lang }) {
+function checkoutMetadata({ dna, email, refCode }) {
     return {
         product: BRAND,
         brand: BRAND,
@@ -25,12 +23,7 @@ function checkoutMetadata({ dna, email, refCode, lang }) {
         dna: dna || '',
         email: email || '',
         refCode: refCode || '',
-        lang: lang === 'es' ? 'es' : 'en',
     };
-}
-
-function subscriptionMetadata({ dna, email, refCode, lang }) {
-    return checkoutMetadata({ dna, email, refCode, lang });
 }
 
 function buildCheckoutLineItems() {
@@ -49,8 +42,8 @@ function buildCheckoutLineItems() {
             price_data: {
                 currency: 'usd',
                 product_data: {
-                    name: 'PredictaCore — Reporte Titán',
-                    description: 'Auditoría forense completa (USD $349, cobro hoy). Marca PredictaCore · Regenoxy LLC.',
+                    name: 'PredictaCore Titan Report',
+                    description: 'Full forensic website audit. USD $349 charged today.',
                     metadata: { brand: BRAND, product: BRAND },
                 },
                 unit_amount: 34900,
@@ -61,8 +54,8 @@ function buildCheckoutLineItems() {
             price_data: {
                 currency: 'usd',
                 product_data: {
-                    name: 'PredictaCore — Monitoreo mensual',
-                    description: 'Reportes de seguimiento USD $25/mes. Primer cobro en ~30 días tras la compra inicial.',
+                    name: 'PredictaCore Monthly Monitoring',
+                    description: 'USD $25/month. First charge in ~30 days after purchase.',
                     metadata: { brand: BRAND, product: BRAND },
                 },
                 unit_amount: 2500,
@@ -76,30 +69,34 @@ function buildCheckoutLineItems() {
 function getCheckoutCustomText() {
     const termsLink = `[PredictaCore Terms of Service](${TERMS_URL})`;
     const privacyLink = `[Privacy Policy](${PRIVACY_URL})`;
+    const descriptor = STATEMENT_SUFFIX();
 
     return {
         terms_of_service_acceptance: {
-            message: `I agree to the ${termsLink} and ${privacyLink} (PredictaCore products only). I understand: USD $349 Titan Report charged today; USD $25/mo monitoring subscription active now with first monthly charge in ~30 days; all sales final; cancel at least 5 business days before renewal.`,
+            message: `I agree to the ${termsLink} and ${privacyLink}. I authorize PredictaCore to charge USD $349 today for the Titan Report and USD $25/month for monitoring (first monthly charge in ~30 days). I understand charges appear as ${descriptor} on my statement. All sales final; cancel monitoring at least 5 business days before renewal.`,
         },
         submit: {
-            message: 'Regenoxy LLC · PredictaCore — Not a free trial: Titan Report (USD $349) is charged today. Monitoring (USD $25/mo) billing starts in approximately 30 days.',
+            message: 'PredictaCore — Titan Report (USD $349) is charged today. Monthly monitoring (USD $25) starts billing in ~30 days. Not a free trial.',
         },
     };
 }
 
-function buildCheckoutSessionParams({ host, dna, email, refCode, lang }) {
-    const locale = 'en';
-    const meta = checkoutMetadata({ dna, email, refCode, lang: 'en' });
+function buildCheckoutSessionParams({ host, dna, email, refCode }) {
+    const meta = checkoutMetadata({ dna, email, refCode });
 
     return {
         payment_method_types: ['card'],
         customer_email: email,
         mode: 'subscription',
         line_items: buildCheckoutLineItems(),
-        locale,
+        locale: 'en',
+        payment_intent_data: {
+            statement_descriptor_suffix: STATEMENT_SUFFIX(),
+        },
         subscription_data: {
             trial_period_days: 30,
-            metadata: subscriptionMetadata({ dna, email, refCode, lang: 'en' }),
+            metadata: meta,
+            description: 'PredictaCore Titan + monthly monitoring',
         },
         consent_collection: {
             terms_of_service: 'required',
@@ -157,7 +154,7 @@ module.exports = {
     BRAND,
     TERMS_URL,
     PRIVACY_URL,
-    CLINICAL_LEGAL_URL,
+    STATEMENT_SUFFIX,
     predictacorePriceIds,
     buildCheckoutSessionParams,
     isPredictacoreCheckoutSession,

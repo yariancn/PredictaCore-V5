@@ -14,7 +14,7 @@ function getSuccessHTML(lang = 'en') {
         headline: 'TITAN PROTECTION ACTIVATED',
         body: 'Your USD $349 payment was processed successfully. Our forensic engine is now analyzing your digital asset.',
         email: 'You will receive the full Titan Report in your email within the next few minutes.',
-        sub: 'Your monitoring subscription ($25/mo) is active. The first monthly charge will occur in approximately 30 days. Cancel via the portal at least 5 business days before each renewal. All sales final — no refunds.',
+        sub: 'Your PredictaCore monitoring ($25/mo) is active. First charge in ~30 days. Your statement should show PREDICTACORE. Cancel at least 5 business days before renewal. All sales final.',
         portal: 'Manage subscription',
         home: 'Back to home',
         terms: 'Terms',
