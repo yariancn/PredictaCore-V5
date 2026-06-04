@@ -11,6 +11,8 @@ const { getLandingHTML } = require('./landing');
 const { getSuccessHTML } = require('./success');
 const { getPlaygroundHTML } = require('./playground');
 const {
+    CLINICAL_WEB,
+    REGENOXY_HUB_PATH,
     getLegalHubHTML,
     getTerminosHTML,
     getPrivacidadHTML,
@@ -227,15 +229,20 @@ app.get('/health', async (req, res) => {
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
         stripe_brand: BRAND,
         stripe_terms_url: TERMS_URL,
-        legal_hub: 'https://predictacore.ai/legal',
+        legal_hub_regenoxy: `https://predictacore.ai${REGENOXY_HUB_PATH}`,
+        clinical_web: CLINICAL_WEB,
         playground: !!process.env.API_KEY,
         timestamp: new Date().toISOString(),
     });
 });
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
-app.get('/legal', (req, res) => res.send(getLegalHubHTML()));
+app.get('/legal', (req, res) => res.redirect(301, REGENOXY_HUB_PATH));
+app.get('/legal/regenoxy', (req, res) => res.send(getLegalHubHTML()));
 app.get('/legal/servicios-clinicos', (req, res) => res.send(getServiciosClinicosHTML()));
+app.get('/static/oxyhyperbaric-legal-hub.html', (req, res) => {
+    res.sendFile(require('path').join(__dirname, 'static', 'oxyhyperbaric-legal-hub.html'));
+});
 app.get('/legal/pagos', (req, res) => res.send(getPagosHTML()));
 app.get('/legal/privacidad', (req, res) => res.send(getPrivacidadRegenoxyHTML()));
 app.get('/terminos', (req, res) => res.send(getTerminosHTML()));

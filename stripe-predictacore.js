@@ -7,9 +7,15 @@ const BRAND = 'predictacore';
 /** Checkout PredictaCore — términos específicos del producto */
 const TERMS_URL = 'https://predictacore.ai/terminos';
 const PRIVACY_URL = 'https://predictacore.ai/privacidad';
-/** Stripe Public details (cuenta Regenoxy) — hub multi-servicio */
-const LEGAL_HUB_URL = 'https://predictacore.ai/legal';
-const PRIVACY_REGENOXY_URL = 'https://predictacore.ai/legal/privacidad';
+/**
+ * Stripe Public details — usar URL en dominio clínico cuando exista:
+ *   REGENOXY_CLINICAL_TERMS_URL=https://oxyhyperbaric.com/legal
+ * Mientras tanto: hub neutro Regenoxy (no /terminos de PredictaCore).
+ */
+const LEGAL_HUB_URL = process.env.REGENOXY_CLINICAL_TERMS_URL
+    || 'https://predictacore.ai/legal/regenoxy';
+const PRIVACY_REGENOXY_URL = process.env.REGENOXY_CLINICAL_PRIVACY_URL
+    || 'https://predictacore.ai/legal/privacidad';
 
 const PRICE_TITAN = () => process.env.STRIPE_PRICE_TITAN || '';
 const PRICE_SUB = () => process.env.STRIPE_PRICE_SUBSCRIPTION || '';

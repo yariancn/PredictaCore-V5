@@ -1,9 +1,21 @@
-const LEGAL_BASE = 'https://predictacore.ai';
+/**
+ * Legales Regenoxy LLC — marcas separadas:
+ * - PredictaCore → predictacore.ai/terminos | /privacidad
+ * - Clínico / hiperbárica → oxyhyperbaric.com (web) + términos clínicos
+ * - Hub corporativo Regenoxy → /legal/regenoxy (neutral; ideal migrar a oxyhyperbaric.com/legal)
+ */
+
 const UPDATED = '27 de mayo de 2026';
 
-function wrapLegalPage({ title, breadcrumb, breadcrumbHref, intro, bodyHtml, footerLinks }) {
+const CLINICAL_WEB = (process.env.REGENOXY_CLINICAL_WEB || 'https://oxyhyperbaric.com').replace(/\/$/, '');
+const CLINICAL_TERMS_URL = process.env.REGENOXY_CLINICAL_TERMS_URL
+    || `${CLINICAL_WEB}/legal`;
+const PREDICTACORE_WEB = 'https://predictacore.ai';
+const REGENOXY_HUB_PATH = '/legal/regenoxy';
+
+function wrapRegenoxyPage({ title, breadcrumb, breadcrumbHref, intro, bodyHtml, footerLinks }) {
     const links = (footerLinks || [])
-        .map((l) => `<a href="${l.href}" class="text-emerald-600 hover:underline">${l.label}</a>`)
+        .map((l) => `<a href="${l.href}" class="text-sky-400 hover:underline">${l.label}</a>`)
         .join(' · ');
 
     return `<!DOCTYPE html>
@@ -13,18 +25,49 @@ function wrapLegalPage({ title, breadcrumb, breadcrumbHref, intro, bodyHtml, foo
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${title} | Regenoxy LLC</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>body{background:#0a0f1a;color:#cbd5e1;font-family:Inter,sans-serif}</style>
+</head>
+<body class="max-w-3xl mx-auto p-8 text-sm leading-relaxed">
+    <header class="border-b border-slate-700 pb-4 mb-6">
+        <p class="text-[10px] uppercase tracking-[0.25em] text-slate-500 mb-2">Regenoxy LLC — documentos legales</p>
+        <nav class="flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-bold uppercase tracking-wider">
+            <a href="${REGENOXY_HUB_PATH}" class="text-sky-400">Centro legal</a>
+            <a href="${CLINICAL_WEB}" class="text-slate-300 hover:text-white" rel="noopener">Oxy Hyperbaric ↗</a>
+            <a href="${PREDICTACORE_WEB}" class="text-slate-300 hover:text-white" rel="noopener">PredictaCore ↗</a>
+        </nav>
+    </header>
+    ${breadcrumbHref ? `<a href="${breadcrumbHref}" class="text-sky-400 text-xs uppercase tracking-widest">← Volver</a>` : ''}
+    ${breadcrumb ? `<p class="text-slate-500 text-xs mt-2">${breadcrumb}</p>` : ''}
+    <h1 class="text-2xl font-black text-white mt-3 mb-2">${title}</h1>
+    <p class="text-slate-500 text-xs mb-6">Última actualización: ${UPDATED}</p>
+    ${intro || ''}
+    <section class="space-y-6 text-slate-300">${bodyHtml}</section>
+    <footer class="mt-12 pt-6 border-t border-slate-700 text-slate-500 text-xs">${links}</footer>
+</body>
+</html>`;
+}
+
+function wrapPredictacorePage({ title, intro, bodyHtml, footerLinks }) {
+    const links = (footerLinks || [])
+        .map((l) => `<a href="${l.href}" class="text-emerald-500 hover:underline">${l.label}</a>`)
+        .join(' · ');
+
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title} | PredictaCore</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>body{background:#050505;color:#d1d5db;font-family:Inter,sans-serif}</style>
 </head>
 <body class="max-w-3xl mx-auto p-8 text-sm leading-relaxed">
-    <nav class="flex flex-wrap gap-3 text-[10px] uppercase tracking-widest text-zinc-500 mb-6">
-        <a href="/" class="text-emerald-500 hover:text-emerald-400">PredictaCore</a>
-        <span>/</span>
-        <a href="/legal" class="hover:text-zinc-300">Centro legal</a>
-        ${breadcrumb ? `<span>/</span><span class="text-zinc-400">${breadcrumb}</span>` : ''}
-    </nav>
-    ${breadcrumbHref ? `<a href="${breadcrumbHref}" class="text-emerald-500 text-xs uppercase tracking-widest">← Volver</a>` : ''}
-    <h1 class="text-2xl font-black text-white mt-4 mb-2">${title}</h1>
-    <p class="text-zinc-500 text-xs mb-6">Última actualización: ${UPDATED} · Regenoxy LLC</p>
+    <header class="border-b border-zinc-800 pb-4 mb-6">
+        <a href="/" class="text-emerald-500 text-xs uppercase tracking-widest font-black">PredictaCore</a>
+        <p class="text-[10px] text-zinc-600 mt-1">Operado por Regenoxy LLC · Solo servicios digitales / IA</p>
+    </header>
+    <h1 class="text-2xl font-black text-white mb-2">${title}</h1>
+    <p class="text-zinc-500 text-xs mb-6">Última actualización: ${UPDATED}</p>
     ${intro || ''}
     <section class="space-y-6 text-zinc-300">${bodyHtml}</section>
     <footer class="mt-12 pt-6 border-t border-zinc-800 text-zinc-600 text-xs">${links}</footer>
@@ -32,225 +75,192 @@ function wrapLegalPage({ title, breadcrumb, breadcrumbHref, intro, bodyHtml, foo
 </html>`;
 }
 
-/** Hub principal — usar en Stripe Public details → Terms */
-function getLegalHubHTML() {
-    return wrapLegalPage({
-        title: 'Centro legal Regenoxy LLC',
-        intro: `<div class="border border-zinc-700 bg-zinc-900/50 p-4 rounded mb-8 text-xs text-zinc-400">
-            <strong>Regenoxy LLC</strong> opera varias líneas de negocio. Los pagos pueden realizarse por Stripe (web),
-            CarePatron, teléfono o en persona. <strong>Cada servicio tiene términos específicos</strong>; el documento aplicable
-            es el que corresponda al producto que usted contrató.
+/** Hub Regenoxy — NO es PredictaCore. Ideal: copiar a oxyhyperbaric.com/legal */
+function getRegenoxyHubHTML() {
+    const clinicalTerms = CLINICAL_TERMS_URL.startsWith('http')
+        ? CLINICAL_TERMS_URL
+        : `${CLINICAL_WEB}${CLINICAL_TERMS_URL}`;
+
+    return wrapRegenoxyPage({
+        title: 'Centro legal — Regenoxy LLC',
+        intro: `<div class="border border-slate-600 bg-slate-900/60 p-4 rounded text-xs text-slate-400">
+            <strong>Regenoxy LLC</strong> opera marcas independientes. Elija el documento del <strong>servicio que contrató</strong>.
+            Los términos de hiperbárica <strong>no</strong> aplican a PredictaCore, y viceversa.
         </div>`,
         bodyHtml: `
-        <div>
-            <h2 class="text-white font-bold mb-3">Servicios digitales — PredictaCore</h2>
-            <p class="mb-3 text-zinc-400">Auditorías IA de sitios web y reportes PDF. Pagos vía checkout en predictacore.ai.</p>
-            <ul class="space-y-2">
-                <li><a href="/terminos" class="text-emerald-500 font-bold hover:underline">Términos PredictaCore</a></li>
-                <li><a href="/privacidad" class="text-emerald-500 hover:underline">Privacidad PredictaCore</a></li>
-            </ul>
+        <div class="grid gap-6 md:grid-cols-2">
+            <div class="border-2 border-sky-800/60 bg-slate-900/80 p-5 rounded-lg">
+                <p class="text-[10px] uppercase tracking-widest text-sky-400 mb-2">Giro clínico / bienestar</p>
+                <h2 class="text-lg font-black text-white mb-2">Oxy Hyperbaric</h2>
+                <p class="text-xs text-slate-400 mb-4">Cámara hiperbárica, consultas, CarePatron, teléfono, calendarios.</p>
+                <p class="text-xs mb-3">Sitio: <a href="${CLINICAL_WEB}" class="text-sky-400 font-bold underline" rel="noopener">${CLINICAL_WEB}</a></p>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="${clinicalTerms}" class="text-sky-300 font-bold hover:underline">Términos servicios clínicos ↗</a></li>
+                    <li><a href="/legal/servicios-clinicos" class="text-slate-400 hover:underline text-xs">Copia en predictacore.ai (mismo contenido)</a></li>
+                </ul>
+            </div>
+            <div class="border-2 border-emerald-900/50 bg-zinc-950 p-5 rounded-lg">
+                <p class="text-[10px] uppercase tracking-widest text-emerald-500 mb-2">Giro digital / IA</p>
+                <h2 class="text-lg font-black text-white mb-2">PredictaCore</h2>
+                <p class="text-xs text-zinc-400 mb-4">Auditorías web, Reporte Titán, monitoreo mensual.</p>
+                <p class="text-xs mb-3">Sitio: <a href="${PREDICTACORE_WEB}" class="text-emerald-500 font-bold underline">${PREDICTACORE_WEB}</a></p>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="/terminos" class="text-emerald-400 font-bold hover:underline">Términos PredictaCore</a></li>
+                    <li><a href="/privacidad" class="text-emerald-400 hover:underline">Privacidad PredictaCore</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border border-slate-700 p-4 rounded">
+            <h2 class="text-white font-bold mb-2">Pagos Regenoxy (todos los giros)</h2>
+            <p class="text-xs text-slate-400 mb-2">Stripe, teléfono, CarePatron — cómo se asigna el contrato correcto.</p>
+            <a href="/legal/pagos" class="text-sky-400 font-bold hover:underline">Política de pagos Regenoxy LLC</a>
         </div>
         <div>
-            <h2 class="text-white font-bold mb-3">Servicios clínicos y bienestar</h2>
-            <p class="mb-3 text-zinc-400">Cámara hiperbárica, consultas y tratamientos. Pagos vía CarePatron, calendarios, teléfono o Stripe presencial.</p>
-            <ul class="space-y-2">
-                <li><a href="/legal/servicios-clinicos" class="text-emerald-500 font-bold hover:underline">Términos — servicios clínicos Regenoxy</a></li>
-            </ul>
-        </div>
-        <div>
-            <h2 class="text-white font-bold mb-3">Pagos y canales</h2>
-            <p class="mb-3 text-zinc-400">Cómo se aplican los términos según el método de cobro.</p>
-            <ul class="space-y-2">
-                <li><a href="/legal/pagos" class="text-emerald-500 font-bold hover:underline">Política de pagos Regenoxy</a></li>
-            </ul>
-        </div>
-        <div>
-            <h2 class="text-white font-bold mb-3">Privacidad (todas las líneas)</h2>
-            <ul class="space-y-2">
-                <li><a href="/legal/privacidad" class="text-emerald-500 font-bold hover:underline">Política de privacidad Regenoxy LLC</a></li>
-            </ul>
-        </div>
-        <div>
-            <h2 class="text-white font-bold mb-2">Contacto</h2>
-            <p>PredictaCore: <a href="mailto:reportes@predictacore.ai" class="text-emerald-500">reportes@predictacore.ai</a><br>
-            Servicios clínicos: indique el correo o teléfono que le proporcionó su coordinador al reservar.</p>
+            <h2 class="text-white font-bold mb-2">Privacidad corporativa</h2>
+            <a href="/legal/privacidad" class="text-sky-400 hover:underline">Privacidad Regenoxy LLC (todas las líneas)</a>
         </div>`,
         footerLinks: [
-            { href: '/terminos', label: 'PredictaCore Términos' },
-            { href: '/legal/privacidad', label: 'Privacidad Regenoxy' },
+            { href: CLINICAL_WEB, label: 'oxyhyperbaric.com' },
+            { href: PREDICTACORE_WEB, label: 'predictacore.ai' },
         ],
     });
 }
 
+function getLegalHubHTML() {
+    return getRegenoxyHubHTML();
+}
+
 function getTerminosHTML() {
-    return wrapLegalPage({
-        title: 'Términos y Condiciones — PredictaCore',
-        breadcrumb: 'PredictaCore',
-        breadcrumbHref: '/legal',
-        intro: `<div class="border border-amber-900/50 bg-amber-950/20 p-4 rounded mb-8 text-xs text-amber-200/90">
-            <strong>Alcance:</strong> Solo productos PredictaCore (Reporte Titán USD $349 y monitoreo USD $25/mes).
-            <a href="/legal" class="underline">Otros servicios Regenoxy</a> tienen términos distintos.
+    return wrapPredictacorePage({
+        title: 'Términos y Condiciones de Servicio',
+        intro: `<div class="border border-emerald-900/50 bg-emerald-950/30 p-4 rounded mb-8 text-xs text-emerald-100/90">
+            <strong>Solo PredictaCore</strong> (predictacore.ai). No incluye cámara hiperbárica ni servicios en
+            <a href="${CLINICAL_WEB}" class="underline text-emerald-400" rel="noopener">oxyhyperbaric.com</a>.
+            Índice corporativo: <a href="${REGENOXY_HUB_PATH}" class="underline">Regenoxy LLC</a>.
         </div>`,
         bodyHtml: `
         <div><h2 class="text-white font-bold mb-2">1. Prestador</h2>
-            <p>PredictaCore es operado por <strong>Regenoxy LLC</strong> en predictacore.ai.</p></div>
+            <p>El servicio <strong>PredictaCore</strong> es operado por Regenoxy LLC en predictacore.ai. Marca digital independiente de Oxy Hyperbaric.</p></div>
         <div><h2 class="text-white font-bold mb-2">2. Servicio</h2>
-            <p>Análisis automatizados de activos digitales con IA. Entregamos reportes PDF con recomendaciones. <strong>No implementamos cambios</strong> en su sitio ni garantizamos resultados comerciales.</p></div>
+            <p>Análisis de activos digitales con IA; reportes PDF. No implementamos cambios en su sitio.</p></div>
         <div><h2 class="text-white font-bold mb-2">3. Precios</h2>
-            <p><strong>Reporte Titán:</strong> USD $349.00 — cobro al comprar.</p>
-            <p class="mt-2"><strong>Monitoreo mensual:</strong> USD $25.00/mes — suscripción activa al comprar; <strong>primer cobro ~30 días después</strong>.</p></div>
+            <p><strong>Reporte Titán:</strong> USD $349 — cobro al comprar.</p>
+            <p class="mt-2"><strong>Monitoreo:</strong> USD $25/mes — activo al comprar; primer cobro ~30 días después.</p></div>
         <div><h2 class="text-white font-bold mb-2">4. No reembolso</h2>
-            <p><strong>VENTAS FINALES.</strong> El pago de USD $349 y los cobros mensuales de USD $25 ya procesados <strong>no son reembolsables</strong>.</p></div>
+            <p><strong>VENTAS FINALES.</strong> USD $349 y cobros mensuales procesados no son reembolsables.</p></div>
         <div><h2 class="text-white font-bold mb-2">5. Cancelación</h2>
-            <p>Cancelación vía portal Stripe. Para evitar el siguiente cobro mensual: <strong>al menos 5 días hábiles antes</strong> de la renovación.</p></div>
-        <div><h2 class="text-white font-bold mb-2">6. Responsabilidad</h2>
-            <p>Limitación según ley de Delaware. Los reportes pueden contener imprecisiones de IA; usted decide cómo usarlos.</p></div>
-        <div><h2 class="text-white font-bold mb-2">7. Propiedad intelectual</h2>
-            <p>Reportes para uso interno del cliente. Prohibida reventa sin autorización.</p></div>
-        <div><h2 class="text-white font-bold mb-2">8. Ley aplicable</h2>
-            <p>Leyes del Estado de Delaware, EE.UU. Disputas por arbitraje vinculante salvo derecho local imperativo.</p></div>
+            <p>Portal Stripe. Cancelar al menos <strong>5 días hábiles</strong> antes del siguiente ciclo mensual.</p></div>
+        <div><h2 class="text-white font-bold mb-2">6–8. Responsabilidad, PI, ley</h2>
+            <p>Delaware, EE.UU. Limitación de responsabilidad estándar. Reportes con posibles imprecisiones de IA.</p></div>
         <div><h2 class="text-white font-bold mb-2">9. Contacto</h2>
-            <p>reportes@predictacore.ai</p></div>`,
+            <p><a href="mailto:reportes@predictacore.ai" class="text-emerald-500">reportes@predictacore.ai</a></p></div>`,
         footerLinks: [
             { href: '/privacidad', label: 'Privacidad PredictaCore' },
-            { href: '/legal', label: 'Centro legal' },
+            { href: REGENOXY_HUB_PATH, label: 'Otras marcas Regenoxy' },
         ],
     });
 }
 
 function getPrivacidadHTML() {
-    return wrapLegalPage({
-        title: 'Privacidad — PredictaCore',
-        breadcrumb: 'PredictaCore',
-        breadcrumbHref: '/legal',
+    return wrapPredictacorePage({
+        title: 'Política de Privacidad',
         intro: `<div class="border border-zinc-800 bg-zinc-900/40 p-4 rounded mb-8 text-xs text-zinc-400">
-            Solo el servicio PredictaCore. Privacidad general Regenoxy: <a href="/legal/privacidad" class="text-emerald-500 underline">aquí</a>.
+            Solo datos del servicio <strong>PredictaCore</strong>. Privacidad clínica / Oxy Hyperbaric: use el canal de su cita o
+            <a href="/legal/privacidad" class="text-emerald-500 underline">privacidad Regenoxy</a>.
         </div>`,
         bodyHtml: `
         <div><h2 class="text-white font-bold mb-2">1. Responsable</h2>
-            <p>Regenoxy LLC — PredictaCore. reportes@predictacore.ai</p></div>
+            <p>Regenoxy LLC — marca PredictaCore. reportes@predictacore.ai</p></div>
         <div><h2 class="text-white font-bold mb-2">2. Datos</h2>
-            <ul class="list-disc pl-5 space-y-1">
-                <li>Email, URL analizada</li>
-                <li>Pagos vía Stripe (no guardamos tarjetas)</li>
-                <li>Contenido público del sitio para el reporte</li>
-                <li>Logs técnicos</li>
-            </ul></div>
-        <div><h2 class="text-white font-bold mb-2">3. Uso</h2>
-            <p>Generar reportes, cobros, seguimiento mensual, soporte y cumplimiento legal.</p></div>
-        <div><h2 class="text-white font-bold mb-2">4. Terceros</h2>
-            <p>Stripe, Resend, Google Cloud/Vertex AI, Railway, PostgreSQL.</p></div>
-        <div><h2 class="text-white font-bold mb-2">5. Retención</h2>
-            <p>Mientras haya suscripción activa y hasta 24 meses tras cancelar.</p></div>
-        <div><h2 class="text-white font-bold mb-2">6. Derechos</h2>
-            <p>Solicitudes a reportes@predictacore.ai</p></div>
-        <div><h2 class="text-white font-bold mb-2">7. Seguridad</h2>
-            <p>HTTPS y controles razonables; ningún sistema es 100% seguro.</p></div>`,
+            <ul class="list-disc pl-5 space-y-1"><li>Email, URL analizada</li><li>Pagos Stripe</li><li>Contenido público scrapeado</li><li>Logs</li></ul></div>
+        <div><h2 class="text-white font-bold mb-2">3–7. Uso, terceros, retención, derechos, seguridad</h2>
+            <p>Stripe, Resend, Vertex AI, Railway, PostgreSQL. Retención hasta 24 meses tras cancelar suscripción.</p></div>`,
         footerLinks: [
             { href: '/terminos', label: 'Términos PredictaCore' },
-            { href: '/legal/privacidad', label: 'Privacidad Regenoxy' },
+            { href: REGENOXY_HUB_PATH, label: 'Centro legal Regenoxy' },
         ],
     });
 }
 
-/** Servicios clínicos: hiperbárica, CarePatron, calendarios */
 function getServiciosClinicosHTML() {
-    return wrapLegalPage({
-        title: 'Términos — Servicios clínicos Regenoxy',
-        breadcrumb: 'Servicios clínicos',
-        breadcrumbHref: '/legal',
-        intro: `<div class="border border-zinc-700 bg-zinc-900/40 p-4 rounded mb-8 text-xs text-zinc-400">
-            Aplica a consultas, cámara hiperbárica y tratamientos de bienestar ofrecidos por Regenoxy LLC
-            (incl. reservas por CarePatron, calendarios en línea, teléfono o cobro en Stripe en consultorio).
-            <strong>No aplica a PredictaCore</strong> — ver <a href="/terminos" class="text-emerald-500 underline">términos PredictaCore</a>.
+    const clinicalTerms = CLINICAL_TERMS_URL.startsWith('http')
+        ? CLINICAL_TERMS_URL
+        : `${CLINICAL_WEB}${CLINICAL_TERMS_URL}`;
+
+    return wrapRegenoxyPage({
+        title: 'Términos — Servicios clínicos (Oxy Hyperbaric)',
+        breadcrumb: 'Oxy Hyperbaric / Regenoxy LLC',
+        breadcrumbHref: REGENOXY_HUB_PATH,
+        intro: `<div class="border border-sky-900/50 bg-sky-950/30 p-4 rounded mb-8 text-xs text-sky-100/90">
+            <strong>Solo servicios clínicos y bienestar</strong> en ${CLINICAL_WEB}.
+            <strong>No aplica a PredictaCore</strong> (<a href="/terminos" class="underline">términos PredictaCore</a>).
+            Versión canónica recomendada en sitio clínico:
+            <a href="${clinicalTerms}" class="text-sky-300 font-bold underline" rel="noopener">${clinicalTerms}</a>.
         </div>`,
         bodyHtml: `
-        <div><h2 class="text-white font-bold mb-2">1. Naturaleza del servicio</h2>
-            <p>Servicios de salud/bienestar prestados por profesionales bajo Regenoxy LLC. No sustituyen emergencias médicas; acuda a urgencias si corresponde.</p></div>
-        <div><h2 class="text-white font-bold mb-2">2. Reservas y asistencia</h2>
-            <p>Las citas se confirman por los canales indicados (CarePatron, calendario, teléfono). Llegar puntual; cancelar con la antelación indicada al reservar (típicamente 24–48 h).</p></div>
+        <div><h2 class="text-white font-bold mb-2">1. Naturaleza</h2>
+            <p>Servicios de salud/bienestar bajo Regenoxy LLC en ${CLINICAL_WEB}. No sustituye urgencias médicas.</p></div>
+        <div><h2 class="text-white font-bold mb-2">2. Reservas</h2>
+            <p>CarePatron, calendario, teléfono. Cancelar con antelación indicada al reservar.</p></div>
         <div><h2 class="text-white font-bold mb-2">3. Pagos</h2>
-            <p>El precio del servicio reservado es el comunicado al momento de la cita. Los cobros pueden procesarse por CarePatron, Stripe (en persona o enlace), o método acordado por teléfono. Al pagar, usted acepta estos términos y la <a href="/legal/pagos" class="text-emerald-500 underline">política de pagos</a>.</p></div>
-        <div><h2 class="text-white font-bold mb-2">4. Reembolsos y cancelaciones</h2>
-            <p><strong>Las políticas de cancelación y reembolso dependen del servicio reservado</strong> y se comunican al agendar. Salvo obligación legal, los servicios ya prestados o no cancelados a tiempo pueden no ser reembolsables.</p></div>
-        <div><h2 class="text-white font-bold mb-2">5. Consentimiento informado</h2>
-            <p>Tratamientos específicos pueden requerir formularios o consentimiento adicional en consultorio o CarePatron.</p></div>
-        <div><h2 class="text-white font-bold mb-2">6. Limitación de responsabilidad</h2>
-            <p>En la máxima medida permitida por la ley, Regenoxy LLC no responde por daños indirectos. La responsabilidad total se limita al monto pagado por el servicio que originó el reclamo.</p></div>
-        <div><h2 class="text-white font-bold mb-2">7. Ley aplicable</h2>
-            <p>Leyes del Estado de Delaware, EE.UU., salvo normas locales imperativas del consumidor.</p></div>`,
+            <p>CarePatron, Stripe presencial/enlace, teléfono. Ver <a href="/legal/pagos" class="text-sky-400 underline">política de pagos</a>.</p></div>
+        <div><h2 class="text-white font-bold mb-2">4. Reembolsos</h2>
+            <p>Según servicio y política comunicada al agendar; servicios prestados pueden no ser reembolsables.</p></div>
+        <div><h2 class="text-white font-bold mb-2">5–7. Consentimiento, responsabilidad, ley</h2>
+            <p>Formularios adicionales en consultorio si aplica. Delaware, EE.UU.</p></div>`,
         footerLinks: [
-            { href: '/legal/pagos', label: 'Política de pagos' },
-            { href: '/legal', label: 'Centro legal' },
+            { href: clinicalTerms, label: 'Sitio Oxy Hyperbaric' },
+            { href: REGENOXY_HUB_PATH, label: 'Centro legal' },
         ],
     });
 }
 
-/** Stripe directo, teléfono, CarePatron */
 function getPagosHTML() {
-    return wrapLegalPage({
-        title: 'Política de pagos Regenoxy LLC',
+    return wrapRegenoxyPage({
+        title: 'Política de pagos — Regenoxy LLC',
         breadcrumb: 'Pagos',
-        breadcrumbHref: '/legal',
+        breadcrumbHref: REGENOXY_HUB_PATH,
         bodyHtml: `
-        <div><h2 class="text-white font-bold mb-2">1. Entidad de cobro</h2>
-            <p>Todos los cargos de Regenoxy LLC pueden aparecer en su extracto como <strong>REGENOXY</strong> o descriptor configurado en Stripe (p. ej. servicio clínico o PredictaCore).</p></div>
-        <div><h2 class="text-white font-bold mb-2">2. Canales de pago</h2>
+        <div><h2 class="text-white font-bold mb-2">1. Extracto bancario</h2>
+            <p>Cargos pueden figurar como <strong>REGENOXY</strong> o descriptor del servicio (clínico vs PredictaCore).</p></div>
+        <div><h2 class="text-white font-bold mb-2">2. Qué términos aplican</h2>
             <ul class="list-disc pl-5 space-y-2">
-                <li><strong>Stripe / web:</strong> PredictaCore en predictacore.ai — términos en <a href="/terminos" class="text-emerald-500 underline">/terminos</a>.</li>
-                <li><strong>CarePatron:</strong> acepta los términos mostrados en esa plataforma más los <a href="/legal/servicios-clinicos" class="text-emerald-500 underline">servicios clínicos</a> de Regenoxy.</li>
-                <li><strong>Teléfono o presencial:</strong> el cobro implica aceptación verbal/escrita de la política del servicio reservado y estos términos generales de pago.</li>
-                <li><strong>Stripe en consultorio / enlaces de pago:</strong> aplican términos del servicio clínico correspondiente, no los de PredictaCore salvo que el enlace sea explícitamente de predictacore.ai.</li>
+                <li><strong>PredictaCore</strong> (predictacore.ai): <a href="/terminos" class="text-emerald-400 underline">/terminos</a> — solo auditorías IA.</li>
+                <li><strong>Oxy Hyperbaric</strong> (${CLINICAL_WEB}): <a href="/legal/servicios-clinicos" class="text-sky-400 underline">términos clínicos</a>.</li>
+                <li><strong>CarePatron / teléfono:</strong> términos del servicio reservado + esta política de pagos.</li>
             </ul></div>
-        <div><h2 class="text-white font-bold mb-2">3. Disputas y contracargos</h2>
-            <p>Contacte primero a Regenoxy con su comprobante y fecha de servicio. Los contracargos sin intento previo de resolución pueden impedir futuras reservas.</p></div>
-        <div><h2 class="text-white font-bold mb-2">4. Documento aplicable</h2>
-            <p>Use el <a href="/legal" class="text-emerald-500 underline">centro legal</a> para abrir el contrato del servicio que contrató.</p></div>`,
-        footerLinks: [
-            { href: '/legal', label: 'Centro legal' },
-            { href: '/legal/servicios-clinicos', label: 'Servicios clínicos' },
-        ],
+        <div><h2 class="text-white font-bold mb-2">3. Disputas</h2>
+            <p>Contacte Regenoxy con comprobante antes de contracargo.</p></div>`,
+        footerLinks: [{ href: REGENOXY_HUB_PATH, label: 'Centro legal' }],
     });
 }
 
-/** Privacidad general Regenoxy — Stripe Public details → Privacy */
 function getPrivacidadRegenoxyHTML() {
-    return wrapLegalPage({
-        title: 'Política de privacidad — Regenoxy LLC',
-        breadcrumb: 'Privacidad',
-        breadcrumbHref: '/legal',
-        intro: `<div class="border border-zinc-800 bg-zinc-900/40 p-4 rounded mb-8 text-xs text-zinc-400">
-            Cubre todas las líneas de Regenoxy LLC. PredictaCore tiene detalle adicional en
-            <a href="/privacidad" class="text-emerald-500 underline">privacidad PredictaCore</a>.
+    return wrapRegenoxyPage({
+        title: 'Privacidad — Regenoxy LLC (todas las marcas)',
+        breadcrumb: 'Privacidad corporativa',
+        breadcrumbHref: REGENOXY_HUB_PATH,
+        intro: `<div class="border border-slate-600 bg-slate-900/40 p-4 rounded mb-8 text-xs text-slate-400">
+            Marco general Regenoxy LLC. <strong>PredictaCore:</strong> <a href="/privacidad" class="text-emerald-500 underline">privacidad específica</a>.
+            <strong>Clínico:</strong> datos de salud según práctica en ${CLINICAL_WEB}.
         </div>`,
         bodyHtml: `
         <div><h2 class="text-white font-bold mb-2">1. Responsable</h2>
-            <p>Regenoxy LLC. Contacto según servicio: reportes@predictacore.ai (PredictaCore) o el canal de su cita clínica.</p></div>
-        <div><h2 class="text-white font-bold mb-2">2. Datos que podemos tratar</h2>
-            <ul class="list-disc pl-5 space-y-1">
-                <li>Identificación y contacto (nombre, email, teléfono)</li>
-                <li>Datos de salud/bienestar (solo servicios clínicos, según HIPAA/práctica local aplicable)</li>
-                <li>Datos de pago (procesados por Stripe, CarePatron u otros; no almacenamos PAN completo)</li>
-                <li>Datos técnicos (IP, logs)</li>
-                <li>Para PredictaCore: URLs y contenido público de sitios analizados</li>
-            </ul></div>
-        <div><h2 class="text-white font-bold mb-2">3. Finalidades</h2>
-            <p>Prestar servicios, facturación, cumplimiento legal, seguridad y mejora operativa.</p></div>
-        <div><h2 class="text-white font-bold mb-2">4. Encargados</h2>
-            <p>Stripe, CarePatron, proveedores de calendario, email, cloud e IA según el servicio contratado.</p></div>
-        <div><h2 class="text-white font-bold mb-2">5. Conservación</h2>
-            <p>El tiempo necesario para el servicio, obligaciones legales y plazos clínicos/contables aplicables.</p></div>
-        <div><h2 class="text-white font-bold mb-2">6. Sus derechos</h2>
-            <p>Solicite acceso, rectificación o eliminación donde la ley lo permita, por el canal de contacto de su servicio.</p></div>`,
+            <p>Regenoxy LLC. PredictaCore: reportes@predictacore.ai. Clínico: contacto de su cita.</p></div>
+        <div><h2 class="text-white font-bold mb-2">2–6. Datos, uso, terceros, retención, derechos</h2>
+            <p>Stripe, CarePatron, calendarios, email, cloud, IA según servicio. Derechos según ley aplicable.</p></div>`,
         footerLinks: [
             { href: '/privacidad', label: 'Privacidad PredictaCore' },
-            { href: '/legal', label: 'Centro legal' },
+            { href: CLINICAL_WEB, label: 'Oxy Hyperbaric' },
         ],
     });
 }
 
 module.exports = {
-    LEGAL_BASE,
+    CLINICAL_WEB,
+    CLINICAL_TERMS_URL,
+    REGENOXY_HUB_PATH,
+    getRegenoxyHubHTML,
     getLegalHubHTML,
     getTerminosHTML,
     getPrivacidadHTML,
