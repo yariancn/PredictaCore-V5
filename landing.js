@@ -55,6 +55,12 @@ function getLandingHTML() {
             @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
 
             .hidden-flow { display: none !important; }
+            .terminal-box {
+                background: rgba(0, 0, 0, 0.85);
+                border: 1px solid rgba(16, 185, 129, 0.35);
+                border-radius: 0.5rem;
+            }
+            #checkout-overlay { transition: opacity 0.25s ease; }
             .lang-btn { cursor: pointer; transition: all 0.3s; opacity: 0.4; }
             .lang-btn.active { opacity: 1; color: var(--pc-emerald); font-weight: bold; }
 
@@ -260,14 +266,23 @@ function getLandingHTML() {
                         <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-2">Charged today: USD $349 (Titan Report)</p>
                         <p id="sub-price-2" class="text-[9px] text-zinc-400 mb-6 leading-relaxed">Monitoring subscription ($25/mo) activates now; first monthly charge in ~30 days. Cancel at least 5 business days before renewal. All sales final — no refunds.</p>
                         
-                        <button onclick="comprarTitan()" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2" id="btn-titan">
+                        <button onclick="comprarTitan()" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2 transition-opacity disabled:opacity-60 disabled:cursor-wait" id="btn-titan">
                             Activate Titan Protection
                         </button>
+                        <p id="checkout-error" class="hidden-flow text-[10px] text-red-400 mb-2 leading-relaxed" role="alert"></p>
                         <p id="cancel-badge" class="text-[9px] text-zinc-500 uppercase tracking-widest mb-4">By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a></p>
                     </div>
                 </div>
             </div>
         </section>
+
+        <div id="checkout-overlay" class="hidden-flow fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md px-6" aria-live="polite" aria-busy="true">
+            <div class="terminal-box w-full max-w-md p-10 text-center shadow-[0_0_60px_rgba(16,185,129,0.2)]">
+                <div class="w-11 h-11 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" role="status"></div>
+                <p id="checkout-overlay-title" class="text-white font-black uppercase tracking-[0.2em] text-xs mb-3">Secure checkout</p>
+                <p id="checkout-overlay-sub" class="text-zinc-500 text-[10px] leading-relaxed font-mono">Connecting to Stripe…</p>
+            </div>
+        </div>
 
         <footer class="py-12 bg-black border-t border-zinc-900 text-center">
             <div class="max-w-4xl mx-auto px-6">
@@ -319,7 +334,13 @@ function getLandingHTML() {
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "Consultant or Agency? Join our Forensic Audit network.",
                     disclaimerText: "PredictaCore AI website audits. USD $349 charged today; USD $25/mo monitoring starts ~30 days later. Card statement shows PREDICTACORE. All sales final. Cancel at least 5 business days before renewal.",
-                    alertProcess: "Redirecting to secure payment gateway...", alertError: "Required data missing.", successPayment: "Payment confirmed! Your Titan report is being processed by the AI and will arrive in your email shortly.",
+                    checkoutLoading: "Opening secure checkout…",
+                    checkoutOverlayTitle: "Secure checkout",
+                    checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
+                    checkoutError: "Could not start checkout. Try again or contact support.",
+                    checkoutNetwork: "Network error. Check your connection and try again.",
+                    alertError: "Required data missing.",
+                    successPayment: "Payment confirmed! Your Titan report is being processed by the AI and will arrive in your email shortly.",
                     phUrl: "Website URL (e.g. yourbusiness.com)", phEmail: "Your Email"
                 },
                 es: {
@@ -350,7 +371,13 @@ function getLandingHTML() {
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
                     disclaimerText: "PredictaCore AI website audits. USD $349 charged today; USD $25/mo monitoring starts ~30 days later. Card statement shows PREDICTACORE. All sales final. Cancel at least 5 business days before renewal.",
-                    alertProcess: "Redirigiendo a la pasarela segura de pago...", alertError: "Faltan datos requeridos.", successPayment: "¡Pago confirmado! Tu reporte Titán está siendo procesado por la IA y llegará a tu correo a la brevedad.",
+                    checkoutLoading: "Abriendo pago seguro…",
+                    checkoutOverlayTitle: "Pago seguro",
+                    checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
+                    checkoutError: "No se pudo iniciar el pago. Reintenta o contacta soporte.",
+                    checkoutNetwork: "Error de red. Revisa tu conexión e intenta de nuevo.",
+                    alertError: "Faltan datos requeridos.",
+                    successPayment: "¡Pago confirmado! Tu reporte Titán está siendo procesado por la IA y llegará a tu correo a la brevedad.",
                     phUrl: "URL del Sitio (ej. tunegocio.com)", phEmail: "Tu Email"
                 }
             };
@@ -415,7 +442,11 @@ function getLandingHTML() {
             async function iniciarEscaneo() {
                 const url = document.getElementById('dna-url').value;
                 const email = document.getElementById('user-email').value;
-                if(!url || !email) return alert(dictionary[currentLang].alertError);
+                if (!url || !email) {
+                    setCheckoutError(dictionary[currentLang].alertError);
+                    return;
+                }
+                setCheckoutError('');
                 
                 document.getElementById('setup-stage').classList.add('hidden-flow');
                 document.getElementById('scanner-stage').classList.remove('hidden-flow');
@@ -438,29 +469,65 @@ function getLandingHTML() {
                 }, 1000);
             }
 
+            function setCheckoutError(msg) {
+                const el = document.getElementById('checkout-error');
+                el.innerText = msg || '';
+                el.classList.toggle('hidden-flow', !msg);
+            }
+
+            function showCheckoutOverlay() {
+                const d = dictionary[currentLang];
+                document.getElementById('checkout-overlay-title').innerText = d.checkoutOverlayTitle;
+                document.getElementById('checkout-overlay-sub').innerText = d.checkoutOverlaySub;
+                document.getElementById('checkout-overlay').classList.remove('hidden-flow');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function hideCheckoutOverlay() {
+                document.getElementById('checkout-overlay').classList.add('hidden-flow');
+                document.body.style.overflow = '';
+            }
+
             async function comprarTitan() {
                 const url = document.getElementById('dna-url').value;
                 const email = document.getElementById('user-email').value;
-                if(!url || !email) return alert(dictionary[currentLang].alertError);
+                const d = dictionary[currentLang];
+                const btn = document.getElementById('btn-titan');
+                const btnLabel = d.btnTitan;
 
-                alert(dictionary[currentLang].alertProcess);
-                
+                if (!url || !email) {
+                    setCheckoutError(d.alertError);
+                    return;
+                }
+
+                setCheckoutError('');
+                btn.disabled = true;
+                btn.innerText = d.checkoutLoading;
+                showCheckoutOverlay();
+
                 try {
-                    const res = await fetch('/start', { 
-                        method: 'POST', 
-                        headers: { 'Content-Type': 'application/json' }, 
-                        body: JSON.stringify({ dna: url, email: email, refCode: refCode, lang: currentLang }) 
+                    const res = await fetch('/start', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ dna: url, email, refCode, lang: currentLang }),
                     });
-                    const data = await res.json();
-                    
-                    if (data.status === 'checkout' && data.url) {
-                        window.location.href = data.url; 
-                    } else {
-                        alert(currentLang === 'es' ? "Error al generar enlace de pago." : "Error generating checkout URL.");
+                    const data = await res.json().catch(() => ({}));
+
+                    if (res.ok && data.status === 'checkout' && data.url) {
+                        window.location.assign(data.url);
+                        return;
                     }
+
+                    hideCheckoutOverlay();
+                    setCheckoutError(data.error || d.checkoutError);
+                    btn.disabled = false;
+                    btn.innerText = btnLabel;
                 } catch (err) {
-                    console.error("!!! Error en pasarela:", err);
-                    alert("Error de red.");
+                    console.error('!!! Error en pasarela:', err);
+                    hideCheckoutOverlay();
+                    setCheckoutError(d.checkoutNetwork);
+                    btn.disabled = false;
+                    btn.innerText = btnLabel;
                 }
             }
         </script>

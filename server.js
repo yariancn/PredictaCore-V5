@@ -40,6 +40,8 @@ const {
     BRAND,
     TERMS_URL,
     buildCheckoutSessionParams,
+    stripeKeyMode,
+    validateCheckoutPrices,
     isPredictacoreCheckoutSession,
     isPredictacoreInvoice,
     expandCheckoutSession,
@@ -218,6 +220,7 @@ app.get('/health', async (req, res) => {
         phase: '2',
         database: db,
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
+        stripe_key_mode: stripeKeyMode(),
         stripe_brand: BRAND,
         stripe_terms_url: TERMS_URL,
         stripe_statement_descriptor: process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE',
@@ -334,14 +337,29 @@ app.post('/start', async (req, res) => {
         }
 
         const host = baseUrl(req);
+        const validation = await validateCheckoutPrices(stripe);
+        if (!validation.ok) {
+            return res.status(400).json({ error: validation.errors.join(' ') });
+        }
+
         const session = await stripe.checkout.sessions.create(
-            buildCheckoutSessionParams({ host, dna, email, refCode, lang })
+            buildCheckoutSessionParams({
+                host,
+                dna,
+                email,
+                refCode,
+                lang,
+                lineItems: validation.lineItems,
+            })
         );
 
         res.json({ status: 'checkout', url: session.url });
     } catch (error) {
-        console.error('!!! Error creando sesión de Stripe:', error);
-        res.status(500).json({ error: 'Error interno en la pasarela de pagos' });
+        const stripeMsg = error?.raw?.message || error?.message;
+        console.error('!!! Error creando sesión de Stripe:', stripeMsg || error);
+        res.status(500).json({
+            error: stripeMsg || 'Payment gateway error',
+        });
     }
 });
 
