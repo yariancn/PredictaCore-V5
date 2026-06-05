@@ -15,14 +15,15 @@ function predictacorePriceIds() {
     return [PRICE_TITAN(), PRICE_SUB()].filter(Boolean);
 }
 
-function checkoutMetadata({ dna, email, refCode }) {
+function checkoutMetadata({ dna, email, refCode, lang }) {
     return {
         product: BRAND,
         brand: BRAND,
         service: 'predictacore_titan',
         dna: dna || '',
-        email: email || '',
+        email: (email || '').trim().toLowerCase(),
         refCode: refCode || '',
+        lang: lang === 'es' ? 'es' : 'en',
     };
 }
 
@@ -188,22 +189,23 @@ async function validateCheckoutPrices(stripe) {
     }
 }
 
-function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems }) {
-    const meta = checkoutMetadata({ dna, email, refCode });
+function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang }) {
+    const meta = checkoutMetadata({ dna, email, refCode, lang });
     const items = lineItems || buildCheckoutLineItems();
+    const locale = meta.lang === 'es' ? 'es' : 'en';
 
     return {
         payment_method_types: ['card'],
-        customer_email: email,
+        customer_email: meta.email || email,
         mode: 'subscription',
         line_items: items,
-        locale: 'en',
+        locale,
         subscription_data: {
             trial_period_days: 30,
             metadata: meta,
         },
         custom_text: getCheckoutCustomText(),
-        success_url: `${host}/exito?email=${encodeURIComponent(email)}&lang=en`,
+        success_url: `${host}/exito?email=${encodeURIComponent(meta.email || email)}&lang=${meta.lang}`,
         cancel_url: `${host}/`,
         metadata: meta,
     };

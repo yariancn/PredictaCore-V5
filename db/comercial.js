@@ -7,23 +7,32 @@ function normalizeUrl(dna) {
     return url;
 }
 
-async function upsertCliente({ email, urlSitio, stripeCustomerId, stripeSubscriptionId, refCode }) {
+async function upsertCliente({
+    email,
+    urlSitio,
+    stripeCustomerId,
+    stripeSubscriptionId,
+    refCode,
+    subscriptionStatus,
+}) {
     const pool = getPool();
     if (!pool || !email) return null;
 
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const status = subscriptionStatus || 'active';
     const url = normalizeUrl(urlSitio);
     const result = await pool.query(
         `INSERT INTO clientes (email, url_sitio, stripe_customer_id, stripe_subscription_id, subscription_status, ref_code_usado)
-         VALUES ($1, $2, $3, $4, 'active', $5)
+         VALUES ($1, $2, $3, $4, $5, $6)
          ON CONFLICT (email) DO UPDATE SET
             url_sitio = EXCLUDED.url_sitio,
             stripe_customer_id = COALESCE(EXCLUDED.stripe_customer_id, clientes.stripe_customer_id),
             stripe_subscription_id = COALESCE(EXCLUDED.stripe_subscription_id, clientes.stripe_subscription_id),
-            subscription_status = 'active',
+            subscription_status = EXCLUDED.subscription_status,
             ref_code_usado = COALESCE(EXCLUDED.ref_code_usado, clientes.ref_code_usado)
          RETURNING id`,
         [
-            email,
+            normalizedEmail,
             url || 'pending',
             stripeCustomerId || null,
             stripeSubscriptionId || null,
@@ -36,11 +45,12 @@ async function upsertCliente({ email, urlSitio, stripeCustomerId, stripeSubscrip
 async function getClienteByEmail(email) {
     const pool = getPool();
     if (!pool) return null;
+    const normalizedEmail = String(email).trim().toLowerCase();
     const result = await pool.query(
         `SELECT id, email, url_sitio, stripe_customer_id, stripe_subscription_id,
                 subscription_status, ref_code_usado
-         FROM clientes WHERE email = $1`,
-        [email]
+         FROM clientes WHERE LOWER(email) = $1`,
+        [normalizedEmail]
     );
     return result.rows[0] || null;
 }

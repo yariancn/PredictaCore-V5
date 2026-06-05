@@ -61,6 +61,94 @@ function baseUrl(req) {
     return `${proto}://${req.get('host')}`;
 }
 
+function publicBaseUrl() {
+    return (process.env.PUBLIC_BASE_URL || 'https://predictacore.ai').replace(/\/$/, '');
+}
+
+async function resolveStripeCustomerId(email) {
+    const normalized = String(email).trim().toLowerCase();
+    const cliente = await getClienteByEmail(normalized);
+    if (cliente?.stripe_customer_id) return cliente.stripe_customer_id;
+
+    const customers = await stripe.customers.list({ email: normalized, limit: 5 });
+    const match = customers.data.find((c) => c.email?.toLowerCase() === normalized);
+    return match?.id || customers.data[0]?.id || null;
+}
+
+async function createCustomerPortalUrl(customerId) {
+    const portalParams = {
+        customer: customerId,
+        return_url: `${publicBaseUrl()}/`,
+    };
+    if (process.env.STRIPE_PORTAL_CONFIG) {
+        portalParams.configuration = process.env.STRIPE_PORTAL_CONFIG;
+    }
+    const session = await stripe.billingPortal.sessions.create(portalParams);
+    return session.url;
+}
+
+function buildTitanActivationEmail(lang, portalUrl) {
+    const es = lang === 'es';
+    const manageBlock = portalUrl
+        ? (es
+            ? `<p style="margin:24px 0;"><a href="${portalUrl}" style="color:#10b981;font-weight:bold;">Gestionar suscripción</a> — cancela al menos 5 días hábiles antes de la renovación si no deseas continuar el monitoreo ($25/mes).</p>`
+            : `<p style="margin:24px 0;"><a href="${portalUrl}" style="color:#10b981;font-weight:bold;">Manage subscription</a> — cancel at least 5 business days before renewal if you do not wish to continue monitoring ($25/mo).</p>`)
+        : '';
+
+    const subject = es ? 'PredictaCore — Protección Titán activada' : 'PredictaCore — Titan Protection Activated';
+    const html = es ? `
+<!DOCTYPE html><html><body style="background:#050505;color:#d1d5db;font-family:Inter,Arial,sans-serif;padding:32px;">
+  <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;">
+    <h1 style="color:#fff;font-size:20px;letter-spacing:0.05em;">PROTECCIÓN TITÁN ACTIVADA</h1>
+    <p>Tu pago de <strong>USD $349</strong> fue procesado. El motor forense ya analiza tu activo digital.</p>
+    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">Recibirás el Reporte Titán completo en tu correo en los próximos minutos.</p>
+    <p>El monitoreo PredictaCore (<strong>$25/mes</strong>) está <strong>activo</strong>. Suscripción en periodo inicial: <strong>primer cobro mensual en ~30 días</strong>. En tu estado de cuenta: <strong>PREDICTACORE</strong>.</p>
+    ${manageBlock}
+    <p style="font-size:11px;color:#71717a;">Ventas finales — sin reembolsos.</p>
+  </div>
+</body></html>` : `
+<!DOCTYPE html><html><body style="background:#050505;color:#d1d5db;font-family:Inter,Arial,sans-serif;padding:32px;">
+  <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;">
+    <h1 style="color:#fff;font-size:20px;letter-spacing:0.05em;">TITAN PROTECTION ACTIVATED</h1>
+    <p>Your <strong>USD $349</strong> payment was processed successfully. Our forensic engine is analyzing your digital asset.</p>
+    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">You will receive the full Titan Report in your email within the next few minutes.</p>
+    <p>PredictaCore monitoring (<strong>$25/mo</strong>) is <strong>active</strong>. You are in the initial period: <strong>first monthly charge in ~30 days</strong>. Statement descriptor: <strong>PREDICTACORE</strong>.</p>
+    ${manageBlock}
+    <p style="font-size:11px;color:#71717a;">All sales final — no refunds.</p>
+  </div>
+</body></html>`;
+
+    const textManage = portalUrl
+        ? (es ? `\n\nGestionar suscripción: ${portalUrl}` : `\n\nManage subscription: ${portalUrl}`)
+        : '';
+    const text = es
+        ? `PROTECCIÓN TITÁN ACTIVADA\n\nPago USD $349 confirmado. Reporte Titán en los próximos minutos.\nMonitoreo $25/mes activo; primer cobro mensual en ~30 días. PREDICTACORE en el estado de cuenta.${textManage}`
+        : `TITAN PROTECTION ACTIVATED\n\nUSD $349 payment confirmed. Titan Report arriving in the next few minutes.\nMonitoring $25/mo active; first monthly charge in ~30 days. Statement: PREDICTACORE.${textManage}`;
+
+    return { subject, html, text };
+}
+
+async function sendTitanActivationEmail(email, lang, customerId) {
+    let portalUrl = null;
+    try {
+        const cid = customerId || await resolveStripeCustomerId(email);
+        if (cid) portalUrl = await createCustomerPortalUrl(cid);
+    } catch (err) {
+        console.warn('>>> Email activación: portal no generado:', err.message);
+    }
+
+    const { subject, html, text } = buildTitanActivationEmail(lang, portalUrl);
+    const { error } = await resend.emails.send({
+        from: 'PredictaCore <reportes@predictacore.ai>',
+        to: email,
+        subject,
+        html,
+        text,
+    });
+    if (error) throw new Error(`Resend activation email: ${error.message}`);
+    console.log(`>>> Email activación Titán enviado a ${email}`);
+}
+
 function requirePlayground(req, res, next) {
     const key = req.headers['x-api-key'] || req.query.key;
     if (!process.env.API_KEY || key !== process.env.API_KEY) {
@@ -95,24 +183,49 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
                 return res.json({ received: true, skipped: 'not_predictacore' });
             }
 
-            const { dna, email, refCode } = session.metadata || {};
+            const { dna, email, refCode, lang } = session.metadata || {};
             if (!dna || !email) {
                 console.warn('>>> [WEBHOOK] PredictaCore checkout sin metadata dna/email');
                 return res.json({ received: true, skipped: 'missing_metadata' });
             }
 
-            console.log(`>>> [PAGO INICIAL $349] ${email}. Activando Titán + suscripción...`);
+            const normalizedEmail = String(email).trim().toLowerCase();
+            const customerId = typeof session.customer === 'string'
+                ? session.customer
+                : session.customer?.id;
+            const subscriptionId = typeof session.subscription === 'string'
+                ? session.subscription
+                : session.subscription?.id;
+
+            let subscriptionStatus = 'active';
+            if (subscriptionId) {
+                try {
+                    const sub = await stripe.subscriptions.retrieve(subscriptionId);
+                    subscriptionStatus = sub.status || 'active';
+                } catch (subErr) {
+                    console.warn('>>> No se pudo leer suscripción:', subErr.message);
+                }
+            }
+
+            console.log(`>>> [PAGO INICIAL $349] ${normalizedEmail}. Titán + suscripción (${subscriptionStatus})...`);
 
             await upsertCliente({
-                email,
+                email: normalizedEmail,
                 urlSitio: dna,
-                stripeCustomerId: session.customer,
-                stripeSubscriptionId: session.subscription,
+                stripeCustomerId: customerId,
+                stripeSubscriptionId: subscriptionId,
                 refCode,
+                subscriptionStatus,
             });
 
-            iniciarAuditoria(dna, email, 'TITAN');
-            await registrarVentaComisiones(session, email, refCode);
+            try {
+                await sendTitanActivationEmail(normalizedEmail, lang || 'en', customerId);
+            } catch (mailErr) {
+                console.error('!!! Email activación Titán:', mailErr.message);
+            }
+
+            iniciarAuditoria(dna, normalizedEmail, 'TITAN');
+            await registrarVentaComisiones(session, normalizedEmail, refCode);
         }
 
         if (event.type === 'invoice.paid') {
@@ -281,31 +394,17 @@ app.post('/portal-cliente', async (req, res) => {
         const { email } = req.body;
         if (!email) return res.status(400).json({ error: 'Email requerido' });
 
-        const pool = getPool();
-        if (!pool) return res.status(503).json({ error: 'BD no disponible' });
-
-        const result = await pool.query(
-            'SELECT stripe_customer_id FROM clientes WHERE email = $1',
-            [email]
-        );
-        const customerId = result.rows[0]?.stripe_customer_id;
+        const customerId = await resolveStripeCustomerId(email);
         if (!customerId) {
-            return res.status(404).json({ error: 'Cliente sin suscripción activa en Stripe' });
+            return res.status(404).json({ error: 'No active subscription found for this email yet.' });
         }
 
-        const portalParams = {
-            customer: customerId,
-            return_url: `${baseUrl(req)}/`,
-        };
-        if (process.env.STRIPE_PORTAL_CONFIG) {
-            portalParams.configuration = process.env.STRIPE_PORTAL_CONFIG;
-        }
-        const session = await stripe.billingPortal.sessions.create(portalParams);
-
-        res.json({ url: session.url });
+        const url = await createCustomerPortalUrl(customerId);
+        res.json({ url });
     } catch (error) {
-        console.error('!!! Error portal Stripe:', error);
-        res.status(500).json({ error: 'No se pudo abrir el portal de cliente' });
+        const stripeMsg = error?.raw?.message || error?.message;
+        console.error('!!! Error portal Stripe:', stripeMsg || error);
+        res.status(500).json({ error: stripeMsg || 'Could not open customer portal' });
     }
 });
 
@@ -532,7 +631,14 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             htmlBase = getHTML();
             subject = 'Your PredictaCore Titan Report';
             filename = 'PREDICTACORE_TITAN.pdf';
-            textBody = 'Your PredictaCore Titan forensic audit is attached.';
+            let portalUrl = null;
+            try {
+                const cid = await resolveStripeCustomerId(emailDestino);
+                if (cid) portalUrl = await createCustomerPortalUrl(cid);
+            } catch (_) { /* optional */ }
+            textBody = portalUrl
+                ? `Your PredictaCore Titan forensic audit is attached.\n\nManage subscription: ${portalUrl}`
+                : 'Your PredictaCore Titan forensic audit is attached.';
         }
 
         browser = await puppeteer.launch({
