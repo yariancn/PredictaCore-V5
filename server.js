@@ -37,6 +37,8 @@ const {
     saveReporte,
 } = require('./db/comercial');
 
+const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
+
 const {
     BRAND,
     TERMS_URL,
@@ -454,19 +456,30 @@ app.get('/titan-interno', (req, res) => {
 });
 
 app.post('/titan-interno', requireTitanInternalKey, async (req, res) => {
-    const { dna, email } = req.body;
-    if (!dna || !email) {
-        return res.status(400).json({ error: 'URL and email required' });
+    const { dna, email, assetType, platform, handle } = req.body;
+    if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+    }
+
+    const resolved = resolveAuditTarget({ assetType, dna, platform, handle });
+    if (!resolved.ok) {
+        return res.status(400).json({ error: resolved.error });
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
-    console.log(`>>> [TITAN INTERNO] ${normalizedEmail} — ${dna}`);
-    iniciarAuditoria(dna, normalizedEmail, 'TITAN');
+    console.log(`>>> [TITAN INTERNO / ${resolved.assetType}] ${normalizedEmail} — ${resolved.url}`);
+    iniciarAuditoria(resolved.url, normalizedEmail, 'TITAN');
+
+    const label = resolved.assetType === 'social'
+        ? `${resolved.platform} profile`
+        : 'website';
 
     res.json({
         status: 'started',
         mode: 'TITAN',
-        message: 'Titan audit started. Full PDF will arrive by email in ~10–20 min.',
+        assetType: resolved.assetType,
+        target: resolved.url,
+        message: `Titan ${label} audit started. Full PDF in ~10–20 min at ${normalizedEmail}.`,
     });
 });
 
@@ -649,7 +662,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             idioma = 'INSTRUCCIÓN: Redacta en el idioma del sitio analizado.';
             regla = '';
         } else {
-            const cerebroActivo = targetUrl.includes('instagram.com') ? cerebroSocial : cerebroWeb;
+            const cerebroActivo = isSocialMediaUrl(targetUrl) ? cerebroSocial : cerebroWeb;
             promptsAUsar = cerebroActivo.PROMPTS;
             idioma = cerebroActivo.IDIOMA;
             regla = cerebroActivo.REGLA_NUCLEAR;
@@ -751,8 +764,11 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             textBody = 'Your monthly PredictaCore monitoring report is attached.';
         } else {
             htmlBase = getHTML();
-            subject = 'Your PredictaCore Titan Report';
-            filename = 'PREDICTACORE_TITAN.pdf';
+            const social = isSocialMediaUrl(targetUrl);
+            subject = social
+                ? 'Your PredictaCore Titan Social Audit'
+                : 'Your PredictaCore Titan Report';
+            filename = social ? 'PREDICTACORE_TITAN_SOCIAL.pdf' : 'PREDICTACORE_TITAN.pdf';
             let portalUrl = null;
             try {
                 const cid = await resolveStripeCustomerId(emailDestino);

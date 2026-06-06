@@ -1,10 +1,12 @@
 // motor.js - BÚNKER 6.3: BIFURCACIÓN EXACTA (RESTAURADO + INYECCIÓN FRANCOTIRADOR)
 const puppeteer = require('puppeteer');
 
+const { isSocialMediaUrl } = require('./audit-target');
+
 async function captureAndScrape(url) {
     let browser;
     try {
-        const isSocialMedia = url.includes('instagram.com') || url.includes('facebook.com') || url.includes('tiktok.com');
+        const isSocialMedia = isSocialMediaUrl(url);
 
         browser = await puppeteer.launch({
             headless: "new",
