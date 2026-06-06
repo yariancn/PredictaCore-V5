@@ -1,3 +1,5 @@
+const { getFaviconHeadTags } = require('./brand');
+
 function getPlaygroundHTML() {
     return `<!DOCTYPE html>
 <html lang="es">
@@ -5,6 +7,7 @@ function getPlaygroundHTML() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
+    ${getFaviconHeadTags()}
     <title>PredictaCore Playground</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>

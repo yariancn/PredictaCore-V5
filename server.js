@@ -1,4 +1,5 @@
 // server.js - PredictaCore (Lite + Titán + Seguimiento mensual)
+const path = require('path');
 const express = require('express');
 const cerebroWeb = require('./cerebro');
 const cerebroSocial = require('./cerebro_social');
@@ -429,6 +430,13 @@ app.get('/health', async (req, res) => {
         timestamp: new Date().toISOString(),
     });
 });
+
+app.get('/favicon.ico', (req, res) => {
+    res.type('image/svg+xml');
+    res.sendFile(path.join(__dirname, 'static', 'favicon.svg'));
+});
+
+app.use('/static', express.static(path.join(__dirname, 'static'), { maxAge: '7d' }));
 
 app.get('/', (req, res) => res.send(getLandingHTML()));
 app.get('/terms', (req, res) => res.send(getTerminosHTML()));

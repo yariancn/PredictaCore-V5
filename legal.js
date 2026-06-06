@@ -2,6 +2,8 @@
  * PredictaCore legal pages (predictacore.ai only).
  */
 
+const { getFaviconHeadTags } = require('./brand');
+
 const UPDATED = 'May 27, 2026';
 
 function wrapPredictacorePage({ title, intro, bodyHtml, footerLinks }) {
@@ -14,6 +16,7 @@ function wrapPredictacorePage({ title, intro, bodyHtml, footerLinks }) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    ${getFaviconHeadTags()}
     <title>${title} | PredictaCore</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>body{background:#050505;color:#d1d5db;font-family:Inter,sans-serif}</style>

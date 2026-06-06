@@ -1,3 +1,5 @@
+const { getFaviconHeadTags } = require('./brand');
+
 function getSuccessHTML(lang = 'en') {
     const t = lang === 'es' ? {
         title: 'Pago confirmado',
@@ -26,6 +28,7 @@ function getSuccessHTML(lang = 'en') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    ${getFaviconHeadTags()}
     <title>${t.title} | PredictaCore</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>

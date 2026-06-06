@@ -1,5 +1,7 @@
 // landing.js - REDISEÑO DE ÉLITE: CERO JERGA TÉCNICA, MÁXIMA AUTORIDAD Y ESTÉTICA BALANCEADA
 
+const { getFaviconHeadTags } = require('./brand');
+
 function getLandingHTML() {
     return `
     <!DOCTYPE html>
@@ -7,6 +9,7 @@ function getLandingHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        ${getFaviconHeadTags()}
         
         <script>
             window.history.scrollRestoration = 'manual';
