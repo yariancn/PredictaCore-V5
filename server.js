@@ -157,6 +157,15 @@ function requirePlayground(req, res, next) {
     next();
 }
 
+app.get('/webhook-stripe', (req, res) => {
+    res.status(200).json({
+        ok: true,
+        endpoint: 'Stripe webhook (POST only)',
+        message: 'This URL is for Stripe servers. Opening it in a browser uses GET and does not test delivery. Configure it in Stripe Dashboard → Webhooks.',
+        events: ['checkout.session.completed', 'invoice.paid'],
+    });
+});
+
 app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;
