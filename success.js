@@ -50,8 +50,17 @@ function getSuccessHTML(lang = 'en') {
         </p>
     </div>
     <script>
-        const email = new URLSearchParams(window.location.search).get('email');
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get('email');
+        const sessionId = params.get('session_id');
         if (email) localStorage.setItem('pc_email', email.trim().toLowerCase());
+        if (sessionId && sessionId.startsWith('cs_')) {
+            fetch('/fulfill-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionId }),
+            }).catch(function() {});
+        }
     </script>
 </body>
 </html>`;

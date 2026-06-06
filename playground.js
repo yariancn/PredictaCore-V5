@@ -59,6 +59,14 @@ function getPlaygroundHTML() {
         <pre id="out-portal" class="mt-3 text-zinc-400">—</pre>
     </section>
 
+    <section class="mb-8 border border-amber-500/30 bg-amber-950/10 p-4 rounded">
+        <h2 class="text-amber-500 text-[10px] uppercase tracking-widest mb-3">06 — Re-procesar pago (session_id)</h2>
+        <p class="text-zinc-500 text-[10px] mb-2">Si el webhook falló: Stripe → Payments → Checkout session → copia el ID (cs_test_...).</p>
+        <input id="pg-session" placeholder="cs_test_..." class="bg-black border border-zinc-700 p-3 rounded text-white w-full mb-2">
+        <button onclick="runFulfill()" class="bg-amber-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /fulfill-checkout</button>
+        <pre id="out-fulfill" class="mt-3 text-amber-400">—</pre>
+    </section>
+
     <section>
         <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">05 — DB Snapshot</h2>
         <button onclick="runDb()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">GET /playground/db</button>
@@ -114,6 +122,12 @@ function getPlaygroundHTML() {
             const r = await api('/portal-cliente', { method: 'POST', body: JSON.stringify({ email }) });
             document.getElementById('out-portal').textContent = JSON.stringify(r.data, null, 2);
             if (r.data?.url) window.open(r.data.url, '_blank');
+        }
+
+        async function runFulfill() {
+            const session_id = document.getElementById('pg-session').value.trim();
+            const r = await api('/fulfill-checkout', { method: 'POST', body: JSON.stringify({ session_id }) });
+            document.getElementById('out-fulfill').textContent = JSON.stringify(r.data, null, 2);
         }
 
         async function runDb() {

@@ -205,7 +205,7 @@ function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang
             metadata: meta,
         },
         custom_text: getCheckoutCustomText(),
-        success_url: `${host}/exito?email=${encodeURIComponent(meta.email || email)}&lang=${meta.lang}`,
+        success_url: `${host}/exito?session_id={CHECKOUT_SESSION_ID}&email=${encodeURIComponent(meta.email || email)}&lang=${meta.lang}`,
         cancel_url: `${host}/`,
         metadata: meta,
     };

@@ -157,6 +157,102 @@ function requirePlayground(req, res, next) {
     next();
 }
 
+async function resolveCheckoutMetadata(session) {
+    const base = session.metadata || {};
+    let dna = base.dna;
+    let email = base.email || session.customer_email || session.customer_details?.email;
+    let refCode = base.refCode || '';
+    let lang = base.lang || 'en';
+
+    const subId = typeof session.subscription === 'string'
+        ? session.subscription
+        : session.subscription?.id;
+
+    if ((!dna || !email) && subId) {
+        try {
+            const sub = await stripe.subscriptions.retrieve(subId);
+            dna = dna || sub.metadata?.dna;
+            email = email || sub.metadata?.email;
+            refCode = refCode || sub.metadata?.refCode || '';
+            lang = lang || sub.metadata?.lang || 'en';
+        } catch (subErr) {
+            console.warn('>>> No se pudo leer metadata de suscripción:', subErr.message);
+        }
+    }
+
+    return {
+        dna,
+        email: email ? String(email).trim().toLowerCase() : '',
+        refCode,
+        lang: lang === 'es' ? 'es' : 'en',
+    };
+}
+
+async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook') {
+    const session = await expandCheckoutSession(stripe, rawSession);
+
+    if (!isPredictacoreCheckoutSession(session)) {
+        console.log(`>>> [${source}] checkout ignorado — no es producto ${BRAND}`);
+        return { ok: false, skipped: 'not_predictacore' };
+    }
+
+    const paid = session.payment_status === 'paid' || session.status === 'complete';
+    if (!paid) {
+        return { ok: false, skipped: 'not_paid' };
+    }
+
+    const isNew = await claimWebhookEvent(`checkout_session:${session.id}`, 'checkout.session.fulfilled');
+    if (!isNew) {
+        console.log(`>>> [${source}] checkout ya procesado: ${session.id}`);
+        return { ok: true, duplicate: true };
+    }
+
+    const { dna, email, refCode, lang } = await resolveCheckoutMetadata(session);
+    if (!dna || !email) {
+        console.warn(`>>> [${source}] checkout sin dna/email — session ${session.id}`);
+        return { ok: false, skipped: 'missing_metadata' };
+    }
+
+    const customerId = typeof session.customer === 'string'
+        ? session.customer
+        : session.customer?.id;
+    const subscriptionId = typeof session.subscription === 'string'
+        ? session.subscription
+        : session.subscription?.id;
+
+    let subscriptionStatus = 'active';
+    if (subscriptionId) {
+        try {
+            const sub = await stripe.subscriptions.retrieve(subscriptionId);
+            subscriptionStatus = sub.status || 'active';
+        } catch (subErr) {
+            console.warn('>>> No se pudo leer suscripción:', subErr.message);
+        }
+    }
+
+    console.log(`>>> [PAGO $349 / ${source}] ${email}. Titán + suscripción (${subscriptionStatus})...`);
+
+    await upsertCliente({
+        email,
+        urlSitio: dna,
+        stripeCustomerId: customerId,
+        stripeSubscriptionId: subscriptionId,
+        refCode,
+        subscriptionStatus,
+    });
+
+    try {
+        await sendTitanActivationEmail(email, lang, customerId);
+    } catch (mailErr) {
+        console.error('!!! Email activación Titán:', mailErr.message);
+    }
+
+    iniciarAuditoria(dna, email, 'TITAN');
+    await registrarVentaComisiones(session, email, refCode);
+
+    return { ok: true, started: true, email };
+}
+
 app.get('/webhook-stripe', (req, res) => {
     res.status(200).json({
         ok: true,
@@ -184,57 +280,7 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
         }
 
         if (event.type === 'checkout.session.completed') {
-            let session = event.data.object;
-            session = await expandCheckoutSession(stripe, session);
-
-            if (!isPredictacoreCheckoutSession(session)) {
-                console.log(`>>> [WEBHOOK] checkout ignorado — no es producto ${BRAND}`);
-                return res.json({ received: true, skipped: 'not_predictacore' });
-            }
-
-            const { dna, email, refCode, lang } = session.metadata || {};
-            if (!dna || !email) {
-                console.warn('>>> [WEBHOOK] PredictaCore checkout sin metadata dna/email');
-                return res.json({ received: true, skipped: 'missing_metadata' });
-            }
-
-            const normalizedEmail = String(email).trim().toLowerCase();
-            const customerId = typeof session.customer === 'string'
-                ? session.customer
-                : session.customer?.id;
-            const subscriptionId = typeof session.subscription === 'string'
-                ? session.subscription
-                : session.subscription?.id;
-
-            let subscriptionStatus = 'active';
-            if (subscriptionId) {
-                try {
-                    const sub = await stripe.subscriptions.retrieve(subscriptionId);
-                    subscriptionStatus = sub.status || 'active';
-                } catch (subErr) {
-                    console.warn('>>> No se pudo leer suscripción:', subErr.message);
-                }
-            }
-
-            console.log(`>>> [PAGO INICIAL $349] ${normalizedEmail}. Titán + suscripción (${subscriptionStatus})...`);
-
-            await upsertCliente({
-                email: normalizedEmail,
-                urlSitio: dna,
-                stripeCustomerId: customerId,
-                stripeSubscriptionId: subscriptionId,
-                refCode,
-                subscriptionStatus,
-            });
-
-            try {
-                await sendTitanActivationEmail(normalizedEmail, lang || 'en', customerId);
-            } catch (mailErr) {
-                console.error('!!! Email activación Titán:', mailErr.message);
-            }
-
-            iniciarAuditoria(dna, normalizedEmail, 'TITAN');
-            await registrarVentaComisiones(session, normalizedEmail, refCode);
+            await fulfillPredictacoreCheckoutSession(event.data.object, 'webhook');
         }
 
         if (event.type === 'invoice.paid') {
@@ -334,6 +380,23 @@ async function registrarVentaComisiones(session, email, refCode) {
 }
 
 app.use(express.json({ limit: '10mb' }));
+
+app.post('/fulfill-checkout', async (req, res) => {
+    try {
+        const sessionId = req.body?.session_id || req.query?.session_id;
+        if (!sessionId || !String(sessionId).startsWith('cs_')) {
+            return res.status(400).json({ error: 'session_id required (cs_...)' });
+        }
+
+        const session = await stripe.checkout.sessions.retrieve(String(sessionId));
+        const result = await fulfillPredictacoreCheckoutSession(session, 'success_page');
+        res.json(result);
+    } catch (error) {
+        const stripeMsg = error?.raw?.message || error?.message;
+        console.error('!!! fulfill-checkout:', stripeMsg || error);
+        res.status(500).json({ error: stripeMsg || 'Fulfillment failed' });
+    }
+});
 
 app.get('/health', async (req, res) => {
     const db = await healthCheck();
