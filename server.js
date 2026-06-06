@@ -381,17 +381,32 @@ app.get('/playground/db', requirePlayground, async (req, res) => {
     if (!pool) return res.status(503).json({ error: 'BD no disponible' });
 
     try {
-        const [clientes, reportes, ventas, jobs] = await Promise.all([
+        const [clientes, reportes, ventas, jobs, recentJobs, recentWebhooks] = await Promise.all([
             pool.query('SELECT COUNT(*)::int AS n FROM clientes'),
             pool.query(`SELECT tipo, COUNT(*)::int AS n FROM reportes GROUP BY tipo`),
             pool.query('SELECT COUNT(*)::int AS n FROM ventas_comisiones'),
             pool.query(`SELECT estado, COUNT(*)::int AS n FROM jobs_auditoria GROUP BY estado`),
+            pool.query(`
+                SELECT job_id, email, modo, estado, error_msg, creado_en, completado_en,
+                       (SELECT count(*)::int FROM jsonb_object_keys(progreso_json) k) AS secciones
+                FROM jobs_auditoria
+                ORDER BY creado_en DESC
+                LIMIT 10
+            `),
+            pool.query(`
+                SELECT stripe_event_id, tipo, procesado_en
+                FROM webhook_eventos
+                ORDER BY procesado_en DESC
+                LIMIT 10
+            `),
         ]);
         res.json({
             clientes: clientes.rows[0].n,
             reportes: reportes.rows,
             ventas: ventas.rows[0].n,
             jobs: jobs.rows,
+            recent_jobs: recentJobs.rows,
+            recent_webhooks: recentWebhooks.rows,
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
