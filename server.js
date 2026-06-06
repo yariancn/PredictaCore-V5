@@ -9,6 +9,7 @@ const { getHTMLLite } = require('./visual_lite');
 const { getHTMLDelta } = require('./visual_delta');
 const { getLandingHTML } = require('./landing');
 const { getSuccessHTML } = require('./success');
+const { getTitanInternalHTML } = require('./titan-internal');
 const { getPlaygroundHTML } = require('./playground');
 const { getTerminosHTML, getPrivacidadHTML } = require('./legal');
 const { captureAndScrape } = require('./motor');
@@ -147,6 +148,18 @@ async function sendTitanActivationEmail(email, lang, customerId) {
     });
     if (error) throw new Error(`Resend activation email: ${error.message}`);
     console.log(`>>> Email activación Titán enviado a ${email}`);
+}
+
+function titanInternalKey() {
+    return process.env.TITAN_INTERNAL_KEY || '12345';
+}
+
+function requireTitanInternalKey(req, res, next) {
+    const key = req.body?.key;
+    if (!key || key !== titanInternalKey()) {
+        return res.status(401).json({ error: 'Invalid access key' });
+    }
+    next();
 }
 
 function requirePlayground(req, res, next) {
@@ -433,6 +446,28 @@ app.get('/legal/privacidad', (req, res) => res.redirect(301, '/privacy'));
 app.get('/exito', (req, res) => {
     const lang = req.query.lang === 'es' ? 'es' : 'en';
     res.send(getSuccessHTML(lang));
+});
+
+app.get('/titan-interno', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.send(getTitanInternalHTML());
+});
+
+app.post('/titan-interno', requireTitanInternalKey, async (req, res) => {
+    const { dna, email } = req.body;
+    if (!dna || !email) {
+        return res.status(400).json({ error: 'URL and email required' });
+    }
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+    console.log(`>>> [TITAN INTERNO] ${normalizedEmail} — ${dna}`);
+    iniciarAuditoria(dna, normalizedEmail, 'TITAN');
+
+    res.json({
+        status: 'started',
+        mode: 'TITAN',
+        message: 'Titan audit started. Full PDF will arrive by email in ~10–20 min.',
+    });
 });
 
 app.get('/playground', requirePlayground, (req, res) => {
