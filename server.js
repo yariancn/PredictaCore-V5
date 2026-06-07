@@ -22,6 +22,8 @@ const {
     getPool,
     initDatabase,
     claimWebhookEvent,
+    releaseWebhookClaim,
+    fulfillmentLooksComplete,
     createJob,
     updateJobProgress,
     completeJob,
@@ -230,10 +232,15 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
         return { ok: false, skipped: 'missing_metadata' };
     }
 
-    const isNew = await claimWebhookEvent(`checkout_session:${session.id}`, 'checkout.session.fulfilled');
+    const claimId = `checkout_session:${session.id}`;
+    const isNew = await claimWebhookEvent(claimId, 'checkout.session.fulfilled');
     if (!isNew) {
-        console.log(`>>> [${source}] checkout ya procesado: ${session.id}`);
-        return { ok: true, duplicate: true, email };
+        const complete = await fulfillmentLooksComplete(email);
+        if (complete) {
+            console.log(`>>> [${source}] checkout ya procesado: ${session.id}`);
+            return { ok: true, duplicate: true, email };
+        }
+        console.warn(`>>> [${source}] fulfillment incompleto — reintentando: ${session.id}`);
     }
 
     const customerId = typeof session.customer === 'string'
@@ -253,27 +260,32 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
         }
     }
 
-    console.log(`>>> [PAGO $349 / ${source}] ${email}. Titán + suscripción (${subscriptionStatus})...`);
-
-    await upsertCliente({
-        email,
-        urlSitio: dna,
-        stripeCustomerId: customerId,
-        stripeSubscriptionId: subscriptionId,
-        refCode,
-        subscriptionStatus,
-    });
-
     try {
-        await sendTitanActivationEmail(email, lang, customerId);
-    } catch (mailErr) {
-        console.error('!!! Email activación Titán:', mailErr.message);
+        console.log(`>>> [PAGO $349 / ${source}] ${email}. Titán + suscripción (${subscriptionStatus})...`);
+
+        await upsertCliente({
+            email,
+            urlSitio: dna,
+            stripeCustomerId: customerId,
+            stripeSubscriptionId: subscriptionId,
+            refCode,
+            subscriptionStatus,
+        });
+
+        try {
+            await sendTitanActivationEmail(email, lang, customerId);
+        } catch (mailErr) {
+            console.error('!!! Email activación Titán:', mailErr.message);
+        }
+
+        iniciarAuditoria(dna, email, 'TITAN');
+        await registrarVentaComisiones(session, email, refCode);
+
+        return { ok: true, started: true, email, recovered: !isNew };
+    } catch (err) {
+        if (isNew) await releaseWebhookClaim(claimId);
+        throw err;
     }
-
-    iniciarAuditoria(dna, email, 'TITAN');
-    await registrarVentaComisiones(session, email, refCode);
-
-    return { ok: true, started: true, email };
 }
 
 app.get('/webhook-stripe', (req, res) => {

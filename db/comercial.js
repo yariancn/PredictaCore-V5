@@ -36,6 +36,7 @@ async function upsertCliente({
             url || 'pending',
             stripeCustomerId || null,
             stripeSubscriptionId || null,
+            status,
             refCode && refCode !== 'null' && refCode !== '' ? refCode : null,
         ]
     );

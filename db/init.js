@@ -80,6 +80,28 @@ async function claimWebhookEvent(stripeEventId, tipo) {
     return result.rows.length > 0;
 }
 
+async function releaseWebhookClaim(stripeEventId) {
+    const p = getPool();
+    if (!p) return;
+    await p.query('DELETE FROM webhook_eventos WHERE stripe_event_id = $1', [stripeEventId]);
+}
+
+async function fulfillmentLooksComplete(email) {
+    const p = getPool();
+    if (!p || !email) return false;
+    const [cli, job] = await Promise.all([
+        p.query('SELECT 1 FROM clientes WHERE lower(email) = lower($1) LIMIT 1', [email]),
+        p.query(
+            `SELECT 1 FROM jobs_auditoria
+             WHERE lower(email) = lower($1) AND modo = 'TITAN'
+               AND estado IN ('running', 'completed')
+             LIMIT 1`,
+            [email]
+        ),
+    ]);
+    return cli.rows.length > 0 && job.rows.length > 0;
+}
+
 async function createJob(jobId, email, urlSitio, modo) {
     const p = getPool();
     if (!p) return;
@@ -176,6 +198,8 @@ module.exports = {
     getPool,
     initDatabase,
     claimWebhookEvent,
+    releaseWebhookClaim,
+    fulfillmentLooksComplete,
     createJob,
     updateJobProgress,
     completeJob,
