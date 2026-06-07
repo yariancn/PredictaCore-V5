@@ -464,16 +464,22 @@ app.get('/checkout-status', async (req, res) => {
             delivery: {
                 cliente,
                 recent_jobs: recentJobs,
+                titan_jobs: recentJobs.filter((j) => j.modo === 'TITAN'),
                 reportes,
-                hint: !recentJobs.length
-                    ? 'No Titan job found — use Playground replay or POST /playground/replay-delivery'
-                    : recentJobs[0].estado === 'failed'
-                        ? `Last job failed: ${recentJobs[0].error_msg || 'unknown'}`
-                        : recentJobs[0].estado === 'running'
-                            ? `Titan in progress (${recentJobs[0].secciones || 0} sections done)`
-                            : recentJobs[0].estado === 'completed'
-                                ? 'Titan job completed — check spam if no PDF'
-                                : null,
+                hint: (() => {
+                    const titanJobs = recentJobs.filter((j) => j.modo === 'TITAN');
+                    if (!titanJobs.length && fulfillmentClaimed) {
+                        return 'Payment claimed but no Titan job — use Playground → replay-delivery to resend email and start Titan.';
+                    }
+                    if (!titanJobs.length) {
+                        return 'No Titan job yet — use Playground replay or POST /playground/replay-delivery';
+                    }
+                    const last = titanJobs[0];
+                    if (last.estado === 'failed') return `Titan failed: ${last.error_msg || 'unknown'}`;
+                    if (last.estado === 'running') return `Titan in progress (${last.secciones || 0} sections done)`;
+                    if (last.estado === 'completed') return 'Titan completed — check spam if no PDF';
+                    return null;
+                })(),
             },
         });
     } catch (error) {
