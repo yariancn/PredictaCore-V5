@@ -3,6 +3,9 @@ const puppeteer = require('puppeteer');
 
 const { isSocialMediaUrl } = require('./audit-target');
 const { collectForensics } = require('./forensics');
+const { runWebSimulation, runSocialSimulation, formatSimulationBlock } = require('./simulator');
+const { findCompetitors } = require('./competitors');
+const { formatKeywordsBlock } = require('./keywords');
 
 async function captureAndScrape(url) {
     let browser;
@@ -109,10 +112,55 @@ async function captureAndScrape(url) {
 
         const forensics = await collectForensics(page, url, loadTime, isSocialMedia);
 
+        let simulationBlock = '';
+        let benchmarkBlock = '';
+        let keywordsBlock = '';
+
+        if (isSocialMedia) {
+            const sim = runSocialSimulation({
+                bioSnippet: forensics.onPage?.bioSnippet,
+                hasEmail: forensics.onPage?.hasEmail,
+                hasPhone: forensics.onPage?.hasPhone,
+                externalLinkCount: forensics.onPage?.externalLinkCount,
+                externalLinks: forensics.onPage?.externalLinks,
+                wordCount: forensics.onPage?.wordCount,
+                aiScore: forensics.aiScore,
+            });
+            simulationBlock = formatSimulationBlock(sim, 'social');
+            const bench = await findCompetitors(url, forensics.onPage, true);
+            benchmarkBlock = bench.block;
+        } else {
+            const bodySample = dataForense.cuerpo.slice(0, 2000);
+            const hasContact = /[\w.+-]+@[\w.-]+\.\w+/.test(bodySample)
+                || /\+?\d[\d\s().-]{8,}/.test(bodySample);
+            const sim = runWebSimulation({
+                title: dataForense.titulo,
+                metaDescription: dataForense.descripcion,
+                bodySample,
+                ctas: dataForense.interactores,
+                botonesProducto,
+                loadTimeSec: loadTime,
+                seoScore: forensics.seoScore,
+                aiScore: forensics.aiScore,
+                imgsAltPct: forensics.onPage?.imgsAltPct,
+                h1Count: forensics.onPage?.h1Count,
+                h1Text: forensics.onPage?.h1Text,
+                wordCount: forensics.onPage?.wordCount,
+                viewport: forensics.onPage?.viewport,
+                canonical: forensics.onPage?.canonical,
+                jsonLdCount: forensics.onPage?.jsonLdCount,
+                hasContact,
+            });
+            simulationBlock = formatSimulationBlock(sim, 'website');
+            keywordsBlock = formatKeywordsBlock(forensics.onPage);
+            const bench = await findCompetitors(url, forensics.onPage, false);
+            benchmarkBlock = bench.block;
+        }
+
         await browser.close();
         const fechaHoy = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
-        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${forensics.block}`;
+        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${forensics.block}${simulationBlock}${benchmarkBlock}${keywordsBlock}`;
 
         return {
             isUrl: true,

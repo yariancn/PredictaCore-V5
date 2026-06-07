@@ -4,7 +4,7 @@ const express = require('express');
 const cerebroWeb = require('./cerebro');
 const cerebroSocial = require('./cerebro_social');
 const { PROMPTS_LITE } = require('./cerebro_lite');
-const { PROMPTS_DELTA, extractInitialSummary } = require('./cerebro_delta');
+const { PROMPTS_DELTA, extractInitialSummary, formatScoreDiffBlock } = require('./cerebro_delta');
 const { getHTML } = require('./visual');
 const { getHTMLLite } = require('./visual_lite');
 const { getHTMLDelta } = require('./visual_delta');
@@ -43,6 +43,7 @@ const {
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
 const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml } = require('./brand');
 const { stageUsesVision } = require('./forensics');
+const { validateSection, stripFinancialClaims, SKIP_MONEY_CHECK } = require('./validator');
 
 const {
     BRAND,
@@ -825,6 +826,7 @@ async function iniciarAuditoria(dna, email, modo) {
         const cliente = await getClienteByEmail(email);
         const titan = await getLatestTitanReport(cliente?.id);
         jobsMemoria[jobId].initialSummary = extractInitialSummary(titan?.secciones_json);
+        jobsMemoria[jobId].prevDossier = titan?.dossier_scrape || '';
     }
 
     await createJob(jobId, email, targetUrl, modo);
@@ -839,7 +841,11 @@ async function iniciarAuditoria(dna, email, modo) {
 async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
     try {
         const datosTarget = await captureAndScrape(targetUrl);
-        jobsMemoria[jobId].dossier = datosTarget.texto;
+        let dossierTexto = datosTarget.texto;
+        if (modo === 'DELTA' && jobsMemoria[jobId].prevDossier) {
+            dossierTexto += formatScoreDiffBlock(jobsMemoria[jobId].prevDossier, datosTarget.texto);
+        }
+        jobsMemoria[jobId].dossier = dossierTexto;
         jobsMemoria[jobId].captures = {
             desktopBase64: datosTarget.desktopBase64,
             mobileBase64: datosTarget.mobileBase64,
@@ -881,14 +887,14 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
 
         for (const etapaId in promptsAUsar) {
             const promptFinal = modo === 'DELTA'
-                ? promptsAUsar[etapaId](datosTarget.texto, inicial)
-                : promptsAUsar[etapaId](datosTarget.texto);
+                ? promptsAUsar[etapaId](dossierTexto, inicial)
+                : promptsAUsar[etapaId](dossierTexto);
 
             const parts = [
                 { text: FIREWALL_IA },
                 { text: idioma },
                 { text: regla },
-                { text: `CONTEXTO:\n${datosTarget.texto}` },
+                { text: `CONTEXTO:\n${dossierTexto}` },
                 { text: promptFinal },
             ];
 
@@ -901,26 +907,51 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
                 }
             }
 
-            const payload = {
-                contents: [{ role: 'user', parts }],
-                generationConfig: {
-                    temperature: 0.1,
-                    maxOutputTokens: modo === 'DELTA' ? 4096 : 8192,
-                },
-            };
+            let sectionText = '';
+            let retries = 0;
+            const maxRetries = 2;
 
-            const vertexRes = await fetch(vertexUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${tokenResponse.token}`,
-                },
-                body: JSON.stringify(payload),
-            });
+            while (retries <= maxRetries) {
+                const attemptParts = retries === 0
+                    ? parts
+                    : [...parts, { text: `REINTENTO ${retries}: Corrige el output anterior.` }];
 
-            const vertexData = await vertexRes.json();
-            if (vertexData.candidates) {
-                jobsMemoria[jobId].progress[etapaId] = vertexData.candidates[0].content.parts[0].text;
+                const payload = {
+                    contents: [{ role: 'user', parts: attemptParts }],
+                    generationConfig: {
+                        temperature: 0.1,
+                        maxOutputTokens: modo === 'DELTA' ? 4096 : 8192,
+                    },
+                };
+
+                const vertexRes = await fetch(vertexUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${tokenResponse.token}`,
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const vertexData = await vertexRes.json();
+                if (!vertexData.candidates) break;
+
+                sectionText = SKIP_MONEY_CHECK.has(etapaId)
+                    ? vertexData.candidates[0].content.parts[0].text
+                    : stripFinancialClaims(vertexData.candidates[0].content.parts[0].text);
+                const validation = validateSection(etapaId, sectionText, dossierTexto);
+                if (validation.ok || retries >= maxRetries) {
+                    if (!validation.ok && retries >= maxRetries) {
+                        console.warn(`>>> [VALIDATOR] ${etapaId} con issues: ${validation.issues.join('; ')}`);
+                    }
+                    break;
+                }
+                parts.push({ text: validation.retrySuffix });
+                retries += 1;
+            }
+
+            if (sectionText) {
+                jobsMemoria[jobId].progress[etapaId] = sectionText;
                 await updateJobProgress(jobId, jobsMemoria[jobId].progress);
             }
             await new Promise((r) => setTimeout(r, 2000));

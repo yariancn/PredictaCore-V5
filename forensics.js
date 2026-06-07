@@ -225,7 +225,7 @@ BIO_PUBLICA: ${p.bioSnippet}
 LINKS_EXTERNOS: ${p.externalLinks || 'NINGUNO'}
 EMAIL_EN_BIO: ${p.hasEmail ? 'SI' : 'NO'} | TELEFONO_EN_BIO: ${p.hasPhone ? 'SI' : 'NO'}
 MUESTRA_TEXTO_PUBLICO: ${p.textSample}
-INSTRUCCION_IA: Evalúa si ChatGPT/Perplexity/Google AI Overview podrían recomendar este negocio. Señala vacíos de entidad (nombre, servicio, ciudad, prueba social, enlace a web propia).
+INSTRUCCION_IA: Evaluación técnica PROXY (robots, bio, links). NO es prueba en vivo en ChatGPT. Señala vacíos de entidad (nombre, servicio, ciudad, enlace web propia).
 === FIN AI_VISIBILITY ===`;
     }
 
@@ -261,7 +261,7 @@ BOTS_IA_EN_ROBOTS: ${botLines || 'SIN_ROBOTS_TXT'}
 ROBOTS_BLOQUEA_TODO: ${data.aiRobots.blocksAll ? 'SI' : 'NO'}
 LLMS_TXT_CONTENIDO: ${data.llmsTxt ? data.llmsTxt.slice(0, 800) : 'AUSENTE — las IAs no tienen manifiesto de entrenamiento/citación'}
 MUESTRA_TEXTO_INDEXABLE: ${p.textSample}
-INSTRUCCION_IA: Diagnostica si GPT/Claude/Perplexity/Google AI pueden citar este negocio. Identifica bloqueos en robots.txt, falta de Schema.org, ausencia de llms.txt, contenido JS-only, o meta noindex.
+INSTRUCCION_IA: Evaluación técnica PROXY — NO prueba en vivo en motores IA. Diagnostica citabilidad por robots.txt, Schema.org, llms.txt, extractabilidad de texto, meta noindex.
 === FIN AI_VISIBILITY ===`;
 }
 
