@@ -415,12 +415,45 @@ app.get('/checkout-status', async (req, res) => {
         const summary = summarizeCheckoutSession(session);
         const pool = getPool();
         let fulfillmentClaimed = false;
+        let recentJobs = [];
+        let reportes = [];
+        let cliente = null;
+        const email = summary.customer_email || summary.metadata?.email;
+
         if (pool) {
             const claimed = await pool.query(
                 'SELECT 1 FROM webhook_eventos WHERE stripe_event_id = $1 LIMIT 1',
                 [`checkout_session:${session.id}`]
             );
             fulfillmentClaimed = claimed.rows.length > 0;
+
+            if (email) {
+                const [jobsRes, repsRes, cliRes] = await Promise.all([
+                    pool.query(`
+                        SELECT job_id, modo, estado, error_msg, creado_en, completado_en,
+                               (SELECT count(*)::int FROM jsonb_object_keys(progreso_json) k) AS secciones
+                        FROM jobs_auditoria
+                        WHERE lower(email) = lower($1)
+                        ORDER BY creado_en DESC
+                        LIMIT 5
+                    `, [email]),
+                    pool.query(`
+                        SELECT tipo, url_sitio, creado_en
+                        FROM reportes r
+                        JOIN clientes c ON c.id = r.cliente_id
+                        WHERE lower(c.email) = lower($1)
+                        ORDER BY r.creado_en DESC
+                        LIMIT 3
+                    `, [email]),
+                    pool.query(
+                        'SELECT email, url_sitio, subscription_status, creado_en FROM clientes WHERE lower(email) = lower($1) LIMIT 1',
+                        [email]
+                    ),
+                ]);
+                recentJobs = jobsRes.rows;
+                reportes = repsRes.rows;
+                cliente = cliRes.rows[0] || null;
+            }
         }
 
         res.json({
@@ -428,6 +461,20 @@ app.get('/checkout-status', async (req, res) => {
             fulfillment_claimed: fulfillmentClaimed,
             stripe_key: stripeKeyDiagnostics(),
             predictacore_price_ids: predictacorePriceIds(),
+            delivery: {
+                cliente,
+                recent_jobs: recentJobs,
+                reportes,
+                hint: !recentJobs.length
+                    ? 'No Titan job found — use Playground replay or POST /playground/replay-delivery'
+                    : recentJobs[0].estado === 'failed'
+                        ? `Last job failed: ${recentJobs[0].error_msg || 'unknown'}`
+                        : recentJobs[0].estado === 'running'
+                            ? `Titan in progress (${recentJobs[0].secciones || 0} sections done)`
+                            : recentJobs[0].estado === 'completed'
+                                ? 'Titan job completed — check spam if no PDF'
+                                : null,
+            },
         });
     } catch (error) {
         const stripeMsg = error?.raw?.message || error?.message;
@@ -644,6 +691,54 @@ app.post('/playground/titan', requirePlayground, async (req, res) => {
         mode: 'TITAN',
         message: 'Auditoría Titán completa iniciada. El PDF llegará por email en ~10-20 min.',
     });
+});
+
+app.post('/playground/replay-delivery', requirePlayground, async (req, res) => {
+    try {
+        const sessionId = req.body?.session_id;
+        if (!sessionId || !String(sessionId).startsWith('cs_')) {
+            return res.status(400).json({ error: 'session_id required (cs_...)' });
+        }
+
+        const session = await expandCheckoutSession(stripe, await stripe.checkout.sessions.retrieve(String(sessionId)));
+        if (!isCheckoutSessionPaid(session)) {
+            return res.status(400).json({ error: 'Session not paid', session: summarizeCheckoutSession(session) });
+        }
+
+        const { dna, email, lang } = await resolveCheckoutMetadata(session);
+        if (!dna || !email) {
+            return res.status(400).json({ error: 'Missing dna/email in session metadata' });
+        }
+
+        const customerId = typeof session.customer === 'string'
+            ? session.customer
+            : session.customer?.id;
+
+        let activationSent = false;
+        let activationError = null;
+        try {
+            await sendTitanActivationEmail(email, lang, customerId);
+            activationSent = true;
+        } catch (mailErr) {
+            activationError = mailErr.message;
+            console.error('!!! replay activation email:', mailErr.message);
+        }
+
+        iniciarAuditoria(dna, email, 'TITAN');
+
+        res.json({
+            status: 'replayed',
+            email,
+            dna,
+            activation_sent: activationSent,
+            activation_error: activationError,
+            message: 'Activation email resent (if Resend OK) and new Titan job started.',
+        });
+    } catch (error) {
+        const stripeMsg = error?.raw?.message || error?.message;
+        console.error('!!! replay-delivery:', stripeMsg || error);
+        res.status(500).json({ error: stripeMsg || 'Replay failed' });
+    }
 });
 
 app.post('/start-lite', async (req, res) => {
