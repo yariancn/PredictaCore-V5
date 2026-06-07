@@ -432,8 +432,14 @@ app.get('/health', async (req, res) => {
 });
 
 app.get('/favicon.ico', (req, res) => {
-    res.type('image/svg+xml');
-    res.sendFile(path.join(__dirname, 'static', 'favicon.svg'));
+    res.type('image/x-icon');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.sendFile(path.join(__dirname, 'static', 'favicon.ico'));
+});
+
+app.get('/apple-touch-icon.png', (req, res) => {
+    res.type('image/png');
+    res.sendFile(path.join(__dirname, 'static', 'apple-touch-icon.png'));
 });
 
 app.use('/static', express.static(path.join(__dirname, 'static'), { maxAge: '7d' }));
