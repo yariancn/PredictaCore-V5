@@ -7,9 +7,9 @@ const REGLA_NUCLEAR = "REGLA NUCLEAR DE REDES SOCIALES: Auditas ÚNICAMENTE el p
 const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO FATAL: PROHIBIDO bullets (• o -). Cada punto inicia con NÚMERO + PUNTO + ESPACIO. Ejemplo: '1. [Texto]'.";
 
 const PROMPTS = {
-  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### I. INTRODUCCIÓN, RESUMEN EJECUTIVO Y RADIOGRAFÍA DEL PERFIL\nPARTE A — RESUMEN EJECUTIVO: Tabla con Plataforma, AI Discoverability Score (del dossier), Tiempo de carga, Veredicto (1 frase).\nPARTE B — PredictaCore: evaluaciones medibles SIMULATION_RESULTS en perfil social.\nPARTE C — Radiografía del negocio (bio + contenido). Dossier: ${d}`,
+  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### I. INTRODUCCIÓN, RESUMEN EJECUTIVO Y RADIOGRAFÍA DEL PERFIL\nPARTE A — Tabla: Plataforma, Giro (GIRO_DETECTADO), AI Score, Tiempo de carga, Veredicto (1 frase).\nPARTE B — Metodología: clientes simulados con perfil psicológico según giro del negocio en redes; objetivo = embudo social→acción (OBJETIVO_SIMULACIONES). PROHIBIDO cantidad de simulaciones.\nPARTE C — Radiografía (bio + contenido). Dossier: ${d}`,
 
-  GEMELOS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### II. PERFILES PSICOLÓGICOS DE AUDIENCIA\n4 perfiles alineados a SIMULATION_RESULTS. 2 oraciones cada uno con enlace a fallas detectadas. Dossier: ${d}`,
+  GEMELOS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### II. PERFILES PSICOLÓGICOS DE AUDIENCIA (POR GIRO)\nUsa GIRO_CLIENTE y PERFIL_*. 4 perfiles. 2 oraciones c/u ligadas a FALLAS #id de SIMULATION_RESULTS. Dossier: ${d}`,
 
   SCORECARD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### III. SCORECARD DE CONVERSIÓN SOCIAL\nTabla | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |. 10 filas. Incluye: Claridad de Bio, Link-in-Bio, Visibilidad en IAs, Cohesión Visual. Impacto cualitativo. Dossier: ${d}`,
 

@@ -9,7 +9,7 @@ const REQUIRED_MARKERS = {
     BENCHMARK: ['BENCHMARK_VERIFIED'],
     FUGAS: ['SIMULATION_RESULTS'],
     FUGAS_LITE: ['SIMULATION_RESULTS'],
-    GEMELOS: ['SIMULATION_RESULTS'],
+    GEMELOS: ['GIRO_CLIENTE', 'SIMULATION_RESULTS'],
     SCORECARD: ['SEO_TECNICO_SCORE', 'AI_DISCOVERABILITY_SCORE', 'TIEMPO_CARGA_SEG'],
 };
 
@@ -33,6 +33,9 @@ function validateSection(etapaId, content, dossier) {
     }
     if (GENERIC_RE.test(text)) {
         issues.push('Lenguaje genérico detectado — exige evidencia del dossier');
+    }
+    if (/\b9,?000\b|miles de simulaciones|thousands of simulations|9000\+/i.test(text)) {
+        issues.push('PROHIBIDO citar cantidad de simulaciones — describe objetivos y giro');
     }
 
     const required = REQUIRED_MARKERS[etapaId];

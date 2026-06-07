@@ -118,13 +118,16 @@ async function captureAndScrape(url) {
 
         if (isSocialMedia) {
             const sim = runSocialSimulation({
+                title: dataForense.titulo,
                 bioSnippet: forensics.onPage?.bioSnippet,
+                textSample: forensics.onPage?.textSample,
                 hasEmail: forensics.onPage?.hasEmail,
                 hasPhone: forensics.onPage?.hasPhone,
                 externalLinkCount: forensics.onPage?.externalLinkCount,
                 externalLinks: forensics.onPage?.externalLinks,
                 wordCount: forensics.onPage?.wordCount,
                 aiScore: forensics.aiScore,
+                platform: forensics.platform,
             });
             simulationBlock = formatSimulationBlock(sim, 'social');
             const bench = await findCompetitors(url, forensics.onPage, true);
@@ -149,6 +152,9 @@ async function captureAndScrape(url) {
                 viewport: forensics.onPage?.viewport,
                 canonical: forensics.onPage?.canonical,
                 jsonLdCount: forensics.onPage?.jsonLdCount,
+                internalLinks: forensics.onPage?.internalLinks,
+                robotsMeta: forensics.onPage?.robotsMeta,
+                sitemapFound: forensics.sitemapFound,
                 hasContact,
             });
             simulationBlock = formatSimulationBlock(sim, 'website');

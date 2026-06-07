@@ -17,7 +17,7 @@ const PROMPTS_LITE = {
 
   WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### IV. LA BRECHA DEL POTENCIAL\n1 párrafo breve + viñeta **La Pieza Faltante:** mejora estratégica más valiosa. Dossier: ${d}`,
 
-  FUGAS_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### V. LAS 3 HEMORRAGIAS CRÍTICAS\n3 errores de las FALLAS_PRIORITARIAS en SIMULATION_RESULTS. ${FORMATO_LISTAS}. Cita evaluación #id. Impacto cualitativo. Usa imágenes si están adjuntas. Dossier: ${d}`,
+  FUGAS_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### V. LAS 3 HEMORRAGIAS CRÍTICAS\n3 errores de FALLAS_PRIORITARIAS (SIMULATION_RESULTS), alineados al GIRO_DETECTADO. ${FORMATO_LISTAS}. Cita #id. Impacto cualitativo. Dossier: ${d}`,
 
   UPSELL: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n### VI. ACTIVA PROTECCIÓN TITÁN\nPárrafo persuasivo: estas 3 fugas son solo el inicio.\nLista exacta (traducida): ${PILARES_11}\n**Reporte Titán (USD $349):** 15 fugas + 15 acciones copy-paste + SEO forense completo + roadmap 21 días.\nCierra sobre fricción de conversión detectada. Dossier: ${d}`,
 };

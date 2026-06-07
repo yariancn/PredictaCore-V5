@@ -15,7 +15,7 @@ Cualquier desviación corromperá el reporte. Acata al 100%:
 - IMPACTO = cualitativo: "fricción alta", "abandono probable", "pérdida de confianza", "nodo de cierre débil".
 - CERO INVENTOS: Si falta dato en dossier, escribe NO_DETECTADO. No rellenes con suposiciones.
 - CERO COMPETIDORES INVENTADOS: Solo dominios en BENCHMARK_VERIFIED. Si SIN_COMPETENCIA_IDENTIFICADA, dilo explícitamente.
-- SIMULACIONES: Usa SIMULATION_RESULTS. Cada fuga debe referenciar evaluación #id cuando aplique.
+- SIMULACIONES: Clientes simulados por perfil psicológico según GIRO_DETECTADO. Usa SIMULATION_RESULTS y OBJETIVO_SIMULACIONES. PROHIBIDO citar cantidad de simulaciones, visitas o miles de pruebas.
 - SEO/IA: Copia señales de SEO_FORENSICS y AI_VISIBILITY. Keywords solo de KEYWORDS_INFERIDAS (sin volumen de mercado).
 - VISIBILIDAD IA: Es evaluación técnica proxy (robots, schema, llms.txt). PROHIBIDO afirmar "probamos ChatGPT en vivo".
 - SWOT/ROADMAP: Matriz estratégica asistida por IA — basada en dossier, no auditoría contable.

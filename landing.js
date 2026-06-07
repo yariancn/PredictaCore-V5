@@ -19,7 +19,7 @@ function getLandingHTML() {
         </script>
 
         <title>PredictaCore | AI Website Audits to Increase Sales</title>
-        <meta name="description" content="PredictaCore is the premier AI audit platform. We uncover hidden obstacles that drive your customers away and deliver a precise, step-by-step action plan to increase your sales.">
+        <meta name="description" content="PredictaCore audits any website or social profile from URL only. Titan Report: 11-section PDF with SEO, AI visibility, buyer-profile simulations by industry, 15 fixes with copy-paste actions.">
         
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
@@ -106,7 +106,7 @@ function getLandingHTML() {
                     </div>
                     <div class="border-l-4 border-zinc-700 pl-6 flex flex-col justify-center">
                         <p id="hero-desc-right" class="text-md text-zinc-400 leading-relaxed">
-                            We are PredictaCore. Agencies charge thousands for opinions; generic AI gives basic advice. We run thousands of simulations on your website to reveal the invisible errors driving your customers away, and tell you exactly how to fix them.
+                            We simulate ideal clients with psychological profiles matched to your industry — then measure friction on your live site or social profile. Real SEO + AI visibility scores. One forensic PDF. URL and email only.
                         </p>
                     </div>
                 </div>
@@ -163,9 +163,17 @@ function getLandingHTML() {
                     <div class="order-1 lg:order-2">
                         <h2 id="offer-title" class="text-xs text-emerald-500 font-bold tracking-[0.3em] uppercase mb-4">What we deliver</h2>
                         <h3 id="offer-sub" class="text-4xl font-extrabold text-white mb-6 leading-none">A Boardroom Level Blueprint.</h3>
-                        <p id="offer-desc" class="text-zinc-300 mb-8 leading-relaxed">
-                            We don't give you technical riddles. The Titan Report gives you and your team a clear, step-by-step action plan to remove buying obstacles immediately.
+                        <p id="offer-desc" class="text-zinc-300 mb-6 leading-relaxed">
+                            The Titan Report is an 11-section PDF delivered by email. We detect your business type, simulate how each buyer profile reacts, and give copy-paste fixes — plus real SEO and AI visibility scores.
                         </p>
+                        <ul id="offer-deliverables" class="space-y-3 font-mono text-[10px] text-zinc-400 mb-8 border-l border-emerald-500/30 pl-4">
+                            <li id="od-1">✓ Desktop + mobile capture · measured load time</li>
+                            <li id="od-2">✓ SEO forensics (title, meta, schema, sitemap, robots)</li>
+                            <li id="od-3">✓ AI discoverability (GEO) · technical proxy score 0–100</li>
+                            <li id="od-4">✓ 4 buyer profiles by industry + friction findings</li>
+                            <li id="od-5">✓ 15 drop-offs + 15 copy-paste actions · 21-day roadmap</li>
+                            <li id="od-6">✓ Web or Instagram / Facebook / TikTok profile</li>
+                        </ul>
                         
                         <ul class="space-y-6 font-mono text-xs text-zinc-300">
                             <li class="flex items-start">
@@ -183,6 +191,34 @@ function getLandingHTML() {
                         </ul>
                     </div>
                 </div>
+
+                <div class="max-w-4xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                    <div class="border border-zinc-700 rounded-xl p-6 bg-zinc-900/50">
+                        <h4 id="lite-box-title" class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest mb-3">Lite — Free</h4>
+                        <ul id="lite-box-list" class="text-[11px] text-zinc-400 space-y-2 font-mono">
+                            <li>· 3 critical conversion leaks</li>
+                            <li>· SEO + AI visibility snapshot</li>
+                            <li>· Buyer profiles by industry (summary)</li>
+                        </ul>
+                    </div>
+                    <div class="border border-emerald-500/40 rounded-xl p-6 bg-emerald-950/20">
+                        <h4 id="titan-box-title" class="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-3">Titan — USD $349</h4>
+                        <ul id="titan-box-list" class="text-[11px] text-zinc-300 space-y-2 font-mono">
+                            <li>· Full 11-section forensic PDF</li>
+                            <li>· 15 leaks + 15 copy-paste actions</li>
+                            <li>· SEO forensics + AI (GEO) + benchmark</li>
+                            <li>· Monthly monitoring report ($25/mo from day 30)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-12 border-b border-zinc-900">
+            <div class="max-w-3xl mx-auto px-6 text-center">
+                <p id="social-banner" class="text-[11px] text-zinc-400 leading-relaxed">
+                    <span class="text-emerald-500 font-bold">Web + Social:</span> paste your domain or a public Instagram, Facebook, or TikTok profile URL — same forensic engine.
+                </p>
             </div>
         </section>
 
@@ -192,19 +228,19 @@ function getLandingHTML() {
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                     <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left hover:bg-white/10 transition-colors">
-                        <div class="text-3xl font-black text-white mb-2">9,000+</div>
-                        <div id="m1" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Synthetic Twins</div>
-                        <p id="m1-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">We clone the specific profile of your ideal customer and simulate thousands of visits to find the exact points where they get frustrated and leave.</p>
+                        <div class="text-3xl font-black text-white mb-2">→</div>
+                        <div id="m1" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Profiles by Industry</div>
+                        <p id="m1-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">We detect your business type and simulate skeptical, rushed, mobile, and comparison shoppers — looking for trust gaps, weak CTAs, and checkout friction on your public URL.</p>
                     </div>
                     <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left hover:bg-white/10 transition-colors">
                         <div class="text-3xl font-black text-white mb-2">11</div>
                         <div id="m2" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Forensic Pillars</div>
-                        <p id="m2-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">We audit every critical aspect of your digital asset, leaving no blind spots in your conversion funnel.</p>
+                        <p id="m2-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">Full PDF: scorecard, SEO, AI visibility, verified benchmark when found, 15 leaks, 15 actions, roadmap. Lite free scan: 3 critical leaks + SEO/AI snapshot.</p>
                     </div>
                     <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left hover:bg-white/10 transition-colors">
-                        <div class="text-3xl font-black text-white mb-2">0</div>
-                        <div id="m3" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Subjective Opinions</div>
-                        <p id="m3-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">No guesswork. We deliver the exact instructions needed to seal the leak, based purely on real customer behavior.</p>
+                        <div class="text-3xl font-black text-white mb-2">URL</div>
+                        <div id="m3" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Only URL Required</div>
+                        <p id="m3-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">No analytics login, no plugins. Measured data from your live page or social profile + AI-assisted narrative grounded in that evidence.</p>
                     </div>
                 </div>
 
@@ -236,8 +272,9 @@ function getLandingHTML() {
                     </div>
                     <h2 id="term-title" class="text-2xl font-black text-white mt-4 mb-6 uppercase tracking-tighter text-center">Start Forensic Diagnostic</h2>
                     <div class="space-y-4">
-                        <input type="text" id="dna-url" placeholder="Website URL (e.g. yourbusiness.com)" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs uppercase tracking-widest">
+                        <input type="text" id="dna-url" placeholder="Website or social profile URL (yourbusiness.com · instagram.com/brand)" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs tracking-widest">
                         <input type="email" id="user-email" placeholder="Your Email" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs uppercase tracking-widest">
+                        <p id="url-hint" class="text-[9px] text-zinc-600 text-center leading-relaxed">Instagram, Facebook, TikTok, or any public website — no login required.</p>
                         <p id="lite-eta-before" class="text-[10px] text-zinc-500 leading-relaxed text-center">Report delivery can take up to 60 minutes while our engine processes your site.</p>
                         <p id="setup-error" class="hidden-flow text-[10px] text-red-400 text-center" role="alert"></p>
                         <button id="btn-start" onclick="iniciarEscaneo()" class="w-full bg-emerald-600 text-white font-black py-4 rounded hover:bg-emerald-500 transition-all uppercase tracking-[0.2em] text-xs">
@@ -269,13 +306,13 @@ function getLandingHTML() {
                     </div>
 
                     <div class="border-t border-zinc-800 pt-8">
-                        <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$349 <span class="text-xs text-zinc-600 line-through font-normal">$700 USD</span></h4>
+                        <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$349 <span id="titan-price-note" class="text-xs text-zinc-500 font-normal">USD · one-time</span></h4>
                         <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-2">Charged today: USD $349 (Titan Report)</p>
                         <p id="sub-price-2" class="text-[9px] text-zinc-400 mb-4 leading-relaxed">Monitoring subscription ($25/mo) activates now; first monthly charge in ~30 days. Cancel at least 5 business days before renewal. All sales final — no refunds.</p>
                         <p id="titan-eta-before" class="text-[10px] text-zinc-500 mb-4 leading-relaxed">After payment, your Titan PDF may take up to 60 minutes to arrive by email.</p>
                         
                         <button onclick="comprarTitan()" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2 transition-opacity disabled:opacity-60 disabled:cursor-wait" id="btn-titan">
-                            Activate Titan Protection
+                            Get Full Titan Report — $349
                         </button>
                         <p id="checkout-error" class="hidden-flow text-[10px] text-red-400 mb-2 leading-relaxed" role="alert"></p>
                         <p id="cancel-badge" class="text-[9px] text-zinc-500 uppercase tracking-widest mb-4">By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a></p>
@@ -318,18 +355,29 @@ function getLandingHTML() {
                     navAccess: "Node Access",
                     heroTitle: "TRAFFIC DOES NOT GUARANTEE <br><span class='text-emerald-500'>PROFITABILITY.</span>",
                     heroDescLeft: "Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We identify those flaws and deliver the exact forensic blueprint to fix them.",
-                    heroDescRight: "We are PredictaCore. Agencies charge thousands for opinions; generic AI gives basic advice. We run thousands of simulations on your website to reveal the invisible errors driving your customers away, and tell you exactly how to fix them.",
+                    heroDescRight: "We simulate ideal clients with psychological profiles matched to your industry — then measure friction on your live site or social profile. Real SEO + AI visibility scores. One forensic PDF. URL and email only.",
                     dosSample: "SAMPLE EXTRACT",
                     dosTitle: "Vital Signs",
                     dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 01 ] - Checkout Friction:</strong><br>Express payment buttons bypass cart and reduce AOV.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Restrict express buttons to final screen.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 02 ] - Authority Weakness:</strong><br>Website disconnected from positive external reviews.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Inject dynamic social proof carousel.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 03 ] - Visual Paralysis:</strong><br>Cluttered main menu fragments user attention.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Consolidate navigation into "Shop By Item".</p></div>',
-                    offerTitle: "What we deliver", offerSub: "A Boardroom Level Blueprint.", offerDesc: "We don't give you technical riddles. The Titan Report gives you and your team a clear, step-by-step action plan to remove buying obstacles immediately.",
+                    offerTitle: "What we deliver", offerSub: "A Boardroom Level Blueprint.", offerDesc: "The Titan Report is an 11-section PDF delivered by email. We detect your business type, simulate how each buyer profile reacts, and give copy-paste fixes — plus real SEO and AI visibility scores.",
+                    od1: "✓ Desktop + mobile capture · measured load time",
+                    od2: "✓ SEO forensics (title, meta, schema, sitemap, robots)",
+                    od3: "✓ AI discoverability (GEO) · technical proxy score 0–100",
+                    od4: "✓ 4 buyer profiles by industry + friction findings",
+                    od5: "✓ 15 drop-offs + 15 copy-paste actions · 21-day roadmap",
+                    od6: "✓ Web or Instagram / Facebook / TikTok profile",
+                    liteBoxTitle: "Lite — Free",
+                    liteBoxList: "<li>· 3 critical conversion leaks</li><li>· SEO + AI visibility snapshot</li><li>· Buyer profiles by industry (summary)</li>",
+                    titanBoxTitle: "Titan — USD $349",
+                    titanBoxList: "<li>· Full 11-section forensic PDF</li><li>· 15 leaks + 15 copy-paste actions</li><li>· SEO forensics + AI (GEO) + benchmark</li><li>· Monthly monitoring report ($25/mo from day 30)</li>",
+                    socialBanner: "<span class=\"text-emerald-500 font-bold\">Web + Social:</span> paste your domain or a public Instagram, Facebook, or TikTok profile URL — same forensic engine.",
                     li1: "1. Drop-off Point X-Ray<br><span class='text-[10px] text-zinc-500'>(Where exactly do they leave?)</span>", 
                     li2: "2. Direct Action Plan<br><span class='text-[10px] text-zinc-500'>(What to change today)</span>", 
                     li3: "3. Hidden Competition Analysis<br><span class='text-[10px] text-zinc-500'>(Why do they buy elsewhere?)</span>",
                     methodTitle: "Our Technology",
-                    m1: "Synthetic Twins", m1Desc: "We clone the specific profile of your ideal customer and simulate thousands of visits to find the exact points where they get frustrated and leave.",
-                    m2: "Forensic Pillars", m2Desc: "We audit every critical aspect of your digital asset, leaving no blind spots in your conversion funnel.",
-                    m3: "Zero Opinions", m3Desc: "No guesswork. We deliver the exact instructions needed to seal the leak, based purely on real customer behavior.",
+                    m1: "Profiles by Industry", m1Desc: "We detect your business type and simulate skeptical, rushed, mobile, and comparison shoppers — looking for trust gaps, weak CTAs, and checkout friction on your public URL.",
+                    m2: "Forensic Pillars", m2Desc: "Full PDF: scorecard, SEO, AI visibility, verified benchmark when found, 15 leaks, 15 actions, roadmap. Lite free scan: 3 critical leaks + SEO/AI snapshot.",
+                    m3: "Only URL Required", m3Desc: "No analytics login, no plugins. Measured data from your live page or social profile + AI-assisted narrative grounded in that evidence.",
                     pillarsTitle: "The 11 Pillars of our Forensic Audit",
                     p1: "Asset X-Ray", p2: "Psychological Profiles", p3: "Health Scorecard", p4: "Visibility & SEO", p5: "Competitive Benchmark", p6: "SWOT Matrix", p7: "Wishlist", p8: "15 Drop-off Points", p9: "15 Tactical Actions", p10: "Scaling Tools", p11: "21-Day Roadmap",
                     termTitle: "Start Forensic Diagnostic", btnStart: "Execute Free Scan",
@@ -338,7 +386,9 @@ function getLandingHTML() {
                     boxText: "Initial scan shows critical bottlenecks. You are losing sales today due to purchasing obstacles. The Titan Report dissects your website and delivers the exact instructions to fix these leaks.",
                     subPrice: "Charged today: USD $349 (Titan Report)",
                     subPrice2: "Monitoring subscription ($25/mo) activates now; first monthly charge in ~30 days. Cancel at least 5 business days before renewal. All sales final — no refunds.",
-                    btnTitan: "Activate Titan Protection",
+                    btnTitan: "Get Full Titan Report — $349",
+                    titanPriceNote: "USD · one-time",
+                    urlHint: "Instagram, Facebook, TikTok, or any public website — no login required.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "Consultant or Agency? Join our Forensic Audit network.",
                     disclaimerText: "PredictaCore AI website audits. USD $349 charged today; USD $25/mo monitoring starts ~30 days later. Card statement shows PREDICTACORE. All sales final. Cancel at least 5 business days before renewal.",
@@ -353,24 +403,35 @@ function getLandingHTML() {
                     liteEtaAfter: "Delivery may take up to 60 minutes due to forensic processing volume. Check spam.",
                     titanEtaBefore: "After payment, your Titan PDF may take up to 60 minutes to arrive by email.",
                     successPayment: "Payment confirmed! Your Titan report is being processed by the AI and will arrive in your email shortly.",
-                    phUrl: "Website URL (e.g. yourbusiness.com)", phEmail: "Your Email"
+                    phUrl: "Website or social profile URL (yourbusiness.com · instagram.com/brand)", phEmail: "Your Email"
                 },
                 es: {
                     navAccess: "Acceso Nodo",
                     heroTitle: "TENER TRÁFICO NO GARANTIZA <br><span class='text-emerald-500'>RENTABILIDAD.</span>",
                     heroDescLeft: "Tu activo digital podría estar perdiendo ventas diarias por errores invisibles en la navegación que ni tú ni tu equipo conocen. Nosotros rastreamos esas fallas y te entregamos la directiva forense exacta para sellarlas.",
-                    heroDescRight: "Somos PredictaCore. Las agencias cobran miles por opiniones; la IA genérica da consejos básicos. Nosotros colisionamos miles de simulaciones contra tu página para revelar los errores invisibles que ahuyentan a tus clientes, y te decimos exactamente cómo solucionarlos.",
+                    heroDescRight: "Simulamos clientes ideales con perfil psicológico según tu giro — y medimos fricción en tu web o perfil social en vivo. Scores reales de SEO e IA. Un PDF forense. Solo URL y email.",
                     dosSample: "EXTRACTO DE MUESTRA",
                     dosTitle: "Signos Vitales",
                     dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 01 ] - Fricción de Checkout:</strong><br>Botones de pago rápido saltan el carrito y reducen el Ticket Promedio.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Restringir botones express a la pantalla final.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 02 ] - Debilidad de Autoridad:</strong><br>Sitio web desconectado de reseñas externas positivas.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Inyectar carrusel dinámico de prueba social.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 03 ] - Parálisis Visual:</strong><br>Menú principal saturado fragmenta la atención.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Consolidar navegación en "Shop By Item".</p></div>',
-                    offerTitle: "Lo que entregamos", offerSub: "Un Mapa de Acción Definitivo.", offerDesc: "No entregamos acertijos técnicos. El Reporte Titán le da a tu equipo instrucciones precisas paso a paso para eliminar los obstáculos de compra de inmediato.",
+                    offerTitle: "Lo que entregamos", offerSub: "Un Mapa de Acción Definitivo.", offerDesc: "El Reporte Titán es un PDF de 11 secciones por email. Detectamos tu giro, simulamos cómo reacciona cada perfil de comprador y entregamos correcciones copy-paste — más scores SEO e IA reales.",
+                    od1: "✓ Captura desktop/móvil · tiempo de carga medido",
+                    od2: "✓ SEO forense (title, meta, schema, sitemap, robots)",
+                    od3: "✓ Visibilidad en IAs (GEO) · score técnico 0–100",
+                    od4: "✓ 4 perfiles de comprador por giro + hallazgos de fricción",
+                    od5: "✓ 15 fugas + 15 acciones copy-paste · roadmap 21 días",
+                    od6: "✓ Web o perfil Instagram / Facebook / TikTok",
+                    liteBoxTitle: "Lite — Gratis",
+                    liteBoxList: "<li>· 3 fugas críticas de conversión</li><li>· Snapshot SEO + visibilidad IA</li><li>· Perfiles de comprador por giro (resumen)</li>",
+                    titanBoxTitle: "Titán — USD $349",
+                    titanBoxList: "<li>· PDF forense completo (11 secciones)</li><li>· 15 fugas + 15 acciones copy-paste</li><li>· SEO forense + IA (GEO) + benchmark</li><li>· Reporte mensual de seguimiento ($25/mes desde día 30)</li>",
+                    socialBanner: "<span class=\"text-emerald-500 font-bold\">Web + Social:</span> pega tu dominio o URL pública de Instagram, Facebook o TikTok — mismo motor forense.",
                     li1: "1. Radiografía de Abandono<br><span class='text-[10px] text-zinc-500'>(¿Dónde exactamente se van?)</span>", 
                     li2: "2. Plan de Acción Directo<br><span class='text-[10px] text-zinc-500'>(¿Qué cambiar hoy mismo?)</span>", 
                     li3: "3. Análisis de Competencia<br><span class='text-[10px] text-zinc-500'>(¿Por qué compran en otro lado?)</span>",
                     methodTitle: "Nuestra Tecnología",
-                    m1: "Gemelos Sintéticos", m1Desc: "Clonamos el perfil exacto de tu cliente ideal y simulamos miles de visitas para encontrar los puntos exactos donde se frustran y abandonan.",
-                    m2: "Pilares Forenses", m2Desc: "Auditamos cada aspecto crítico de tu activo digital, sin dejar puntos ciegos en tu embudo de conversión.",
-                    m3: "Cero Opiniones", m3Desc: "Sin adivinanzas. Entregamos las instrucciones exactas para sellar la fuga, basados puramente en el comportamiento real del cliente.",
+                    m1: "Perfiles por Giro", m1Desc: "Detectamos tu tipo de negocio y simulamos comprador escéptico, apurado, móvil y comparador — buscando brechas de confianza, CTAs débiles y fricción en tu URL pública.",
+                    m2: "Pilares Forenses", m2Desc: "PDF completo: scorecard, SEO, visibilidad IA, benchmark verificado si existe, 15 fugas, 15 acciones, roadmap. Lite gratis: 3 fugas críticas + snapshot SEO/IA.",
+                    m3: "Solo URL", m3Desc: "Sin analytics ni plugins. Datos medidos de tu página o perfil social + narrativa IA anclada a esa evidencia.",
                     pillarsTitle: "Los 11 Pilares de nuestra Auditoría Forense",
                     p1: "Radiografía del Activo", p2: "Perfiles Psicológicos", p3: "Scorecard de Salud", p4: "Visibilidad y SEO", p5: "Benchmark Competitivo", p6: "Matriz Estratégica", p7: "Lista de Deseos", p8: "15 Puntos de Fuga", p9: "15 Acciones Tácticas", p10: "Herramientas de Escala", p11: "Hoja de Ruta a 21 Días",
                     termTitle: "Iniciar Diagnóstico Forense", btnStart: "Ejecutar Escaneo Gratuito",
@@ -379,7 +440,9 @@ function getLandingHTML() {
                     boxText: "El escaneo inicial muestra cuellos de botella críticos. Estás perdiendo ventas hoy por obstáculos de compra. El Reporte Titán disecta tu sitio y entrega las instrucciones exactas para arreglar estas fugas.",
                     subPrice: "Cobro hoy: USD $349 (Reporte Titán)",
                     subPrice2: "La suscripción de monitoreo ($25/mes) se activa ahora; el primer cobro mensual será en ~30 días. Cancela al menos 5 días hábiles antes de la renovación. Ventas finales — sin reembolsos.",
-                    btnTitan: "Activar Protección Titán",
+                    btnTitan: "Obtener Reporte Titán completo — $349",
+                    titanPriceNote: "USD · pago único",
+                    urlHint: "Instagram, Facebook, TikTok o cualquier web pública — sin login.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
                     disclaimerText: "PredictaCore AI website audits. USD $349 charged today; USD $25/mo monitoring starts ~30 days later. Card statement shows PREDICTACORE. All sales final. Cancel at least 5 business days before renewal.",
@@ -394,7 +457,7 @@ function getLandingHTML() {
                     liteEtaAfter: "La entrega puede tardar hasta 60 minutos por el volumen de análisis. Revisa spam.",
                     titanEtaBefore: "Tras el pago, tu PDF Titán puede tardar hasta 60 minutos en llegar por correo.",
                     successPayment: "¡Pago confirmado! Tu reporte Titán está siendo procesado por la IA y llegará a tu correo a la brevedad.",
-                    phUrl: "URL del Sitio (ej. tunegocio.com)", phEmail: "Tu Email"
+                    phUrl: "URL web o perfil social (tunegocio.com · instagram.com/marca)", phEmail: "Tu Email"
                 }
             };
 
@@ -420,6 +483,17 @@ function getLandingHTML() {
                 document.getElementById('offer-title').innerText = d.offerTitle;
                 document.getElementById('offer-sub').innerText = d.offerSub;
                 document.getElementById('offer-desc').innerText = d.offerDesc;
+                for (let i = 1; i <= 6; i++) {
+                    const el = document.getElementById('od-' + i);
+                    if (el && d['od' + i]) el.innerText = d['od' + i];
+                }
+                if (d.liteBoxTitle) document.getElementById('lite-box-title').innerText = d.liteBoxTitle;
+                if (d.liteBoxList) document.getElementById('lite-box-list').innerHTML = d.liteBoxList;
+                if (d.titanBoxTitle) document.getElementById('titan-box-title').innerText = d.titanBoxTitle;
+                if (d.titanBoxList) document.getElementById('titan-box-list').innerHTML = d.titanBoxList;
+                if (d.socialBanner) document.getElementById('social-banner').innerHTML = d.socialBanner;
+                if (d.urlHint) document.getElementById('url-hint').innerText = d.urlHint;
+                if (d.titanPriceNote) document.getElementById('titan-price-note').innerText = d.titanPriceNote;
                 document.getElementById('li-1').innerHTML = d.li1;
                 document.getElementById('li-2').innerHTML = d.li2;
                 document.getElementById('li-3').innerHTML = d.li3;
