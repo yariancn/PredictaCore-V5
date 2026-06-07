@@ -7,7 +7,7 @@ const REGLA_NUCLEAR = "REGLA NUCLEAR DE REDES SOCIALES: Auditas ÚNICAMENTE el p
 const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO FATAL: PROHIBIDO bullets (• o -). Cada punto inicia con NÚMERO + PUNTO + ESPACIO. Ejemplo: '1. [Texto]'.";
 
 const PROMPTS = {
-  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### I. INTRODUCCIÓN, RESUMEN EJECUTIVO Y RADIOGRAFÍA DEL PERFIL\nPARTE A — Tabla: Plataforma, Giro (GIRO_DETECTADO), AI Score, Tiempo de carga, Veredicto (1 frase).\nPARTE B — Metodología: clientes simulados con perfil psicológico según giro del negocio en redes; objetivo = embudo social→acción (OBJETIVO_SIMULACIONES). PROHIBIDO cantidad de simulaciones.\nPARTE C — Radiografía (bio + contenido). Dossier: ${d}`,
+  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### I. INTRODUCCIÓN, RESUMEN EJECUTIVO Y RADIOGRAFÍA DEL PERFIL\nPARTE A — Tabla: Plataforma, Giro (GIRO_DETECTADO), AI Score, Tiempo de carga, Veredicto (1 frase: por qué este perfil pierde clientes/seguidores).\nPARTE B — Para el emprendedor (1 párrafo): PREDICTACORE_MISION — solo lo público del perfil, sin datos internos; objetivo = convertir visitas del feed en acción. OBJETIVO_SIMULACIONES.\nPARTE C — Radiografía (bio + contenido). Dossier: ${d}`,
 
   GEMELOS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### II. PERFILES PSICOLÓGICOS DE AUDIENCIA (POR GIRO)\nUsa GIRO_CLIENTE y PERFIL_*. 4 perfiles. 2 oraciones c/u ligadas a FALLAS #id de SIMULATION_RESULTS. Dossier: ${d}`,
 

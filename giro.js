@@ -173,6 +173,13 @@ function formatGiroBlock({ giro, profiles, isSocial, platform }) {
         (p) => `PERFIL_${p.id.toUpperCase()}: ${p.label} — ${p.focus}`
     );
     return `
+=== PREDICTACORE_MISION (CONTEXTO — USAR EN INTRO SECCIÓN I) ===
+AUDIENCIA: Emprendedor / PYME promedio — NO enterprise ni equipos con data warehouse
+ALCANCE: SOLO activo público (URL) — PROHIBIDO pedir o inferir analytics internos, GA4, ventas reales
+OBJETIVO_FINAL: Explicar por qué la página/perfil está perdiendo clientes y cómo mejorarlo con acciones concretas
+VENTAJA: Más denso y accionable que consultoría que solo revise la misma URL; más riguroso que IA genérica en chat
+=== FIN PREDICTACORE_MISION ===
+
 === GIRO_CLIENTE (DATOS REALES — USAR EN SECCIÓN II) ===
 GIRO_DETECTADO: ${giro.label}
 ${isSocial ? `PLATAFORMA: ${platform || 'Social'}` : 'TIPO_ACTIVO: Sitio web'}

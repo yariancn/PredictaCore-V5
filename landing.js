@@ -18,8 +18,8 @@ function getLandingHTML() {
             };
         </script>
 
-        <title>PredictaCore | AI Website Audits to Increase Sales</title>
-        <meta name="description" content="PredictaCore audits any website or social profile from URL only. Titan Report: 11-section PDF with SEO, AI visibility, buyer-profile simulations by industry, 15 fixes with copy-paste actions.">
+        <title>PredictaCore | Forensic audit for entrepreneurs — fix the page that loses customers</title>
+        <meta name="description" content="For the average entrepreneur: PredictaCore audits your public website or social profile (URL only) to find why you lose customers and exactly how to fix it. More than generic AI. Denser than a $3k agency looking at the same page. USD $349.">
         
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
@@ -101,15 +101,40 @@ function getLandingHTML() {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
                     <div class="border-l-4 border-emerald-500 pl-6">
                         <p id="hero-desc-left" class="text-xl text-zinc-200 leading-tight">
-                            Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We identify those flaws and deliver the exact forensic blueprint to fix them.
+                            Your public page is where strangers decide yes or no. We don't need your analytics — we forensic-scan what every customer sees and show you exactly what's making them leave.
                         </p>
                     </div>
                     <div class="border-l-4 border-zinc-700 pl-6 flex flex-col justify-center">
                         <p id="hero-desc-right" class="text-md text-zinc-400 leading-relaxed">
-                            We simulate ideal clients with psychological profiles matched to your industry — then measure friction on your live site or social profile. Real SEO + AI visibility scores. One forensic PDF. URL and email only.
+                            Built for the average entrepreneur, not enterprise. One URL. One PDF. Why you're losing customers on your site or social profile — and 15 copy-paste fixes. More rigor than chat AI. More deliverables than most agencies charge $3k+ to review the same page.
                         </p>
                     </div>
                 </div>
+                <p id="hero-tagline" class="max-w-3xl mx-auto mt-16 text-center text-[11px] text-emerald-500/90 uppercase tracking-[0.25em] font-bold">
+                    We don't value your internal data. We value what your page is doing to your next customer.
+                </p>
+            </div>
+        </section>
+
+        <section id="why-section" class="py-20 border-b border-zinc-900 bg-black/40">
+            <div class="max-w-6xl mx-auto px-6">
+                <h2 id="why-title" class="text-xs text-emerald-500 font-bold tracking-[0.3em] uppercase mb-3 text-center">Why PredictaCore</h2>
+                <p id="why-sub" class="text-2xl md:text-3xl font-black text-white text-center mb-12 max-w-3xl mx-auto leading-tight">The spearhead audit for entrepreneurs who can't afford to guess.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 border border-zinc-800 rounded-xl bg-white/[0.03]">
+                        <h3 id="why-1-t" class="text-white font-bold text-sm mb-3">Our only focus</h3>
+                        <p id="why-1-d" class="text-[11px] text-zinc-400 leading-relaxed">Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We find friction, invisible errors, and missed trust signals. Goal: stop losing customers you never knew you had.</p>
+                    </div>
+                    <div class="p-6 border border-emerald-500/20 rounded-xl bg-emerald-950/10">
+                        <h3 id="why-2-t" class="text-emerald-400 font-bold text-sm mb-3">Beat agencies on the same page</h3>
+                        <p id="why-2-d" class="text-[11px] text-zinc-300 leading-relaxed">Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $349.</p>
+                    </div>
+                    <div class="p-6 border border-zinc-800 rounded-xl bg-white/[0.03]">
+                        <h3 id="why-3-t" class="text-white font-bold text-sm mb-3">Beat generic AI</h3>
+                        <p id="why-3-d" class="text-[11px] text-zinc-400 leading-relaxed">ChatGPT guesses. We scrape, score, simulate buyer psychology by your industry, validate outputs, and deliver a structured 11-section PDF — not a paragraph you have to interpret.</p>
+                    </div>
+                </div>
+                <p id="why-foot" class="text-center text-[10px] text-zinc-600 mt-10 max-w-2xl mx-auto leading-relaxed">Not for Fortune 500 data rooms. For the shop owner, clinic, creator, or local brand who needs their page to convert — today.</p>
             </div>
         </section>
 
@@ -354,8 +379,15 @@ function getLandingHTML() {
                 en: {
                     navAccess: "Node Access",
                     heroTitle: "TRAFFIC DOES NOT GUARANTEE <br><span class='text-emerald-500'>PROFITABILITY.</span>",
-                    heroDescLeft: "Your digital asset might be losing daily sales due to friction errors invisible to you and your team. We identify those flaws and deliver the exact forensic blueprint to fix them.",
-                    heroDescRight: "We simulate ideal clients with psychological profiles matched to your industry — then measure friction on your live site or social profile. Real SEO + AI visibility scores. One forensic PDF. URL and email only.",
+                    heroDescLeft: "Your public page is where strangers decide yes or no. We don't need your analytics — we forensic-scan what every customer sees and show you exactly what's making them leave.",
+                    heroDescRight: "Built for the average entrepreneur, not enterprise. One URL. One PDF. Why you're losing customers on your site or social profile — and 15 copy-paste fixes. More rigor than chat AI. More deliverables than most agencies charge $3k+ to review the same page.",
+                    heroTagline: "We don't value your internal data. We value what your page is doing to your next customer.",
+                    whyTitle: "Why PredictaCore",
+                    whySub: "The spearhead audit for entrepreneurs who can't afford to guess.",
+                    why1T: "Our only focus", why1D: "Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We find friction, invisible errors, and missed trust signals. Goal: stop losing customers you never knew you had.",
+                    why2T: "Beat agencies on the same page", why2D: "Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $349.",
+                    why3T: "Beat generic AI", why3D: "ChatGPT guesses. We scrape, score, simulate buyer psychology by your industry, validate outputs, and deliver a structured 11-section PDF — not a paragraph you have to interpret.",
+                    whyFoot: "Not for Fortune 500 data rooms. For the shop owner, clinic, creator, or local brand who needs their page to convert — today.",
                     dosSample: "SAMPLE EXTRACT",
                     dosTitle: "Vital Signs",
                     dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 01 ] - Checkout Friction:</strong><br>Express payment buttons bypass cart and reduce AOV.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Restrict express buttons to final screen.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 02 ] - Authority Weakness:</strong><br>Website disconnected from positive external reviews.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Inject dynamic social proof carousel.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 03 ] - Visual Paralysis:</strong><br>Cluttered main menu fragments user attention.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Consolidate navigation into "Shop By Item".</p></div>',
@@ -408,8 +440,15 @@ function getLandingHTML() {
                 es: {
                     navAccess: "Acceso Nodo",
                     heroTitle: "TENER TRÁFICO NO GARANTIZA <br><span class='text-emerald-500'>RENTABILIDAD.</span>",
-                    heroDescLeft: "Tu activo digital podría estar perdiendo ventas diarias por errores invisibles en la navegación que ni tú ni tu equipo conocen. Nosotros rastreamos esas fallas y te entregamos la directiva forense exacta para sellarlas.",
-                    heroDescRight: "Simulamos clientes ideales con perfil psicológico según tu giro — y medimos fricción en tu web o perfil social en vivo. Scores reales de SEO e IA. Un PDF forense. Solo URL y email.",
+                    heroDescLeft: "Tu página pública es donde un desconocido dice sí o no. No necesitamos tu analytics — escaneamos lo que ve cada cliente y te mostramos qué lo hace irse.",
+                    heroDescRight: "Hecho para el emprendedor promedio, no para corporativos. Una URL. Un PDF. Por qué pierdes clientes en tu web o red social — y 15 correcciones copy-paste. Más rigor que la IA en chat. Más entregables que muchas agencias que cobran $3k+ por revisar la misma página.",
+                    heroTagline: "No valoramos tus datos internos. Valoramos lo que tu página le hace a tu próximo cliente.",
+                    whyTitle: "Por qué PredictaCore",
+                    whySub: "La auditoría punta de lanza para emprendedores que no pueden permitirse adivinar.",
+                    why1T: "Nuestro único foco", why1D: "Tu web o perfil social en vivo — lo que ve un visitante real antes de comprar, reservar o irse. Detectamos fricción, errores invisibles y señales de confianza faltantes. Objetivo: dejar de perder clientes que ni sabías que tenías.",
+                    why2T: "Mejor que agencias sobre la misma página", why2D: "Un consultor que solo ve tu URL entrega un deck de opinión. Tú recibes scores SEO + IA medidos, perfiles de comprador por giro, competencia verificada cuando existe, 15 fugas, 15 acciones copy-paste, capturas y roadmap 21 días — por $349.",
+                    why3T: "Mejor que IA genérica", why3D: "ChatGPT adivina. Nosotros scrapeamos, medimos, simulamos psicología de comprador según tu giro, validamos el output y entregamos un PDF de 11 secciones — no un párrafo que debes interpretar.",
+                    whyFoot: "No es para data rooms de Fortune 500. Es para la tienda, clínica, creador o marca local que necesita que su página convierta — hoy.",
                     dosSample: "EXTRACTO DE MUESTRA",
                     dosTitle: "Signos Vitales",
                     dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 01 ] - Fricción de Checkout:</strong><br>Botones de pago rápido saltan el carrito y reducen el Ticket Promedio.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Restringir botones express a la pantalla final.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 02 ] - Debilidad de Autoridad:</strong><br>Sitio web desconectado de reseñas externas positivas.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Inyectar carrusel dinámico de prueba social.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 03 ] - Parálisis Visual:</strong><br>Menú principal saturado fragmenta la atención.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Consolidar navegación en "Shop By Item".</p></div>',
@@ -475,6 +514,16 @@ function getLandingHTML() {
                 document.getElementById('hero-title').innerHTML = d.heroTitle;
                 document.getElementById('hero-desc-left').innerText = d.heroDescLeft;
                 document.getElementById('hero-desc-right').innerText = d.heroDescRight;
+                if (d.heroTagline) document.getElementById('hero-tagline').innerText = d.heroTagline;
+                if (d.whyTitle) document.getElementById('why-title').innerText = d.whyTitle;
+                if (d.whySub) document.getElementById('why-sub').innerText = d.whySub;
+                if (d.why1T) document.getElementById('why-1-t').innerText = d.why1T;
+                if (d.why1D) document.getElementById('why-1-d').innerText = d.why1D;
+                if (d.why2T) document.getElementById('why-2-t').innerText = d.why2T;
+                if (d.why2D) document.getElementById('why-2-d').innerText = d.why2D;
+                if (d.why3T) document.getElementById('why-3-t').innerText = d.why3T;
+                if (d.why3D) document.getElementById('why-3-d').innerText = d.why3D;
+                if (d.whyFoot) document.getElementById('why-foot').innerText = d.whyFoot;
                 
                 document.getElementById('dos-sample').innerText = d.dosSample;
                 document.getElementById('dos-title').innerText = d.dosTitle;
