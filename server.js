@@ -218,16 +218,16 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
         return { ok: false, skipped: 'not_paid' };
     }
 
-    const isNew = await claimWebhookEvent(`checkout_session:${session.id}`, 'checkout.session.fulfilled');
-    if (!isNew) {
-        console.log(`>>> [${source}] checkout ya procesado: ${session.id}`);
-        return { ok: true, duplicate: true };
-    }
-
     const { dna, email, refCode, lang } = await resolveCheckoutMetadata(session);
     if (!dna || !email) {
         console.warn(`>>> [${source}] checkout sin dna/email — session ${session.id}`);
         return { ok: false, skipped: 'missing_metadata' };
+    }
+
+    const isNew = await claimWebhookEvent(`checkout_session:${session.id}`, 'checkout.session.fulfilled');
+    if (!isNew) {
+        console.log(`>>> [${source}] checkout ya procesado: ${session.id}`);
+        return { ok: true, duplicate: true, email };
     }
 
     const customerId = typeof session.customer === 'string'
@@ -445,7 +445,14 @@ app.get('/apple-touch-icon.png', (req, res) => {
 
 app.use('/static', express.static(path.join(__dirname, 'static'), { maxAge: '7d' }));
 
-app.get('/', (req, res) => res.send(getLandingHTML()));
+app.get('/', (req, res) => {
+    const sessionId = req.query.session_id;
+    if (sessionId && String(sessionId).startsWith('cs_')) {
+        const qs = new URLSearchParams(req.query);
+        return res.redirect(302, `/exito?${qs.toString()}`);
+    }
+    res.send(getLandingHTML());
+});
 app.get('/terms', (req, res) => res.send(getTerminosHTML()));
 app.get('/privacy', (req, res) => res.send(getPrivacidadHTML()));
 app.get('/terminos', (req, res) => res.redirect(301, '/terms'));
@@ -460,9 +467,29 @@ app.get('/legal/pagos', (req, res) => res.redirect(301, '/'));
 app.get('/legal/privacy', (req, res) => res.redirect(301, '/privacy'));
 app.get('/legal/privacidad', (req, res) => res.redirect(301, '/privacy'));
 
-app.get('/exito', (req, res) => {
+app.get('/exito', async (req, res) => {
     const lang = req.query.lang === 'es' ? 'es' : 'en';
-    res.send(getSuccessHTML(lang));
+    const sessionId = req.query.session_id;
+    let fulfillStatus = 'processing';
+
+    if (!sessionId || !String(sessionId).startsWith('cs_')) {
+        fulfillStatus = 'missing_session';
+    } else {
+        try {
+            const session = await stripe.checkout.sessions.retrieve(String(sessionId));
+            const result = await fulfillPredictacoreCheckoutSession(session, 'success_page');
+            if (result.started) fulfillStatus = 'ok';
+            else if (result.duplicate) fulfillStatus = 'dup';
+            else if (result.ok) fulfillStatus = 'ok';
+            else fulfillStatus = 'fail';
+        } catch (err) {
+            const stripeMsg = err?.raw?.message || err?.message;
+            console.error('!!! /exito fulfill:', stripeMsg || err);
+            fulfillStatus = 'fail';
+        }
+    }
+
+    res.send(getSuccessHTML(lang, fulfillStatus));
 });
 
 app.get('/titan-interno', (req, res) => {
@@ -591,7 +618,6 @@ app.post('/start', async (req, res) => {
             return res.status(400).json({ error: keyDiag.hint });
         }
 
-        const host = baseUrl(req);
         const validation = await validateCheckoutPrices(stripe);
         if (!validation.ok) {
             return res.status(400).json({ error: validation.errors.join(' ') });
@@ -599,7 +625,7 @@ app.post('/start', async (req, res) => {
 
         const session = await stripe.checkout.sessions.create(
             buildCheckoutSessionParams({
-                host,
+                host: publicBaseUrl(),
                 dna,
                 email,
                 refCode,

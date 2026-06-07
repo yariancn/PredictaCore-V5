@@ -1,6 +1,15 @@
 const { getFaviconHeadTags } = require('./brand');
 
-function getSuccessHTML(lang = 'en') {
+function statusMessage(t, fulfillStatus) {
+    if (fulfillStatus === 'ok') return t.processingOk;
+    if (fulfillStatus === 'dup') return t.processingDup;
+    if (fulfillStatus === 'fail') return t.processingFail;
+    if (fulfillStatus === 'missing_session') return t.processingMissing;
+    if (fulfillStatus === 'processing') return t.processing;
+    return '';
+}
+
+function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
     const t = lang === 'es' ? {
         title: 'Pago confirmado',
         headline: 'PAGO RECIBIDO',
@@ -13,6 +22,7 @@ function getSuccessHTML(lang = 'en') {
         processingOk: 'Pago confirmado. Análisis Titán en proceso — revisa tu correo (hasta 60 min).',
         processingDup: 'Pago ya registrado. Tu análisis sigue en cola — revisa tu correo (hasta 60 min).',
         processingFail: 'Pago recibido en Stripe, pero hubo un retraso al encolar. Escríbenos a reportes@predictacore.ai con tu email de compra.',
+        processingMissing: 'El pago en Stripe parece OK, pero no llegó el ID de sesión (session_id) en la URL. Revisa tu correo en unos minutos; si no llega nada, escríbenos a reportes@predictacore.ai.',
         home: 'Volver al inicio',
         terms: 'Términos',
         privacy: 'Privacidad',
@@ -28,6 +38,7 @@ function getSuccessHTML(lang = 'en') {
         processingOk: 'Payment confirmed. Titan audit running — watch your inbox (up to 60 min).',
         processingDup: 'Payment already registered. Your audit is queued — watch your inbox (up to 60 min).',
         processingFail: 'Stripe shows payment OK, but queuing delayed. Email reportes@predictacore.ai with your purchase email.',
+        processingMissing: 'Stripe payment looks OK, but the session_id was missing from the return URL. Check your inbox shortly; if nothing arrives, email reportes@predictacore.ai.',
         home: 'Back to home',
         terms: 'Terms',
         privacy: 'Privacy',
@@ -56,7 +67,7 @@ function getSuccessHTML(lang = 'en') {
         <p class="text-zinc-300 text-sm mb-4 leading-relaxed">${t.body}</p>
         <p class="text-emerald-400 text-xs font-semibold mb-3 leading-relaxed">${t.email}</p>
         <p class="text-amber-500/90 text-[11px] mb-4 leading-relaxed border border-amber-500/20 bg-amber-950/20 rounded p-3">${t.eta}</p>
-        <p id="fulfill-status" class="text-[10px] text-zinc-400 mb-4 leading-relaxed font-mono">${t.processing}</p>
+        <p id="fulfill-status" class="text-[10px] text-zinc-400 mb-4 leading-relaxed font-mono">${statusMessage(t, fulfillStatus)}</p>
         <p class="text-zinc-500 text-[10px] mb-4 leading-relaxed">${t.sub}</p>
         <p class="text-zinc-600 text-[9px] mb-8 leading-relaxed">${t.portalNote}</p>
         <a href="/" class="inline-block w-full bg-emerald-600 text-white py-3 rounded text-xs uppercase tracking-widest hover:bg-emerald-500 transition-colors">${t.home}</a>
@@ -69,6 +80,7 @@ function getSuccessHTML(lang = 'en') {
             ok: t.processingOk,
             dup: t.processingDup,
             fail: t.processingFail,
+            missing: t.processingMissing,
             none: '',
         })};
         const params = new URLSearchParams(window.location.search);
@@ -77,7 +89,7 @@ function getSuccessHTML(lang = 'en') {
         const statusEl = document.getElementById('fulfill-status');
         if (email) localStorage.setItem('pc_email', email.trim().toLowerCase());
 
-        if (sessionId && sessionId.startsWith('cs_')) {
+        if (sessionId && sessionId.startsWith('cs_') && !statusEl.innerText) {
             fetch('/fulfill-checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -91,8 +103,8 @@ function getSuccessHTML(lang = 'en') {
                 else statusEl.innerText = MSG.fail;
             })
             .catch(function() { statusEl.innerText = MSG.fail; });
-        } else {
-            statusEl.innerText = MSG.none;
+        } else if (!sessionId || !sessionId.startsWith('cs_')) {
+            if (!statusEl.innerText) statusEl.innerText = MSG.missing || MSG.none;
         }
     </script>
 </body>
