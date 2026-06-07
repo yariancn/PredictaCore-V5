@@ -232,10 +232,31 @@ function isPredictacoreCheckoutSession(session) {
     return lineItemsMatchPredictacore(session.line_items?.data || session.display_items);
 }
 
+function isCheckoutSessionPaid(session) {
+    if (session.payment_status === 'paid') return true;
+    if (session.payment_status === 'no_payment_required' && session.status === 'complete') return true;
+    return false;
+}
+
+function summarizeCheckoutSession(session) {
+    return {
+        id: session.id,
+        status: session.status,
+        payment_status: session.payment_status,
+        livemode: session.livemode,
+        amount_total: session.amount_total,
+        currency: session.currency,
+        customer_email: session.customer_email || session.customer_details?.email || null,
+        is_paid: isCheckoutSessionPaid(session),
+        is_predictacore: isPredictacoreCheckoutSession(session),
+        metadata: session.metadata || {},
+    };
+}
+
 async function expandCheckoutSession(stripe, session) {
     if (session.line_items?.data?.length) return session;
     return stripe.checkout.sessions.retrieve(session.id, {
-        expand: ['line_items.data.price'],
+        expand: ['line_items.data.price', 'subscription'],
     });
 }
 
@@ -268,4 +289,6 @@ module.exports = {
     isPredictacoreInvoice,
     expandCheckoutSession,
     metadataIsPredictacore,
+    isCheckoutSessionPaid,
+    summarizeCheckoutSession,
 };

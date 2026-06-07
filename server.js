@@ -48,9 +48,12 @@ const {
     normalizeStripeSecretKey,
     stripeKeyDiagnostics,
     validateCheckoutPrices,
+    predictacorePriceIds,
     isPredictacoreCheckoutSession,
     isPredictacoreInvoice,
     expandCheckoutSession,
+    isCheckoutSessionPaid,
+    summarizeCheckoutSession,
 } = require('./stripe-predictacore');
 
 const stripe = require('stripe')(normalizeStripeSecretKey(process.env.STRIPE_SECRET_KEY));
@@ -210,12 +213,15 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
 
     if (!isPredictacoreCheckoutSession(session)) {
         console.log(`>>> [${source}] checkout ignorado — no es producto ${BRAND}`);
-        return { ok: false, skipped: 'not_predictacore' };
+        return { ok: false, skipped: 'not_predictacore', session: summarizeCheckoutSession(session) };
     }
 
-    const paid = session.payment_status === 'paid' || session.status === 'complete';
-    if (!paid) {
-        return { ok: false, skipped: 'not_paid' };
+    if (!isCheckoutSessionPaid(session)) {
+        return {
+            ok: false,
+            skipped: 'not_paid',
+            session: summarizeCheckoutSession(session),
+        };
     }
 
     const { dna, email, refCode, lang } = await resolveCheckoutMetadata(session);
@@ -398,6 +404,38 @@ async function registrarVentaComisiones(session, email, refCode) {
 
 app.use(express.json({ limit: '10mb' }));
 
+app.get('/checkout-status', async (req, res) => {
+    try {
+        const sessionId = req.query.session_id;
+        if (!sessionId || !String(sessionId).startsWith('cs_')) {
+            return res.status(400).json({ error: 'session_id required (cs_...)' });
+        }
+
+        const session = await expandCheckoutSession(stripe, await stripe.checkout.sessions.retrieve(String(sessionId)));
+        const summary = summarizeCheckoutSession(session);
+        const pool = getPool();
+        let fulfillmentClaimed = false;
+        if (pool) {
+            const claimed = await pool.query(
+                'SELECT 1 FROM webhook_eventos WHERE stripe_event_id = $1 LIMIT 1',
+                [`checkout_session:${session.id}`]
+            );
+            fulfillmentClaimed = claimed.rows.length > 0;
+        }
+
+        res.json({
+            ...summary,
+            fulfillment_claimed: fulfillmentClaimed,
+            stripe_key: stripeKeyDiagnostics(),
+            predictacore_price_ids: predictacorePriceIds(),
+        });
+    } catch (error) {
+        const stripeMsg = error?.raw?.message || error?.message;
+        console.error('!!! checkout-status:', stripeMsg || error);
+        res.status(500).json({ error: stripeMsg || 'Could not read checkout session' });
+    }
+});
+
 app.post('/fulfill-checkout', async (req, res) => {
     try {
         const sessionId = req.body?.session_id || req.query?.session_id;
@@ -405,7 +443,7 @@ app.post('/fulfill-checkout', async (req, res) => {
             return res.status(400).json({ error: 'session_id required (cs_...)' });
         }
 
-        const session = await stripe.checkout.sessions.retrieve(String(sessionId));
+        const session = await expandCheckoutSession(stripe, await stripe.checkout.sessions.retrieve(String(sessionId)));
         const result = await fulfillPredictacoreCheckoutSession(session, 'success_page');
         res.json(result);
     } catch (error) {
@@ -423,7 +461,12 @@ app.get('/health', async (req, res) => {
         phase: '2',
         database: db,
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
-        stripe: stripeKeyDiagnostics(),
+        stripe: {
+            ...stripeKeyDiagnostics(),
+            restricted_key_warning: stripeKeyDiagnostics().restricted
+                ? 'Prefer sk_test_/sk_live_ secret key over rk_ restricted key for Checkout subscriptions.'
+                : null,
+        },
         stripe_brand: BRAND,
         stripe_terms_url: TERMS_URL,
         stripe_statement_descriptor: process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE',
@@ -476,11 +519,13 @@ app.get('/exito', async (req, res) => {
         fulfillStatus = 'missing_session';
     } else {
         try {
-            const session = await stripe.checkout.sessions.retrieve(String(sessionId));
+            const session = await expandCheckoutSession(stripe, await stripe.checkout.sessions.retrieve(String(sessionId)));
             const result = await fulfillPredictacoreCheckoutSession(session, 'success_page');
             if (result.started) fulfillStatus = 'ok';
             else if (result.duplicate) fulfillStatus = 'dup';
             else if (result.ok) fulfillStatus = 'ok';
+            else if (result.skipped === 'not_paid') fulfillStatus = 'not_paid';
+            else if (result.skipped === 'not_predictacore') fulfillStatus = 'not_predictacore';
             else fulfillStatus = 'fail';
         } catch (err) {
             const stripeMsg = err?.raw?.message || err?.message;
