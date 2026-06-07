@@ -41,7 +41,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
-const { buildTitanUpgradeUrl } = require('./brand');
+const { buildTitanUpgradeUrl, getEmailBrandHeader } = require('./brand');
 
 const {
     BRAND,
@@ -99,6 +99,7 @@ async function createCustomerPortalUrl(customerId) {
 
 function buildTitanActivationEmail(lang, portalUrl) {
     const es = lang === 'es';
+    const brandHeader = getEmailBrandHeader(lang);
     const manageBlock = portalUrl
         ? (es
             ? `<p style="margin:24px 0;"><a href="${portalUrl}" style="color:#10b981;font-weight:bold;">Gestionar suscripción</a> — cancela al menos 5 días hábiles antes de la renovación si no deseas continuar el monitoreo ($25/mes).</p>`
@@ -108,8 +109,9 @@ function buildTitanActivationEmail(lang, portalUrl) {
     const subject = es ? 'PredictaCore — Protección Titán activada' : 'PredictaCore — Titan Protection Activated';
     const html = es ? `
 <!DOCTYPE html><html><body style="background:#050505;color:#d1d5db;font-family:Inter,Arial,sans-serif;padding:32px;">
-  <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;">
-    <h1 style="color:#fff;font-size:20px;letter-spacing:0.05em;">PROTECCIÓN TITÁN ACTIVADA</h1>
+  <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;background:#0a0a0a;">
+    ${brandHeader}
+    <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">PROTECCIÓN TITÁN ACTIVADA</h1>
     <p>Tu pago de <strong>USD $349</strong> fue procesado. El motor forense ya analiza tu activo digital.</p>
     <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">Recibirás el Reporte Titán completo en tu correo en los próximos minutos (hasta 60 min).</p>
     <p>El monitoreo PredictaCore (<strong>$25/mes</strong>) está <strong>activo</strong>. Suscripción en periodo inicial: <strong>primer cobro mensual en ~30 días</strong>. En tu estado de cuenta: <strong>PREDICTACORE</strong>.</p>
@@ -118,8 +120,9 @@ function buildTitanActivationEmail(lang, portalUrl) {
   </div>
 </body></html>` : `
 <!DOCTYPE html><html><body style="background:#050505;color:#d1d5db;font-family:Inter,Arial,sans-serif;padding:32px;">
-  <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;">
-    <h1 style="color:#fff;font-size:20px;letter-spacing:0.05em;">TITAN PROTECTION ACTIVATED</h1>
+  <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;background:#0a0a0a;">
+    ${brandHeader}
+    <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">TITAN PROTECTION ACTIVATED</h1>
     <p>Your <strong>USD $349</strong> payment was processed successfully. Our forensic engine is analyzing your digital asset.</p>
     <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">You will receive the full Titan Report in your email within the next few minutes (up to 60 minutes).</p>
     <p>PredictaCore monitoring (<strong>$25/mo</strong>) is <strong>active</strong>. You are in the initial period: <strong>first monthly charge in ~30 days</strong>. Statement descriptor: <strong>PREDICTACORE</strong>.</p>
