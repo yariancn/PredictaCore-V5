@@ -438,7 +438,7 @@ app.get('/checkout-status', async (req, res) => {
                         LIMIT 5
                     `, [email]),
                     pool.query(`
-                        SELECT tipo, url_sitio, creado_en
+                        SELECT r.tipo, r.url_sitio, r.creado_en
                         FROM reportes r
                         JOIN clientes c ON c.id = r.cliente_id
                         WHERE lower(c.email) = lower($1)
