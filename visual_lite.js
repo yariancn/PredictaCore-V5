@@ -36,6 +36,13 @@ function getHTMLLite() {
             td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 9pt; color: #334155; }
             tr:last-child td { border-bottom: none; }
             tr:nth-child(even) td { background: #f8fafc; }
+
+            .lite-titan-cta {
+                margin-top: 28px; padding: 18px; border: 2px solid #10b981; border-radius: 8px;
+                background: #ecfdf5; page-break-inside: avoid;
+            }
+            .lite-titan-cta h3 { color: #065f46; font-size: 11pt; margin: 0 0 8px 0; text-transform: uppercase; }
+            .lite-titan-cta p { font-size: 9.5pt; color: #047857; margin: 0; line-height: 1.5; word-break: break-all; }
         </style>
     </head>
     <body>

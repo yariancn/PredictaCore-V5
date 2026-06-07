@@ -39,6 +39,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
+const { buildTitanUpgradeUrl } = require('./brand');
 
 const {
     BRAND,
@@ -105,7 +106,7 @@ function buildTitanActivationEmail(lang, portalUrl) {
   <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;">
     <h1 style="color:#fff;font-size:20px;letter-spacing:0.05em;">PROTECCIÓN TITÁN ACTIVADA</h1>
     <p>Tu pago de <strong>USD $349</strong> fue procesado. El motor forense ya analiza tu activo digital.</p>
-    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">Recibirás el Reporte Titán completo en tu correo en los próximos minutos.</p>
+    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">Recibirás el Reporte Titán completo en tu correo en los próximos minutos (hasta 60 min).</p>
     <p>El monitoreo PredictaCore (<strong>$25/mes</strong>) está <strong>activo</strong>. Suscripción en periodo inicial: <strong>primer cobro mensual en ~30 días</strong>. En tu estado de cuenta: <strong>PREDICTACORE</strong>.</p>
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;">Ventas finales — sin reembolsos.</p>
@@ -115,7 +116,7 @@ function buildTitanActivationEmail(lang, portalUrl) {
   <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;">
     <h1 style="color:#fff;font-size:20px;letter-spacing:0.05em;">TITAN PROTECTION ACTIVATED</h1>
     <p>Your <strong>USD $349</strong> payment was processed successfully. Our forensic engine is analyzing your digital asset.</p>
-    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">You will receive the full Titan Report in your email within the next few minutes.</p>
+    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">You will receive the full Titan Report in your email within the next few minutes (up to 60 minutes).</p>
     <p>PredictaCore monitoring (<strong>$25/mo</strong>) is <strong>active</strong>. You are in the initial period: <strong>first monthly charge in ~30 days</strong>. Statement descriptor: <strong>PREDICTACORE</strong>.</p>
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;">All sales final — no refunds.</p>
@@ -493,7 +494,7 @@ app.post('/titan-interno', requireTitanInternalKey, async (req, res) => {
         mode: 'TITAN',
         assetType: resolved.assetType,
         target: resolved.url,
-        message: `Titan ${label} audit started. Full PDF in ~10–20 min at ${normalizedEmail}.`,
+        message: `Titan ${label} audit started. PDF may take up to 60 minutes at ${normalizedEmail}.`,
     });
 });
 
@@ -765,12 +766,22 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         let subject;
         let filename;
         let textBody;
+        let emailHtml = null;
+        let liteTitanUrl = null;
 
         if (modo === 'LITE') {
             htmlBase = getHTMLLite();
             subject = 'Your PredictaCore Lite Audit';
             filename = 'PREDICTACORE_LITE.pdf';
-            textBody = 'Your PredictaCore Lite audit is attached.';
+            const titanUrl = buildTitanUpgradeUrl({ email: emailDestino, dna: targetUrl, lang: 'en' });
+            textBody = `Your PredictaCore Lite audit is attached.\n\nUpgrade to the full Titan Report (11 sections, USD $349):\n${titanUrl}`;
+            emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
+  <h1 style="color:#fff;font-size:18px;">Your Lite audit is attached</h1>
+  <p style="font-size:14px;line-height:1.6;">Processing can take up to 60 minutes for heavy sites. Check spam if you don't see this message soon.</p>
+  <p style="font-size:14px;line-height:1.6;">Want the full forensic blueprint? Your URL and email are pre-filled:</p>
+  <p style="margin:24px 0;"><a href="${titanUrl}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activate Titan Report — $349</a></p>
+  <p style="font-size:11px;color:#71717a;">PredictaCore · predictacore.ai</p></div>`;
+            liteTitanUrl = titanUrl;
         } else if (modo === 'DELTA') {
             htmlBase = getHTMLDelta();
             subject = 'PredictaCore — Monthly Monitoring Report';
@@ -789,8 +800,8 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                 if (cid) portalUrl = await createCustomerPortalUrl(cid);
             } catch (_) { /* optional */ }
             textBody = portalUrl
-                ? `Your PredictaCore Titan forensic audit is attached.\n\nManage subscription: ${portalUrl}`
-                : 'Your PredictaCore Titan forensic audit is attached.';
+                ? `Your PredictaCore Titan forensic audit is attached.\n\nDelivery note: processing may take up to 60 minutes.\n\nManage subscription: ${portalUrl}`
+                : 'Your PredictaCore Titan forensic audit is attached.\n\nDelivery note: processing may take up to 60 minutes.';
         }
 
         browser = await puppeteer.launch({
@@ -800,29 +811,41 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const page = await browser.newPage();
         await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
 
-        await page.evaluate((progressData, dominio) => {
+        await page.evaluate((progressData, dominio, titanUpgradeUrl) => {
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
             if (dEl && dominio) dEl.innerText = dominio.replace(/^https?:\/\//, '');
 
             for (const key in progressData) {
                 const div = document.createElement('div');
-                div.className = 'report-section';
+                div.className = 'report-section markdown-content';
                 div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
-        }, job.progress, targetUrl);
+
+            if (titanUpgradeUrl) {
+                const cta = document.createElement('div');
+                cta.className = 'lite-titan-cta';
+                cta.innerHTML = '<h3>Upgrade to Titan Report</h3>'
+                    + '<p>Full 11-section forensic audit (USD $349). Your email and URL are pre-filled:</p>'
+                    + '<p><strong>' + titanUpgradeUrl + '</strong></p>';
+                reporte.appendChild(cta);
+            }
+        }, job.progress, targetUrl, liteTitanUrl);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
 
-        const { data, error } = await resend.emails.send({
+        const mailPayload = {
             from: 'PredictaCore <reportes@predictacore.ai>',
             to: emailDestino,
             subject,
             text: textBody,
             attachments: [{ filename, content: pdfBuffer }],
-        });
+        };
+        if (emailHtml) mailPayload.html = emailHtml;
+
+        const { data, error } = await resend.emails.send(mailPayload);
 
         if (error) throw new Error(`Resend API Error: ${error.message}`);
         console.log(`>>> Sellado. Reporte ${modo} entregado a ${emailDestino}. ID: ${data.id}`);

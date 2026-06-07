@@ -238,6 +238,8 @@ function getLandingHTML() {
                     <div class="space-y-4">
                         <input type="text" id="dna-url" placeholder="Website URL (e.g. yourbusiness.com)" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs uppercase tracking-widest">
                         <input type="email" id="user-email" placeholder="Your Email" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs uppercase tracking-widest">
+                        <p id="lite-eta-before" class="text-[10px] text-zinc-500 leading-relaxed text-center">Report delivery can take up to 60 minutes while our engine processes your site.</p>
+                        <p id="setup-error" class="hidden-flow text-[10px] text-red-400 text-center" role="alert"></p>
                         <button id="btn-start" onclick="iniciarEscaneo()" class="w-full bg-emerald-600 text-white font-black py-4 rounded hover:bg-emerald-500 transition-all uppercase tracking-[0.2em] text-xs">
                             Execute Free Scan
                         </button>
@@ -256,7 +258,9 @@ function getLandingHTML() {
                         <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                     <h2 id="up-t" class="text-2xl font-black text-white mb-2 uppercase tracking-tighter">X-Ray Sealed</h2>
-                    <p class="text-zinc-400 text-xs mb-8" id="up-st">Successfully sent to <span id="sent-email" class="text-white font-bold"></span>.</p>
+                    <p class="text-zinc-400 text-xs mb-2" id="up-st">Successfully sent to <span id="sent-email" class="text-white font-bold"></span>.</p>
+                    <p id="lite-queued-msg" class="text-emerald-500/90 text-[10px] font-bold uppercase tracking-widest mb-2 leading-relaxed">Your Lite report is being generated and will arrive by email.</p>
+                    <p id="lite-eta-after" class="text-amber-500/80 text-[10px] mb-8 leading-relaxed border border-amber-500/15 rounded p-3 bg-amber-950/10">Delivery may take up to 60 minutes due to forensic processing volume. Check spam.</p>
                     
                     <div class="bg-zinc-900 border border-zinc-700 p-6 rounded mb-8 text-left">
                         <p id="box-text" class="text-[11px] text-zinc-300 leading-relaxed">
@@ -267,7 +271,8 @@ function getLandingHTML() {
                     <div class="border-t border-zinc-800 pt-8">
                         <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$349 <span class="text-xs text-zinc-600 line-through font-normal">$700 USD</span></h4>
                         <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-2">Charged today: USD $349 (Titan Report)</p>
-                        <p id="sub-price-2" class="text-[9px] text-zinc-400 mb-6 leading-relaxed">Monitoring subscription ($25/mo) activates now; first monthly charge in ~30 days. Cancel at least 5 business days before renewal. All sales final — no refunds.</p>
+                        <p id="sub-price-2" class="text-[9px] text-zinc-400 mb-4 leading-relaxed">Monitoring subscription ($25/mo) activates now; first monthly charge in ~30 days. Cancel at least 5 business days before renewal. All sales final — no refunds.</p>
+                        <p id="titan-eta-before" class="text-[10px] text-zinc-500 mb-4 leading-relaxed">After payment, your Titan PDF may take up to 60 minutes to arrive by email.</p>
                         
                         <button onclick="comprarTitan()" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2 transition-opacity disabled:opacity-60 disabled:cursor-wait" id="btn-titan">
                             Activate Titan Protection
@@ -343,6 +348,10 @@ function getLandingHTML() {
                     checkoutError: "Could not start checkout. Try again or contact support.",
                     checkoutNetwork: "Network error. Check your connection and try again.",
                     alertError: "Required data missing.",
+                    liteEtaBefore: "Report delivery can take up to 60 minutes while our engine processes your site.",
+                    liteQueued: "Your Lite report is being generated and will arrive by email.",
+                    liteEtaAfter: "Delivery may take up to 60 minutes due to forensic processing volume. Check spam.",
+                    titanEtaBefore: "After payment, your Titan PDF may take up to 60 minutes to arrive by email.",
                     successPayment: "Payment confirmed! Your Titan report is being processed by the AI and will arrive in your email shortly.",
                     phUrl: "Website URL (e.g. yourbusiness.com)", phEmail: "Your Email"
                 },
@@ -380,6 +389,10 @@ function getLandingHTML() {
                     checkoutError: "No se pudo iniciar el pago. Reintenta o contacta soporte.",
                     checkoutNetwork: "Error de red. Revisa tu conexión e intenta de nuevo.",
                     alertError: "Faltan datos requeridos.",
+                    liteEtaBefore: "La entrega puede tardar hasta 60 minutos mientras procesamos tu sitio.",
+                    liteQueued: "Tu reporte Lite se está generando y llegará por correo.",
+                    liteEtaAfter: "La entrega puede tardar hasta 60 minutos por el volumen de análisis. Revisa spam.",
+                    titanEtaBefore: "Tras el pago, tu PDF Titán puede tardar hasta 60 minutos en llegar por correo.",
                     successPayment: "¡Pago confirmado! Tu reporte Titán está siendo procesado por la IA y llegará a tu correo a la brevedad.",
                     phUrl: "URL del Sitio (ej. tunegocio.com)", phEmail: "Tu Email"
                 }
@@ -437,19 +450,29 @@ function getLandingHTML() {
                 document.getElementById('sub-price-2').innerText = d.subPrice2;
                 document.getElementById('btn-titan').innerText = d.btnTitan;
                 document.getElementById('cancel-badge').innerHTML = d.cancelBadge;
+                document.getElementById('lite-eta-before').innerText = d.liteEtaBefore;
+                document.getElementById('lite-queued-msg').innerText = d.liteQueued;
+                document.getElementById('lite-eta-after').innerText = d.liteEtaAfter;
+                document.getElementById('titan-eta-before').innerText = d.titanEtaBefore;
                 
                 document.getElementById('footer-text').innerText = d.footerText;
                 document.getElementById('disclaimer-text').innerText = d.disclaimerText;
+            }
+
+            function setSetupError(msg) {
+                const el = document.getElementById('setup-error');
+                el.innerText = msg || '';
+                el.classList.toggle('hidden-flow', !msg);
             }
 
             async function iniciarEscaneo() {
                 const url = document.getElementById('dna-url').value;
                 const email = document.getElementById('user-email').value;
                 if (!url || !email) {
-                    setCheckoutError(dictionary[currentLang].alertError);
+                    setSetupError(dictionary[currentLang].alertError);
                     return;
                 }
-                setCheckoutError('');
+                setSetupError('');
                 
                 document.getElementById('setup-stage').classList.add('hidden-flow');
                 document.getElementById('scanner-stage').classList.remove('hidden-flow');
@@ -533,6 +556,19 @@ function getLandingHTML() {
                     btn.innerText = btnLabel;
                 }
             }
+
+            (function initFromUrl() {
+                const dna = urlParams.get('dna');
+                const emailParam = urlParams.get('email');
+                if (dna) document.getElementById('dna-url').value = decodeURIComponent(dna);
+                if (emailParam) document.getElementById('user-email').value = decodeURIComponent(emailParam);
+                if (urlParams.get('lang') === 'es') setLanguage('es');
+                if (urlParams.get('titan') === '1') {
+                    setTimeout(function() {
+                        document.getElementById('terminal-section').scrollIntoView({ behavior: 'smooth' });
+                    }, 400);
+                }
+            })();
         </script>
     </body>
     </html>

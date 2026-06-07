@@ -3,21 +3,31 @@ const { getFaviconHeadTags } = require('./brand');
 function getSuccessHTML(lang = 'en') {
     const t = lang === 'es' ? {
         title: 'Pago confirmado',
-        headline: 'PROTECCIÓN TITÁN ACTIVADA',
-        body: 'Tu pago de USD $349 fue procesado con éxito. Nuestro motor forense ya está analizando tu activo digital.',
-        email: 'Recibirás el Reporte Titán completo en tu correo en los próximos minutos.',
-        sub: 'El monitoreo PredictaCore ($25/mes) ya está activo. El primer cobro mensual será en aproximadamente 30 días. En tu estado de cuenta verás PREDICTACORE.',
-        portalNote: 'Cuando llegue el correo con tu reporte, encontrarás un enlace para gestionar tu suscripción si lo necesitas más adelante.',
+        headline: 'PAGO RECIBIDO',
+        body: 'Tu pago de USD $349 fue procesado correctamente. El motor forense PredictaCore ya está en cola.',
+        email: 'Recibirás un correo de confirmación y, después, el Reporte Titán completo en PDF.',
+        eta: 'Por la cantidad de datos que analizamos, el correo puede tardar hasta 60 minutos. Revisa spam y la carpeta Promociones.',
+        sub: 'Monitoreo PredictaCore ($25/mes) activo. Primer cobro mensual en ~30 días. Estado de cuenta: PREDICTACORE.',
+        portalNote: 'El enlace para gestionar tu suscripción llegará en el correo con tu reporte.',
+        processing: 'Confirmando pago y encolando análisis…',
+        processingOk: 'Pago confirmado. Análisis Titán en proceso — revisa tu correo (hasta 60 min).',
+        processingDup: 'Pago ya registrado. Tu análisis sigue en cola — revisa tu correo (hasta 60 min).',
+        processingFail: 'Pago recibido en Stripe, pero hubo un retraso al encolar. Escríbenos a reportes@predictacore.ai con tu email de compra.',
         home: 'Volver al inicio',
         terms: 'Términos',
         privacy: 'Privacidad',
     } : {
         title: 'Payment confirmed',
-        headline: 'TITAN PROTECTION ACTIVATED',
-        body: 'Your USD $349 payment was processed successfully. Our forensic engine is now analyzing your digital asset.',
-        email: 'YOU WILL RECEIVE THE FULL TITAN REPORT IN YOUR EMAIL WITHIN THE NEXT FEW MINUTES.',
-        sub: 'Your PredictaCore monitoring ($25/mo) is active. First charge in ~30 days. Your statement should show PREDICTACORE.',
-        portalNote: 'When your report email arrives, it will include a link to manage your subscription if you ever need it.',
+        headline: 'PAYMENT RECEIVED',
+        body: 'Your USD $349 payment was processed successfully. The PredictaCore forensic engine is now queued.',
+        email: 'You will receive a confirmation email, then your full Titan Report PDF.',
+        eta: 'Because of the volume of data we process, delivery can take up to 60 minutes. Check spam and Promotions.',
+        sub: 'PredictaCore monitoring ($25/mo) is active. First monthly charge in ~30 days. Statement: PREDICTACORE.',
+        portalNote: 'A link to manage your subscription will arrive in your report email.',
+        processing: 'Confirming payment and queuing your audit…',
+        processingOk: 'Payment confirmed. Titan audit running — watch your inbox (up to 60 min).',
+        processingDup: 'Payment already registered. Your audit is queued — watch your inbox (up to 60 min).',
+        processingFail: 'Stripe shows payment OK, but queuing delayed. Email reportes@predictacore.ai with your purchase email.',
         home: 'Back to home',
         terms: 'Terms',
         privacy: 'Privacy',
@@ -44,7 +54,9 @@ function getSuccessHTML(lang = 'en') {
         </div>
         <h1 class="text-2xl font-black text-white mb-4 tracking-tighter">${t.headline}</h1>
         <p class="text-zinc-300 text-sm mb-4 leading-relaxed">${t.body}</p>
-        <p class="text-emerald-500 text-xs font-bold uppercase tracking-widest mb-4 leading-relaxed">${t.email}</p>
+        <p class="text-emerald-400 text-xs font-semibold mb-3 leading-relaxed">${t.email}</p>
+        <p class="text-amber-500/90 text-[11px] mb-4 leading-relaxed border border-amber-500/20 bg-amber-950/20 rounded p-3">${t.eta}</p>
+        <p id="fulfill-status" class="text-[10px] text-zinc-400 mb-4 leading-relaxed font-mono">${t.processing}</p>
         <p class="text-zinc-500 text-[10px] mb-4 leading-relaxed">${t.sub}</p>
         <p class="text-zinc-600 text-[9px] mb-8 leading-relaxed">${t.portalNote}</p>
         <a href="/" class="inline-block w-full bg-emerald-600 text-white py-3 rounded text-xs uppercase tracking-widest hover:bg-emerald-500 transition-colors">${t.home}</a>
@@ -53,16 +65,34 @@ function getSuccessHTML(lang = 'en') {
         </p>
     </div>
     <script>
+        const MSG = ${JSON.stringify({
+            ok: t.processingOk,
+            dup: t.processingDup,
+            fail: t.processingFail,
+            none: '',
+        })};
         const params = new URLSearchParams(window.location.search);
         const email = params.get('email');
         const sessionId = params.get('session_id');
+        const statusEl = document.getElementById('fulfill-status');
         if (email) localStorage.setItem('pc_email', email.trim().toLowerCase());
+
         if (sessionId && sessionId.startsWith('cs_')) {
             fetch('/fulfill-checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ session_id: sessionId }),
-            }).catch(function() {});
+            })
+            .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+            .then(function(r) {
+                if (r.ok && r.d.started) statusEl.innerText = MSG.ok;
+                else if (r.d.duplicate) statusEl.innerText = MSG.dup;
+                else if (r.ok) statusEl.innerText = MSG.ok;
+                else statusEl.innerText = MSG.fail;
+            })
+            .catch(function() { statusEl.innerText = MSG.fail; });
+        } else {
+            statusEl.innerText = MSG.none;
         }
     </script>
 </body>
