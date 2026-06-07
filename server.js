@@ -5,6 +5,7 @@ const cerebroWeb = require('./cerebro');
 const cerebroSocial = require('./cerebro_social');
 const { PROMPTS_LITE } = require('./cerebro_lite');
 const { PROMPTS_DELTA, extractInitialSummary, formatScoreDiffBlock } = require('./cerebro_delta');
+const { IDIOMA_LITE, IDIOMA_DELTA } = require('./idioma');
 const { getHTML } = require('./visual');
 const { getHTMLLite } = require('./visual_lite');
 const { getHTMLDelta } = require('./visual_delta');
@@ -872,11 +873,11 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
 
         if (modo === 'DELTA') {
             promptsAUsar = PROMPTS_DELTA;
-            idioma = 'INSTRUCCIÓN: Redacta en el idioma del sitio analizado.';
+            idioma = IDIOMA_DELTA;
             regla = 'REGLA: Reporte de seguimiento mensual comparativo.';
         } else if (modo === 'LITE') {
             promptsAUsar = PROMPTS_LITE;
-            idioma = 'INSTRUCCIÓN: Redacta en el idioma del sitio analizado.';
+            idioma = IDIOMA_LITE;
             regla = '';
         } else {
             const cerebroActivo = isSocialMediaUrl(targetUrl) ? cerebroSocial : cerebroWeb;

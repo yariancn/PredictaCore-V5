@@ -1,6 +1,8 @@
 // cerebro_social.js - CEREBRO EXCLUSIVO PARA REDES SOCIALES + VISIBILIDAD IA
 
-const IDIOMA = "INSTRUCCIÓN CRÍTICA: Detecta el idioma de la biografía del negocio. IGNORA textos genéricos de la plataforma ('Iniciar sesión', 'Log in', 'Publicaciones'). Escribe TODO el reporte en el idioma del negocio.";
+const { IDIOMA_SOCIAL } = require('./idioma');
+
+const IDIOMA = IDIOMA_SOCIAL;
 
 const REGLA_NUCLEAR = "REGLA NUCLEAR DE REDES SOCIALES: Auditas ÚNICAMENTE el perfil del cliente. Ignora muros de registro de Meta. PROHIBIDO $, USD, ROI% en diagnóstico.";
 

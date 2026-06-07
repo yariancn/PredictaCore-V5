@@ -144,6 +144,7 @@ async function collectSocialForensics(page, url, loadTimeSec) {
         const externalLinks = links.filter((l) => !l.href.includes(location.hostname));
         return {
             title: document.title || '',
+            htmlLang: document.documentElement.lang || 'AUSENTE',
             wordCount: body.split(/\s+/).filter(Boolean).length,
             bioSnippet: bioCandidates.slice(0, 5).join(' | ') || body.slice(0, 400),
             linkCount: links.length,

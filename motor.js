@@ -6,6 +6,7 @@ const { collectForensics } = require('./forensics');
 const { runWebSimulation, runSocialSimulation, formatSimulationBlock } = require('./simulator');
 const { findCompetitors } = require('./competitors');
 const { formatKeywordsBlock } = require('./keywords');
+const { formatIdiomaBlock, resolveReportLocale } = require('./idioma');
 
 async function captureAndScrape(url) {
     let browser;
@@ -25,7 +26,7 @@ async function captureAndScrape(url) {
         
         if (isSocialMedia) {
             await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-            await page.setExtraHTTPHeaders({ 'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8' });
+            await page.setExtraHTTPHeaders({ 'Accept-Language': 'es-MX,es;q=0.9,en;q=0.8' });
             await page.evaluateOnNewDocument(() => {
                 Object.defineProperty(navigator, 'webdriver', { get: () => false });
             });
@@ -164,9 +165,15 @@ async function captureAndScrape(url) {
         }
 
         await browser.close();
-        const fechaHoy = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+        const locale = resolveReportLocale(
+            forensics.onPage?.htmlLang,
+            dataForense.cuerpo.slice(0, 2000)
+        );
+        const dateLocale = locale.code.startsWith('es') ? 'es-MX' : 'en-US';
+        const fechaHoy = new Date().toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' });
+        const idiomaBlock = formatIdiomaBlock(forensics.onPage?.htmlLang, dataForense.cuerpo.slice(0, 2000));
 
-        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${forensics.block}${simulationBlock}${benchmarkBlock}${keywordsBlock}`;
+        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${idiomaBlock}${forensics.block}${simulationBlock}${benchmarkBlock}${keywordsBlock}`;
 
         return {
             isUrl: true,

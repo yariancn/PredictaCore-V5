@@ -1,6 +1,8 @@
 // cerebro_omni.js - EL SCANNER FORENSE DEFINITIVO (45 PUNTOS CRÍTICOS)
 
-const IDIOMA = "INSTRUCCIÓN CRÍTICA: Detecta el idioma principal del sitio web analizado. DEBES redactar el reporte COMPLETO estrictamente en ese idioma.";
+const { IDIOMA_REPORTE } = require('./idioma');
+
+const IDIOMA = IDIOMA_REPORTE;
 
 const REGLA_NUCLEAR = "REGLA NUCLEAR: Inteligencia OMNI de PredictaCore. Tono quirúrgico y ejecutivo. Dictas sentencias sobre fricción de conversión. PROHIBIDO $, USD, ROI%.";
 

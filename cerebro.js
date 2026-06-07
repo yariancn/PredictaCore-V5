@@ -1,6 +1,8 @@
 // cerebro.js - BÚNKER 2: MULTILINGÜE ESTRICTO, SEO REAL Y VISIBILIDAD IA
 
-const IDIOMA = "INSTRUCCIÓN CRÍTICA Y ABSOLUTA: Detecta el idioma principal del sitio web analizado (basado en el Dossier y las Imágenes). DEBES redactar tu respuesta COMPLETA (incluyendo el encabezado, el análisis, las tablas y las viñetas) ESTRICTAMENTE en ese idioma detectado. Cero mezclas.";
+const { IDIOMA_REPORTE } = require('./idioma');
+
+const IDIOMA = IDIOMA_REPORTE;
 
 const REGLA_NUCLEAR = "REGLA NUCLEAR DE AUDITORÍA: TIENES ESTRICTAMENTE PROHIBIDO mencionar reseñas de clientes, testimonios, o quejas (como manchas o defectos) en NINGUNA PARTE del reporte, CON EXCEPCIÓN ÚNICA de la Sección IV (Visibilidad, SEO y Descubrimiento IA). PROHIBIDO cifras monetarias ($, USD, ROI%). Impacto solo cualitativo.";
 

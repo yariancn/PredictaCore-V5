@@ -1,6 +1,8 @@
 // cerebro_lite.js - TEASER FORENSE CON SEO/IA REAL
 
-const IDIOMA = "INSTRUCCIÓN CRÍTICA: Detecta el idioma principal del sitio. Redacta COMPLETO en ese idioma.";
+const { IDIOMA_LITE } = require('./idioma');
+
+const IDIOMA = IDIOMA_LITE;
 
 const REGLA_NUCLEAR = "REGLA NUCLEAR: PredictaCore Titán, auditor forence. Tono élite, clínico. Prohibido tipografías/colores. Fricción de conversión y abandono. PROHIBIDO $, USD, ROI%.";
 

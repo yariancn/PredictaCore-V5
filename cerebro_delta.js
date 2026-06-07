@@ -1,6 +1,8 @@
 // cerebro_delta.js — Reporte mensual comparativo (seguimiento)
 
-const IDIOMA = 'INSTRUCCIÓN CRÍTICA: Detecta el idioma principal del sitio web. Redacta TODO el reporte en ese idioma.';
+const { IDIOMA_DELTA } = require('./idioma');
+
+const IDIOMA = IDIOMA_DELTA;
 
 const REGLA_NUCLEAR = 'REGLA NUCLEAR: PredictaCore Titán en modo SEGUIMIENTO MENSUAL. Comparas reporte inicial vs estado actual. Concreto y ejecutivo. Máximo 2 párrafos por sección. PROHIBIDO $, USD, ROI%.';
 

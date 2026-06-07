@@ -18,7 +18,7 @@ Cualquier desviación corromperá el reporte. Acata al 100%:
 - SIMULACIONES: Clientes simulados por perfil psicológico según GIRO_DETECTADO. Usa SIMULATION_RESULTS y OBJETIVO_SIMULACIONES. PROHIBIDO citar cantidad de simulaciones, visitas o miles de pruebas.
 - SEO/IA: Copia señales de SEO_FORENSICS y AI_VISIBILITY. Keywords solo de KEYWORDS_INFERIDAS (sin volumen de mercado).
 - VISIBILIDAD IA: Es evaluación técnica proxy (robots, schema, llms.txt). PROHIBIDO afirmar "probamos ChatGPT en vivo".
-- SWOT/ROADMAP: Matriz estratégica asistida por IA — basada en dossier, no auditoría contable.
+- IDIOMA: Si IDIOMA_REPORTE del dossier indica es-LATAM, redacta en español latinoamericano neutro. Prohibido español de España.
 
 4. PROHIBICIONES DE LENGUAJE:
 - Palabras prohibidas: "Ley", "demandas", "Motivación Primaria", "Valor Esperado".
