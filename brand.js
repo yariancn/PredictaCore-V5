@@ -39,9 +39,55 @@ function getEmailBrandHeader(lang = 'en') {
 </div>`;
 }
 
+/** Branded header for PDF cover (Lite / Titán) */
+function getPdfCoverBrandHtml() {
+    return `<div class="pc-brand-cover">
+  <div class="pc-logo-circle">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+  </div>
+  <div class="pc-wordmark">PREDICTA<span class="pc-accent">CORE</span></div>
+  <div class="pc-tagline">Business Intelligence</div>
+</div>`;
+}
+
+function getPdfCoverMetricsHtml({ loadTimeSec, seoScore, aiScore, assetType }) {
+    const load = loadTimeSec != null ? `${loadTimeSec}s` : '—';
+    const seo = seoScore != null ? `${seoScore}/100` : '—';
+    const ai = aiScore != null ? `${aiScore}/100` : '—';
+    const label = assetType === 'social' ? 'Perfil social' : 'Sitio web';
+    return `<div class="pc-metrics">
+  <div class="pc-metric"><span class="pc-metric-k">Activo</span><span class="pc-metric-v">${label}</span></div>
+  <div class="pc-metric"><span class="pc-metric-k">Carga</span><span class="pc-metric-v">${load}</span></div>
+  <div class="pc-metric"><span class="pc-metric-k">SEO</span><span class="pc-metric-v">${seo}</span></div>
+  <div class="pc-metric"><span class="pc-metric-k">Visibilidad IA</span><span class="pc-metric-v">${ai}</span></div>
+</div>`;
+}
+
+/** Shared CSS for PDF brand blocks */
+function getPdfBrandStyles() {
+    return `.pc-brand-cover { margin-bottom: 18px; }
+.pc-logo-circle { width: 52px; height: 52px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.pc-wordmark { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.04em; text-transform: uppercase; color: #0f172a; line-height: 1; }
+.pc-accent { color: #10b981; }
+.pc-tagline { font-size: 8pt; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: #64748b; margin-top: 6px; }
+.pc-metrics { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 8px 0; page-break-inside: avoid; }
+.pc-metric { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; min-width: 100px; background: #f8fafc; }
+.pc-metric-k { display: block; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.12em; color: #64748b; font-weight: 700; }
+.pc-metric-v { display: block; font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 2px; }
+.forensic-evidence { page-break-inside: avoid; margin: 0 0 24px 0; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+.forensic-evidence h3 { font-size: 10pt; text-transform: uppercase; letter-spacing: 0.15em; color: #0f172a; margin: 0 0 12px 0; border: none; }
+.forensic-shots { display: flex; gap: 12px; flex-wrap: wrap; }
+.forensic-shots figure { margin: 0; flex: 1; min-width: 200px; }
+.forensic-shots img { width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; }
+.forensic-shots figcaption { font-size: 7pt; text-transform: uppercase; color: #64748b; margin-top: 4px; text-align: center; }`;
+}
+
 module.exports = {
     getFaviconHeadTags,
     getEmailBrandHeader,
+    getPdfCoverBrandHtml,
+    getPdfCoverMetricsHtml,
+    getPdfBrandStyles,
     FAVICON_VERSION,
     publicSiteUrl,
     buildTitanUpgradeUrl,

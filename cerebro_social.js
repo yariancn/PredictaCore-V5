@@ -1,33 +1,33 @@
-// cerebro_social.js - CEREBRO EXCLUSIVO PARA REDES SOCIALES
+// cerebro_social.js - CEREBRO EXCLUSIVO PARA REDES SOCIALES + VISIBILIDAD IA
 
-const IDIOMA = "INSTRUCCIÓN CRÍTICA: Detecta el idioma de la biografía del negocio. IGNORA los textos genéricos de la plataforma como 'Iniciar sesión', 'Log in', 'Publicaciones', etc. Escribe TODO el reporte estrictamente en el idioma del negocio.";
+const IDIOMA = "INSTRUCCIÓN CRÍTICA: Detecta el idioma de la biografía del negocio. IGNORA textos genéricos de la plataforma ('Iniciar sesión', 'Log in', 'Publicaciones'). Escribe TODO el reporte en el idioma del negocio.";
 
-const REGLA_NUCLEAR = "REGLA NUCLEAR DE REDES SOCIALES: Tienes ESTRICTAMENTE PROHIBIDO auditar a la plataforma (Instagram, Facebook o TikTok). Estás auditando ÚNICAMENTE el perfil del cliente/negocio. Si el dossier contiene textos del muro de registro de Meta ('Crea una cuenta para ver fotos', 'Iniciar sesión'), IGNÓRALOS POR COMPLETO. Tu objetivo es auditar la biografía, el contenido y la fricción de venta del cliente.";
+const REGLA_NUCLEAR = "REGLA NUCLEAR DE REDES SOCIALES: Tienes PROHIBIDO auditar a la plataforma (Instagram, Facebook, TikTok). Auditas ÚNICAMENTE el perfil del cliente. Ignora muros de registro de Meta.";
 
-const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO FATAL: TIENES ESTRICTAMENTE PROHIBIDO usar viñetas simples (bullets como • o -). DEBES iniciar cada punto OBLIGATORIAMENTE con un NÚMERO seguido de un PUNTO y un ESPACIO. Ejemplo CORRECTO: '1. [Texto]'.";
+const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO FATAL: PROHIBIDO bullets (• o -). Cada punto inicia con NÚMERO + PUNTO + ESPACIO. Ejemplo: '1. [Texto]'.";
 
 const PROMPTS = {
-  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### I. INTRODUCCIÓN Y RADIOGRAFÍA DEL PERFIL\nRedacta en dos partes:\nPÁRRAFO 1: Explica con autoridad quiénes somos (PredictaCore) y que simulamos fricción transaccional.\nPÁRRAFOS 2 y 3: Describe profundamente el negocio del cliente basado en su biografía y contenido visual. ¿Qué venden y a quién? Dossier: ${d}`,
+  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### I. INTRODUCCIÓN, RESUMEN EJECUTIVO Y RADIOGRAFÍA DEL PERFIL\nPARTE A — RESUMEN EJECUTIVO: Tabla con Plataforma, AI Discoverability Score (del dossier), Tiempo de carga, Veredicto (1 frase).\nPARTE B — PredictaCore: simulaciones de fricción transaccional en perfiles sociales.\nPARTE C — Radiografía del negocio (bio + contenido). Dossier: ${d}`,
 
-  GEMELOS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### II. PERFILES PSICOLÓGICOS DE AUDIENCIA\nDiseña 4 perfiles de seguidores enfocados en sus motivaciones de compra. EXACTAMENTE 2 oraciones por perfil. Sé directo y letal. Dossier: ${d}`,
+  GEMELOS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### II. PERFILES PSICOLÓGICOS DE AUDIENCIA\n4 perfiles de seguidores. 2 oraciones cada uno. Dossier: ${d}`,
 
-  SCORECARD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### III. SCORECARD DE CONVERSIÓN SOCIAL\nPresenta una tabla Markdown. Traduce esta cabecera: | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |\nREGLAS: 10 filas exactas. Evalúa puntos MACRO de un perfil social (Claridad de Bio, Fricción en el Enlace, Cohesión Visual, Tangibilidad). Diagnósticos de 3 líneas. Dossier: ${d}`,
+  SCORECARD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### III. SCORECARD DE CONVERSIÓN SOCIAL\nTabla | Punto de Salud | Calificación (1-10) | Diagnóstico Forense |. 10 filas. Incluye: Claridad de Bio, Link-in-Bio, Visibilidad en IAs, Cohesión Visual. Dossier: ${d}`,
 
-  VISIBILIDAD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### IV. AUTORIDAD Y EMBUDO SOCIAL\nRealiza un ensayo profundo evaluando:\n- Hemorragia de Atención: ¿El contenido retiene al usuario o lo pierde?\n- Fricción del Link in Bio: Analiza qué tan difícil es pasar de ser un seguidor a ser un comprador.\n- Arrendamiento Digital: Advierte al cliente sobre el peligro de depender 100% del algoritmo de Meta sin derivar tráfico a una web propia. Dossier: ${d}`,
+  VISIBILIDAD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### IV. AUTORIDAD SOCIAL, EMBUDO Y DESCUBRIMIENTO POR IA\nUsa bloque AI_VISIBILITY del dossier (datos reales).\n\nSUBSECCIÓN A — Embudo social: retención, link-in-bio, arrendamiento algorítmico.\n\nSUBSECCIÓN B — ¿Cómo describirían las IAs este perfil?: Tabla | Motor IA | ¿Recomendaría este negocio? | Evidencia (bio, links, NAP) | Brecha |. Si no hay web propia, diagnostica invisibilidad fuera de la plataforma.\n\nSUBSECCIÓN C — Señales de entidad pública: nombre, categoría, ubicación, CTA, enlace externo verificable.\nDossier: ${d}`,
 
-  BENCHMARK: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### V. RADIOGRAFÍA ESTRATÉGICA (BENCHMARK)\nElige a 3 competidores reales del nicho del cliente. Presenta una tabla Markdown. Traduce cabecera: | Criterio de Análisis | Perfil Analizado | [Comp 1] | [Comp 2] | [Comp 3] |\nREGLAS: NO usar saltos de línea en celdas. Máximo 2 oraciones por celda. Dossier: ${d}`,
+  BENCHMARK: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### V. BENCHMARK COMPETITIVO SOCIAL\n3 competidores reales. Tabla comparativa. Fila "Descubrimiento IA". Dossier: ${d}`,
 
-  SWOT: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VI. MATRIZ ESTRATÉGICA\nDesarrolla Fortalezas, Debilidades, Oportunidades y Amenazas de este perfil (3 a 5 líneas cada una). ${FORMATO_LISTAS} Dossier: ${d}`,
+  SWOT: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VI. MATRIZ ESTRATÉGICA\nSWOT del perfil. ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VII. LISTA DE DESEOS\n10 tácticas de alto valor para mejorar el perfil (3 a 5 líneas). ${FORMATO_LISTAS} (Numera del 1 al 10). Dossier: ${d}`,
+  WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VII. LISTA DE DESEOS\n10 tácticas de alto valor. ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VIII. 15 PUNTOS DE FUGA\nIdentifica 15 errores críticos en la biografía, el link, los textos de las imágenes o la falta de llamadas a la acción. Marca las peores como **[HEMORRAGIA CRÍTICA]**. REGLAS:\n1. ${FORMATO_LISTAS} (Numera del 1 al 15).\n2. Explica la pérdida de ventas de cada fuga. Dossier: ${d}`,
+  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VIII. 15 PUNTOS DE FUGA\n15 errores en bio, link, CTAs, contenido. **[HEMORRAGIA CRÍTICA]** en los peores. ${FORMATO_LISTAS}. Usa capturas adjuntas. Dossier: ${d}`,
 
-  ACCIONES: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### IX. 15 ACCIONES TÁCTICAS\nProporciona la solución exacta a las 15 fugas. REGLA: ${FORMATO_LISTAS} (Numera del 1 al 15). Dossier: ${d}`,
+  ACCIONES: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### IX. 15 ACCIONES TÁCTICAS\nSoluciones a las 15 fugas. ${FORMATO_LISTAS}.\nOBLIGATORIO — Acción #1 o #2 **Visibilidad en IAs para perfil social**: web propia con Schema sameAs, bio optimizada para citación, link-in-bio con datos estructurados, consistencia NAP, llms.txt en web vinculada. **[COPIAR Y PEGAR]:** bio mejorada y ejemplo de enlace.\nDossier: ${d}`,
 
-  HERRAMIENTAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### X. HERRAMIENTAS DE CRECIMIENTO\n5 soluciones SaaS para redes sociales (programadores, auto-DMs, link-in-bio) justificando ROI. ${FORMATO_LISTAS} (Numera del 1 al 5). Dossier: ${d}`,
+  HERRAMIENTAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### X. HERRAMIENTAS DE CRECIMIENTO\n5 SaaS (link-in-bio, programación, DM automation, analytics, GEO monitoring). ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  OMNI: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### XI. HOJA DE RUTA EJECUTIVA (21 DÍAS)\n3 fases de 7 días. DEBES generar EXACTAMENTE 3 pasos por cada fase enfocados en optimizar el perfil. ${FORMATO_LISTAS} Dossier: ${d}`
+  OMNI: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### XI. HOJA DE RUTA (21 DÍAS)\n3 fases × 3 pasos para optimizar perfil + visibilidad IA. ${FORMATO_LISTAS} Dossier: ${d}`,
 };
 
 module.exports = { PROMPTS, IDIOMA, REGLA_NUCLEAR };

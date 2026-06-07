@@ -1,3 +1,5 @@
+const { getPdfCoverBrandHtml, getPdfBrandStyles } = require('./brand');
+
 function getHTML() {
     return `
     <!DOCTYPE html>
@@ -76,6 +78,8 @@ function getHTML() {
                 }
                 td { padding: 12px !important; border-bottom: 1px solid var(--pc-border) !important; color: var(--pc-dark) !important; font-size: 10pt; }
                 tr:nth-child(even) td { background: #f8fafc !important; -webkit-print-color-adjust: exact; }
+
+                ${getPdfBrandStyles()}
             }
         </style>
     </head>
@@ -93,10 +97,13 @@ function getHTML() {
 
             <div id="impresion-area">
                 <div class="hidden print:flex cover-page">
-                    <div class="text-emerald-500 font-bold uppercase tracking-[0.5em] mb-4">Forensic Conversion Report</div>
+                    ${getPdfCoverBrandHtml()}
+                    <div class="text-emerald-600 font-bold uppercase tracking-[0.35em] mb-2 text-[9pt]">Forensic Conversion Report</div>
                     <div class="cover-accent"></div>
-                    <div class="cover-title">PredictaCore<br>Titán Intelligence</div>
-                    <div class="text-2xl text-gray-500 mt-8" id="pdf-domain">Asset Analysis</div>
+                    <div class="cover-title" style="font-size:2rem;">Titán Intelligence</div>
+                    <div class="text-xl text-gray-500 mt-4" id="pdf-domain">Asset Analysis</div>
+                    <div id="pdf-metrics"></div>
+                    <div id="pdf-evidence"></div>
                     <div class="mt-auto pt-10 border-t border-gray-200 flex justify-between items-end">
                         <span class="font-bold text-gray-900 uppercase text-xs tracking-widest">Altamente Confidencial</span>
                         <span id="pdf-date" class="font-bold text-gray-900"></span>

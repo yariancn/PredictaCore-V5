@@ -2,6 +2,7 @@
 const puppeteer = require('puppeteer');
 
 const { isSocialMediaUrl } = require('./audit-target');
+const { collectForensics } = require('./forensics');
 
 async function captureAndScrape(url) {
     let browser;
@@ -106,13 +107,23 @@ async function captureAndScrape(url) {
             }
         }
 
+        const forensics = await collectForensics(page, url, loadTime, isSocialMedia);
+
         await browser.close();
         const fechaHoy = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-        
-        // INTEGRAMOS LOS DATOS NUEVOS AL DOSSIER (El Cerebro ahora verá los logos y el Shop Pay)
-        const dossierTexto = `FECHA: ${fechaHoy} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}`;
 
-        return { isUrl: true, texto: dossierTexto, desktopBase64, mobileBase64 };
+        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${forensics.block}`;
+
+        return {
+            isUrl: true,
+            texto: dossierTexto,
+            desktopBase64,
+            mobileBase64,
+            loadTimeSec: loadTime,
+            seoScore: forensics.seoScore ?? null,
+            aiScore: forensics.aiScore ?? null,
+            assetType: forensics.assetType,
+        };
     } catch (error) {
         if (browser) await browser.close();
         return { isUrl: false, texto: `ERROR_MOTOR: ${error.message}` };
