@@ -574,6 +574,7 @@ app.get('/privacidad', (req, res) => res.redirect(301, '/privacy'));
 
 app.get('/legal', (req, res) => res.redirect(301, '/'));
 app.get('/legal/regenoxy', (req, res) => res.redirect(301, '/'));
+app.get('/static/oxyhyperbaric-legal-hub.html', (req, res) => res.redirect(301, '/'));
 app.get('/legal/clinical-services', (req, res) => res.redirect(301, '/'));
 app.get('/legal/servicios-clinicos', (req, res) => res.redirect(301, '/'));
 app.get('/legal/payments', (req, res) => res.redirect(301, '/'));
@@ -766,8 +767,22 @@ app.post('/playground/replay-delivery', requirePlayground, async (req, res) => {
 });
 
 app.post('/start-lite', async (req, res) => {
-    iniciarAuditoria(req.body.dna, req.body.email, 'LITE');
-    res.json({ status: 'started' });
+    const { dna, email } = req.body || {};
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    const targetUrl = normalizeUrl(dna);
+    if (!targetUrl || !normalizedEmail) {
+        return res.status(400).json({ error: 'URL and email required' });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+        return res.status(400).json({ error: 'Invalid email address' });
+    }
+    try {
+        await iniciarAuditoria(dna, normalizedEmail, 'LITE');
+        res.json({ status: 'started' });
+    } catch (err) {
+        console.error('!!! /start-lite:', err?.message || err);
+        res.status(500).json({ error: 'Could not start scan' });
+    }
 });
 
 app.post('/start', async (req, res) => {

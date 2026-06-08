@@ -9,17 +9,11 @@ function getLandingHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PredictaCore | Auditoría forense para emprendedores</title>
+        <meta name="description" content="PredictaCore audita tu web o perfil social (solo URL) para encontrar por qué pierdes clientes y cómo arreglarlo. Escaneo Lite gratis. Reporte Titán USD $349.">
+        <meta name="application-name" content="PredictaCore">
+        <meta property="og:site_name" content="PredictaCore">
         ${getFaviconHeadTags()}
-        
-        <script>
-            window.history.scrollRestoration = 'manual';
-            window.onload = function() {
-                setTimeout(function() { window.scrollTo(0, 0); }, 10);
-            };
-        </script>
-
-        <title>PredictaCore | Forensic audit for entrepreneurs — fix the page that loses customers</title>
-        <meta name="description" content="For the average entrepreneur: PredictaCore audits your public website or social profile (URL only) to find why you lose customers and exactly how to fix it. More than generic AI. Denser than a $3k agency looking at the same page. USD $349.">
         
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
@@ -72,6 +66,17 @@ function getLandingHTML() {
                 background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, transparent 50%);
                 z-index: -1;
             }
+
+            .pc-readable { font-size: 0.875rem; line-height: 1.65; letter-spacing: 0; }
+            .pc-input {
+                font-size: 0.875rem;
+                letter-spacing: 0;
+                text-transform: none;
+            }
+            .pc-label-xs {
+                font-size: 0.6875rem;
+                letter-spacing: 0.12em;
+            }
         </style>
     </head>
     <body class="antialiased">
@@ -86,59 +91,64 @@ function getLandingHTML() {
             </div>
             <div class="flex items-center space-x-6">
                 <div class="flex space-x-3 text-[10px] tracking-widest border border-zinc-800 px-3 py-1 rounded-full bg-black/50">
-                    <span onclick="setLanguage('en')" id="lang-en" class="lang-btn active">EN</span>
+                    <span id="lang-en" class="lang-btn active">EN</span>
                     <span class="text-zinc-700">/</span>
-                    <span onclick="setLanguage('es')" id="lang-es" class="lang-btn">ES</span>
+                    <span id="lang-es" class="lang-btn">ES</span>
                 </div>
-                <a href="#terminal-section" id="nav-access" class="text-[10px] uppercase font-bold tracking-widest text-emerald-500 border-b border-emerald-500/30 hover:text-emerald-400 transition-colors">Node Access</a>
+                <a href="#terminal-section" id="nav-access" class="text-xs uppercase font-bold tracking-wide text-emerald-500 border-b border-emerald-500/30 hover:text-emerald-400 transition-colors">Escaneo gratis</a>
             </div>
         </nav>
 
-        <section class="min-h-screen flex flex-col justify-center px-6 pt-32 pb-20">
+        <section class="pt-28 pb-16 md:pt-36 md:pb-20 px-6">
             <div class="max-w-6xl mx-auto w-full">
-                <h1 id="hero-title" class="text-huge text-white mb-12">TRAFFIC DOES NOT GUARANTEE <br><span class="text-emerald-500">PROFITABILITY.</span></h1>
+                <h1 id="hero-title" class="text-huge text-white mb-8 md:mb-10">TRAFFIC DOES NOT GUARANTEE <br><span class="text-emerald-500">PROFITABILITY.</span></h1>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                     <div class="border-l-4 border-emerald-500 pl-6">
-                        <p id="hero-desc-left" class="text-xl text-zinc-200 leading-tight">
+                        <p id="hero-desc-left" class="text-lg text-zinc-200 leading-relaxed pc-readable">
                             Your public page is where strangers decide yes or no. We don't need your analytics — we forensic-scan what every customer sees and show you exactly what's making them leave.
                         </p>
                     </div>
                     <div class="border-l-4 border-zinc-700 pl-6 flex flex-col justify-center">
-                        <p id="hero-desc-right" class="text-md text-zinc-400 leading-relaxed">
+                        <p id="hero-desc-right" class="text-base text-zinc-400 leading-relaxed pc-readable">
                             Built for the average entrepreneur, not enterprise. One URL. One PDF. Why you're losing customers on your site or social profile — and 15 copy-paste fixes. More rigor than chat AI. More deliverables than most agencies charge $3k+ to review the same page.
                         </p>
                     </div>
                 </div>
-                <p id="hero-tagline" class="max-w-3xl mx-auto mt-16 text-center text-[11px] text-emerald-500/90 uppercase tracking-[0.25em] font-bold">
+                <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="#terminal-section" id="hero-cta" class="inline-block w-full sm:w-auto text-center bg-emerald-600 text-white font-black py-4 px-8 rounded hover:bg-emerald-500 transition-all uppercase tracking-wide text-sm">
+                        Ejecutar escaneo gratuito
+                    </a>
+                </div>
+                <p id="hero-tagline" class="max-w-3xl mx-auto mt-8 text-center text-xs text-emerald-500/90 uppercase tracking-wide font-semibold">
                     We don't value your internal data. We value what your page is doing to your next customer.
                 </p>
             </div>
         </section>
 
-        <section id="why-section" class="py-20 border-b border-zinc-900 bg-black/40">
+        <section id="why-section" class="py-16 border-b border-zinc-900 bg-black/40">
             <div class="max-w-6xl mx-auto px-6">
-                <h2 id="why-title" class="text-xs text-emerald-500 font-bold tracking-[0.3em] uppercase mb-3 text-center">Why PredictaCore</h2>
-                <p id="why-sub" class="text-2xl md:text-3xl font-black text-white text-center mb-12 max-w-3xl mx-auto leading-tight">The spearhead audit for entrepreneurs who can't afford to guess.</p>
+                <h2 id="why-title" class="text-xs text-emerald-500 font-bold tracking-wide uppercase mb-3 text-center">Why PredictaCore</h2>
+                <p id="why-sub" class="text-2xl md:text-3xl font-black text-white text-center mb-10 max-w-3xl mx-auto leading-tight">The spearhead audit for entrepreneurs who can't afford to guess.</p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="p-6 border border-zinc-800 rounded-xl bg-white/[0.03]">
                         <h3 id="why-1-t" class="text-white font-bold text-sm mb-3">Our only focus</h3>
-                        <p id="why-1-d" class="text-[11px] text-zinc-400 leading-relaxed">Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We find friction, invisible errors, and missed trust signals. Goal: stop losing customers you never knew you had.</p>
+                        <p id="why-1-d" class="text-sm text-zinc-400 leading-relaxed pc-readable">Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We find friction, invisible errors, and missed trust signals. Goal: stop losing customers you never knew you had.</p>
                     </div>
                     <div class="p-6 border border-emerald-500/20 rounded-xl bg-emerald-950/10">
                         <h3 id="why-2-t" class="text-emerald-400 font-bold text-sm mb-3">Beat agencies on the same page</h3>
-                        <p id="why-2-d" class="text-[11px] text-zinc-300 leading-relaxed">Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $349.</p>
+                        <p id="why-2-d" class="text-sm text-zinc-300 leading-relaxed pc-readable">Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $349.</p>
                     </div>
                     <div class="p-6 border border-zinc-800 rounded-xl bg-white/[0.03]">
                         <h3 id="why-3-t" class="text-white font-bold text-sm mb-3">Beat generic AI</h3>
-                        <p id="why-3-d" class="text-[11px] text-zinc-400 leading-relaxed">ChatGPT guesses. We scrape, score, simulate buyer psychology by your industry, validate outputs, and deliver a structured 11-section PDF — not a paragraph you have to interpret.</p>
+                        <p id="why-3-d" class="text-sm text-zinc-400 leading-relaxed pc-readable">ChatGPT guesses. We scrape, score, simulate buyer psychology by your industry, validate outputs, and deliver a structured 11-section PDF — not a paragraph you have to interpret.</p>
                     </div>
                 </div>
-                <p id="why-foot" class="text-center text-[10px] text-zinc-600 mt-10 max-w-2xl mx-auto leading-relaxed">Not for Fortune 500 data rooms. For the shop owner, clinic, creator, or local brand who needs their page to convert — today.</p>
+                <p id="why-foot" class="text-center text-xs text-zinc-500 mt-8 max-w-2xl mx-auto leading-relaxed pc-readable">Not for Fortune 500 data rooms. For the shop owner, clinic, creator, or local brand who needs their page to convert — today.</p>
             </div>
         </section>
 
-        <section class="py-24 bg-[#080808] border-y border-zinc-900 overflow-hidden">
+        <section class="py-16 bg-[#080808] border-y border-zinc-900 overflow-hidden">
             <div class="max-w-6xl mx-auto px-6">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div class="order-2 lg:order-1">
@@ -191,7 +201,7 @@ function getLandingHTML() {
                         <p id="offer-desc" class="text-zinc-300 mb-6 leading-relaxed">
                             The Titan Report is an 11-section PDF delivered by email. We detect your business type, simulate how each buyer profile reacts, and give copy-paste fixes — plus real SEO and AI visibility scores.
                         </p>
-                        <ul id="offer-deliverables" class="space-y-3 font-mono text-[10px] text-zinc-400 mb-8 border-l border-emerald-500/30 pl-4">
+                        <ul id="offer-deliverables" class="space-y-2 font-mono text-xs text-zinc-400 mb-8 border-l border-emerald-500/30 pl-4 pc-readable">
                             <li id="od-1">✓ Desktop + mobile capture · measured load time</li>
                             <li id="od-2">✓ SEO forensics (title, meta, schema, sitemap, robots)</li>
                             <li id="od-3">✓ AI discoverability (GEO) · technical proxy score 0–100</li>
@@ -199,36 +209,21 @@ function getLandingHTML() {
                             <li id="od-5">✓ 15 drop-offs + 15 copy-paste actions · 21-day roadmap</li>
                             <li id="od-6">✓ Web or Instagram / Facebook / TikTok profile</li>
                         </ul>
-                        
-                        <ul class="space-y-6 font-mono text-xs text-zinc-300">
-                            <li class="flex items-start">
-                                <span class="w-2 h-2 mt-1 bg-emerald-500 mr-4 shrink-0"></span> 
-                                <span id="li-1" class="leading-tight">1. Drop-off Point X-Ray<br><span class="text-[10px] text-zinc-500">(Where exactly do they leave?)</span></span>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="w-2 h-2 mt-1 bg-emerald-500 mr-4 shrink-0"></span> 
-                                <span id="li-2" class="leading-tight">2. Direct Action Plan<br><span class="text-[10px] text-zinc-500">(What to change today)</span></span>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="w-2 h-2 mt-1 bg-emerald-500 mr-4 shrink-0"></span> 
-                                <span id="li-3" class="leading-tight">3. Hidden Competition Analysis<br><span class="text-[10px] text-zinc-500">(Why do they buy elsewhere?)</span></span>
-                            </li>
-                        </ul>
                     </div>
                 </div>
 
-                <div class="max-w-4xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div class="max-w-4xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                     <div class="border border-zinc-700 rounded-xl p-6 bg-zinc-900/50">
-                        <h4 id="lite-box-title" class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest mb-3">Lite — Free</h4>
-                        <ul id="lite-box-list" class="text-[11px] text-zinc-400 space-y-2 font-mono">
+                        <h4 id="lite-box-title" class="text-emerald-500 text-xs font-bold uppercase tracking-wide mb-3">Lite — Free</h4>
+                        <ul id="lite-box-list" class="text-sm text-zinc-400 space-y-2 font-mono pc-readable">
                             <li>· 3 critical conversion leaks</li>
                             <li>· SEO + AI visibility snapshot</li>
                             <li>· Buyer profiles by industry (summary)</li>
                         </ul>
                     </div>
                     <div class="border border-emerald-500/40 rounded-xl p-6 bg-emerald-950/20">
-                        <h4 id="titan-box-title" class="text-emerald-400 text-[10px] font-bold uppercase tracking-widest mb-3">Titan — USD $349</h4>
-                        <ul id="titan-box-list" class="text-[11px] text-zinc-300 space-y-2 font-mono">
+                        <h4 id="titan-box-title" class="text-emerald-400 text-xs font-bold uppercase tracking-wide mb-3">Titan — USD $349</h4>
+                        <ul id="titan-box-list" class="text-sm text-zinc-300 space-y-2 font-mono pc-readable">
                             <li>· Full 11-section forensic PDF</li>
                             <li>· 15 leaks + 15 copy-paste actions</li>
                             <li>· SEO forensics + AI (GEO) + benchmark</li>
@@ -239,39 +234,13 @@ function getLandingHTML() {
             </div>
         </section>
 
-        <section class="py-12 border-b border-zinc-900">
-            <div class="max-w-3xl mx-auto px-6 text-center">
-                <p id="social-banner" class="text-[11px] text-zinc-400 leading-relaxed">
-                    <span class="text-emerald-500 font-bold">Web + Social:</span> paste your domain or a public Instagram, Facebook, or TikTok profile URL — same forensic engine.
-                </p>
-            </div>
-        </section>
-
-        <section class="py-24 relative">
+        <section class="py-16 relative border-b border-zinc-900">
             <div class="max-w-6xl mx-auto px-6 text-center">
-                <h2 id="method-title" class="text-xs text-emerald-500 font-bold tracking-[0.3em] uppercase mb-12">Our Technology</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                    <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left hover:bg-white/10 transition-colors">
-                        <div class="text-3xl font-black text-white mb-2">→</div>
-                        <div id="m1" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Profiles by Industry</div>
-                        <p id="m1-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">We detect your business type and simulate skeptical, rushed, mobile, and comparison shoppers — looking for trust gaps, weak CTAs, and checkout friction on your public URL.</p>
-                    </div>
-                    <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left hover:bg-white/10 transition-colors">
-                        <div class="text-3xl font-black text-white mb-2">11</div>
-                        <div id="m2" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Forensic Pillars</div>
-                        <p id="m2-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">Full PDF: scorecard, SEO, AI visibility, verified benchmark when found, 15 leaks, 15 actions, roadmap. Lite free scan: 3 critical leaks + SEO/AI snapshot.</p>
-                    </div>
-                    <div class="p-8 border border-zinc-800 bg-white/5 rounded-xl text-left hover:bg-white/10 transition-colors">
-                        <div class="text-3xl font-black text-white mb-2">URL</div>
-                        <div id="m3" class="text-xs font-bold uppercase tracking-widest text-emerald-500">Only URL Required</div>
-                        <p id="m3-desc" class="text-[11px] mt-4 text-zinc-300 leading-relaxed">No analytics login, no plugins. Measured data from your live page or social profile + AI-assisted narrative grounded in that evidence.</p>
-                    </div>
-                </div>
+                <h2 id="method-title" class="text-xs text-emerald-500 font-bold tracking-wide uppercase mb-8">The 11 forensic pillars</h2>
 
                 <div class="bg-black/50 border border-zinc-800 p-8 rounded-xl text-left max-w-4xl mx-auto">
-                    <h3 id="pillars-title" class="text-emerald-500 font-bold tracking-[0.2em] uppercase mb-6 text-[10px] border-b border-zinc-800 pb-4">The 11 Pillars of our Forensic Audit</h3>
-                    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-8 font-mono text-[10px] text-zinc-400">
+                    <h3 id="pillars-title" class="text-emerald-500 font-bold tracking-wide uppercase mb-6 text-xs border-b border-zinc-800 pb-4">What your PDF includes</h3>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-8 font-mono text-xs text-zinc-400 pc-readable">
                         <li id="p-1"><span class="text-emerald-600 mr-2">01</span> Asset X-Ray</li>
                         <li id="p-2"><span class="text-emerald-600 mr-2">02</span> Psychological Profiles</li>
                         <li id="p-3"><span class="text-emerald-600 mr-2">03</span> Health Scorecard</li>
@@ -288,21 +257,18 @@ function getLandingHTML() {
             </div>
         </section>
 
-        <section id="terminal-section" class="py-24 bg-emerald-950/10 border-t border-emerald-900/20">
+        <section id="terminal-section" class="py-16 bg-emerald-950/10 border-t border-emerald-900/20">
             <div class="max-w-2xl mx-auto px-6">
                 
-                <div id="setup-stage" class="terminal-box p-8 md:p-12 shadow-[0_0_50px_rgba(16,185,129,0.1)] border border-zinc-800 bg-black/80 relative">
-                    <div class="absolute top-4 right-4 text-[10px] text-emerald-500 font-mono animate-pulse">
-                        // AVAILABLE NODES: 2
-                    </div>
-                    <h2 id="term-title" class="text-2xl font-black text-white mt-4 mb-6 uppercase tracking-tighter text-center">Start Forensic Diagnostic</h2>
+                <div id="setup-stage" class="terminal-box p-8 md:p-10 shadow-[0_0_50px_rgba(16,185,129,0.1)] border border-zinc-800 bg-black/80 relative">
+                    <h2 id="term-title" class="text-2xl font-black text-white mb-2 uppercase tracking-tighter text-center">Start Forensic Diagnostic</h2>
+                    <p id="term-sub" class="text-sm text-zinc-400 text-center mb-6 pc-readable">Paste your website or public Instagram, Facebook, or TikTok URL. No login required.</p>
                     <div class="space-y-4">
-                        <input type="text" id="dna-url" placeholder="Website or social profile URL (yourbusiness.com · instagram.com/brand)" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs tracking-widest">
-                        <input type="email" id="user-email" placeholder="Your Email" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono text-xs uppercase tracking-widest">
-                        <p id="url-hint" class="text-[9px] text-zinc-600 text-center leading-relaxed">Instagram, Facebook, TikTok, or any public website — no login required.</p>
-                        <p id="lite-eta-before" class="text-[10px] text-zinc-500 leading-relaxed text-center">Report delivery can take up to 60 minutes while our engine processes your site.</p>
-                        <p id="setup-error" class="hidden-flow text-[10px] text-red-400 text-center" role="alert"></p>
-                        <button id="btn-start" onclick="iniciarEscaneo()" class="w-full bg-emerald-600 text-white font-black py-4 rounded hover:bg-emerald-500 transition-all uppercase tracking-[0.2em] text-xs">
+                        <input type="url" id="dna-url" placeholder="Website or social profile URL (yourbusiness.com · instagram.com/brand)" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input">
+                        <input type="email" id="user-email" placeholder="Your Email" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input">
+                        <p id="lite-eta-before" class="text-xs text-zinc-500 leading-relaxed text-center pc-readable">Report delivery can take up to 60 minutes while our engine processes your site.</p>
+                        <p id="setup-error" class="hidden-flow text-sm text-red-400 text-center font-medium" role="alert"></p>
+                        <button type="button" id="btn-start" class="w-full bg-emerald-600 text-white font-black py-4 rounded hover:bg-emerald-500 transition-all uppercase tracking-wide text-sm disabled:opacity-60 disabled:cursor-wait">
                             Execute Free Scan
                         </button>
                     </div>
@@ -336,7 +302,7 @@ function getLandingHTML() {
                         <p id="sub-price-2" class="text-[9px] text-zinc-400 mb-4 leading-relaxed">Monitoring subscription ($25/mo) activates now; first monthly charge in ~30 days. Cancel at least 5 business days before renewal. All sales final — no refunds.</p>
                         <p id="titan-eta-before" class="text-[10px] text-zinc-500 mb-4 leading-relaxed">After payment, your Titan PDF may take up to 60 minutes to arrive by email.</p>
                         
-                        <button onclick="comprarTitan()" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2 transition-opacity disabled:opacity-60 disabled:cursor-wait" id="btn-titan">
+                        <button type="button" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2 transition-opacity disabled:opacity-60 disabled:cursor-wait" id="btn-titan">
                             Get Full Titan Report — $349
                         </button>
                         <p id="checkout-error" class="hidden-flow text-[10px] text-red-400 mb-2 leading-relaxed" role="alert"></p>
@@ -354,17 +320,17 @@ function getLandingHTML() {
             </div>
         </div>
 
-        <footer class="py-12 bg-black border-t border-zinc-900 text-center">
+        <footer class="py-10 bg-black border-t border-zinc-900 text-center">
             <div class="max-w-4xl mx-auto px-6">
-                <p id="footer-text" class="text-[10px] text-emerald-600 uppercase tracking-[0.2em] mb-6">Consultant or Agency? Join our Forensic Audit network.</p>
-                <p id="disclaimer-text" class="text-[9px] text-zinc-500 leading-relaxed mb-4 max-w-2xl mx-auto">
+                <p id="footer-text" class="text-xs text-emerald-600 uppercase tracking-wide mb-4">Consultant or Agency? Join our Forensic Audit network.</p>
+                <p id="disclaimer-text" class="text-xs text-zinc-500 leading-relaxed mb-4 max-w-2xl mx-auto pc-readable">
                     PredictaCore AI website audits. USD $349 charged today; USD $25/mo monitoring starts ~30 days later. Card statement shows PREDICTACORE. All sales final. Cancel at least 5 business days before renewal.
                 </p>
-                <p class="text-[9px] text-zinc-600 mb-6">
+                <p class="text-xs text-zinc-600 mb-4">
                     <a href="/terms" class="text-emerald-600 hover:underline">Terms</a> · <a href="/privacy" class="text-emerald-600 hover:underline">Privacy</a>
                 </p>
-                <div class="text-[9px] text-zinc-700 font-mono">
-                    © 2026 PREDICTACORE // NODE_STATUS: OPERATIONAL
+                <div class="text-xs text-zinc-600 font-mono">
+                    © 2026 PredictaCore · predictacore.ai
                 </div>
             </div>
         </footer>
@@ -377,7 +343,9 @@ function getLandingHTML() {
             
             const dictionary = {
                 en: {
-                    navAccess: "Node Access",
+                    pageTitle: "PredictaCore | Forensic audit for entrepreneurs",
+                    navAccess: "Free scan",
+                    heroCta: "Run free scan",
                     heroTitle: "TRAFFIC DOES NOT GUARANTEE <br><span class='text-emerald-500'>PROFITABILITY.</span>",
                     heroDescLeft: "Your public page is where strangers decide yes or no. We don't need your analytics — we forensic-scan what every customer sees and show you exactly what's making them leave.",
                     heroDescRight: "Built for the average entrepreneur, not enterprise. One URL. One PDF. Why you're losing customers on your site or social profile — and 15 copy-paste fixes. More rigor than chat AI. More deliverables than most agencies charge $3k+ to review the same page.",
@@ -402,17 +370,12 @@ function getLandingHTML() {
                     liteBoxList: "<li>· 3 critical conversion leaks</li><li>· SEO + AI visibility snapshot</li><li>· Buyer profiles by industry (summary)</li>",
                     titanBoxTitle: "Titan — USD $349",
                     titanBoxList: "<li>· Full 11-section forensic PDF</li><li>· 15 leaks + 15 copy-paste actions</li><li>· SEO forensics + AI (GEO) + benchmark</li><li>· Monthly monitoring report ($25/mo from day 30)</li>",
-                    socialBanner: "<span class=\"text-emerald-500 font-bold\">Web + Social:</span> paste your domain or a public Instagram, Facebook, or TikTok profile URL — same forensic engine.",
-                    li1: "1. Drop-off Point X-Ray<br><span class='text-[10px] text-zinc-500'>(Where exactly do they leave?)</span>", 
-                    li2: "2. Direct Action Plan<br><span class='text-[10px] text-zinc-500'>(What to change today)</span>", 
-                    li3: "3. Hidden Competition Analysis<br><span class='text-[10px] text-zinc-500'>(Why do they buy elsewhere?)</span>",
-                    methodTitle: "Our Technology",
-                    m1: "Profiles by Industry", m1Desc: "We detect your business type and simulate skeptical, rushed, mobile, and comparison shoppers — looking for trust gaps, weak CTAs, and checkout friction on your public URL.",
-                    m2: "Forensic Pillars", m2Desc: "Full PDF: scorecard, SEO, AI visibility, verified benchmark when found, 15 leaks, 15 actions, roadmap. Lite free scan: 3 critical leaks + SEO/AI snapshot.",
-                    m3: "Only URL Required", m3Desc: "No analytics login, no plugins. Measured data from your live page or social profile + AI-assisted narrative grounded in that evidence.",
-                    pillarsTitle: "The 11 Pillars of our Forensic Audit",
+                    methodTitle: "The 11 forensic pillars",
+                    pillarsTitle: "What your PDF includes",
                     p1: "Asset X-Ray", p2: "Psychological Profiles", p3: "Health Scorecard", p4: "Visibility & SEO", p5: "Competitive Benchmark", p6: "SWOT Matrix", p7: "Wishlist", p8: "15 Drop-off Points", p9: "15 Tactical Actions", p10: "Scaling Tools", p11: "21-Day Roadmap",
-                    termTitle: "Start Forensic Diagnostic", btnStart: "Execute Free Scan",
+                    termTitle: "Start Forensic Diagnostic",
+                    termSub: "Paste your website or public Instagram, Facebook, or TikTok URL. No login required.",
+                    btnStart: "Execute Free Scan",
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
                     upT: "X-Ray Sealed", upSt: "Successfully sent to",
                     boxText: "Initial scan shows critical bottlenecks. You are losing sales today due to purchasing obstacles. The Titan Report dissects your website and delivers the exact instructions to fix these leaks.",
@@ -429,7 +392,9 @@ function getLandingHTML() {
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
                     checkoutError: "Could not start checkout. Try again or contact support.",
                     checkoutNetwork: "Network error. Check your connection and try again.",
-                    alertError: "Required data missing.",
+                    alertError: "URL and email are required.",
+                    invalidEmail: "Enter a valid email address.",
+                    scanError: "Could not start the scan. Try again in a moment.",
                     liteEtaBefore: "Report delivery can take up to 60 minutes while our engine processes your site.",
                     liteQueued: "Your Lite report is being generated and will arrive by email.",
                     liteEtaAfter: "Delivery may take up to 60 minutes due to forensic processing volume. Check spam.",
@@ -438,7 +403,9 @@ function getLandingHTML() {
                     phUrl: "Website or social profile URL (yourbusiness.com · instagram.com/brand)", phEmail: "Your Email"
                 },
                 es: {
-                    navAccess: "Acceso Nodo",
+                    pageTitle: "PredictaCore | Auditoría forense para emprendedores",
+                    navAccess: "Escaneo gratis",
+                    heroCta: "Ejecutar escaneo gratuito",
                     heroTitle: "TENER TRÁFICO NO GARANTIZA <br><span class='text-emerald-500'>RENTABILIDAD.</span>",
                     heroDescLeft: "Tu página pública es donde un desconocido dice sí o no. No necesitamos tu analytics — escaneamos lo que ve cada cliente y te mostramos qué lo hace irse.",
                     heroDescRight: "Hecho para el emprendedor promedio, no para corporativos. Una URL. Un PDF. Por qué pierdes clientes en tu web o red social — y 15 correcciones copy-paste. Más rigor que la IA en chat. Más entregables que muchas agencias que cobran $3k+ por revisar la misma página.",
@@ -463,17 +430,12 @@ function getLandingHTML() {
                     liteBoxList: "<li>· 3 fugas críticas de conversión</li><li>· Snapshot SEO + visibilidad IA</li><li>· Perfiles de comprador por giro (resumen)</li>",
                     titanBoxTitle: "Titán — USD $349",
                     titanBoxList: "<li>· PDF forense completo (11 secciones)</li><li>· 15 fugas + 15 acciones copy-paste</li><li>· SEO forense + IA (GEO) + benchmark</li><li>· Reporte mensual de seguimiento ($25/mes desde día 30)</li>",
-                    socialBanner: "<span class=\"text-emerald-500 font-bold\">Web + Social:</span> pega tu dominio o URL pública de Instagram, Facebook o TikTok — mismo motor forense.",
-                    li1: "1. Radiografía de Abandono<br><span class='text-[10px] text-zinc-500'>(¿Dónde exactamente se van?)</span>", 
-                    li2: "2. Plan de Acción Directo<br><span class='text-[10px] text-zinc-500'>(¿Qué cambiar hoy mismo?)</span>", 
-                    li3: "3. Análisis de Competencia<br><span class='text-[10px] text-zinc-500'>(¿Por qué compran en otro lado?)</span>",
-                    methodTitle: "Nuestra Tecnología",
-                    m1: "Perfiles por Giro", m1Desc: "Detectamos tu tipo de negocio y simulamos comprador escéptico, apurado, móvil y comparador — buscando brechas de confianza, CTAs débiles y fricción en tu URL pública.",
-                    m2: "Pilares Forenses", m2Desc: "PDF completo: scorecard, SEO, visibilidad IA, benchmark verificado si existe, 15 fugas, 15 acciones, roadmap. Lite gratis: 3 fugas críticas + snapshot SEO/IA.",
-                    m3: "Solo URL", m3Desc: "Sin analytics ni plugins. Datos medidos de tu página o perfil social + narrativa IA anclada a esa evidencia.",
-                    pillarsTitle: "Los 11 Pilares de nuestra Auditoría Forense",
+                    methodTitle: "Los 11 pilares forenses",
+                    pillarsTitle: "Qué incluye tu PDF",
                     p1: "Radiografía del Activo", p2: "Perfiles Psicológicos", p3: "Scorecard de Salud", p4: "Visibilidad y SEO", p5: "Benchmark Competitivo", p6: "Matriz Estratégica", p7: "Lista de Deseos", p8: "15 Puntos de Fuga", p9: "15 Acciones Tácticas", p10: "Herramientas de Escala", p11: "Hoja de Ruta a 21 Días",
-                    termTitle: "Iniciar Diagnóstico Forense", btnStart: "Ejecutar Escaneo Gratuito",
+                    termTitle: "Iniciar diagnóstico forense",
+                    termSub: "Pega tu web o URL pública de Instagram, Facebook o TikTok. Sin login.",
+                    btnStart: "Ejecutar escaneo gratuito",
                     logInit: ">> INICIALIZANDO NÚCLEO PREDICTACORE...",
                     upT: "Radiografía Sellada", upSt: "Enviado con éxito a",
                     boxText: "El escaneo inicial muestra cuellos de botella críticos. Estás perdiendo ventas hoy por obstáculos de compra. El Reporte Titán disecta tu sitio y entrega las instrucciones exactas para arreglar estas fugas.",
@@ -490,7 +452,9 @@ function getLandingHTML() {
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
                     checkoutError: "No se pudo iniciar el pago. Reintenta o contacta soporte.",
                     checkoutNetwork: "Error de red. Revisa tu conexión e intenta de nuevo.",
-                    alertError: "Faltan datos requeridos.",
+                    alertError: "URL y email son obligatorios.",
+                    invalidEmail: "Ingresa un email válido.",
+                    scanError: "No se pudo iniciar el escaneo. Intenta de nuevo en un momento.",
                     liteEtaBefore: "La entrega puede tardar hasta 60 minutos mientras procesamos tu sitio.",
                     liteQueued: "Tu reporte Lite se está generando y llegará por correo.",
                     liteEtaAfter: "La entrega puede tardar hasta 60 minutos por el volumen de análisis. Revisa spam.",
@@ -506,11 +470,14 @@ function getLandingHTML() {
 
             function setLanguage(lang) {
                 currentLang = lang;
+                document.documentElement.lang = lang;
                 document.getElementById('lang-es').classList.toggle('active', lang === 'es');
                 document.getElementById('lang-en').classList.toggle('active', lang === 'en');
                 const d = dictionary[lang];
+                if (d.pageTitle) document.title = d.pageTitle;
                 
                 document.getElementById('nav-access').innerText = d.navAccess;
+                if (d.heroCta) document.getElementById('hero-cta').innerText = d.heroCta;
                 document.getElementById('hero-title').innerHTML = d.heroTitle;
                 document.getElementById('hero-desc-left').innerText = d.heroDescLeft;
                 document.getElementById('hero-desc-right').innerText = d.heroDescRight;
@@ -540,17 +507,9 @@ function getLandingHTML() {
                 if (d.liteBoxList) document.getElementById('lite-box-list').innerHTML = d.liteBoxList;
                 if (d.titanBoxTitle) document.getElementById('titan-box-title').innerText = d.titanBoxTitle;
                 if (d.titanBoxList) document.getElementById('titan-box-list').innerHTML = d.titanBoxList;
-                if (d.socialBanner) document.getElementById('social-banner').innerHTML = d.socialBanner;
-                if (d.urlHint) document.getElementById('url-hint').innerText = d.urlHint;
                 if (d.titanPriceNote) document.getElementById('titan-price-note').innerText = d.titanPriceNote;
-                document.getElementById('li-1').innerHTML = d.li1;
-                document.getElementById('li-2').innerHTML = d.li2;
-                document.getElementById('li-3').innerHTML = d.li3;
 
                 document.getElementById('method-title').innerText = d.methodTitle;
-                document.getElementById('m1').innerText = d.m1; document.getElementById('m1-desc').innerText = d.m1Desc;
-                document.getElementById('m2').innerText = d.m2; document.getElementById('m2-desc').innerText = d.m2Desc;
-                document.getElementById('m3').innerText = d.m3; document.getElementById('m3-desc').innerText = d.m3Desc;
                 
                 document.getElementById('pillars-title').innerText = d.pillarsTitle;
                 for(let i=1; i<=11; i++) {
@@ -560,6 +519,7 @@ function getLandingHTML() {
                 }
                 
                 document.getElementById('term-title').innerText = d.termTitle;
+                if (d.termSub) document.getElementById('term-sub').innerText = d.termSub;
                 document.getElementById('btn-start').innerText = d.btnStart;
                 document.getElementById('dna-url').placeholder = d.phUrl;
                 document.getElementById('user-email').placeholder = d.phEmail;
@@ -588,34 +548,105 @@ function getLandingHTML() {
                 el.classList.toggle('hidden-flow', !msg);
             }
 
+            function updateSentEmail(email) {
+                let el = document.getElementById('sent-email');
+                if (!el) {
+                    const upSt = document.getElementById('up-st');
+                    const d = dictionary[currentLang];
+                    if (upSt) {
+                        upSt.innerHTML = d.upSt + ' <span id="sent-email" class="text-white font-bold"></span>.';
+                        el = document.getElementById('sent-email');
+                    }
+                }
+                if (el) el.textContent = email;
+            }
+
+            function resetScanUi() {
+                document.getElementById('setup-stage')?.classList.remove('hidden-flow');
+                document.getElementById('scanner-stage')?.classList.add('hidden-flow');
+                document.getElementById('upsell-stage')?.classList.add('hidden-flow');
+                const btn = document.getElementById('btn-start');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-60', 'cursor-wait');
+                }
+            }
+
             async function iniciarEscaneo() {
-                const url = document.getElementById('dna-url').value;
-                const email = document.getElementById('user-email').value;
+                const url = (document.getElementById('dna-url')?.value || '').trim();
+                const email = (document.getElementById('user-email')?.value || '').trim();
+                const d = dictionary[currentLang];
+                const btn = document.getElementById('btn-start');
+                const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
                 if (!url || !email) {
-                    setSetupError(dictionary[currentLang].alertError);
+                    setSetupError(d.alertError);
+                    return;
+                }
+                if (!emailOk) {
+                    setSetupError(d.invalidEmail);
                     return;
                 }
                 setSetupError('');
-                
-                document.getElementById('setup-stage').classList.add('hidden-flow');
-                document.getElementById('scanner-stage').classList.remove('hidden-flow');
-                document.getElementById('sent-email').innerText = email;
-                
+
+                if (btn) {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-60', 'cursor-wait');
+                }
+
+                document.getElementById('setup-stage')?.classList.add('hidden-flow');
+                document.getElementById('scanner-stage')?.classList.remove('hidden-flow');
+                document.getElementById('upsell-stage')?.classList.add('hidden-flow');
+                document.getElementById('terminal-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                updateSentEmail(email);
+
                 const terminal = document.getElementById('terminal-output');
-                const logs = currentLang === 'es' ? 
-                    [">> Conectando nodos...", ">> Inyectando Gemelos Sintéticos...", ">> Analizando Perfiles y Fricción...", ">> Sellando Teaser...", ">> Enviando..."] :
-                    [">> Connecting nodes...", ">> Injecting Synthetic Twins...", ">> Analyzing Profiles & Friction...", ">> Sealing Teaser...", ">> Sending..."];
-                
-                fetch('/start-lite', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ dna: url, email: email }) });
-                
+                if (terminal) {
+                    terminal.innerHTML = '<p id="log-init">' + d.logInit + '</p>';
+                }
+
+                const logs = currentLang === 'es'
+                    ? [">> Conectando nodos...", ">> Analizando página pública...", ">> Detectando fricción y fugas...", ">> Generando reporte Lite...", ">> Enviando por correo..."]
+                    : [">> Connecting nodes...", ">> Scanning public page...", ">> Detecting friction and leaks...", ">> Building Lite report...", ">> Sending email..."];
+
+                let fetchOk = false;
+                try {
+                    const res = await fetch('/start-lite', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ dna: url, email }),
+                    });
+                    fetchOk = res.ok;
+                    if (!res.ok) {
+                        const data = await res.json().catch(() => ({}));
+                        throw new Error(data.error || d.scanError);
+                    }
+                } catch (err) {
+                    resetScanUi();
+                    setSetupError(err.message || d.scanError);
+                    return;
+                }
+
+                if (!fetchOk) return;
+
                 let i = 0;
                 const interval = setInterval(() => {
-                    const p = document.createElement('p'); p.innerText = logs[i]; terminal.appendChild(p); i++;
-                    if(i >= logs.length) { 
-                        clearInterval(interval); 
-                        setTimeout(() => { document.getElementById('scanner-stage').classList.add('hidden-flow'); document.getElementById('upsell-stage').classList.remove('hidden-flow'); }, 2000); 
+                    if (!terminal || i >= logs.length) {
+                        clearInterval(interval);
+                        return;
                     }
-                }, 1000);
+                    const p = document.createElement('p');
+                    p.innerText = logs[i];
+                    terminal.appendChild(p);
+                    i++;
+                    if (i >= logs.length) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            document.getElementById('scanner-stage')?.classList.add('hidden-flow');
+                            document.getElementById('upsell-stage')?.classList.remove('hidden-flow');
+                        }, 1500);
+                    }
+                }, 900);
             }
 
             function setCheckoutError(msg) {
@@ -685,7 +716,25 @@ function getLandingHTML() {
                 const emailParam = urlParams.get('email');
                 if (dna) document.getElementById('dna-url').value = decodeURIComponent(dna);
                 if (emailParam) document.getElementById('user-email').value = decodeURIComponent(emailParam);
-                if (urlParams.get('lang') === 'es') setLanguage('es');
+
+                const langParam = urlParams.get('lang');
+                const browserEs = (navigator.language || '').toLowerCase().startsWith('es');
+                if (langParam === 'es' || (!langParam && browserEs)) {
+                    setLanguage('es');
+                }
+
+                document.getElementById('btn-start')?.addEventListener('click', iniciarEscaneo);
+                document.getElementById('btn-titan')?.addEventListener('click', comprarTitan);
+                document.getElementById('lang-en')?.addEventListener('click', () => setLanguage('en'));
+                document.getElementById('lang-es')?.addEventListener('click', () => setLanguage('es'));
+
+                document.getElementById('dna-url')?.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') iniciarEscaneo();
+                });
+                document.getElementById('user-email')?.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') iniciarEscaneo();
+                });
+
                 if (urlParams.get('titan') === '1') {
                     setTimeout(function() {
                         document.getElementById('terminal-section').scrollIntoView({ behavior: 'smooth' });
