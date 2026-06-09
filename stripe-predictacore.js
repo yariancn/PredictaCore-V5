@@ -56,7 +56,7 @@ function buildCheckoutLineItems() {
                 currency: 'usd',
                 product_data: {
                     name: 'PredictaCore Monthly Monitoring',
-                    description: 'USD $25/month. First charge in ~30 days after purchase.',
+                    description: 'USD $25/month. First follow-up report at month 1; first charge on that date (not a free trial).',
                     metadata: { brand: BRAND, product: BRAND },
                 },
                 unit_amount: 2500,
@@ -67,14 +67,24 @@ function buildCheckoutLineItems() {
     ];
 }
 
-function getCheckoutCustomText() {
+function getCheckoutCustomText(lang = 'en') {
     const termsLink = `[PredictaCore Terms of Service](${TERMS_URL})`;
     const privacyLink = `[Privacy Policy](${PRIVACY_URL})`;
+    const termsLinkEs = `[Términos de PredictaCore](${TERMS_URL})`;
+    const privacyLinkEs = `[Política de Privacidad](${PRIVACY_URL})`;
     const descriptor = STATEMENT_SUFFIX();
+
+    if (lang === 'es') {
+        return {
+            submit: {
+                message: `PredictaCore — USD $349 hoy (Reporte Titán). Monitoreo $25/mes: primer reporte de seguimiento al mes 1; primer cobro en esa fecha (no es prueba gratis). Al pagar aceptas ${termsLinkEs} y ${privacyLinkEs}. Estado de cuenta: ${descriptor}. Ventas finales.`,
+            },
+        };
+    }
 
     return {
         submit: {
-            message: `PredictaCore — USD $349 charged today (Titan Report). USD $25/mo monitoring starts in ~30 days. By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}. All sales final.`,
+            message: `PredictaCore — USD $349 charged today (Titan Report). $25/mo monitoring: first follow-up report at month 1; first charge on that date (not a free trial). By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}. All sales final.`,
         },
     };
 }
@@ -189,22 +199,39 @@ async function validateCheckoutPrices(stripe) {
     }
 }
 
+function titanCheckoutLineItems(lineItems) {
+    const items = lineItems || buildCheckoutLineItems();
+    return items.length ? [items[0]] : buildCheckoutLineItems().slice(0, 1);
+}
+
+async function createMonitoringSubscription(stripe, { customerId, metadata }) {
+    const subPriceId = PRICE_SUB();
+    if (!subPriceId) {
+        throw new Error('STRIPE_PRICE_SUBSCRIPTION not configured');
+    }
+    return stripe.subscriptions.create({
+        customer: customerId,
+        items: [{ price: subPriceId }],
+        trial_period_days: 30,
+        metadata: {
+            ...metadata,
+            service: 'predictacore_monitoring',
+        },
+    });
+}
+
 function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang }) {
     const meta = checkoutMetadata({ dna, email, refCode, lang });
-    const items = lineItems || buildCheckoutLineItems();
     const locale = meta.lang === 'es' ? 'es' : 'en';
 
     return {
         payment_method_types: ['card'],
         customer_email: meta.email || email,
-        mode: 'subscription',
-        line_items: items,
+        customer_creation: 'always',
+        mode: 'payment',
+        line_items: titanCheckoutLineItems(lineItems),
         locale,
-        subscription_data: {
-            trial_period_days: 30,
-            metadata: meta,
-        },
-        custom_text: getCheckoutCustomText(),
+        custom_text: getCheckoutCustomText(meta.lang),
         success_url: `${host}/exito?session_id={CHECKOUT_SESSION_ID}&email=${encodeURIComponent(meta.email || email)}&lang=${meta.lang}`,
         cancel_url: `${host}/`,
         metadata: meta,
@@ -284,7 +311,9 @@ module.exports = {
     stripeKeyDiagnostics,
     validateCheckoutPrices,
     predictacorePriceIds,
+    checkoutMetadata,
     buildCheckoutSessionParams,
+    createMonitoringSubscription,
     isPredictacoreCheckoutSession,
     isPredictacoreInvoice,
     expandCheckoutSession,

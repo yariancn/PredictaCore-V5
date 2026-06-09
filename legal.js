@@ -49,7 +49,7 @@ function getTerminosHTML() {
             <p>AI-powered website and digital profile audits delivered as PDF reports. We do not edit your website or guarantee revenue outcomes.</p></div>
         <div><h2 class="text-white font-bold mb-2">3. Pricing</h2>
             <p><strong>Titan Report:</strong> USD $349.00 — charged at purchase.</p>
-            <p class="mt-2"><strong>Monthly monitoring (optional subscription):</strong> USD $25.00/month — starts when you purchase; <strong>first recurring charge ~30 days later</strong>.</p></div>
+            <p class="mt-2"><strong>Monthly monitoring (subscription):</strong> USD $25.00/month — activated at purchase. <strong>First follow-up report at month 1; first $25 charge on that date</strong> (not a free trial).</p></div>
         <div><h2 class="text-white font-bold mb-2">4. Card charges</h2>
             <p>Charges should appear on your statement as <strong>PREDICTACORE</strong> (or similar PredictaCore descriptor). If you do not recognize a charge, contact reportes@predictacore.ai before disputing with your bank.</p></div>
         <div><h2 class="text-white font-bold mb-2">5. No refunds</h2>
