@@ -214,7 +214,21 @@ function scoreSocialAiVisibility(onPage) {
     return Math.min(100, s);
 }
 
-function formatForensicsBlock(data) {
+function localizeForensicLabel(value, locale) {
+    const es = locale?.code?.startsWith('es');
+    if (es || !value) return value;
+    const map = {
+        AUSENTE: 'ABSENT',
+        PRESENTE: 'PRESENT',
+        ENCONTRADO: 'FOUND',
+        NO_ENCONTRADO: 'NOT FOUND',
+        NINGUNO: 'NONE',
+        'AUSENTE — las IAs no tienen manifiesto de entrenamiento/citación': 'ABSENT — no AI training/citation manifest',
+    };
+    return map[value] || String(value).replace(/\bAUSENTE\b/g, 'ABSENT').replace(/\bPRESENTE\b/g, 'PRESENT').replace(/\bENCONTRADO\b/g, 'FOUND').replace(/\bNO_ENCONTRADO\b/g, 'NOT FOUND');
+}
+
+function formatForensicsBlock(data, locale) {
     if (data.assetType === 'social') {
         const p = data.onPage;
         return `
@@ -233,26 +247,27 @@ INSTRUCCION_IA: Evaluación técnica PROXY (robots, bio, links). NO es prueba en
     const p = data.onPage;
     const botLines = Object.entries(data.aiRobots.bots || {})
         .map(([k, v]) => `${k}=${v}`).join(' | ');
+    const L = (v) => localizeForensicLabel(v, locale);
 
     return `
 === SEO_FORENSICS (DATOS REALES — USAR EN SECCIÓN IV) ===
 TIEMPO_CARGA_SEG: ${data.loadTimeSec}
 SEO_TECNICO_SCORE: ${data.seoScore}/100
 TITLE (${p.titleLen} chars): ${p.title}
-META_DESCRIPTION (${p.metaDescLen} chars): ${p.metaDescription || 'AUSENTE'}
-CANONICAL: ${p.canonical}
-ROBOTS_META: ${p.robotsMeta}
-HTML_LANG: ${p.htmlLang}
-H1_COUNT: ${p.h1Count} | H1_TEXT: ${p.h1Text}
-H2_MUESTRA: ${p.h2Sample}
-OG_TITLE: ${p.ogTitle} | OG_DESC: ${p.ogDescription} | OG_IMAGE: ${p.ogImage}
-VIEWPORT_MOBILE: ${p.viewport}
+META_DESCRIPTION (${p.metaDescLen} chars): ${L(p.metaDescription || 'AUSENTE')}
+CANONICAL: ${L(p.canonical)}
+ROBOTS_META: ${L(p.robotsMeta)}
+HTML_LANG: ${L(p.htmlLang)}
+H1_COUNT: ${p.h1Count} | H1_TEXT: ${L(p.h1Text)}
+H2_MUESTRA: ${L(p.h2Sample)}
+OG_TITLE: ${L(p.ogTitle)} | OG_DESC: ${L(p.ogDescription)} | OG_IMAGE: ${L(p.ogImage)}
+VIEWPORT_MOBILE: ${L(p.viewport)}
 IMAGENES_ALT_COVERAGE: ${p.imgsAltPct}% (${p.imgsTotal} imgs)
 ENLACES_INTERNOS: ${p.internalLinks} | EXTERNOS: ${p.externalLinks}
-JSON_LD: ${p.jsonLdCount} bloques | TIPOS: ${p.jsonLdTypes}
-SITEMAP_XML: ${data.sitemapFound ? 'ENCONTRADO' : 'NO_ENCONTRADO'}
-ROBOTS_TXT: ${data.robotsTxt ? 'PRESENTE' : 'AUSENTE'}
-LLMS_TXT: ${data.llmsTxt ? 'PRESENTE' : 'AUSENTE'}
+JSON_LD: ${p.jsonLdCount} bloques | TIPOS: ${L(p.jsonLdTypes)}
+SITEMAP_XML: ${data.sitemapFound ? L('ENCONTRADO') : L('NO_ENCONTRADO')}
+ROBOTS_TXT: ${data.robotsTxt ? L('PRESENTE') : L('AUSENTE')}
+LLMS_TXT: ${data.llmsTxt ? L('PRESENTE') : L('AUSENTE')}
 PALABRAS_EN_PAGINA: ${p.wordCount}
 === FIN SEO_FORENSICS ===
 
@@ -260,7 +275,7 @@ PALABRAS_EN_PAGINA: ${p.wordCount}
 AI_DISCOVERABILITY_SCORE: ${data.aiScore}/100
 BOTS_IA_EN_ROBOTS: ${botLines || 'SIN_ROBOTS_TXT'}
 ROBOTS_BLOQUEA_TODO: ${data.aiRobots.blocksAll ? 'SI' : 'NO'}
-LLMS_TXT_CONTENIDO: ${data.llmsTxt ? data.llmsTxt.slice(0, 800) : 'AUSENTE — las IAs no tienen manifiesto de entrenamiento/citación'}
+LLMS_TXT_CONTENIDO: ${data.llmsTxt ? data.llmsTxt.slice(0, 800) : L('AUSENTE — las IAs no tienen manifiesto de entrenamiento/citación')}
 MUESTRA_TEXTO_INDEXABLE: ${p.textSample}
 INSTRUCCION_IA: Evaluación técnica PROXY — NO prueba en vivo en motores IA. Diagnostica citabilidad por robots.txt, Schema.org, llms.txt, extractabilidad de texto, meta noindex.
 === FIN AI_VISIBILITY ===`;
@@ -270,10 +285,7 @@ async function collectForensics(page, url, loadTimeSec, isSocial) {
     const data = isSocial
         ? await collectSocialForensics(page, url, loadTimeSec)
         : await collectWebForensics(page, url, loadTimeSec);
-    return {
-        ...data,
-        block: formatForensicsBlock(data),
-    };
+    return data;
 }
 
 const VISION_STAGES = new Set(['INTRO', 'SCORECARD', 'VISIBILIDAD', 'FUGAS', 'ACCIONES', 'FUGAS_LITE']);
@@ -286,6 +298,7 @@ function stageUsesVision(modo, etapaId) {
 
 module.exports = {
     collectForensics,
+    formatForensicsBlock,
     stageUsesVision,
     AI_BOTS,
 };

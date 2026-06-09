@@ -48,6 +48,7 @@ const {
     getLanguageLockInstruction,
     getPdfUiStrings,
     getReportEmailCopy,
+    getVisionPromptLabels,
     postProcessSection,
 } = require('./report-format');
 const { stageUsesVision } = require('./forensics');
@@ -944,10 +945,11 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             ];
 
             if (stageUsesVision(modo, etapaId) && datosTarget.desktopBase64) {
-                parts.push({ text: 'CAPTURA FORENSE DESKTOP — analiza layout, CTAs, jerarquía visual, fricción:' });
+                const visionLabels = getVisionPromptLabels(reportLocale);
+                parts.push({ text: visionLabels.desktop });
                 parts.push({ inlineData: { mimeType: 'image/jpeg', data: datosTarget.desktopBase64 } });
                 if (datosTarget.mobileBase64) {
-                    parts.push({ text: 'CAPTURA FORENSE MOBILE — analiza usabilidad móvil:' });
+                    parts.push({ text: visionLabels.mobile });
                     parts.push({ inlineData: { mimeType: 'image/jpeg', data: datosTarget.mobileBase64 } });
                 }
             }
@@ -1109,7 +1111,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             const tagEl = document.getElementById('pdf-cover-tag');
             if (tagEl && ui.coverTag) tagEl.innerText = ui.coverTag;
             const titleEl = document.getElementById('pdf-cover-title');
-            if (titleEl && ui.liteTitle) titleEl.innerText = ui.liteTitle;
+            if (titleEl && titanUpgradeUrl && ui.liteTitle) titleEl.innerText = ui.liteTitle;
             else if (titleEl && ui.coverTitle) titleEl.innerText = ui.coverTitle;
             const confEl = document.getElementById('pdf-confidential');
             if (confEl && ui.confidential) confEl.innerText = ui.confidential;

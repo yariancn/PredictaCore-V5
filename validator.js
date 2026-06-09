@@ -79,6 +79,14 @@ function validateSection(etapaId, content, dossier, locale) {
         }
     }
 
+    if (etapaId === 'FUGAS' && /(?:evaluaci[oó]n|evaluation)\s*#?(?:1[6-9]|[2-9]\d)/i.test(text)) {
+        issues.push('PROHIBIDO citar evaluación #16 o superior — máximo 15 fugas');
+    }
+
+    if (etapaId === 'FUGAS' && (text.match(/\*\*\[P1\s*[—-]/gi) || []).length > 4) {
+        issues.push('PROHIBIDO marcar más de 3 fugas como P1 — reserva P1 solo para las 3 peores');
+    }
+
     if (locale) {
         const { detectMixedLanguage } = require('./report-format');
         const mix = detectMixedLanguage(text, locale);

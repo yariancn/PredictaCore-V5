@@ -2,7 +2,7 @@
 const puppeteer = require('puppeteer');
 
 const { isSocialMediaUrl } = require('./audit-target');
-const { collectForensics } = require('./forensics');
+const { collectForensics, formatForensicsBlock } = require('./forensics');
 const { runWebSimulation, runSocialSimulation, formatSimulationBlock } = require('./simulator');
 const { findCompetitors } = require('./competitors');
 const { formatKeywordsBlock } = require('./keywords');
@@ -113,6 +113,12 @@ async function captureAndScrape(url) {
 
         const forensics = await collectForensics(page, url, loadTime, isSocialMedia);
 
+        const locale = resolveReportLocale(
+            forensics.onPage?.htmlLang,
+            `${dataForense.titulo} ${dataForense.descripcion} ${dataForense.cuerpo}`.slice(0, 4000)
+        );
+        const forensicsBlock = formatForensicsBlock(forensics, locale);
+
         let simulationBlock = '';
         let benchmarkBlock = '';
         let keywordsBlock = '';
@@ -159,16 +165,12 @@ async function captureAndScrape(url) {
                 hasContact,
             });
             simulationBlock = formatSimulationBlock(sim, 'website');
-            keywordsBlock = formatKeywordsBlock(forensics.onPage);
+            keywordsBlock = formatKeywordsBlock(forensics.onPage, locale);
             const bench = await findCompetitors(url, forensics.onPage, false);
             benchmarkBlock = bench.block;
         }
 
         await browser.close();
-        const locale = resolveReportLocale(
-            forensics.onPage?.htmlLang,
-            `${dataForense.titulo} ${dataForense.descripcion} ${dataForense.cuerpo}`.slice(0, 4000)
-        );
         const dateLocale = locale.code.startsWith('es') ? 'es-MX' : 'en-US';
         const fechaHoy = new Date().toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' });
         const idiomaBlock = formatIdiomaBlock(
@@ -176,7 +178,7 @@ async function captureAndScrape(url) {
             `${dataForense.titulo} ${dataForense.descripcion} ${dataForense.cuerpo}`.slice(0, 4000)
         );
 
-        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${idiomaBlock}${forensics.block}${simulationBlock}${benchmarkBlock}${keywordsBlock}`;
+        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${idiomaBlock}${forensicsBlock}${simulationBlock}${benchmarkBlock}${keywordsBlock}`;
 
         return {
             isUrl: true,

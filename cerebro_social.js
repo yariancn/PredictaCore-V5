@@ -23,7 +23,7 @@ const PROMPTS = {
 
   WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VII. LISTA DE DESEOS\n10 tácticas de alto valor. ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VIII. 15 PUNTOS DE FUGA\nEXACTAMENTE 15 líneas numeradas del 1. al 15. — PROHIBIDO viñetas. Basado en SIMULATION_RESULTS + capturas. **[HEMORRAGIA CRÍTICA]** en los peores. Cita evaluación #id. ${FORMATO_LISTAS}. Impacto cualitativo. Dossier: ${d}`,
+  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nSISTEMA DE PRIORIDAD (15 fugas): 1-3 **[P1 — HEMORRAGIA CRÍTICA]**, 4-8 **[P2 — FUGA GRAVE]**, 9-12 **[P3 — FUGA MODERADA]**, 13-15 **[P4 — FRICCIÓN MENOR]**. PROHIBIDO marcar las 15 como críticas.\nEscribe este encabezado traducido: ### VIII. 15 PUNTOS DE FUGA\nEXACTAMENTE 15 líneas numeradas del 1. al 15. — PROHIBIDO viñetas. Basado en SIMULATION_RESULTS + capturas. Formato: 1. **[P1 — HEMORRAGIA CRÍTICA]** [hallazgo] (evaluación #id). PROHIBIDO evaluación #16+. ${FORMATO_LISTAS}. Impacto cualitativo. Dossier: ${d}`,
 
   ACCIONES: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### IX. 15 ACCIONES TÁCTICAS\nEXACTAMENTE 15 líneas numeradas del 1. al 15. — acción N resuelve fuga N. ${FORMATO_LISTAS}.\nOBLIGATORIO — Acción 1 o 2 **Visibilidad en IAs para perfil social**: web propia, Schema sameAs, bio citables, llms.txt en web vinculada. **[COPIAR Y PEGAR]:** bio mejorada.\nDossier: ${d}`,
 

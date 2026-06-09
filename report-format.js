@@ -20,33 +20,58 @@ function countNumberedItems(text) {
     return ((text || '').match(/^\s*\d+\.\s+/gm) || []).length;
 }
 
-/** Convierte viñetas en lista numerada 1..N (para FUGAS, ACCIONES, etc.) */
-function normalizeNumberedList(text, { minItems = 1 } = {}) {
+function extractListItems(body) {
+    const items = [];
+
+    for (const line of body.split('\n')) {
+        const itemMatch = line.match(/^\s*(?:[-*•]|\d+\.)\s+(.+)$/);
+        if (itemMatch) items.push(itemMatch[1].trim());
+    }
+    if (items.length >= 3) return items;
+
+    for (const line of body.split('\n')) {
+        const titleMatch = line.match(/^\s*(\*{0,2}[A-Za-zÁÉÍÓÚáéíóú][^*\n:]{2,72}\*{0,2}):\s*(.+)$/);
+        if (titleMatch) items.push(`${titleMatch[1]}: ${titleMatch[2]}`.trim());
+    }
+    if (items.length >= 3) return items;
+
+    const severityChunks = body
+        .split(/\n(?=\*\*\[P[1-4]|CRITICAL HEMORRHAGE|\*\*CRITICAL)/i)
+        .map((p) => p.replace(/\s+/g, ' ').trim())
+        .filter((p) => p.length > 20 && !/^#{1,3}\s/.test(p));
+    if (severityChunks.length >= 3) return severityChunks;
+
+    const paragraphs = body
+        .split(/\n\s*\n/)
+        .map((p) => p.replace(/\s+/g, ' ').trim())
+        .filter((p) => p.length > 20 && !/^#{1,3}\s/.test(p));
+    if (paragraphs.length >= 3) return paragraphs;
+
+    const lines = body.split('\n').map((l) => l.trim()).filter((l) => l.length > 30);
+    if (lines.length >= 3) return lines;
+
+    return items;
+}
+
+/** Convierte viñetas, párrafos o "Título:" en lista numerada 1..N */
+function normalizeNumberedList(text, { minItems = 1, targetItems = null } = {}) {
     if (!text || typeof text !== 'string') return text;
 
     const headerMatch = text.match(/^(###[^\n]+\n?)/);
     const header = headerMatch ? headerMatch[1] : '';
     const body = headerMatch ? text.slice(header.length) : text;
 
-    const items = [];
-    const prefix = [];
-
-    for (const line of body.split('\n')) {
-        const itemMatch = line.match(/^\s*(?:[-*•]|\d+\.)\s+(.+)$/);
-        if (itemMatch) {
-            items.push(itemMatch[1].trim());
-        } else if (items.length === 0 && line.trim()) {
-            prefix.push(line);
-        } else if (items.length === 0 && !line.trim()) {
-            prefix.push(line);
-        }
+    const existing = countNumberedItems(body);
+    if (targetItems && existing >= targetItems - 1) {
+        return text;
     }
 
+    const items = extractListItems(body);
     if (items.length < minItems) return text;
 
-    const numbered = items.map((item, i) => `${i + 1}. ${item}`).join('\n');
-    const prefixText = prefix.join('\n').trim();
-    return prefixText ? `${header}${prefixText}\n\n${numbered}` : `${header}${numbered}`;
+    const trimmed = targetItems ? items.slice(0, targetItems) : items;
+    const numbered = trimmed.map((item, i) => `${i + 1}. ${item}`).join('\n');
+    return `${header}${numbered}`;
 }
 
 function detectMixedLanguage(text, locale) {
@@ -54,14 +79,28 @@ function detectMixedLanguage(text, locale) {
 
     const esMarkers = (text.match(/\b(el|la|los|las|de|que|para|con|por|una|del|más|sitio|cliente|página|acción|fuga|visibilidad)\b/gi) || []).length;
     const enMarkers = (text.match(/\b(the|and|your|website|customer|should|however|action|leak|visibility|page)\b/gi) || []).length;
+    const esDossier = /\b(AUSENTE|ENCONTRADO|PRESENTE|CAPTURA FORENSE|NO_ENCONTRADO|precio|cerca de mi|contratar|mejor)\b/i.test(text);
 
     if (locale.code.startsWith('es') && enMarkers >= 4 && enMarkers > esMarkers * 0.35) {
         return 'Mezcla inglés/español detectada — reescribe todo en español latinoamericano';
     }
-    if (locale.code.startsWith('en') && esMarkers >= 6 && esMarkers > enMarkers * 0.5) {
-        return 'Mixed Spanish/English detected — rewrite entirely in US English';
+    if (locale.code.startsWith('en') && (esMarkers >= 6 && esMarkers > enMarkers * 0.5 || esDossier)) {
+        return 'Mixed Spanish/English detected — rewrite entirely in US English; translate dossier labels (ABSENT/FOUND/PRESENT, not AUSENTE/ENCONTRADO)';
     }
     return null;
+}
+
+function getVisionPromptLabels(locale) {
+    if (locale?.code?.startsWith('es')) {
+        return {
+            desktop: 'CAPTURA FORENSE DESKTOP — analiza layout, CTAs, jerarquía visual, fricción:',
+            mobile: 'CAPTURA FORENSE MOBILE — analiza usabilidad móvil:',
+        };
+    }
+    return {
+        desktop: 'FORENSIC DESKTOP SCREENSHOT — analyze layout, CTAs, visual hierarchy, friction:',
+        mobile: 'FORENSIC MOBILE SCREENSHOT — analyze mobile usability:',
+    };
 }
 
 function getPdfUiStrings(locale) {
@@ -153,8 +192,10 @@ const NUMBERED_SECTIONS = {
 
 function postProcessSection(etapaId, text, locale) {
     let out = text || '';
-    const min = NUMBERED_SECTIONS[etapaId];
-    if (min) out = normalizeNumberedList(out, { minItems: Math.min(min, 3) });
+    const target = NUMBERED_SECTIONS[etapaId];
+    if (target) {
+        out = normalizeNumberedList(out, { minItems: Math.min(target, 3), targetItems: target });
+    }
     return out;
 }
 
@@ -164,6 +205,7 @@ module.exports = {
     countNumberedItems,
     normalizeNumberedList,
     detectMixedLanguage,
+    getVisionPromptLabels,
     getPdfUiStrings,
     getReportEmailCopy,
     postProcessSection,
