@@ -43,6 +43,13 @@ const {
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
 const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml } = require('./brand');
+const {
+    getLocaleFromDossier,
+    getLanguageLockInstruction,
+    getPdfUiStrings,
+    getReportEmailCopy,
+    postProcessSection,
+} = require('./report-format');
 const { stageUsesVision } = require('./forensics');
 const { validateSection, stripFinancialClaims, SKIP_MONEY_CHECK } = require('./validator');
 
@@ -883,6 +890,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             dossierTexto += formatScoreDiffBlock(jobsMemoria[jobId].prevDossier, datosTarget.texto);
         }
         jobsMemoria[jobId].dossier = dossierTexto;
+        jobsMemoria[jobId].reportLocale = getLocaleFromDossier(dossierTexto);
         jobsMemoria[jobId].captures = {
             desktopBase64: datosTarget.desktopBase64,
             mobileBase64: datosTarget.mobileBase64,
@@ -922,6 +930,9 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             regla = cerebroActivo.REGLA_NUCLEAR;
         }
 
+        const reportLocale = jobsMemoria[jobId].reportLocale || getLocaleFromDossier(dossierTexto);
+        const languageLock = getLanguageLockInstruction(reportLocale);
+
         for (const etapaId in promptsAUsar) {
             const promptFinal = modo === 'DELTA'
                 ? promptsAUsar[etapaId](dossierTexto, inicial)
@@ -930,6 +941,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             const parts = [
                 { text: FIREWALL_IA },
                 { text: idioma },
+                { text: languageLock },
                 { text: regla },
                 { text: `CONTEXTO:\n${dossierTexto}` },
                 { text: promptFinal },
@@ -976,7 +988,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
                 sectionText = SKIP_MONEY_CHECK.has(etapaId)
                     ? vertexData.candidates[0].content.parts[0].text
                     : stripFinancialClaims(vertexData.candidates[0].content.parts[0].text);
-                const validation = validateSection(etapaId, sectionText, dossierTexto);
+                const validation = validateSection(etapaId, sectionText, dossierTexto, reportLocale);
                 if (validation.ok || retries >= maxRetries) {
                     if (!validation.ok && retries >= maxRetries) {
                         console.warn(`>>> [VALIDATOR] ${etapaId} con issues: ${validation.issues.join('; ')}`);
@@ -988,6 +1000,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             }
 
             if (sectionText) {
+                sectionText = postProcessSection(etapaId, sectionText, reportLocale);
                 jobsMemoria[jobId].progress[etapaId] = sectionText;
                 await updateJobProgress(jobId, jobsMemoria[jobId].progress);
             }
@@ -1034,6 +1047,12 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             modo,
         };
 
+        const captures = jobsMemoria[jobId]?.captures || {};
+        const dossier = jobsMemoria[jobId]?.dossier || jobDb?.dossier || '';
+        const reportLocale = jobsMemoria[jobId]?.reportLocale || getLocaleFromDossier(dossier);
+        const langCode = reportLocale.code.startsWith('es') ? 'es' : 'en';
+        const pdfUi = getPdfUiStrings(reportLocale);
+
         let htmlBase;
         let subject;
         let filename;
@@ -1043,38 +1062,30 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
 
         if (modo === 'LITE') {
             htmlBase = getHTMLLite();
-            subject = 'Your PredictaCore Lite Audit';
-            filename = 'PREDICTACORE_LITE.pdf';
-            const titanUrl = buildTitanUpgradeUrl({ email: emailDestino, dna: targetUrl, lang: 'en' });
-            textBody = `Your PredictaCore Lite audit is attached.\n\nUpgrade to the full Titan Report (11 sections, USD $349):\n${titanUrl}`;
-            emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
-  ${getEmailBrandHeader('en')}
-  <h1 style="color:#fff;font-size:18px;text-align:center;">Your Lite audit is attached</h1>
-  <p style="font-size:14px;line-height:1.6;">Processing can take up to 60 minutes for heavy sites. Check spam if you don't see this message soon.</p>
-  <p style="font-size:14px;line-height:1.6;">Includes real SEO + AI visibility snapshot. Upgrade to the full 11-pillar Titan Report (USD $349):</p>
-  <p style="margin:24px 0;text-align:center;"><a href="${titanUrl}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activate Titan Report — $349</a></p>
-  <p style="font-size:11px;color:#71717a;text-align:center;">PredictaCore · predictacore.ai</p></div>`;
-            liteTitanUrl = titanUrl;
+            liteTitanUrl = buildTitanUpgradeUrl({ email: emailDestino, dna: targetUrl, lang: langCode });
+            const mail = getReportEmailCopy('LITE', reportLocale, { titanUrl: liteTitanUrl });
+            subject = mail.subject;
+            filename = mail.filename;
+            textBody = mail.text;
+            emailHtml = mail.html ? getEmailBrandHeader(langCode) + mail.html : null;
         } else if (modo === 'DELTA') {
             htmlBase = getHTMLDelta();
-            subject = 'PredictaCore — Monthly Monitoring Report';
-            filename = 'PREDICTACORE_MONITORING.pdf';
-            textBody = 'Your monthly PredictaCore monitoring report is attached.';
+            const mail = getReportEmailCopy('DELTA', reportLocale);
+            subject = mail.subject;
+            filename = mail.filename;
+            textBody = mail.text;
         } else {
             htmlBase = getHTML();
             const social = isSocialMediaUrl(targetUrl);
-            subject = social
-                ? 'Your PredictaCore Titan Social Audit'
-                : 'Your PredictaCore Titan Report';
-            filename = social ? 'PREDICTACORE_TITAN_SOCIAL.pdf' : 'PREDICTACORE_TITAN.pdf';
             let portalUrl = null;
             try {
                 const cid = await resolveStripeCustomerId(emailDestino);
                 if (cid) portalUrl = await createCustomerPortalUrl(cid);
             } catch (_) { /* optional */ }
-            textBody = portalUrl
-                ? `Your PredictaCore Titan forensic audit is attached.\n\nDelivery note: processing may take up to 60 minutes.\n\nManage subscription: ${portalUrl}`
-                : 'Your PredictaCore Titan forensic audit is attached.\n\nDelivery note: processing may take up to 60 minutes.';
+            const mail = getReportEmailCopy('TITAN', reportLocale, { portalUrl, social });
+            subject = mail.subject;
+            filename = mail.filename;
+            textBody = mail.text;
         }
 
         browser = await puppeteer.launch({
@@ -1084,18 +1095,31 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const page = await browser.newPage();
         await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
 
-        const captures = jobsMemoria[jobId]?.captures || {};
         const metricsHtml = getPdfCoverMetricsHtml({
             loadTimeSec: captures.loadTimeSec,
             seoScore: captures.seoScore,
             aiScore: captures.aiScore,
             assetType: captures.assetType,
+            lang: langCode,
         });
 
-        await page.evaluate((progressData, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64) => {
+        await page.evaluate((progressData, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale) => {
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
             if (dEl && dominio) dEl.innerText = dominio.replace(/^https?:\/\//, '');
+            else if (dEl && ui.assetDefault) dEl.innerText = ui.assetDefault;
+
+            const tagEl = document.getElementById('pdf-cover-tag');
+            if (tagEl && ui.coverTag) tagEl.innerText = ui.coverTag;
+            const titleEl = document.getElementById('pdf-cover-title');
+            if (titleEl && ui.liteTitle) titleEl.innerText = ui.liteTitle;
+            else if (titleEl && ui.coverTitle) titleEl.innerText = ui.coverTitle;
+            const confEl = document.getElementById('pdf-confidential');
+            if (confEl && ui.confidential) confEl.innerText = ui.confidential;
+            const dateEl = document.getElementById('pdf-date');
+            if (dateEl) {
+                dateEl.innerText = new Date().toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' });
+            }
 
             const metricsEl = document.getElementById('pdf-metrics');
             if (metricsEl && metricsBlock) metricsEl.innerHTML = metricsBlock;
@@ -1108,9 +1132,9 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             if (desktopB64 && evidenceTargets.length) {
                 const block = document.createElement('div');
                 block.className = 'forensic-evidence';
-                block.innerHTML = '<h3>Evidencia visual forense</h3><div class="forensic-shots">'
-                    + '<figure><img src="data:image/jpeg;base64,' + desktopB64 + '" alt="Desktop"/><figcaption>Desktop</figcaption></figure>'
-                    + (mobileB64 ? '<figure><img src="data:image/jpeg;base64,' + mobileB64 + '" alt="Mobile"/><figcaption>Mobile</figcaption></figure>' : '')
+                block.innerHTML = '<h3>' + (ui.evidenceTitle || 'Evidence') + '</h3><div class="forensic-shots">'
+                    + '<figure><img src="data:image/jpeg;base64,' + desktopB64 + '" alt="Desktop"/><figcaption>' + (ui.desktop || 'Desktop') + '</figcaption></figure>'
+                    + (mobileB64 ? '<figure><img src="data:image/jpeg;base64,' + mobileB64 + '" alt="Mobile"/><figcaption>' + (ui.mobile || 'Mobile') + '</figcaption></figure>' : '')
                     + '</div>';
                 evidenceTargets.forEach((el) => el.appendChild(block.cloneNode(true)));
             }
@@ -1125,12 +1149,12 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             if (titanUpgradeUrl) {
                 const cta = document.createElement('div');
                 cta.className = 'lite-titan-cta';
-                cta.innerHTML = '<h3>Upgrade to Titan Report</h3>'
-                    + '<p>Full 11-section forensic audit (USD $349). Your email and URL are pre-filled:</p>'
+                cta.innerHTML = '<h3>' + (ui.liteCtaTitle || 'Titan') + '</h3>'
+                    + '<p>' + (ui.liteCtaBody || '') + '</p>'
                     + '<p><strong>' + titanUpgradeUrl + '</strong></p>';
                 reporte.appendChild(cta);
             }
-        }, job.progress, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64);
+        }, job.progress, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US');
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();

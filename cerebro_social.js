@@ -23,9 +23,9 @@ const PROMPTS = {
 
   WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VII. LISTA DE DESEOS\n10 tácticas de alto valor. ${FORMATO_LISTAS} Dossier: ${d}`,
 
-  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VIII. 15 PUNTOS DE FUGA\n15 errores basados en SIMULATION_RESULTS + capturas. **[HEMORRAGIA CRÍTICA]** en los peores. Cita evaluación #id. ${FORMATO_LISTAS}. Impacto cualitativo. Dossier: ${d}`,
+  FUGAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VIII. 15 PUNTOS DE FUGA\nEXACTAMENTE 15 líneas numeradas del 1. al 15. — PROHIBIDO viñetas. Basado en SIMULATION_RESULTS + capturas. **[HEMORRAGIA CRÍTICA]** en los peores. Cita evaluación #id. ${FORMATO_LISTAS}. Impacto cualitativo. Dossier: ${d}`,
 
-  ACCIONES: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### IX. 15 ACCIONES TÁCTICAS\nSoluciones a las 15 fugas. ${FORMATO_LISTAS}.\nOBLIGATORIO — Acción #1 o #2 **Visibilidad en IAs para perfil social**: web propia, Schema sameAs, bio citables, llms.txt en web vinculada. **[COPIAR Y PEGAR]:** bio mejorada.\nDossier: ${d}`,
+  ACCIONES: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### IX. 15 ACCIONES TÁCTICAS\nEXACTAMENTE 15 líneas numeradas del 1. al 15. — acción N resuelve fuga N. ${FORMATO_LISTAS}.\nOBLIGATORIO — Acción 1 o 2 **Visibilidad en IAs para perfil social**: web propia, Schema sameAs, bio citables, llms.txt en web vinculada. **[COPIAR Y PEGAR]:** bio mejorada.\nDossier: ${d}`,
 
   HERRAMIENTAS: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### X. HERRAMIENTAS DE CRECIMIENTO\n5 SaaS (link-in-bio, programación, analytics, GEO). Sin ROI numérico. ${FORMATO_LISTAS} Dossier: ${d}`,
 

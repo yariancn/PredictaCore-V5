@@ -50,16 +50,23 @@ function getPdfCoverBrandHtml() {
 </div>`;
 }
 
-function getPdfCoverMetricsHtml({ loadTimeSec, seoScore, aiScore, assetType }) {
+function getPdfCoverMetricsHtml({ loadTimeSec, seoScore, aiScore, assetType, lang = 'es' }) {
     const load = loadTimeSec != null ? `${loadTimeSec}s` : '—';
     const seo = seoScore != null ? `${seoScore}/100` : '—';
     const ai = aiScore != null ? `${aiScore}/100` : '—';
-    const label = assetType === 'social' ? 'Perfil social' : 'Sitio web';
+    const es = lang === 'es' || String(lang).startsWith('es');
+    const label = assetType === 'social'
+        ? (es ? 'Perfil social' : 'Social profile')
+        : (es ? 'Sitio web' : 'Website');
+    const kActivo = es ? 'Activo' : 'Asset';
+    const kCarga = es ? 'Carga' : 'Load';
+    const kSeo = 'SEO';
+    const kIa = es ? 'Visibilidad IA' : 'AI visibility';
     return `<div class="pc-metrics">
-  <div class="pc-metric"><span class="pc-metric-k">Activo</span><span class="pc-metric-v">${label}</span></div>
-  <div class="pc-metric"><span class="pc-metric-k">Carga</span><span class="pc-metric-v">${load}</span></div>
-  <div class="pc-metric"><span class="pc-metric-k">SEO</span><span class="pc-metric-v">${seo}</span></div>
-  <div class="pc-metric"><span class="pc-metric-k">Visibilidad IA</span><span class="pc-metric-v">${ai}</span></div>
+  <div class="pc-metric"><span class="pc-metric-k">${kActivo}</span><span class="pc-metric-v">${label}</span></div>
+  <div class="pc-metric"><span class="pc-metric-k">${kCarga}</span><span class="pc-metric-v">${load}</span></div>
+  <div class="pc-metric"><span class="pc-metric-k">${kSeo}</span><span class="pc-metric-v">${seo}</span></div>
+  <div class="pc-metric"><span class="pc-metric-k">${kIa}</span><span class="pc-metric-v">${ai}</span></div>
 </div>`;
 }
 

@@ -43,7 +43,7 @@ function getHTMLLite() {
     <body>
         <div class="header-info">
             ${getPdfCoverBrandHtml()}
-            <div class="cover-title">Lite Intelligence Report</div>
+            <div class="cover-title" id="pdf-cover-title">Lite Intelligence Report</div>
             <div class="cover-accent"></div>
             <div id="pdf-metrics"></div>
             <div style="font-size: 10.5pt; color: #64748b; font-weight: 600;" id="pdf-domain">Asset Analysis</div>

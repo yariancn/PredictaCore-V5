@@ -24,7 +24,15 @@ function dossierHas(dossier, key) {
 
 const SKIP_MONEY_CHECK = new Set(['UPSELL', 'HERRAMIENTAS']);
 
-function validateSection(etapaId, content, dossier) {
+const NUMBERED_SECTIONS = {
+    FUGAS: 15,
+    ACCIONES: 15,
+    WISHLIST: 10,
+    FUGAS_LITE: 3,
+    OMNI: 9,
+};
+
+function validateSection(etapaId, content, dossier, locale) {
     const issues = [];
     const text = content || '';
 
@@ -61,6 +69,20 @@ function validateSection(etapaId, content, dossier) {
         if (compDomains.length && mentioned.length === 0) {
             issues.push(`Debe usar competidores verificados: ${compDomains.join(', ')}`);
         }
+    }
+
+    if (NUMBERED_SECTIONS[etapaId]) {
+        const expected = NUMBERED_SECTIONS[etapaId];
+        const count = ((text || '').match(/^\s*\d+\.\s+/gm) || []).length;
+        if (count < expected - 1) {
+            issues.push(`Debe listar exactamente ${expected} puntos numerados (1. 2. 3. …). Encontrados: ${count}. PROHIBIDO viñetas • o -`);
+        }
+    }
+
+    if (locale) {
+        const { detectMixedLanguage } = require('./report-format');
+        const mix = detectMixedLanguage(text, locale);
+        if (mix) issues.push(mix);
     }
 
     return {
