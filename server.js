@@ -5,7 +5,7 @@ const cerebroWeb = require('./cerebro');
 const cerebroSocial = require('./cerebro_social');
 const { PROMPTS_LITE } = require('./cerebro_lite');
 const { PROMPTS_DELTA, extractInitialSummary, formatScoreDiffBlock } = require('./cerebro_delta');
-const { IDIOMA_LITE, IDIOMA_DELTA } = require('./idioma');
+const { buildReportLanguagePrompt } = require('./idioma');
 const { getHTML } = require('./visual');
 const { getHTMLLite } = require('./visual_lite');
 const { getHTMLDelta } = require('./visual_delta');
@@ -890,7 +890,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             dossierTexto += formatScoreDiffBlock(jobsMemoria[jobId].prevDossier, datosTarget.texto);
         }
         jobsMemoria[jobId].dossier = dossierTexto;
-        jobsMemoria[jobId].reportLocale = getLocaleFromDossier(dossierTexto);
+        jobsMemoria[jobId].reportLocale = datosTarget.reportLocale || getLocaleFromDossier(dossierTexto);
         jobsMemoria[jobId].captures = {
             desktopBase64: datosTarget.desktopBase64,
             mobileBase64: datosTarget.mobileBase64,
@@ -911,27 +911,23 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
         const vertexUrl = `https://us-central1-aiplatform.googleapis.com/v1/projects/${credenciales.project_id}/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent`;
 
         let promptsAUsar;
-        let idioma;
         let regla;
         const inicial = jobsMemoria[jobId].initialSummary || '';
+        const reportLocale = jobsMemoria[jobId].reportLocale || getLocaleFromDossier(dossierTexto);
+        const idiomaPrompt = buildReportLanguagePrompt(reportLocale);
+        const languageLock = getLanguageLockInstruction(reportLocale);
 
         if (modo === 'DELTA') {
             promptsAUsar = PROMPTS_DELTA;
-            idioma = IDIOMA_DELTA;
             regla = 'REGLA: Reporte de seguimiento mensual comparativo.';
         } else if (modo === 'LITE') {
             promptsAUsar = PROMPTS_LITE;
-            idioma = IDIOMA_LITE;
             regla = '';
         } else {
             const cerebroActivo = isSocialMediaUrl(targetUrl) ? cerebroSocial : cerebroWeb;
             promptsAUsar = cerebroActivo.PROMPTS;
-            idioma = cerebroActivo.IDIOMA;
             regla = cerebroActivo.REGLA_NUCLEAR;
         }
-
-        const reportLocale = jobsMemoria[jobId].reportLocale || getLocaleFromDossier(dossierTexto);
-        const languageLock = getLanguageLockInstruction(reportLocale);
 
         for (const etapaId in promptsAUsar) {
             const promptFinal = modo === 'DELTA'
@@ -940,7 +936,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
 
             const parts = [
                 { text: FIREWALL_IA },
-                { text: idioma },
+                { text: idiomaPrompt },
                 { text: languageLock },
                 { text: regla },
                 { text: `CONTEXTO:\n${dossierTexto}` },
@@ -1103,7 +1099,8 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             lang: langCode,
         });
 
-        await page.evaluate((progressData, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale) => {
+        await page.evaluate((progressData, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang) => {
+            if (htmlLang) document.documentElement.lang = htmlLang;
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
             if (dEl && dominio) dEl.innerText = dominio.replace(/^https?:\/\//, '');
@@ -1154,7 +1151,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                     + '<p><strong>' + titanUpgradeUrl + '</strong></p>';
                 reporte.appendChild(cta);
             }
-        }, job.progress, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US');
+        }, job.progress, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();

@@ -167,17 +167,21 @@ async function captureAndScrape(url) {
         await browser.close();
         const locale = resolveReportLocale(
             forensics.onPage?.htmlLang,
-            dataForense.cuerpo.slice(0, 2000)
+            `${dataForense.titulo} ${dataForense.descripcion} ${dataForense.cuerpo}`.slice(0, 4000)
         );
         const dateLocale = locale.code.startsWith('es') ? 'es-MX' : 'en-US';
         const fechaHoy = new Date().toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' });
-        const idiomaBlock = formatIdiomaBlock(forensics.onPage?.htmlLang, dataForense.cuerpo.slice(0, 2000));
+        const idiomaBlock = formatIdiomaBlock(
+            forensics.onPage?.htmlLang,
+            `${dataForense.titulo} ${dataForense.descripcion} ${dataForense.cuerpo}`.slice(0, 4000)
+        );
 
         const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${idiomaBlock}${forensics.block}${simulationBlock}${benchmarkBlock}${keywordsBlock}`;
 
         return {
             isUrl: true,
             texto: dossierTexto,
+            reportLocale: locale,
             desktopBase64,
             mobileBase64,
             loadTimeSec: loadTime,

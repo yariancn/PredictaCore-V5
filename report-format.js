@@ -1,12 +1,9 @@
 /** Post-procesado y UI del PDF según idioma del activo */
 
-const { resolveReportLocale } = require('./idioma');
+const { resolveReportLocale, parseLocaleFromDossier } = require('./idioma');
 
 function getLocaleFromDossier(dossier) {
-    const htmlLang = (dossier || '').match(/HTML_LANG:\s*(\S+)/)?.[1] || '';
-    const sample = (dossier || '').match(/MUESTRA_TEXTO[^:]*:\s*(.+)/i)?.[1]
-        || (dossier || '').slice(0, 2500);
-    return resolveReportLocale(htmlLang, sample);
+    return parseLocaleFromDossier(dossier);
 }
 
 function getLanguageLockInstruction(locale) {
