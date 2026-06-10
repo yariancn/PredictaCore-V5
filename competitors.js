@@ -1,4 +1,6 @@
-/** Competitor discovery — rivales reales del mismo nicho (búsqueda por producto/servicio, no por marca) */
+/** Competitor discovery — mismo nicho + mismo mercado geográfico (universal por giro) */
+
+const { extractGeoContext, formatGeoBlock, geoMatchesMarket } = require('./geo-context');
 
 const BLOCKLIST = new Set([
     'facebook.com', 'instagram.com', 'twitter.com', 'x.com', 'tiktok.com',
@@ -19,68 +21,132 @@ const NON_COMPETITOR_RE = /\b(bank|banco|santander|chase|wells fargo|bbva|financ
 
 const ECOMMERCE_SIGNALS = /\b(add to cart|shop now|buy now|checkout|collection|product|products|shipping|free shipping|\$\d|price|cart|store|shop\b)/i;
 
-const GIRO_QUERIES = {
-    ecommerce: (niche) => [
-        `${niche} online shop`,
-        `buy ${niche}`,
-        `best ${niche} store`,
-        `${niche} boutique`,
-    ],
-    salud: (niche) => [`${niche} clinic near me`, `${niche} medical center`, `${niche} appointment`],
-    servicios: (niche) => [`${niche} agency`, `${niche} services company`, `hire ${niche}`],
-    restaurante: (niche) => [`${niche} restaurant`, `${niche} menu`, `${niche} reservations`],
-    educacion: (niche) => [`${niche} course`, `${niche} online training`, `${niche} academy`],
-    inmobiliario: (niche) => [`${niche} real estate`, `${niche} homes for sale`, `${niche} realtor`],
-    general: (niche) => [`${niche} business`, `${niche} company`, `${niche} services`],
-    general_social: (niche) => [`${niche} instagram`, `${niche} brand`],
-};
-
 const STOPWORDS = new Set([
     'shop', 'store', 'home', 'welcome', 'official', 'website', 'online', 'the', 'and', 'for',
-    'your', 'our', 'llc', 'inc', 'page', 'site', 'best', 'custom', 'personalized', 'buy',
+    'your', 'our', 'llc', 'inc', 'page', 'site', 'best', 'buy', 'with', 'from', 'that', 'this',
+    'shipped', 'shipping', 'nationwide', 'designed', 'located', 'based', 'mailing', 'address',
 ]);
 
-function clientBrandToken(url, clientTitle) {
-    try {
-        const host = new URL(url).hostname.replace(/^www\./, '').split('.')[0].toLowerCase();
-        if (host.length >= 4) return host;
-    } catch { /* skip */ }
-    const title = (clientTitle || '').replace(/\s*[|\-–—].*$/, '').trim().toLowerCase();
-    return title.split(/\s+/)[0] || '';
-}
+function extractNicheTerms(onPage, giro, clientTitle, clientDesc, url, geo) {
+    const brandTokens = clientBrandTokens(url, clientTitle);
+    const brandHost = [...brandTokens][0] || '';
+    const titleFull = (onPage?.title || clientTitle || '').trim();
+    const titleParts = titleFull.split(/\s*[|\-–—]\s*/).map((p) => p.trim()).filter(Boolean);
+    const titleForNiche = titleParts.filter((p) => {
+        const lower = p.toLowerCase();
+        return ![...brandTokens].some((bt) => bt.length >= 3 && lower.includes(bt));
+    }).join(' ') || titleParts[0] || titleFull;
+    const h1 = onPage?.h1Text && !/AUSENTE|ABSENT/i.test(onPage.h1Text) ? onPage.h1Text : '';
 
-function extractNicheTerms(onPage, giro, clientTitle, clientDesc, url) {
-    const brand = clientBrandToken(url, clientTitle);
-    const corpus = `${onPage?.textSample || ''} ${clientDesc || ''} ${onPage?.metaDescription || ''} ${onPage?.h1Text || ''}`.toLowerCase();
-    const titleTail = (clientTitle || onPage?.title || '').replace(/^[^|\-–—]+[|\-–—]\s*/i, '').toLowerCase();
+    const primary = `${titleForNiche} ${h1} ${clientDesc || ''} ${onPage?.metaDescription || ''}`.toLowerCase();
+    const secondary = (onPage?.textSample || '').slice(0, 350).toLowerCase();
 
-    const productHits = [];
-    const productRe = /\b(?:custom|personalized|personaliz\w*|handmade|artisan|luxury|organic|professional)\s+[a-z\s]{3,40}?(?:blanket|bedding|swaddle|nursery|milestone|gift|gifts|jewelry|shirt|mug|portrait|cake|dress|hat|print|decor|furniture|supplement|therapy|clinic|course|menu|property|home)\w*/gi;
-    let pm;
-    while ((pm = productRe.exec(`${corpus} ${titleTail}`)) !== null) {
-        productHits.push(pm[0].replace(/\s+/g, ' ').trim());
+    const geoTokens = new Set(
+        [geo?.city, geo?.region, geo?.country, brandHost, geo?.postal]
+            .filter(Boolean)
+            .map((t) => String(t).toLowerCase())
+    );
+    if (geo?.region && /^[A-Z]{2}$/.test(geo.region)) {
+        geoTokens.add(geo.region.toLowerCase());
     }
 
-    const tokens = `${corpus} ${titleTail}`
-        .replace(/[^\w\sáéíóúñ-]/g, ' ')
-        .split(/\s+/)
-        .filter((w) => w.length > 3 && !STOPWORDS.has(w) && (!brand || !w.includes(brand)));
+    function collectTokens(text) {
+        return text
+            .replace(/[^\w\sáéíóúñ-]/g, ' ')
+            .split(/\s+/)
+            .filter((w) => w.length > 3 && !STOPWORDS.has(w) && !geoTokens.has(w)
+                && ![...brandTokens].some((bt) => bt.length >= 3 && w.includes(bt)));
+    }
 
     const freq = {};
-    tokens.forEach((t) => { freq[t] = (freq[t] || 0) + 1; });
+    collectTokens(primary).forEach((t) => { freq[t] = (freq[t] || 0) + 3; });
+    collectTokens(secondary).slice(0, 12).forEach((t) => { freq[t] = (freq[t] || 0) + 1; });
     const top = Object.entries(freq).sort((a, b) => b[1] - a[1]).map(([w]) => w).slice(0, 6);
 
-    if (productHits.length) return productHits[0].slice(0, 80);
+    const titleNiche = titleForNiche.toLowerCase().replace(/[^\w\s-]/g, ' ').trim();
+    if (titleNiche.length >= 8 && collectTokens(titleNiche).length >= 2) {
+        return collectTokens(titleNiche).slice(0, 5).join(' ');
+    }
     if (top.length >= 2) return top.slice(0, 5).join(' ');
     if (giro?.label) return giro.label.toLowerCase().replace(/[^\w\s]/g, ' ').trim();
-    return 'online business services';
+    return 'local business';
 }
 
-function buildSearchQueries(onPage, url, isSocial, giro, clientTitle, clientDesc) {
-    const niche = extractNicheTerms(onPage, giro, clientTitle, clientDesc, url);
+function appendGeo(queries, geo) {
+    if (!geo?.label || geo.label === 'NO_DETECTADA') return queries;
+    const out = [...queries];
+    if (geo.city) {
+        out.push(...queries.map((q) => `${q} ${geo.city}`).slice(0, 2));
+    }
+    if (geo.country && geo.country !== 'NO_DETECTADA') {
+        out.push(...queries.slice(0, 2).map((q) => `${q} ${geo.country}`));
+    }
+    return out;
+}
+
+const GIRO_QUERIES = {
+    ecommerce: (niche, geo) => appendGeo([
+        `${niche} online shop`,
+        `${niche} store`,
+        `buy ${niche}`,
+    ], geo),
+    salud: (niche, geo) => appendGeo([
+        `${niche} clinic`,
+        `${niche} medical services`,
+        `${niche} near me`,
+    ], geo),
+    servicios: (niche, geo) => appendGeo([
+        `${niche} services`,
+        `${niche} company`,
+        `hire ${niche}`,
+    ], geo),
+    restaurante: (niche, geo) => appendGeo([
+        `${niche} restaurant`,
+        `${niche} menu`,
+        `${niche} reservations`,
+    ], geo),
+    educacion: (niche, geo) => appendGeo([
+        `${niche} course`,
+        `${niche} training`,
+        `${niche} academy`,
+    ], geo),
+    inmobiliario: (niche, geo) => appendGeo([
+        `${niche} real estate`,
+        `${niche} properties`,
+        `${niche} realtor`,
+    ], geo),
+    general: (niche, geo) => appendGeo([
+        `${niche} business`,
+        `${niche} services`,
+        `${niche} company`,
+    ], geo),
+    general_social: (niche, geo) => appendGeo([
+        `${niche} business`,
+        `${niche} brand`,
+    ], geo),
+};
+
+function clientBrandTokens(url, clientTitle) {
+    const tokens = new Set();
+    try {
+        const host = new URL(url).hostname.replace(/^www\./, '').split('.')[0].toLowerCase();
+        if (host.length >= 3) tokens.add(host);
+    } catch { /* skip */ }
+    const titleParts = (clientTitle || '').split(/\s*[|\-–—]\s*/);
+    titleParts.forEach((part) => {
+        part.toLowerCase().split(/\s+/).forEach((w) => {
+            const clean = w.replace(/[^\w]/g, '');
+            if (clean.length >= 3) tokens.add(clean);
+        });
+    });
+    return tokens;
+}
+
+function buildSearchQueries(onPage, url, isSocial, giro, clientTitle, clientDesc, geo) {
+    const niche = extractNicheTerms(onPage, giro, clientTitle, clientDesc, url, geo);
     const giroId = giro?.id || (isSocial ? 'general_social' : 'general');
     const builder = GIRO_QUERIES[giroId] || GIRO_QUERIES.general;
-    return [...new Set(builder(niche).filter(Boolean))].slice(0, 5);
+    return [...new Set(builder(niche, geo).filter(Boolean))].slice(0, 6);
 }
 
 async function fetchSearchHtml(query) {
@@ -135,7 +201,6 @@ function parseDomainsFromHtml(html, clientDomain) {
         if (BLOCKLIST.has(domain)) continue;
         if (domain.endsWith('.google.com') || domain.includes('duckduckgo') || domain.includes('bing.com')) continue;
         if (domain.includes('microsoft.com') || domain.includes('apple.com')) continue;
-        if (domain.includes(clientDomain.split('.')[0]) && domain !== clientDomain) continue;
         seen.add(domain);
         found.push(domain);
         if (found.length >= 15) break;
@@ -200,13 +265,16 @@ function isMegaRetailer(domain, snapshot) {
     return false;
 }
 
-function isNonCompetitorDomain(domain, snapshot, clientBrand) {
+function isNonCompetitorDomain(domain, snapshot, clientBrandTokensSet) {
     if (isMegaRetailer(domain, snapshot)) return true;
     const blob = `${domain} ${snapshot?.title || ''} ${snapshot?.description || ''} ${snapshot?.bodyText || ''}`;
     if (NON_COMPETITOR_RE.test(blob)) return true;
     if (/\.(gov|edu)$/.test(domain)) return true;
     if (BLOCKLIST.has(domain)) return true;
-    if (clientBrand && clientBrand.length >= 4 && domain.replace(/\W/g, '').includes(clientBrand.replace(/\W/g, ''))) return true;
+    const domainClean = domain.replace(/\W/g, '').toLowerCase();
+    for (const bt of clientBrandTokensSet || []) {
+        if (bt.length >= 4 && domainClean.includes(bt)) return true;
+    }
     return false;
 }
 
@@ -224,11 +292,12 @@ function summarizeWhatTheyDo(snapshot) {
     return summary;
 }
 
-async function validateCompetitor(domain, nicheCorpus, giro, clientBrand) {
+async function validateCompetitor(domain, nicheCorpus, giro, clientBrandTokensSet, clientGeo) {
     const snapshot = await fetchPageSnapshot(domain);
     if (!snapshot || !snapshot.title) return null;
-    if (isNonCompetitorDomain(domain, snapshot, clientBrand)) return null;
+    if (isNonCompetitorDomain(domain, snapshot, clientBrandTokensSet)) return null;
     if (!hasCommercialSignals(snapshot, giro?.id)) return null;
+    if (!geoMatchesMarket(clientGeo, snapshot, domain)) return null;
 
     const compText = `${snapshot.title} ${snapshot.description} ${snapshot.bodyText}`;
     const score = overlapScore(nicheCorpus, compText);
@@ -242,7 +311,7 @@ async function validateCompetitor(domain, nicheCorpus, giro, clientBrand) {
         title: snapshot.title,
         queHace,
         relevanceScore: Math.min(10, score + 2),
-        source: 'busqueda_nicho_validada',
+        source: 'busqueda_nicho_geo_validada',
     };
 }
 
@@ -251,19 +320,16 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
     try {
         clientDomain = new URL(url).hostname.replace(/^www\./, '');
     } catch {
-        return { competitors: [], block: formatBenchmarkBlock([], '', ctx.giro?.label) };
+        return { competitors: [], block: formatBenchmarkBlock([], '', ctx.giro?.label, null) };
     }
 
     const giro = ctx.giro || { id: 'general', label: 'Negocio local' };
-    const clientBrand = clientBrandToken(url, ctx.clientTitle);
-    const nicheCorpus = [
-        extractNicheTerms(onPage, giro, ctx.clientTitle, ctx.clientDesc, url),
-        giro.label,
-        onPage?.metaDescription,
-        onPage?.textSample?.slice(0, 500),
-    ].filter(Boolean).join(' ');
+    const clientBrand = clientBrandTokens(url, ctx.clientTitle);
+    const geo = extractGeoContext(onPage, url, giro);
+    const niche = extractNicheTerms(onPage, giro, ctx.clientTitle, ctx.clientDesc, url, geo);
+    const nicheCorpus = [niche, giro.label, onPage?.metaDescription, onPage?.textSample?.slice(0, 500)].filter(Boolean).join(' ');
 
-    const queries = buildSearchQueries(onPage, url, isSocial, giro, ctx.clientTitle, ctx.clientDesc);
+    const queries = buildSearchQueries(onPage, url, isSocial, giro, ctx.clientTitle, ctx.clientDesc, geo);
     const candidates = new Set();
 
     for (const query of queries) {
@@ -278,7 +344,7 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
     const competitors = [];
     for (const domain of candidates) {
         if (competitors.length >= 3) break;
-        const validated = await validateCompetitor(domain, nicheCorpus, giro, clientBrand);
+        const validated = await validateCompetitor(domain, nicheCorpus, giro, clientBrand, geo);
         if (validated) competitors.push(validated);
     }
 
@@ -287,19 +353,21 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
         competitors,
         query: queries[0] || 'N/A',
         queries,
-        block: formatBenchmarkBlock(competitors, usedQuery, giro.label),
+        geo,
+        block: formatBenchmarkBlock(competitors, usedQuery, giro.label, geo),
     };
 }
 
-function formatBenchmarkBlock(competitors, query, giroLabel) {
+function formatBenchmarkBlock(competitors, query, giroLabel, geo) {
+    const geoBlock = geo ? formatGeoBlock(geo) : '';
     if (!competitors.length) {
-        return `
+        return `${geoBlock}
 === BENCHMARK_VERIFIED (DATOS REALES — USAR EN SECCIÓN V) ===
 ESTADO: SIN_COMPETENCIA_IDENTIFICADA
 GIRO: ${giroLabel || 'NO_DETECTADO'}
 QUERY_BUSQUEDA: ${query}
-MENSAJE_OBLIGATORIO: No se identificó competencia directa verificable en el mismo nicho y escala (${giroLabel || 'negocio boutique/PYME'}). Los resultados de búsqueda no arrojaron tiendas/servicios comparables con solapamiento de oferta. PROHIBIDO inventar competidores ni usar mega-retailers (Amazon, Walmart, Target, Costco), bancos, plataformas SaaS o constructores web (Wix, Shopify.com, Santander, etc.).
-REGLA_IA: NO uses tabla comparativa. Escribe 2-3 párrafos sobre implicaciones de posicionamiento y confusión de marca si aplica. CERO dominios inventados.
+MENSAJE_OBLIGATORIO: No se identificó competencia directa verificable en el mismo nicho comercial y mercado geográfico (${geo?.label || 'ubicación no detectada'}). PROHIBIDO inventar competidores ni usar mega-retailers (Amazon, Walmart, Target, Costco), bancos o plataformas SaaS.
+REGLA_IA: NO uses tabla comparativa. Escribe 2-3 párrafos sobre posicionamiento en este mercado. CERO dominios inventados.
 === FIN BENCHMARK_VERIFIED ===`;
     }
 
@@ -307,12 +375,12 @@ REGLA_IA: NO uses tabla comparativa. Escribe 2-3 párrafos sobre implicaciones d
         `COMP_${i + 1}: ${c.domain} | TITLE: ${c.title} | QUE_HACE: ${c.queHace} | RELEVANCIA: ${c.relevanceScore}/10`
     ));
 
-    return `
+    return `${geoBlock}
 === BENCHMARK_VERIFIED (DATOS REALES — USAR EN SECCIÓN V) ===
 ESTADO: COMPETENCIA_VERIFICADA
 GIRO: ${giroLabel || 'NO_DETECTADO'}
 QUERY_BUSQUEDA: ${query}
-REGLA_IA: Usa ÚNICAMENTE estos competidores verificados del mismo nicho comercial (misma categoría de producto/servicio, escala boutique/PYME). PROHIBIDO añadir Amazon, Walmart, Target, Costco u otros mega-retailers. PROHIBIDO añadir dominios no listados. Tabla OBLIGATORIA con fila "Qué hacen / What they do" usando texto QUE_HACE de cada COMP_N (copiar literal, PROHIBIDO NO_DETECTADO).
+REGLA_IA: Usa ÚNICAMENTE estos competidores verificados — mismo nicho comercial Y mismo mercado geográfico (UBICACION_MERCADO). PROHIBIDO mega-retailers y dominios no listados. Tabla con fila "Qué hacen / What they do" (copiar QUE_HACE literal).
 ${lines.join('\n')}
 === FIN BENCHMARK_VERIFIED ===`;
 }

@@ -17,7 +17,7 @@ const PROMPTS = {
 
   VISIBILIDAD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### IV. AUTORIDAD SOCIAL, EMBUDO Y DESCUBRIMIENTO POR IA\nUsa bloque AI_VISIBILITY (datos reales). Evaluación técnica proxy — NO prueba en vivo en ChatGPT.\n\nSUBSECCIÓN A — Embudo social: retención, link-in-bio, arrendamiento algorítmico.\n\nSUBSECCIÓN B — Tabla | Motor IA | ¿Recomendaría? | Evidencia (bio, links, NAP) | Brecha |.\n\nSUBSECCIÓN C — Señales de entidad pública: nombre, categoría, ubicación, CTA, enlace externo.\nDossier: ${d}`,
 
-  BENCHMARK: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### V. BENCHMARK COMPETITIVO SOCIAL\nOBLIGATORIO: BENCHMARK_VERIFIED y PERFIL_NEGOCIO. Si PYME_BOUTIQUE, PROHIBIDO mega-retailers. Si SIN_COMPETENCIA_IDENTIFICADA, sin tabla. Si hay COMP_1..3, tabla SOLO con esos dominios y fila "Qué hacen / What they do" (QUE_HACE del dossier). PROHIBIDO dominios no listados. Dossier: ${d}`,
+  BENCHMARK: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### V. BENCHMARK COMPETITIVO SOCIAL\nOBLIGATORIO: BENCHMARK_VERIFIED, UBICACION_MERCADO y PERFIL_NEGOCIO. Mismo nicho + mismo mercado geográfico. Si PYME_BOUTIQUE, PROHIBIDO mega-retailers. Si SIN_COMPETENCIA_IDENTIFICADA, sin tabla. Si COMP_1..3, tabla SOLO con esos dominios. PROHIBIDO dominios no listados. Dossier: ${d}`,
 
   SWOT: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### VI. MATRIZ ESTRATÉGICA (ASISTIDA POR IA)\nSWOT del perfil. ${FORMATO_LISTAS} Dossier: ${d}`,
 
