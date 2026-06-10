@@ -6,6 +6,25 @@ function publicSiteUrl() {
     return (process.env.PUBLIC_BASE_URL || 'https://predictacore.ai').replace(/\/$/, '');
 }
 
+function mailDomain() {
+    try {
+        return new URL(publicSiteUrl()).hostname.replace(/^www\./, '');
+    } catch {
+        return 'predictacore.ai';
+    }
+}
+
+/** Contact / support address shown in legal pages and error copy */
+function getSupportEmail() {
+    return process.env.SUPPORT_EMAIL || `audit@${mailDomain()}`;
+}
+
+/** Resend "from" header — must match a verified domain in Resend */
+function getResendFrom() {
+    if (process.env.RESEND_FROM) return process.env.RESEND_FROM;
+    return `PredictaCore <audit@${mailDomain()}>`;
+}
+
 /** Deep link to landing upsell with email + URL prefilled for Titan checkout */
 function buildTitanUpgradeUrl({ email, dna, lang = 'en' }) {
     const params = new URLSearchParams();
@@ -97,5 +116,7 @@ module.exports = {
     getPdfBrandStyles,
     FAVICON_VERSION,
     publicSiteUrl,
+    getSupportEmail,
+    getResendFrom,
     buildTitanUpgradeUrl,
 };

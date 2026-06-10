@@ -8,12 +8,27 @@ const BLOCKLIST = new Set([
     'shopify.com', 'myshopify.com', 'wix.com', 'wixsite.com', 'squarespace.com',
     'wordpress.com', 'webflow.com', 'godaddy.com', 'weebly.com', 'blackbell.com',
     'bing.com', 'duckduckgo.com', 'microsoft.com', 'yahoo.com',
+    'target.com', 'walmart.com', 'costco.com', 'bestbuy.com', 'homedepot.com',
+    'lowes.com', 'macys.com', 'kohls.com', 'wayfair.com', 'overstock.com',
+    'samsclub.com', 'cvs.com', 'walgreens.com', 'alibaba.com', 'aliexpress.com',
 ]);
 
-const NON_COMPETITOR_RE = /\b(bank|banco|santander|chase|wells fargo|bbva|financial institution|website builder|web platform|software platform|create your (own )?website|service businesses to create|technology provider|not a (direct )?competitor|saas platform|hosting provider|domain registrar)\b/i;
+const MEGA_RETAILER_RE = /\b(amazon|walmart|target|costco|best buy|home depot|lowe'?s|macys|kohl'?s|wayfair|sam'?s club|cvs|walgreens|alibaba|aliexpress|big-box|mass-market retailer|major retailer|mega-?retailer)\b/i;
+
+const NON_COMPETITOR_RE = /\b(bank|banco|santander|chase|wells fargo|bbva|financial institution|website builder|web platform|software platform|create your (own )?website|service businesses to create|technology provider|not a (direct )?competitor|saas platform|hosting provider|domain registrar|department store|grocery chain|supermarket chain|general merchandise)\b/i;
 
 const GIRO_QUERIES = {
-    ecommerce: (kw) => [`${kw} online store`, `${kw} shop buy`, `personalized ${kw} store`],
+    ecommerce: (kw) => {
+        const niche = /\b(custom|personalized|personaliz|handmade|artisan|bespoke|monogram)\b/i.test(kw)
+            ? kw
+            : `personalized custom ${kw}`;
+        return [
+            `${niche} boutique shopify store`,
+            `${niche} small business online shop`,
+            `${niche} DTC brand`,
+            `shop ${niche} handmade`,
+        ];
+    },
     salud: (kw) => [`${kw} clinic`, `${kw} medical services`, `${kw} wellness center`],
     servicios: (kw) => [`${kw} agency`, `${kw} consulting services`, `${kw} professional services`],
     restaurante: (kw) => [`${kw} restaurant`, `${kw} menu reservations`, `${kw} food delivery`],
@@ -158,7 +173,18 @@ function overlapScore(a, b) {
     return shared;
 }
 
+function isMegaRetailer(domain, snapshot) {
+    const blob = `${domain} ${snapshot?.title || ''} ${snapshot?.description || ''} ${snapshot?.bodyText || ''}`.toLowerCase();
+    if (/^(target|walmart|amazon|costco|bestbuy|homedepot|lowes|macys|kohls|wayfair)\./i.test(domain)) return true;
+    if (MEGA_RETAILER_RE.test(domain)) return true;
+    if (MEGA_RETAILER_RE.test(blob) && /\b(millions of products|everyday low prices|groceries|electronics|department store|supercenter|big box)\b/i.test(blob)) {
+        return true;
+    }
+    return false;
+}
+
 function isNonCompetitorDomain(domain, snapshot) {
+    if (isMegaRetailer(domain, snapshot)) return true;
     const blob = `${domain} ${snapshot?.title || ''} ${snapshot?.description || ''} ${snapshot?.bodyText || ''}`;
     if (NON_COMPETITOR_RE.test(blob)) return true;
     if (/\.(gov|edu)$/.test(domain)) return true;
@@ -248,7 +274,7 @@ function formatBenchmarkBlock(competitors, query, giroLabel) {
 ESTADO: SIN_COMPETENCIA_IDENTIFICADA
 GIRO: ${giroLabel || 'NO_DETECTADO'}
 QUERY_BUSQUEDA: ${query}
-MENSAJE_OBLIGATORIO: No se identificó competencia directa verificable en el mismo giro (${giroLabel || 'negocio'}). Los resultados de búsqueda no arrojaron tiendas/servicios comparables con solapamiento de oferta. PROHIBIDO inventar competidores ni usar bancos, plataformas SaaS o constructores web (Wix, Shopify.com, Santander, etc.).
+MENSAJE_OBLIGATORIO: No se identificó competencia directa verificable en el mismo giro y escala (${giroLabel || 'negocio boutique/PYME'}). Los resultados de búsqueda no arrojaron tiendas/servicios comparables con solapamiento de oferta. PROHIBIDO inventar competidores ni usar mega-retailers (Amazon, Walmart, Target, Costco), bancos, plataformas SaaS o constructores web (Wix, Shopify.com, Santander, etc.).
 REGLA_IA: NO uses tabla comparativa. Escribe 2-3 párrafos sobre implicaciones de posicionamiento y confusión de marca si aplica. CERO dominios inventados.
 === FIN BENCHMARK_VERIFIED ===`;
     }
@@ -262,9 +288,9 @@ REGLA_IA: NO uses tabla comparativa. Escribe 2-3 párrafos sobre implicaciones d
 ESTADO: COMPETENCIA_VERIFICADA
 GIRO: ${giroLabel || 'NO_DETECTADO'}
 QUERY_BUSQUEDA: ${query}
-REGLA_IA: Usa ÚNICAMENTE estos competidores verificados del mismo giro. PROHIBIDO añadir otros. Tabla OBLIGATORIA con fila "Qué hacen / What they do" usando texto QUE_HACE de cada COMP_N. PROHIBIDO incluir dominios que no estén listados abajo.
+REGLA_IA: Usa ÚNICAMENTE estos competidores verificados del mismo giro y escala similar (boutique/PYME/DTC). PROHIBIDO añadir Amazon, Walmart, Target, Costco u otros mega-retailers. PROHIBIDO añadir otros dominios. Tabla OBLIGATORIA con fila "Qué hacen / What they do" usando texto QUE_HACE de cada COMP_N. PROHIBIDO incluir dominios que no estén listados abajo.
 ${lines.join('\n')}
 === FIN BENCHMARK_VERIFIED ===`;
 }
 
-module.exports = { findCompetitors, formatBenchmarkBlock, buildSearchQueries };
+module.exports = { findCompetitors, formatBenchmarkBlock, buildSearchQueries, MEGA_RETAILER_RE, BLOCKLIST };

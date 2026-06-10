@@ -42,7 +42,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
-const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml } = require('./brand');
+const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml, getResendFrom } = require('./brand');
 const {
     getLocaleFromDossier,
     getLanguageLockInstruction,
@@ -165,7 +165,7 @@ async function sendTitanActivationEmail(email, lang, customerId) {
 
     const { subject, html, text } = buildTitanActivationEmail(lang, portalUrl);
     const { error } = await resend.emails.send({
-        from: 'PredictaCore <reportes@predictacore.ai>',
+        from: getResendFrom(),
         to: email,
         subject,
         html,
@@ -1101,6 +1101,11 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             lang: langCode,
         });
 
+        const progressForPdf = {};
+        for (const [key, value] of Object.entries(job.progress || {})) {
+            progressForPdf[key] = postProcessSection(key, value, reportLocale);
+        }
+
         await page.evaluate((progressData, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang) => {
             if (htmlLang) document.documentElement.lang = htmlLang;
             const reporte = document.getElementById('reporte');
@@ -1113,8 +1118,6 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             const titleEl = document.getElementById('pdf-cover-title');
             if (titleEl && titanUpgradeUrl && ui.liteTitle) titleEl.innerText = ui.liteTitle;
             else if (titleEl && ui.coverTitle) titleEl.innerText = ui.coverTitle;
-            const confEl = document.getElementById('pdf-confidential');
-            if (confEl && ui.confidential) confEl.innerText = ui.confidential;
             const dateEl = document.getElementById('pdf-date');
             if (dateEl) {
                 dateEl.innerText = new Date().toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' });
@@ -1153,13 +1156,13 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                     + '<p><strong>' + titanUpgradeUrl + '</strong></p>';
                 reporte.appendChild(cta);
             }
-        }, job.progress, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode);
+        }, progressForPdf, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
 
         const mailPayload = {
-            from: 'PredictaCore <reportes@predictacore.ai>',
+            from: getResendFrom(),
             to: emailDestino,
             subject,
             text: textBody,

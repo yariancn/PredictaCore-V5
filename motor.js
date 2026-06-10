@@ -9,6 +9,23 @@ const { formatKeywordsBlock } = require('./keywords');
 const { formatIdiomaBlock, resolveReportLocale } = require('./idioma');
 const { detectGiro } = require('./giro');
 
+function formatBusinessProfile(onPage, giro, clientTitle, clientDesc) {
+    const wc = onPage?.wordCount || 0;
+    const links = onPage?.internalLinks || 0;
+    const imgs = onPage?.imgsTotal || onPage?.imgs || 0;
+    const escala = (wc < 12000 && links < 150) ? 'PYME_BOUTIQUE' : 'MEDIANA';
+    const corpus = `${clientTitle || ''} ${clientDesc || ''} ${onPage?.title || ''} ${onPage?.metaDescription || ''} ${onPage?.textSample || ''}`;
+    const personalized = /\b(custom|personalized|personaliz|handmade|artisan|artesanal|bespoke|monogram|hecho a medida)\b/i.test(corpus);
+    return `
+=== PERFIL_NEGOCIO (OBLIGATORIO PARA BENCHMARK, SWOT Y GEMELOS) ===
+ESCALA: ${escala}
+PERSONALIZACION: ${personalized ? 'SI — productos personalizados/artesanales' : 'NO_DETECTADA'}
+SENALES_NAVEGACION: ${wc} palabras públicas | ${links} enlaces internos | ${imgs} imágenes
+GIRO: ${giro?.label || 'NO_DETECTADO'}
+REGLA_BENCHMARK: Activo boutique/PYME del nicho. PROHIBIDO comparar con Amazon, Walmart, Target, Costco, eBay marketplace genérico u otros mega-retailers. Solo competidores del mismo nicho, escala similar y oferta comparable (personalizado, DTC pequeño, artesanal).
+=== FIN PERFIL_NEGOCIO ===`;
+}
+
 async function captureAndScrape(url) {
     let browser;
     try {
@@ -189,7 +206,14 @@ async function captureAndScrape(url) {
             `${dataForense.titulo} ${dataForense.descripcion} ${dataForense.cuerpo}`.slice(0, 4000)
         );
 
-        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${idiomaBlock}${forensicsBlock}${simulationBlock}${benchmarkBlock}${keywordsBlock}`;
+        const businessProfileBlock = formatBusinessProfile(
+            forensics.onPage,
+            giro,
+            dataForense.titulo,
+            dataForense.descripcion
+        );
+
+        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${idiomaBlock}${businessProfileBlock}${forensicsBlock}${simulationBlock}${benchmarkBlock}${keywordsBlock}`;
 
         return {
             isUrl: true,

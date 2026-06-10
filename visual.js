@@ -117,8 +117,7 @@ function getHTML() {
                     <div class="text-xl text-gray-500 mt-4" id="pdf-domain">Asset Analysis</div>
                     <div id="pdf-metrics"></div>
                     <div id="pdf-evidence"></div>
-                    <div class="mt-auto pt-10 border-t border-gray-200 flex justify-between items-end">
-                        <span class="font-bold text-gray-900 uppercase text-xs tracking-widest" id="pdf-confidential">Altamente Confidencial</span>
+                    <div class="mt-auto pt-10 border-t border-gray-200 flex justify-end items-end">
                         <span id="pdf-date" class="font-bold text-gray-900"></span>
                     </div>
                 </div>

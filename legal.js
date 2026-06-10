@@ -2,7 +2,7 @@
  * PredictaCore legal pages (predictacore.ai only).
  */
 
-const { getFaviconHeadTags } = require('./brand');
+const { getFaviconHeadTags, getSupportEmail } = require('./brand');
 
 const UPDATED = 'May 27, 2026';
 
@@ -36,6 +36,7 @@ function wrapPredictacorePage({ title, intro, bodyHtml, footerLinks }) {
 }
 
 function getTerminosHTML() {
+    const support = getSupportEmail();
     return wrapPredictacorePage({
         title: 'Terms of Service',
         intro: `<div class="border border-emerald-900/50 bg-emerald-950/30 p-4 rounded mb-8 text-xs text-emerald-100/90">
@@ -44,14 +45,14 @@ function getTerminosHTML() {
         </div>`,
         bodyHtml: `
         <div><h2 class="text-white font-bold mb-2">1. Provider</h2>
-            <p>PredictaCore is provided at predictacore.ai. Support: reportes@predictacore.ai</p></div>
+            <p>PredictaCore is provided at predictacore.ai. Support: ${support}</p></div>
         <div><h2 class="text-white font-bold mb-2">2. Service</h2>
             <p>AI-powered website and digital profile audits delivered as PDF reports. We do not edit your website or guarantee revenue outcomes.</p></div>
         <div><h2 class="text-white font-bold mb-2">3. Pricing</h2>
             <p><strong>Titan Report:</strong> USD $349.00 — charged at purchase.</p>
             <p class="mt-2"><strong>Monthly monitoring (subscription):</strong> USD $25.00/month — starts 30 days after purchase.</p></div>
         <div><h2 class="text-white font-bold mb-2">4. Card charges</h2>
-            <p>Charges should appear on your statement as <strong>PREDICTACORE</strong> (or similar PredictaCore descriptor). If you do not recognize a charge, contact reportes@predictacore.ai before disputing with your bank.</p></div>
+            <p>Charges should appear on your statement as <strong>PREDICTACORE</strong> (or similar PredictaCore descriptor). If you do not recognize a charge, contact ${support} before disputing with your bank.</p></div>
         <div><h2 class="text-white font-bold mb-2">5. No refunds</h2>
             <p><strong>ALL SALES ARE FINAL.</strong> USD $349 and processed USD $25 monthly charges are non-refundable.</p></div>
         <div><h2 class="text-white font-bold mb-2">6. Cancellation</h2>
@@ -67,6 +68,7 @@ function getTerminosHTML() {
 }
 
 function getPrivacidadHTML() {
+    const support = getSupportEmail();
     return wrapPredictacorePage({
         title: 'Privacy Policy',
         intro: `<div class="border border-zinc-800 bg-zinc-900/40 p-4 rounded mb-8 text-xs text-zinc-400">
@@ -74,7 +76,7 @@ function getPrivacidadHTML() {
         </div>`,
         bodyHtml: `
         <div><h2 class="text-white font-bold mb-2">1. Controller</h2>
-            <p>PredictaCore — reportes@predictacore.ai</p></div>
+            <p>PredictaCore — ${support}</p></div>
         <div><h2 class="text-white font-bold mb-2">2. Data we collect</h2>
             <ul class="list-disc pl-5 space-y-1">
                 <li>Email address</li>
@@ -90,7 +92,7 @@ function getPrivacidadHTML() {
         <div><h2 class="text-white font-bold mb-2">5. Retention</h2>
             <p>While subscribed and up to 24 months after cancellation.</p></div>
         <div><h2 class="text-white font-bold mb-2">6. Your rights</h2>
-            <p>Contact reportes@predictacore.ai</p></div>
+            <p>Contact ${support}</p></div>
         <div><h2 class="text-white font-bold mb-2">7. Security</h2>
             <p>HTTPS and reasonable safeguards.</p></div>`,
         footerLinks: [{ href: '/terms', label: 'Terms of Service' }],

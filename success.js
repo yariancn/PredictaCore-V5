@@ -1,4 +1,4 @@
-const { getFaviconHeadTags } = require('./brand');
+const { getFaviconHeadTags, getSupportEmail } = require('./brand');
 
 function statusMessage(t, fulfillStatus) {
     if (fulfillStatus === 'ok') return t.processingOk;
@@ -12,6 +12,7 @@ function statusMessage(t, fulfillStatus) {
 }
 
 function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
+    const support = getSupportEmail();
     const t = lang === 'es' ? {
         title: 'Pago confirmado',
         headline: 'PAGO RECIBIDO',
@@ -23,10 +24,10 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
         processing: 'Confirmando pago y encolando análisis…',
         processingOk: 'Pago confirmado. Análisis Titán en proceso — revisa tu correo (hasta 60 min).',
         processingDup: 'Pago ya registrado. Tu análisis sigue en cola — revisa tu correo (hasta 60 min).',
-        processingFail: 'Pago recibido en Stripe, pero hubo un retraso al encolar. Escríbenos a reportes@predictacore.ai con tu email de compra.',
+        processingFail: `Pago recibido en Stripe, pero hubo un retraso al encolar. Escríbenos a ${support} con tu email de compra.`,
         processingNotPaid: 'Stripe devolvió esta sesión pero el pago NO está confirmado (payment_status ≠ paid). No se cobró USD $349. Vuelve a intentar el checkout o revisa Developers → Eventos en Stripe.',
         processingNotPredictacore: 'Esta sesión de Stripe no corresponde a PredictaCore (Price IDs o metadata incorrectos en Railway). Revisa STRIPE_PRICE_TITAN y STRIPE_PRICE_SUBSCRIPTION.',
-        processingMissing: 'El pago en Stripe parece OK, pero no llegó el ID de sesión (session_id) en la URL. Revisa tu correo en unos minutos; si no llega nada, escríbenos a reportes@predictacore.ai.',
+        processingMissing: `El pago en Stripe parece OK, pero no llegó el ID de sesión (session_id) en la URL. Revisa tu correo en unos minutos; si no llega nada, escríbenos a ${support}.`,
         home: 'Volver al inicio',
         terms: 'Términos',
         privacy: 'Privacidad',
@@ -41,10 +42,10 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
         processing: 'Confirming payment and queuing your audit…',
         processingOk: 'Payment confirmed. Titan audit running — watch your inbox (up to 60 min).',
         processingDup: 'Payment already registered. Your audit is queued — watch your inbox (up to 60 min).',
-        processingFail: 'Stripe shows payment OK, but queuing delayed. Email reportes@predictacore.ai with your purchase email.',
+        processingFail: `Stripe shows payment OK, but queuing delayed. Email ${support} with your purchase email.`,
         processingNotPaid: 'Stripe returned this session but payment is NOT confirmed (payment_status ≠ paid). USD $349 was not charged. Retry checkout or check Developers → Events in Stripe.',
         processingNotPredictacore: 'This Stripe session is not PredictaCore (wrong Price IDs or metadata in Railway). Check STRIPE_PRICE_TITAN and STRIPE_PRICE_SUBSCRIPTION.',
-        processingMissing: 'Stripe payment looks OK, but the session_id was missing from the return URL. Check your inbox shortly; if nothing arrives, email reportes@predictacore.ai.',
+        processingMissing: `Stripe payment looks OK, but the session_id was missing from the return URL. Check your inbox shortly; if nothing arrives, email ${support}.`,
         home: 'Back to home',
         terms: 'Terms',
         privacy: 'Privacy',

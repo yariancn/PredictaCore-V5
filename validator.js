@@ -1,4 +1,10 @@
-/** Post-validación de secciones Gemini — anti-alucinación y anti-$ */
+const { MEGA_RETAILER_RE } = require('./competitors');
+
+const MEGA_RETAILER_DOMAINS = [
+    'target.com', 'walmart.com', 'amazon.com', 'costco.com', 'bestbuy.com',
+    'homedepot.com', 'lowes.com', 'macys.com', 'kohls.com', 'wayfair.com',
+    'ebay.com', 'etsy.com', 'samsclub.com',
+];
 
 const MONEY_RE = /(?:USD|\$|€|£|MXN|\+\d{1,3}%|\d{1,3}%\s*(?:ROI|retorno|incremento|aumento))/i;
 const GENERIC_RE = /(?:en general|muchas empresas|la mayoría de sitios|podría ser que|quizás|probablemente|it is common|many businesses)/i;
@@ -64,6 +70,12 @@ function validateSection(etapaId, content, dossier, locale) {
         if (/\b(blackbell|santander|wix\.com|shopify\.com|squarespace|godaddy)\b/i.test(text)) {
             issues.push('Inventó competidores no verificados — dossier indica SIN_COMPETENCIA_IDENTIFICADA');
         }
+        for (const mega of MEGA_RETAILER_DOMAINS) {
+            const short = mega.split('.')[0];
+            if (text.toLowerCase().includes(short)) {
+                issues.push(`PROHIBIDO mega-retailer ${mega} — no hay competencia verificada en dossier`);
+            }
+        }
         if (/\|\s*criterio\s*\|/i.test(text) && /comp\s*[123]/i.test(text)) {
             issues.push('PROHIBIDO tabla comparativa cuando no hay competidores verificados');
         }
@@ -75,16 +87,42 @@ function validateSection(etapaId, content, dossier, locale) {
         if (compDomains.length && mentioned.length === 0) {
             issues.push(`Debe usar competidores verificados: ${compDomains.join(', ')}`);
         }
-        const extraDomain = text.match(/\b([a-z0-9-]+\.(com|net|org|io|shop|store))\b/gi) || [];
         const allowed = new Set(compDomains.map((d) => d.toLowerCase()));
         const clientDomain = (dossier.match(/URL:\s*(https?:\/\/)?([\w.-]+)/i) || [])[2];
         if (clientDomain) allowed.add(clientDomain.toLowerCase());
+
+        for (const mega of MEGA_RETAILER_DOMAINS) {
+            const short = mega.split('.')[0];
+            if (text.toLowerCase().includes(short) && !allowed.has(mega)) {
+                issues.push(`PROHIBIDO mega-retailer ${mega} — el activo es boutique/PYME del nicho; solo competidores verificados en COMP_*`);
+            }
+        }
+        if (MEGA_RETAILER_RE.test(text) && dossierHas(dossier, 'PYME_BOUTIQUE')) {
+            const hasUnauthorizedMega = MEGA_RETAILER_DOMAINS.some((mega) => {
+                const short = mega.split('.')[0];
+                return text.toLowerCase().includes(short) && !allowed.has(mega);
+            });
+            if (hasUnauthorizedMega) {
+                issues.push('PROHIBIDO comparar con big-box/mass-market — PERFIL_NEGOCIO indica PYME boutique');
+            }
+        }
+
+        const extraDomain = text.match(/\b([a-z0-9-]+\.(com|net|org|io|shop|store))\b/gi) || [];
         const invented = extraDomain.filter((d) => !allowed.has(d.toLowerCase()) && !['predictacore.ai'].includes(d.toLowerCase()));
-        if (invented.length > 2) {
-            issues.push(`Dominios no autorizados en benchmark: ${[...new Set(invented)].slice(0, 4).join(', ')}`);
+        if (invented.length > 0) {
+            issues.push(`Dominios no autorizados en benchmark: ${[...new Set(invented)].slice(0, 4).join(', ')} — solo COMP_* del dossier`);
         }
         if (!/qu[eé] hacen|what they do/i.test(text)) {
             issues.push('La tabla debe incluir fila "Qué hacen / What they do" con QUE_HACE del dossier');
+        }
+    }
+
+    if (etapaId === 'SWOT' && dossierHas(dossier, 'PYME_BOUTIQUE')) {
+        for (const mega of MEGA_RETAILER_DOMAINS) {
+            const short = mega.split('.')[0];
+            if (text.toLowerCase().includes(short)) {
+                issues.push(`SWOT no debe citar mega-retailers (${mega}) — compara solo con rivales del nicho verificados`);
+            }
         }
     }
 

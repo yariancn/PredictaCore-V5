@@ -20,6 +20,8 @@ function countNumberedItems(text) {
     return ((text || '').match(/^\s*\d+\.\s+/gm) || []).length;
 }
 
+const PRIORITY_START_RE = /^(?:\*\*)?(Critical|Crítico|High|Alto|Medium|Medio|Low|Bajo)\]?\*?\*?\s*(.*)$/i;
+
 function normalizePriorityPrefix(item) {
     return String(item || '')
         .replace(/^P1\s*[—\-]?\s*(?:CRITICAL HEMORRHAGE|HEMORRAGIA CRÍTICA)\s*/i, '**Critical:** ')
@@ -27,10 +29,83 @@ function normalizePriorityPrefix(item) {
         .replace(/^P3\s*[—\-]?\s*(?:MODERATE LEAK|FUGA MODERADA)\s*/i, '**Medium:** ')
         .replace(/^P4\s*[—\-]?\s*(?:MINOR FRICTION|FRICCIÓN MENOR)\s*/i, '**Low:** ')
         .replace(/^\*\*\[P[1-4][^\]]*\]\*\*\s*/i, '')
+        .replace(/^(Critical|Crítico)\]\*?\*?\s*/i, '**Critical:** ')
+        .replace(/^(Critical|Crítico)\s+(?!:\*\*)/i, '**Critical:** ')
+        .replace(/^(High|Alto)\]\*?\*?\s*/i, '**High:** ')
+        .replace(/^(Medium|Medio)\]\*?\*?\s*/i, '**Medium:** ')
+        .replace(/^(Low|Bajo)\]\*?\*?\s*/i, '**Low:** ')
+        .replace(/^(High|Alto)\s+(?!:\*\*)/i, '**High:** ')
+        .replace(/^(Medium|Medio)\s+(?!:\*\*)/i, '**Medium:** ')
+        .replace(/^(Low|Bajo)\s+(?!:\*\*)/i, '**Low:** ')
+        .replace(/^\*\*(Critical|High|Medium|Low|Crítico|Alto|Medio|Bajo):\*\*\s*/i, (m, p) => {
+            const map = { crítico: 'Critical', alto: 'High', medio: 'Medium', bajo: 'Low' };
+            const key = p.toLowerCase();
+            return `**${map[key] || p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()}:** `;
+        })
         .trim();
 }
 
-function extractListItems(body) {
+function extractPriorityItems(body) {
+    const items = [];
+    let current = null;
+
+    for (const rawLine of body.split('\n')) {
+        const line = rawLine.trim();
+        if (!line) continue;
+        const m = line.match(PRIORITY_START_RE);
+        if (m) {
+            if (current) items.push(normalizePriorityPrefix(current));
+            current = `${m[1]} ${m[2]}`.trim();
+        } else if (current) {
+            current += ` ${line}`;
+        }
+    }
+    if (current) items.push(normalizePriorityPrefix(current));
+    return items;
+}
+
+function extractWishItems(body) {
+    const items = [];
+    let current = null;
+
+    for (const rawLine of body.split('\n')) {
+        const line = rawLine.trim();
+        if (!line) continue;
+        const m = line.match(/^(?:\d+\.\s*)?(?:\*\*)?(?:Deseo|Wish):\*?\*?\s*(.*)$/i);
+        if (m) {
+            if (current) items.push(current.trim());
+            const label = /^des/i.test(line) ? 'Deseo' : 'Wish';
+            current = `**${label}:** ${m[1].trim()}`;
+        } else if (current) {
+            current += ` ${line}`;
+        }
+    }
+    if (current) items.push(current.trim());
+    return items.filter((p) => p.length > 15);
+}
+
+function extractActionItems(body) {
+    const numbered = [];
+    for (const line of body.split('\n')) {
+        const m = line.match(/^\s*\d+\.\s+(.+)$/);
+        if (m) numbered.push(m[1].trim());
+    }
+    if (numbered.length >= 3) return numbered;
+
+    const blocks = body
+        .split(/\n+(?=[A-Z][^\n]{8,90}(?::\s|\s+(?:Implement|Add|Establish|Improve|Create|Optimize|Clarify|Shorten|Integrate|Build|Fix|Enable|Remove|Move|Update|Include|Highlight|Rewrite|Deploy|Configure|Install|Set up|Write|Design|Launch|Reduce|Increase|Expand|Audit|Review|Test|Monitor|Track|Register|Submit|Connect|Migrate|Refactor|Restructure|Reorganize|Consolidate|Standardize|Automate|Schedule|Publish|Promote|Segment|Personalize|Localize|Translate|Validate|Verify|Document|Train|Educate|Inform|Notify|Remind|Follow|Respond|Engage|Convert|Capture|Collect|Display|Show|Hide|Replace|Swap|Switch|Upgrade|Downgrade|Refresh|Reload|Restore|Recover|Backup|Export|Import|Sync|Link|Unlink|Merge|Split|Filter|Sort|Search|Index|Cache|Compress|Minify|Lazy-load|Preload|Prefetch|Defer|Async|Inline|Embed|Inject|Append|Prepend|Insert|Delete|Clear|Reset|Undo|Redo|Copy|Paste|Paste|Print|Share|Post|Tweet|Pin|Tag|Label|Categorize|Group|Ungroup|Bundle|Unbundle|Discount|Price|Charge|Bill|Invoice|Refund|Cancel|Pause|Resume|Stop|Start|Begin|End|Finish|Complete|Close|Open|Lock|Unlock|Grant|Revoke|Assign|Unassign|Delegate|Escalate|Prioritize|Deprioritize|Archive|Unarchive|Flag|Unflag|Mark|Unmark|Star|Unstar|Favorite|Unfavorite|Like|Unlike|Vote|Rate|Rank|Score|Grade|Measure|Calculate|Estimate|Forecast|Predict|Analyze|Diagnose|Debug|Troubleshoot|Resolve|Mitigate|Prevent|Avoid|Eliminate|Minimize|Maximize|Optimize)))/)
+        .map((p) => p.replace(/\s+/g, ' ').trim())
+        .filter((p) => p.length > 25 && !/^#{1,3}\s/.test(p));
+    if (blocks.length >= 3) return blocks;
+
+    const paragraphs = body
+        .split(/\n\s*\n/)
+        .map((p) => p.replace(/\s+/g, ' ').trim())
+        .filter((p) => p.length > 30 && !/^#{1,3}\s/.test(p));
+    return paragraphs;
+}
+
+function extractListItems(body, { mode = 'auto' } = {}) {
     const items = [];
 
     for (const line of body.split('\n')) {
@@ -39,23 +114,26 @@ function extractListItems(body) {
     }
     if (items.length >= 3) return items;
 
-    const prioritySplit = body
-        .split(/\n+(?=P[1-4]\s+(?:CRITICAL|SEVERE|MODERATE|MINOR|HEMORRHAGE|LEAK|FRICTION)|(?:\*\*)?(?:Critical|High|Medium|Low|Crítico|Alto|Medio|Bajo)\b)/i)
-        .map((p) => normalizePriorityPrefix(p.replace(/\s+/g, ' ').trim()))
-        .filter((p) => p.length > 15 && !/^#{1,3}\s/.test(p));
-    if (prioritySplit.length >= 3) return prioritySplit;
+    if (mode === 'fugas' || mode === 'auto') {
+        const priorityItems = extractPriorityItems(body);
+        if (priorityItems.length >= 3) return priorityItems;
+    }
+
+    if (mode === 'wishlist' || mode === 'auto') {
+        const wishItems = extractWishItems(body);
+        if (wishItems.length >= 3) return wishItems;
+    }
+
+    if (mode === 'acciones' || mode === 'auto') {
+        const actionItems = extractActionItems(body);
+        if (actionItems.length >= 3) return actionItems;
+    }
 
     for (const line of body.split('\n')) {
         const titleMatch = line.match(/^\s*(\*{0,2}[A-Za-zÁÉÍÓÚáéíóú][^*\n:]{2,72}\*{0,2}):\s*(.+)$/);
         if (titleMatch) items.push(`${titleMatch[1]}: ${titleMatch[2]}`.trim());
     }
     if (items.length >= 3) return items;
-
-    const wishSplit = body
-        .split(/\n+(?=(?:\*\*)?(?:Deseo|Wish|Strategic|Product|Comprehensive|Dedicated|Prominent|Advanced|Interactive|Visual|Live)[^.\n]{0,60}[.:])/i)
-        .map((p) => p.replace(/\s+/g, ' ').trim())
-        .filter((p) => p.length > 20 && !/^#{1,3}\s/.test(p));
-    if (wishSplit.length >= 3) return wishSplit;
 
     const paragraphs = body
         .split(/\n\s*\n/)
@@ -69,8 +147,15 @@ function extractListItems(body) {
     return items;
 }
 
+const SECTION_EXTRACT_MODE = {
+    FUGAS: 'fugas',
+    FUGAS_LITE: 'fugas',
+    WISHLIST: 'wishlist',
+    ACCIONES: 'acciones',
+};
+
 /** Convierte viñetas, párrafos o "Título:" en lista numerada 1..N */
-function normalizeNumberedList(text, { minItems = 1, targetItems = null } = {}) {
+function normalizeNumberedList(text, { minItems = 1, targetItems = null, mode = 'auto' } = {}) {
     if (!text || typeof text !== 'string') return text;
 
     const headerMatch = text.match(/^(###[^\n]+\n?)/);
@@ -82,7 +167,7 @@ function normalizeNumberedList(text, { minItems = 1, targetItems = null } = {}) 
         return text;
     }
 
-    const items = extractListItems(body);
+    const items = extractListItems(body, { mode });
     if (items.length < minItems) return text;
 
     const trimmed = targetItems ? items.slice(0, targetItems) : items;
@@ -124,7 +209,6 @@ function getPdfUiStrings(locale) {
         return {
             coverTag: 'Reporte forense de conversión',
             coverTitle: 'Inteligencia Titán',
-            confidential: 'Altamente confidencial',
             evidenceTitle: 'Evidencia visual forense',
             desktop: 'Escritorio',
             mobile: 'Móvil',
@@ -137,7 +221,6 @@ function getPdfUiStrings(locale) {
     return {
         coverTag: 'Forensic conversion report',
         coverTitle: 'Titan Intelligence',
-        confidential: 'Highly confidential',
         evidenceTitle: 'Forensic visual evidence',
         desktop: 'Desktop',
         mobile: 'Mobile',
@@ -210,7 +293,12 @@ function postProcessSection(etapaId, text, locale) {
     let out = text || '';
     const target = NUMBERED_SECTIONS[etapaId];
     if (target) {
-        out = normalizeNumberedList(out, { minItems: Math.min(target, 3), targetItems: target });
+        const mode = SECTION_EXTRACT_MODE[etapaId] || 'auto';
+        out = normalizeNumberedList(out, { minItems: Math.min(target, 3), targetItems: target, mode });
+        const after = countNumberedItems(out.replace(/^###[^\n]+\n?/, ''));
+        if (after < target - 1) {
+            out = normalizeNumberedList(out, { minItems: 2, targetItems: target, mode: 'auto' });
+        }
     }
     return out;
 }
