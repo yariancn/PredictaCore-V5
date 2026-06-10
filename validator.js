@@ -61,6 +61,12 @@ function validateSection(etapaId, content, dossier, locale) {
         if (/comp\s*[123]|competidor\s*[123]|vs\.?\s*\w+\.com/i.test(text) && !text.includes('SIN_COMPETENCIA') && !text.includes('No se identificó')) {
             issues.push('Inventó competidores — dossier indica SIN_COMPETENCIA_IDENTIFICADA');
         }
+        if (/\b(blackbell|santander|wix\.com|shopify\.com|squarespace|godaddy)\b/i.test(text)) {
+            issues.push('Inventó competidores no verificados — dossier indica SIN_COMPETENCIA_IDENTIFICADA');
+        }
+        if (/\|\s*criterio\s*\|/i.test(text) && /comp\s*[123]/i.test(text)) {
+            issues.push('PROHIBIDO tabla comparativa cuando no hay competidores verificados');
+        }
     }
 
     if (etapaId === 'BENCHMARK' && dossierHas(dossier, 'COMP_1:')) {
@@ -68,6 +74,27 @@ function validateSection(etapaId, content, dossier, locale) {
         const mentioned = compDomains.filter((d) => text.toLowerCase().includes(d.toLowerCase()));
         if (compDomains.length && mentioned.length === 0) {
             issues.push(`Debe usar competidores verificados: ${compDomains.join(', ')}`);
+        }
+        const extraDomain = text.match(/\b([a-z0-9-]+\.(com|net|org|io|shop|store))\b/gi) || [];
+        const allowed = new Set(compDomains.map((d) => d.toLowerCase()));
+        const clientDomain = (dossier.match(/URL:\s*(https?:\/\/)?([\w.-]+)/i) || [])[2];
+        if (clientDomain) allowed.add(clientDomain.toLowerCase());
+        const invented = extraDomain.filter((d) => !allowed.has(d.toLowerCase()) && !['predictacore.ai'].includes(d.toLowerCase()));
+        if (invented.length > 2) {
+            issues.push(`Dominios no autorizados en benchmark: ${[...new Set(invented)].slice(0, 4).join(', ')}`);
+        }
+        if (!/qu[eé] hacen|what they do/i.test(text)) {
+            issues.push('La tabla debe incluir fila "Qué hacen / What they do" con QUE_HACE del dossier');
+        }
+    }
+
+    if (etapaId === 'WISHLIST') {
+        const techWish = /\b(h1 tag|schema\.org|json-ld|alt text|robots\.txt|meta description|canonical|sitemap)\b/i.test(text);
+        if (techWish) {
+            issues.push('Wishlist debe ser deseos del CLIENTE visitante — PROHIBIDO fixes técnicos SEO (van en Acciones/Fugas)');
+        }
+        if (!/\b(wish|ojal[aá]|desear[ií]a|gustar[ií]a|me gustar[ií]a|i wish)\b/i.test(text)) {
+            issues.push('Cada deseo debe expresarse como deseo del visitante (Wish / Ojalá pudiera / I wish I could)');
         }
     }
 
@@ -84,7 +111,11 @@ function validateSection(etapaId, content, dossier, locale) {
     }
 
     if (etapaId === 'FUGAS' && (text.match(/\*\*\[P1\s*[—-]/gi) || []).length > 4) {
-        issues.push('PROHIBIDO marcar más de 3 fugas como P1 — reserva P1 solo para las 3 peores');
+        issues.push('PROHIBIDO usar códigos P1/P2 — usa Critical/High/Medium/Low');
+    }
+
+    if (etapaId === 'FUGAS' && /\bP[1-4]\s+(?:CRITICAL|SEVERE|MODERATE|MINOR|HEMORRHAGE|LEAK)\b/i.test(text)) {
+        issues.push('PROHIBIDO códigos P1/P2/P3/P4 — usa **[Critical]**, **[High]**, **[Medium]**, **[Low]**');
     }
 
     if (locale) {

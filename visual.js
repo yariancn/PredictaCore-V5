@@ -49,9 +49,15 @@ function getHTML() {
                 #section-INTRO { page-break-before: avoid; }
 
                 .markdown-content h3 { 
-                    color: var(--pc-dark) !important; font-size: 1.6rem !important; font-weight: 800 !important;
-                    border-bottom: 2px solid var(--pc-green); padding-bottom: 0.5rem; margin: 0 0 2rem 0 !important;
-                    text-transform: uppercase; page-break-after: avoid; -webkit-print-color-adjust: exact;
+                    color: var(--pc-dark) !important; font-size: 1.15rem !important; font-weight: 800 !important;
+                    border-bottom: 2px solid var(--pc-green); padding-bottom: 0.4rem; margin: 0 0 1.25rem 0 !important;
+                    text-transform: uppercase; page-break-after: avoid; line-height: 1.25 !important;
+                    -webkit-print-color-adjust: exact;
+                }
+
+                .markdown-content h4 {
+                    font-size: 10pt !important; margin: 1rem 0 0.5rem !important; color: var(--pc-dark) !important;
+                    page-break-after: avoid;
                 }
 
                 /* Alineación Perfecta de Viñetas */
@@ -67,16 +73,23 @@ function getHTML() {
                     padding-left: 0.5rem;
                 }
 
-                .markdown-content p { font-size: 11pt; line-height: 1.6; color: var(--pc-dark) !important; text-align: justify; margin-bottom: 1.2rem; }
+                .markdown-content p { font-size: 10pt; line-height: 1.55; color: var(--pc-dark) !important; text-align: left; margin-bottom: 0.85rem; }
 
-                /* Tablas sin cortes feos */
-                table { width: 100%; border-collapse: collapse; margin: 2rem 0; border: 1px solid var(--pc-border) !important; page-break-inside: auto; }
-                tr { page-break-inside: avoid !important; }
+                /* Tablas legibles — sin texto encimado */
+                table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; border: 1px solid var(--pc-border) !important; page-break-inside: auto; table-layout: fixed; }
+                thead { display: table-header-group; }
+                tr { page-break-inside: avoid !important; page-break-after: auto; }
                 th { 
-                    background: var(--pc-table-head) !important; color: #ffffff !important; padding: 14px !important; 
-                    text-transform: uppercase; font-size: 9pt; text-align: left; border: none !important; -webkit-print-color-adjust: exact; 
+                    background: var(--pc-table-head) !important; color: #ffffff !important; padding: 8px 6px !important; 
+                    text-transform: uppercase; font-size: 7pt; text-align: left; border: 1px solid var(--pc-border) !important;
+                    vertical-align: top; word-wrap: break-word; overflow-wrap: anywhere; line-height: 1.3;
+                    -webkit-print-color-adjust: exact; 
                 }
-                td { padding: 12px !important; border-bottom: 1px solid var(--pc-border) !important; color: var(--pc-dark) !important; font-size: 10pt; }
+                td { 
+                    padding: 8px 6px !important; border: 1px solid var(--pc-border) !important; color: var(--pc-dark) !important;
+                    font-size: 8pt; vertical-align: top; word-wrap: break-word; overflow-wrap: anywhere; line-height: 1.35;
+                    hyphens: auto;
+                }
                 tr:nth-child(even) td { background: #f8fafc !important; -webkit-print-color-adjust: exact; }
 
                 ${getPdfBrandStyles()}

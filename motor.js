@@ -7,6 +7,7 @@ const { runWebSimulation, runSocialSimulation, formatSimulationBlock } = require
 const { findCompetitors } = require('./competitors');
 const { formatKeywordsBlock } = require('./keywords');
 const { formatIdiomaBlock, resolveReportLocale } = require('./idioma');
+const { detectGiro } = require('./giro');
 
 async function captureAndScrape(url) {
     let browser;
@@ -118,6 +119,8 @@ async function captureAndScrape(url) {
             `${dataForense.titulo} ${dataForense.descripcion} ${dataForense.cuerpo}`.slice(0, 4000)
         );
         const forensicsBlock = formatForensicsBlock(forensics, locale);
+        const giroCorpus = `${dataForense.titulo} ${dataForense.descripcion} ${dataForense.cuerpo}`.slice(0, 4000);
+        const giro = detectGiro(giroCorpus, isSocialMedia);
 
         let simulationBlock = '';
         let benchmarkBlock = '';
@@ -137,7 +140,11 @@ async function captureAndScrape(url) {
                 platform: forensics.platform,
             });
             simulationBlock = formatSimulationBlock(sim, 'social');
-            const bench = await findCompetitors(url, forensics.onPage, true);
+            const bench = await findCompetitors(url, forensics.onPage, true, {
+                giro,
+                clientTitle: dataForense.titulo,
+                clientDesc: dataForense.descripcion,
+            });
             benchmarkBlock = bench.block;
         } else {
             const bodySample = dataForense.cuerpo.slice(0, 2000);
@@ -166,7 +173,11 @@ async function captureAndScrape(url) {
             });
             simulationBlock = formatSimulationBlock(sim, 'website');
             keywordsBlock = formatKeywordsBlock(forensics.onPage, locale);
-            const bench = await findCompetitors(url, forensics.onPage, false);
+            const bench = await findCompetitors(url, forensics.onPage, false, {
+                giro,
+                clientTitle: dataForense.titulo,
+                clientDesc: dataForense.descripcion,
+            });
             benchmarkBlock = bench.block;
         }
 

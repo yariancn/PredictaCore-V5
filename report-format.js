@@ -20,14 +20,30 @@ function countNumberedItems(text) {
     return ((text || '').match(/^\s*\d+\.\s+/gm) || []).length;
 }
 
+function normalizePriorityPrefix(item) {
+    return String(item || '')
+        .replace(/^P1\s*[—\-]?\s*(?:CRITICAL HEMORRHAGE|HEMORRAGIA CRÍTICA)\s*/i, '**Critical:** ')
+        .replace(/^P2\s*[—\-]?\s*(?:SEVERE LEAK|FUGA GRAVE)\s*/i, '**High:** ')
+        .replace(/^P3\s*[—\-]?\s*(?:MODERATE LEAK|FUGA MODERADA)\s*/i, '**Medium:** ')
+        .replace(/^P4\s*[—\-]?\s*(?:MINOR FRICTION|FRICCIÓN MENOR)\s*/i, '**Low:** ')
+        .replace(/^\*\*\[P[1-4][^\]]*\]\*\*\s*/i, '')
+        .trim();
+}
+
 function extractListItems(body) {
     const items = [];
 
     for (const line of body.split('\n')) {
         const itemMatch = line.match(/^\s*(?:[-*•]|\d+\.)\s+(.+)$/);
-        if (itemMatch) items.push(itemMatch[1].trim());
+        if (itemMatch) items.push(normalizePriorityPrefix(itemMatch[1].trim()));
     }
     if (items.length >= 3) return items;
+
+    const prioritySplit = body
+        .split(/\n+(?=P[1-4]\s+(?:CRITICAL|SEVERE|MODERATE|MINOR|HEMORRHAGE|LEAK|FRICTION)|(?:\*\*)?(?:Critical|High|Medium|Low|Crítico|Alto|Medio|Bajo)\b)/i)
+        .map((p) => normalizePriorityPrefix(p.replace(/\s+/g, ' ').trim()))
+        .filter((p) => p.length > 15 && !/^#{1,3}\s/.test(p));
+    if (prioritySplit.length >= 3) return prioritySplit;
 
     for (const line of body.split('\n')) {
         const titleMatch = line.match(/^\s*(\*{0,2}[A-Za-zÁÉÍÓÚáéíóú][^*\n:]{2,72}\*{0,2}):\s*(.+)$/);
@@ -35,19 +51,19 @@ function extractListItems(body) {
     }
     if (items.length >= 3) return items;
 
-    const severityChunks = body
-        .split(/\n(?=\*\*\[P[1-4]|CRITICAL HEMORRHAGE|\*\*CRITICAL)/i)
+    const wishSplit = body
+        .split(/\n+(?=(?:\*\*)?(?:Deseo|Wish|Strategic|Product|Comprehensive|Dedicated|Prominent|Advanced|Interactive|Visual|Live)[^.\n]{0,60}[.:])/i)
         .map((p) => p.replace(/\s+/g, ' ').trim())
         .filter((p) => p.length > 20 && !/^#{1,3}\s/.test(p));
-    if (severityChunks.length >= 3) return severityChunks;
+    if (wishSplit.length >= 3) return wishSplit;
 
     const paragraphs = body
         .split(/\n\s*\n/)
-        .map((p) => p.replace(/\s+/g, ' ').trim())
+        .map((p) => normalizePriorityPrefix(p.replace(/\s+/g, ' ').trim()))
         .filter((p) => p.length > 20 && !/^#{1,3}\s/.test(p));
     if (paragraphs.length >= 3) return paragraphs;
 
-    const lines = body.split('\n').map((l) => l.trim()).filter((l) => l.length > 30);
+    const lines = body.split('\n').map((l) => normalizePriorityPrefix(l.trim())).filter((l) => l.length > 30);
     if (lines.length >= 3) return lines;
 
     return items;
@@ -62,7 +78,7 @@ function normalizeNumberedList(text, { minItems = 1, targetItems = null } = {}) 
     const body = headerMatch ? text.slice(header.length) : text;
 
     const existing = countNumberedItems(body);
-    if (targetItems && existing >= targetItems - 1) {
+    if (targetItems && existing >= targetItems) {
         return text;
     }
 
