@@ -1,6 +1,11 @@
 /** Post-procesado y UI del PDF según idioma del activo */
 
 const { resolveReportLocale, parseLocaleFromDossier } = require('./idioma');
+const {
+    buildFugasFromDossier,
+    stripPlaceholderLeaks,
+    PLACEHOLDER_RE,
+} = require('./fugas-builder');
 
 function getLocaleFromDossier(dossier) {
     return parseLocaleFromDossier(dossier);
@@ -20,7 +25,8 @@ function countNumberedItems(text) {
     return ((text || '').match(/^\s*\d+\.\s+/gm) || []).length;
 }
 
-const PRIORITY_START_RE = /^(?:\*\*)?(Critical|Crítico|High|Alto|Medium|Medio|Low|Bajo)\]?\*?\*?\s*(.*)$/i;
+const PRIORITY_START_RE = /^(?:\*\*)?(?:\[)?(Critical|Crítico|High|Alto|Medium|Medio|Low|Bajo)(?:\])?\]?\*?\*?\s*(.*)$/i;
+const PRIORITY_ONLY_RE = /^(?:\*\*)?(?:\[)?(Critical|Crítico|High|Alto|Medium|Medio|Low|Bajo)(?:\])?\]?\*?\*?\s*$/i;
 
 function normalizePriorityPrefix(item) {
     return String(item || '')
@@ -52,10 +58,13 @@ function extractPriorityItems(body) {
     for (const rawLine of body.split('\n')) {
         const line = rawLine.trim();
         if (!line) continue;
+        if (PLACEHOLDER_RE.test(line)) continue;
+
         const m = line.match(PRIORITY_START_RE);
-        if (m) {
+        const solo = line.match(PRIORITY_ONLY_RE);
+        if (m && (m[2] || solo)) {
             if (current) items.push(normalizePriorityPrefix(current));
-            current = `${m[1]} ${m[2]}`.trim();
+            current = solo ? `${m[1]} ` : `${m[1]} ${m[2]}`.trim();
         } else if (current) {
             current += ` ${line}`;
         }
@@ -172,7 +181,7 @@ function normalizeNumberedList(text, { minItems = 1, targetItems = null, mode = 
 
     const trimmed = targetItems ? items.slice(0, targetItems) : items;
     const numbered = trimmed.map((item, i) => `${i + 1}. ${item}`).join('\n');
-    return `${header}${numbered}`;
+    return `${header}${header ? '\n\n' : ''}${numbered}`;
 }
 
 function detectMixedLanguage(text, locale) {
@@ -289,9 +298,23 @@ const NUMBERED_SECTIONS = {
     OMNI: 9,
 };
 
-function postProcessSection(etapaId, text, locale) {
-    let out = text || '';
+function postProcessSection(etapaId, text, locale, dossier = '') {
+    let out = stripPlaceholderLeaks(text || '');
     const target = NUMBERED_SECTIONS[etapaId];
+
+    if (etapaId === 'FUGAS' || etapaId === 'FUGAS_LITE') {
+        const targetCount = etapaId === 'FUGAS_LITE' ? 3 : 15;
+        if (dossier && dossier.includes('SIMULATION_RESULTS')) {
+            const headerMatch = (text || '').match(/^(###[^\n]+)/);
+            return buildFugasFromDossier(dossier, locale, {
+                target: targetCount,
+                header: headerMatch?.[1] || undefined,
+            });
+        }
+        const cleaned = stripPlaceholderLeaks(out);
+        return normalizeNumberedList(cleaned, { minItems: 2, targetItems: targetCount, mode: 'fugas' });
+    }
+
     if (target) {
         const mode = SECTION_EXTRACT_MODE[etapaId] || 'auto';
         out = normalizeNumberedList(out, { minItems: Math.min(target, 3), targetItems: target, mode });
@@ -314,4 +337,5 @@ module.exports = {
     getReportEmailCopy,
     postProcessSection,
     NUMBERED_SECTIONS,
+    PLACEHOLDER_RE,
 };

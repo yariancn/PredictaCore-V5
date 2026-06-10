@@ -998,7 +998,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             }
 
             if (sectionText) {
-                sectionText = postProcessSection(etapaId, sectionText, reportLocale);
+                sectionText = postProcessSection(etapaId, sectionText, reportLocale, dossierTexto);
                 jobsMemoria[jobId].progress[etapaId] = sectionText;
                 await updateJobProgress(jobId, jobsMemoria[jobId].progress);
             }
@@ -1103,7 +1103,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
 
         const progressForPdf = {};
         for (const [key, value] of Object.entries(job.progress || {})) {
-            progressForPdf[key] = postProcessSection(key, value, reportLocale);
+            progressForPdf[key] = postProcessSection(key, value, reportLocale, dossier);
         }
 
         await page.evaluate((progressData, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang) => {
@@ -1147,6 +1147,13 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                 div.innerHTML = marked.parse(progressData[key]);
                 reporte.appendChild(div);
             }
+
+            document.querySelectorAll('.report-section.markdown-content').forEach(function(section) {
+                section.querySelectorAll('ol').forEach(function(ol) {
+                    ol.style.listStyleType = 'decimal';
+                    ol.style.paddingLeft = '1.5rem';
+                });
+            });
 
             if (titanUpgradeUrl) {
                 const cta = document.createElement('div');

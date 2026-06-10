@@ -1,4 +1,4 @@
-/** Competitor discovery — solo rivales del mismo giro (cero invenciones) */
+/** Competitor discovery — rivales reales del mismo nicho (búsqueda por producto/servicio, no por marca) */
 
 const BLOCKLIST = new Set([
     'facebook.com', 'instagram.com', 'twitter.com', 'x.com', 'tiktok.com',
@@ -15,72 +15,88 @@ const BLOCKLIST = new Set([
 
 const MEGA_RETAILER_RE = /\b(amazon|walmart|target|costco|best buy|home depot|lowe'?s|macys|kohl'?s|wayfair|sam'?s club|cvs|walgreens|alibaba|aliexpress|big-box|mass-market retailer|major retailer|mega-?retailer)\b/i;
 
-const NON_COMPETITOR_RE = /\b(bank|banco|santander|chase|wells fargo|bbva|financial institution|website builder|web platform|software platform|create your (own )?website|service businesses to create|technology provider|not a (direct )?competitor|saas platform|hosting provider|domain registrar|department store|grocery chain|supermarket chain|general merchandise)\b/i;
+const NON_COMPETITOR_RE = /\b(bank|banco|santander|chase|wells fargo|bbva|financial institution|website builder|web platform|software platform|create your (own )?website|service businesses to create|technology provider|not a (direct )?competitor|saas platform|hosting provider|domain registrar|department store|grocery chain|supermarket chain|general merchandise|wikipedia|dictionary|news article|how to start)\b/i;
+
+const ECOMMERCE_SIGNALS = /\b(add to cart|shop now|buy now|checkout|collection|product|products|shipping|free shipping|\$\d|price|cart|store|shop\b)/i;
 
 const GIRO_QUERIES = {
-    ecommerce: (kw) => {
-        const niche = /\b(custom|personalized|personaliz|handmade|artisan|bespoke|monogram)\b/i.test(kw)
-            ? kw
-            : `personalized custom ${kw}`;
-        return [
-            `${niche} boutique shopify store`,
-            `${niche} small business online shop`,
-            `${niche} DTC brand`,
-            `shop ${niche} handmade`,
-        ];
-    },
-    salud: (kw) => [`${kw} clinic`, `${kw} medical services`, `${kw} wellness center`],
-    servicios: (kw) => [`${kw} agency`, `${kw} consulting services`, `${kw} professional services`],
-    restaurante: (kw) => [`${kw} restaurant`, `${kw} menu reservations`, `${kw} food delivery`],
-    educacion: (kw) => [`${kw} course online`, `${kw} training academy`, `${kw} certification`],
-    inmobiliario: (kw) => [`${kw} real estate`, `${kw} properties for sale`, `${kw} realtor`],
-    general: (kw) => [`${kw} business services`, `${kw} local company`, `${kw} official website`],
-    general_social: (kw) => [`${kw} business instagram`, `${kw} brand profile`],
+    ecommerce: (niche) => [
+        `${niche} online shop`,
+        `buy ${niche}`,
+        `best ${niche} store`,
+        `${niche} boutique`,
+    ],
+    salud: (niche) => [`${niche} clinic near me`, `${niche} medical center`, `${niche} appointment`],
+    servicios: (niche) => [`${niche} agency`, `${niche} services company`, `hire ${niche}`],
+    restaurante: (niche) => [`${niche} restaurant`, `${niche} menu`, `${niche} reservations`],
+    educacion: (niche) => [`${niche} course`, `${niche} online training`, `${niche} academy`],
+    inmobiliario: (niche) => [`${niche} real estate`, `${niche} homes for sale`, `${niche} realtor`],
+    general: (niche) => [`${niche} business`, `${niche} company`, `${niche} services`],
+    general_social: (niche) => [`${niche} instagram`, `${niche} brand`],
 };
 
-function extractProductKeywords(onPage, clientTitle, clientDesc) {
-    const title = (clientTitle || onPage?.title || '').replace(/\s*[|\-–—].*$/, '').trim();
-    const desc = (clientDesc || onPage?.metaDescription || onPage?.textSample || '').slice(0, 200);
-    const raw = `${title} ${desc}`.toLowerCase()
+const STOPWORDS = new Set([
+    'shop', 'store', 'home', 'welcome', 'official', 'website', 'online', 'the', 'and', 'for',
+    'your', 'our', 'llc', 'inc', 'page', 'site', 'best', 'custom', 'personalized', 'buy',
+]);
+
+function clientBrandToken(url, clientTitle) {
+    try {
+        const host = new URL(url).hostname.replace(/^www\./, '').split('.')[0].toLowerCase();
+        if (host.length >= 4) return host;
+    } catch { /* skip */ }
+    const title = (clientTitle || '').replace(/\s*[|\-–—].*$/, '').trim().toLowerCase();
+    return title.split(/\s+/)[0] || '';
+}
+
+function extractNicheTerms(onPage, giro, clientTitle, clientDesc, url) {
+    const brand = clientBrandToken(url, clientTitle);
+    const corpus = `${onPage?.textSample || ''} ${clientDesc || ''} ${onPage?.metaDescription || ''} ${onPage?.h1Text || ''}`.toLowerCase();
+    const titleTail = (clientTitle || onPage?.title || '').replace(/^[^|\-–—]+[|\-–—]\s*/i, '').toLowerCase();
+
+    const productHits = [];
+    const productRe = /\b(?:custom|personalized|personaliz\w*|handmade|artisan|luxury|organic|professional)\s+[a-z\s]{3,40}?(?:blanket|bedding|swaddle|nursery|milestone|gift|gifts|jewelry|shirt|mug|portrait|cake|dress|hat|print|decor|furniture|supplement|therapy|clinic|course|menu|property|home)\w*/gi;
+    let pm;
+    while ((pm = productRe.exec(`${corpus} ${titleTail}`)) !== null) {
+        productHits.push(pm[0].replace(/\s+/g, ' ').trim());
+    }
+
+    const tokens = `${corpus} ${titleTail}`
         .replace(/[^\w\sáéíóúñ-]/g, ' ')
-        .replace(/\b(shop|store|home|welcome|official|website|online|the|and|for|your|our|llc|inc)\b/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-    const words = raw.split(' ').filter((w) => w.length > 3).slice(0, 6);
-    const phrase = words.join(' ').trim();
-    if (phrase.length >= 10) return phrase;
-    if (title.length >= 8) return title.toLowerCase().replace(/[^\w\s-]/g, ' ').trim();
-    return 'local business services';
+        .split(/\s+/)
+        .filter((w) => w.length > 3 && !STOPWORDS.has(w) && (!brand || !w.includes(brand)));
+
+    const freq = {};
+    tokens.forEach((t) => { freq[t] = (freq[t] || 0) + 1; });
+    const top = Object.entries(freq).sort((a, b) => b[1] - a[1]).map(([w]) => w).slice(0, 6);
+
+    if (productHits.length) return productHits[0].slice(0, 80);
+    if (top.length >= 2) return top.slice(0, 5).join(' ');
+    if (giro?.label) return giro.label.toLowerCase().replace(/[^\w\s]/g, ' ').trim();
+    return 'online business services';
 }
 
 function buildSearchQueries(onPage, url, isSocial, giro, clientTitle, clientDesc) {
-    const kw = extractProductKeywords(onPage, clientTitle, clientDesc);
+    const niche = extractNicheTerms(onPage, giro, clientTitle, clientDesc, url);
     const giroId = giro?.id || (isSocial ? 'general_social' : 'general');
     const builder = GIRO_QUERIES[giroId] || GIRO_QUERIES.general;
-    const queries = builder(kw).filter(Boolean);
-    try {
-        const host = new URL(url).hostname.replace(/^www\./, '').split('.')[0];
-        if (host.length > 4 && !queries.some((q) => q.includes(host))) {
-            queries.push(`${kw} ${host} alternative`);
-        }
-    } catch { /* skip */ }
-    return [...new Set(queries)].slice(0, 4);
+    return [...new Set(builder(niche).filter(Boolean))].slice(0, 5);
 }
 
 async function fetchSearchHtml(query) {
     const q = encodeURIComponent(query);
     const urls = [
         `https://html.duckduckgo.com/html/?q=${q}`,
-        `https://www.bing.com/search?q=${q}&count=12`,
+        `https://www.bing.com/search?q=${q}&count=15`,
     ];
     for (const url of urls) {
         try {
             const ctrl = new AbortController();
-            const timer = setTimeout(() => ctrl.abort(), 10000);
+            const timer = setTimeout(() => ctrl.abort(), 12000);
             const res = await fetch(url, {
                 signal: ctrl.signal,
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (compatible; PredictaCore/1.0; +https://predictacore.ai)',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Accept-Language': 'en-US,en;q=0.9',
                 },
             });
@@ -119,9 +135,10 @@ function parseDomainsFromHtml(html, clientDomain) {
         if (BLOCKLIST.has(domain)) continue;
         if (domain.endsWith('.google.com') || domain.includes('duckduckgo') || domain.includes('bing.com')) continue;
         if (domain.includes('microsoft.com') || domain.includes('apple.com')) continue;
+        if (domain.includes(clientDomain.split('.')[0]) && domain !== clientDomain) continue;
         seen.add(domain);
         found.push(domain);
-        if (found.length >= 12) break;
+        if (found.length >= 15) break;
     }
     return found;
 }
@@ -129,15 +146,15 @@ function parseDomainsFromHtml(html, clientDomain) {
 async function fetchPageSnapshot(domain) {
     try {
         const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 7000);
+        const timer = setTimeout(() => ctrl.abort(), 8000);
         const res = await fetch(`https://${domain}`, {
             signal: ctrl.signal,
-            headers: { 'User-Agent': 'PredictaCore-Forensics/1.0' },
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PredictaCore/1.0)' },
             redirect: 'follow',
         });
         clearTimeout(timer);
         if (!res.ok) return null;
-        const html = (await res.text()).slice(0, 12000);
+        const html = (await res.text()).slice(0, 15000);
         const title = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim().slice(0, 150) || '';
         const meta = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)?.[1]
             || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i)?.[1]
@@ -147,8 +164,8 @@ async function fetchPageSnapshot(domain) {
             .replace(/<[^>]+>/g, ' ')
             .replace(/\s+/g, ' ')
             .trim()
-            .slice(0, 600);
-        return { title, description: meta.slice(0, 250), bodyText };
+            .slice(0, 800);
+        return { title, description: meta.slice(0, 250), bodyText, html: html.slice(0, 4000) };
     } catch {
         return null;
     }
@@ -160,7 +177,7 @@ function tokenSet(text) {
             .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
             .replace(/[^\w\s]/g, ' ')
             .split(/\s+/)
-            .filter((w) => w.length > 3 && !['shop', 'store', 'home', 'online', 'website', 'official', 'welcome'].includes(w))
+            .filter((w) => w.length > 3 && !STOPWORDS.has(w))
     );
 }
 
@@ -183,41 +200,49 @@ function isMegaRetailer(domain, snapshot) {
     return false;
 }
 
-function isNonCompetitorDomain(domain, snapshot) {
+function isNonCompetitorDomain(domain, snapshot, clientBrand) {
     if (isMegaRetailer(domain, snapshot)) return true;
     const blob = `${domain} ${snapshot?.title || ''} ${snapshot?.description || ''} ${snapshot?.bodyText || ''}`;
     if (NON_COMPETITOR_RE.test(blob)) return true;
     if (/\.(gov|edu)$/.test(domain)) return true;
     if (BLOCKLIST.has(domain)) return true;
+    if (clientBrand && clientBrand.length >= 4 && domain.replace(/\W/g, '').includes(clientBrand.replace(/\W/g, ''))) return true;
     return false;
 }
 
-function summarizeWhatTheyDo(snapshot, giroLabel) {
+function hasCommercialSignals(snapshot, giroId) {
+    const blob = `${snapshot?.title || ''} ${snapshot?.description || ''} ${snapshot?.bodyText || ''} ${snapshot?.html || ''}`;
+    if (giroId === 'ecommerce') return ECOMMERCE_SIGNALS.test(blob);
+    return blob.length > 80;
+}
+
+function summarizeWhatTheyDo(snapshot) {
     const parts = [snapshot?.title, snapshot?.description].filter(Boolean);
-    if (!parts.length) return 'NO_DETECTADO';
+    if (!parts.length) return null;
     const summary = parts.join(' — ').slice(0, 200);
-    if (NON_COMPETITOR_RE.test(summary)) return 'RECHAZADO_NO_COMPETIDOR';
+    if (NON_COMPETITOR_RE.test(summary)) return null;
     return summary;
 }
 
-async function validateCompetitor(domain, clientCorpus, giroLabel) {
+async function validateCompetitor(domain, nicheCorpus, giro, clientBrand) {
     const snapshot = await fetchPageSnapshot(domain);
     if (!snapshot || !snapshot.title) return null;
-    if (isNonCompetitorDomain(domain, snapshot)) return null;
+    if (isNonCompetitorDomain(domain, snapshot, clientBrand)) return null;
+    if (!hasCommercialSignals(snapshot, giro?.id)) return null;
 
-    const score = overlapScore(clientCorpus, `${snapshot.title} ${snapshot.description} ${snapshot.bodyText}`);
-    const minScore = 2;
-    if (score < minScore) return null;
+    const compText = `${snapshot.title} ${snapshot.description} ${snapshot.bodyText}`;
+    const score = overlapScore(nicheCorpus, compText);
+    if (score < 1) return null;
 
-    const queHace = summarizeWhatTheyDo(snapshot, giroLabel);
-    if (queHace === 'RECHAZADO_NO_COMPETIDOR') return null;
+    const queHace = summarizeWhatTheyDo(snapshot);
+    if (!queHace) return null;
 
     return {
         domain,
         title: snapshot.title,
         queHace,
-        relevanceScore: score,
-        source: 'busqueda_web_validada',
+        relevanceScore: Math.min(10, score + 2),
+        source: 'busqueda_nicho_validada',
     };
 }
 
@@ -230,13 +255,12 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
     }
 
     const giro = ctx.giro || { id: 'general', label: 'Negocio local' };
-    const clientCorpus = [
-        ctx.clientTitle,
-        ctx.clientDesc,
-        onPage?.title,
-        onPage?.metaDescription,
-        onPage?.textSample,
+    const clientBrand = clientBrandToken(url, ctx.clientTitle);
+    const nicheCorpus = [
+        extractNicheTerms(onPage, giro, ctx.clientTitle, ctx.clientDesc, url),
         giro.label,
+        onPage?.metaDescription,
+        onPage?.textSample?.slice(0, 500),
     ].filter(Boolean).join(' ');
 
     const queries = buildSearchQueries(onPage, url, isSocial, giro, ctx.clientTitle, ctx.clientDesc);
@@ -248,20 +272,20 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
         parseDomainsFromHtml(html, clientDomain).forEach((d) => {
             if (d !== clientDomain && !d.endsWith(clientDomain)) candidates.add(d);
         });
-        if (candidates.size >= 8) break;
+        if (candidates.size >= 12) break;
     }
 
     const competitors = [];
     for (const domain of candidates) {
         if (competitors.length >= 3) break;
-        const validated = await validateCompetitor(domain, clientCorpus, giro.label);
+        const validated = await validateCompetitor(domain, nicheCorpus, giro, clientBrand);
         if (validated) competitors.push(validated);
     }
 
-    const usedQuery = queries[0] || 'N/A';
+    const usedQuery = queries.join(' | ') || 'N/A';
     return {
         competitors,
-        query: usedQuery,
+        query: queries[0] || 'N/A',
         queries,
         block: formatBenchmarkBlock(competitors, usedQuery, giro.label),
     };
@@ -274,7 +298,7 @@ function formatBenchmarkBlock(competitors, query, giroLabel) {
 ESTADO: SIN_COMPETENCIA_IDENTIFICADA
 GIRO: ${giroLabel || 'NO_DETECTADO'}
 QUERY_BUSQUEDA: ${query}
-MENSAJE_OBLIGATORIO: No se identificó competencia directa verificable en el mismo giro y escala (${giroLabel || 'negocio boutique/PYME'}). Los resultados de búsqueda no arrojaron tiendas/servicios comparables con solapamiento de oferta. PROHIBIDO inventar competidores ni usar mega-retailers (Amazon, Walmart, Target, Costco), bancos, plataformas SaaS o constructores web (Wix, Shopify.com, Santander, etc.).
+MENSAJE_OBLIGATORIO: No se identificó competencia directa verificable en el mismo nicho y escala (${giroLabel || 'negocio boutique/PYME'}). Los resultados de búsqueda no arrojaron tiendas/servicios comparables con solapamiento de oferta. PROHIBIDO inventar competidores ni usar mega-retailers (Amazon, Walmart, Target, Costco), bancos, plataformas SaaS o constructores web (Wix, Shopify.com, Santander, etc.).
 REGLA_IA: NO uses tabla comparativa. Escribe 2-3 párrafos sobre implicaciones de posicionamiento y confusión de marca si aplica. CERO dominios inventados.
 === FIN BENCHMARK_VERIFIED ===`;
     }
@@ -288,9 +312,16 @@ REGLA_IA: NO uses tabla comparativa. Escribe 2-3 párrafos sobre implicaciones d
 ESTADO: COMPETENCIA_VERIFICADA
 GIRO: ${giroLabel || 'NO_DETECTADO'}
 QUERY_BUSQUEDA: ${query}
-REGLA_IA: Usa ÚNICAMENTE estos competidores verificados del mismo giro y escala similar (boutique/PYME/DTC). PROHIBIDO añadir Amazon, Walmart, Target, Costco u otros mega-retailers. PROHIBIDO añadir otros dominios. Tabla OBLIGATORIA con fila "Qué hacen / What they do" usando texto QUE_HACE de cada COMP_N. PROHIBIDO incluir dominios que no estén listados abajo.
+REGLA_IA: Usa ÚNICAMENTE estos competidores verificados del mismo nicho comercial (misma categoría de producto/servicio, escala boutique/PYME). PROHIBIDO añadir Amazon, Walmart, Target, Costco u otros mega-retailers. PROHIBIDO añadir dominios no listados. Tabla OBLIGATORIA con fila "Qué hacen / What they do" usando texto QUE_HACE de cada COMP_N (copiar literal, PROHIBIDO NO_DETECTADO).
 ${lines.join('\n')}
 === FIN BENCHMARK_VERIFIED ===`;
 }
 
-module.exports = { findCompetitors, formatBenchmarkBlock, buildSearchQueries, MEGA_RETAILER_RE, BLOCKLIST };
+module.exports = {
+    findCompetitors,
+    formatBenchmarkBlock,
+    buildSearchQueries,
+    extractNicheTerms,
+    MEGA_RETAILER_RE,
+    BLOCKLIST,
+};

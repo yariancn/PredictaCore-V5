@@ -1,4 +1,5 @@
 const { MEGA_RETAILER_RE } = require('./competitors');
+const { hasPlaceholderLeaks } = require('./fugas-builder');
 
 const MEGA_RETAILER_DOMAINS = [
     'target.com', 'walmart.com', 'amazon.com', 'costco.com', 'bestbuy.com',
@@ -115,6 +116,9 @@ function validateSection(etapaId, content, dossier, locale) {
         if (!/qu[eé] hacen|what they do/i.test(text)) {
             issues.push('La tabla debe incluir fila "Qué hacen / What they do" con QUE_HACE del dossier');
         }
+        if (/NO_DETECTADO/i.test(text) && compDomains.length > 0) {
+            issues.push('PROHIBIDO NO_DETECTADO en celdas de competidores — copia literal QUE_HACE de COMP_N');
+        }
     }
 
     if (etapaId === 'SWOT' && dossierHas(dossier, 'PYME_BOUTIQUE')) {
@@ -142,6 +146,10 @@ function validateSection(etapaId, content, dossier, locale) {
         if (count < expected - 1) {
             issues.push(`Debe listar exactamente ${expected} puntos numerados (1. 2. 3. …). Encontrados: ${count}. PROHIBIDO viñetas • o -`);
         }
+    }
+
+    if (etapaId === 'FUGAS' && hasPlaceholderLeaks(text)) {
+        issues.push('PROHIBIDO texto placeholder ("not detected from available data") — usa TODAS las FALLAS_PRIORITARIAS del dossier SIMULATION_RESULTS');
     }
 
     if (etapaId === 'FUGAS' && /(?:evaluaci[oó]n|evaluation)\s*#?(?:1[6-9]|[2-9]\d)/i.test(text)) {

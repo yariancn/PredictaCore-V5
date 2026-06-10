@@ -15,6 +15,7 @@ Cualquier desviación corromperá el reporte. Acata al 100%:
 - IMPACTO = cualitativo: "fricción alta", "abandono probable", "pérdida de confianza", "nodo de cierre débil".
 - CERO INVENTOS: Si falta dato en dossier, escribe NO_DETECTADO. No rellenes con suposiciones.
 - CERO COMPETIDORES INVENTADOS: Solo dominios en BENCHMARK_VERIFIED. Si SIN_COMPETENCIA_IDENTIFICADA, dilo explícitamente. PROHIBIDO Amazon, Walmart, Target, Costco u otros mega-retailers salvo que aparezcan en COMP_*.
+- CERO PLACEHOLDERS: PROHIBIDO "Additional conversion leak not detected", "not detected from available data" o relleno inventado. Cada fuga debe citar evidencia real (#id de SIMULATION_RESULTS o SEO_FORENSICS).
 - SIMULACIONES: Clientes simulados por perfil psicológico según GIRO_DETECTADO. Usa SIMULATION_RESULTS y OBJETIVO_SIMULACIONES. PROHIBIDO citar cantidad de simulaciones, visitas o miles de pruebas.
 - SEO/IA: Copia señales de SEO_FORENSICS y AI_VISIBILITY. Keywords solo de KEYWORDS_INFERIDAS (sin volumen de mercado).
 - VISIBILIDAD IA: Es evaluación técnica proxy (robots, schema, llms.txt). PROHIBIDO afirmar "probamos ChatGPT en vivo".

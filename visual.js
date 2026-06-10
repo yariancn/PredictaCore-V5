@@ -61,9 +61,16 @@ function getHTML() {
                 }
 
                 /* Alineación Perfecta de Viñetas */
-                .markdown-content ul, .markdown-content ol { 
-                    padding-left: 1.5rem !important; 
-                    margin-bottom: 1.5rem !important; 
+                .markdown-content ol {
+                    padding-left: 1.5rem !important;
+                    margin-bottom: 1.5rem !important;
+                    list-style-type: decimal !important;
+                    list-style-position: outside !important;
+                }
+                .markdown-content ul {
+                    padding-left: 1.5rem !important;
+                    margin-bottom: 1.5rem !important;
+                    list-style-type: disc !important;
                     list-style-position: outside !important;
                 }
                 .markdown-content li { 
