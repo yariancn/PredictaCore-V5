@@ -299,7 +299,7 @@ function getLandingHTML() {
                     <div class="border-t border-zinc-800 pt-8">
                         <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$349 <span id="titan-price-note" class="text-xs text-zinc-500 font-normal">USD · one-time</span></h4>
                         <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-2">Charged today: USD $349 (Titan Report)</p>
-                        <p id="sub-price-2" class="text-xs text-zinc-400 mb-4 leading-relaxed pc-readable">Monthly monitoring ($25/mo) included. First follow-up report at month 1; first $25 charge on that date — not a free trial. Cancel at least 5 business days before renewal. All sales final — no refunds.</p>
+                        <p id="sub-price-2" class="text-xs text-zinc-400 mb-4 leading-relaxed pc-readable">$25/month monitoring starts 30 days after purchase. Cancel anytime from your subscription portal.</p>
                         <p id="titan-eta-before" class="text-[10px] text-zinc-500 mb-4 leading-relaxed">After payment, your Titan PDF may take up to 60 minutes to arrive by email.</p>
                         
                         <button type="button" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2 transition-opacity disabled:opacity-60 disabled:cursor-wait" id="btn-titan">
@@ -380,13 +380,13 @@ function getLandingHTML() {
                     upT: "X-Ray Sealed", upSt: "Successfully sent to",
                     boxText: "Initial scan shows critical bottlenecks. You are losing sales today due to purchasing obstacles. The Titan Report dissects your website and delivers the exact instructions to fix these leaks.",
                     subPrice: "Charged today: USD $349 (Titan Report)",
-                    subPrice2: "Monthly monitoring ($25/mo) included. First follow-up report at month 1; first $25 charge on that date — not a free trial. Cancel at least 5 business days before renewal. All sales final — no refunds.",
+                    subPrice2: "$25/month monitoring starts 30 days after purchase. Cancel anytime from your subscription portal.",
                     btnTitan: "Get Full Titan Report — $349",
                     titanPriceNote: "USD · one-time",
                     urlHint: "Instagram, Facebook, TikTok, or any public website — no login required.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "Consultant or Agency? Join our Forensic Audit network.",
-                    disclaimerText: "PredictaCore AI website audits. USD $349 charged today. Monitoring $25/mo: first follow-up at month 1, first charge then. Card statement shows PREDICTACORE. All sales final. Cancel at least 5 business days before renewal.",
+                    disclaimerText: "PredictaCore audits. $349 charged today. $25/month monitoring starts day 30. Statement: PREDICTACORE.",
                     checkoutLoading: "Opening secure checkout…",
                     checkoutOverlayTitle: "Secure checkout",
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
@@ -440,13 +440,13 @@ function getLandingHTML() {
                     upT: "Radiografía Sellada", upSt: "Enviado con éxito a",
                     boxText: "El escaneo inicial muestra cuellos de botella críticos. Estás perdiendo ventas hoy por obstáculos de compra. El Reporte Titán disecta tu sitio y entrega las instrucciones exactas para arreglar estas fugas.",
                     subPrice: "Cobro hoy: USD $349 (Reporte Titán)",
-                    subPrice2: "Monitoreo mensual ($25/mes) incluido. Primer reporte de seguimiento al mes 1; primer cobro de $25 en esa fecha — no es prueba gratis. Cancela al menos 5 días hábiles antes de la renovación. Ventas finales — sin reembolsos.",
+                    subPrice2: "Monitoreo $25/mes desde el día 30. Cancela cuando quieras desde tu portal de suscripción.",
                     btnTitan: "Obtener Reporte Titán completo — $349",
                     titanPriceNote: "USD · pago único",
                     urlHint: "Instagram, Facebook, TikTok o cualquier web pública — sin login.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
-                    disclaimerText: "Auditorías PredictaCore. USD $349 hoy. Monitoreo $25/mes: primer seguimiento al mes 1, primer cobro entonces. Estado de cuenta: PREDICTACORE. Ventas finales. Cancela al menos 5 días hábiles antes de renovar.",
+                    disclaimerText: "Auditorías PredictaCore. $349 hoy. Monitoreo $25/mes desde el día 30. Estado de cuenta: PREDICTACORE.",
                     checkoutLoading: "Abriendo pago seguro…",
                     checkoutOverlayTitle: "Pago seguro",
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
@@ -718,9 +718,10 @@ function getLandingHTML() {
                 if (emailParam) document.getElementById('user-email').value = decodeURIComponent(emailParam);
 
                 const langParam = urlParams.get('lang');
-                const browserEs = (navigator.language || '').toLowerCase().startsWith('es');
-                if (langParam === 'es' || (!langParam && browserEs)) {
+                if (langParam === 'es') {
                     setLanguage('es');
+                } else if (langParam === 'en') {
+                    setLanguage('en');
                 }
 
                 document.getElementById('btn-start')?.addEventListener('click', iniciarEscaneo);

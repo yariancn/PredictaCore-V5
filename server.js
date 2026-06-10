@@ -127,7 +127,7 @@ function buildTitanActivationEmail(lang, portalUrl) {
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">PROTECCIÓN TITÁN ACTIVADA</h1>
     <p>Tu pago de <strong>USD $349</strong> fue procesado. El motor forense ya analiza tu activo digital.</p>
     <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">Recibirás el Reporte Titán completo en tu correo en los próximos minutos (hasta 60 min).</p>
-    <p>El monitoreo PredictaCore (<strong>$25/mes</strong>) está <strong>activo</strong>. Tu primer reporte de seguimiento llega al <strong>mes 1</strong>; el primer cobro de $25 es en esa fecha (no es prueba gratis). En tu estado de cuenta: <strong>PREDICTACORE</strong>.</p>
+    <p>Monitoreo PredictaCore (<strong>$25/mes</strong>) activo. Primer cobro el <strong>día 30</strong>. Estado de cuenta: <strong>PREDICTACORE</strong>.</p>
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;">Ventas finales — sin reembolsos.</p>
   </div>
@@ -138,7 +138,7 @@ function buildTitanActivationEmail(lang, portalUrl) {
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">TITAN PROTECTION ACTIVATED</h1>
     <p>Your <strong>USD $349</strong> payment was processed successfully. Our forensic engine is analyzing your digital asset.</p>
     <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">You will receive the full Titan Report in your email within the next few minutes (up to 60 minutes).</p>
-    <p>PredictaCore monitoring (<strong>$25/mo</strong>) is <strong>active</strong>. Your first follow-up report arrives at <strong>month 1</strong>; the first $25 charge is on that date (not a free trial). Statement descriptor: <strong>PREDICTACORE</strong>.</p>
+    <p>PredictaCore monitoring (<strong>$25/mo</strong>) is active. First charge on <strong>day 30</strong>. Statement: <strong>PREDICTACORE</strong>.</p>
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;">All sales final — no refunds.</p>
   </div>
@@ -148,8 +148,8 @@ function buildTitanActivationEmail(lang, portalUrl) {
         ? (es ? `\n\nGestionar suscripción: ${portalUrl}` : `\n\nManage subscription: ${portalUrl}`)
         : '';
     const text = es
-        ? `PROTECCIÓN TITÁN ACTIVADA\n\nPago USD $349 confirmado. Reporte Titán en los próximos minutos.\nMonitoreo $25/mes activo; primer reporte de seguimiento al mes 1, primer cobro entonces. PREDICTACORE en el estado de cuenta.${textManage}`
-        : `TITAN PROTECTION ACTIVATED\n\nUSD $349 payment confirmed. Titan Report arriving in the next few minutes.\nMonitoring $25/mo active; first follow-up at month 1, first charge then. Statement: PREDICTACORE.${textManage}`;
+        ? `PROTECCIÓN TITÁN ACTIVADA\n\nPago USD $349 confirmado. Reporte Titán en los próximos minutos.\nMonitoreo $25/mes; primer cobro el día 30. PREDICTACORE en el estado de cuenta.${textManage}`
+        : `TITAN PROTECTION ACTIVATED\n\nUSD $349 payment confirmed. Titan Report arriving in the next few minutes.\nMonitoring $25/mo; first charge on day 30. Statement: PREDICTACORE.${textManage}`;
 
     return { subject, html, text };
 }

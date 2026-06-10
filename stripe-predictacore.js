@@ -56,7 +56,7 @@ function buildCheckoutLineItems() {
                 currency: 'usd',
                 product_data: {
                     name: 'PredictaCore Monthly Monitoring',
-                    description: 'USD $25/month. First follow-up report at month 1; first charge on that date (not a free trial).',
+                    description: 'USD $25/month. Starts 30 days after purchase.',
                     metadata: { brand: BRAND, product: BRAND },
                 },
                 unit_amount: 2500,
@@ -68,23 +68,23 @@ function buildCheckoutLineItems() {
 }
 
 function getCheckoutCustomText(lang = 'en') {
-    const termsLink = `[PredictaCore Terms of Service](${TERMS_URL})`;
+    const termsLink = `[Terms of Service](${TERMS_URL})`;
     const privacyLink = `[Privacy Policy](${PRIVACY_URL})`;
-    const termsLinkEs = `[Términos de PredictaCore](${TERMS_URL})`;
-    const privacyLinkEs = `[Política de Privacidad](${PRIVACY_URL})`;
+    const termsLinkEs = `[Términos](${TERMS_URL})`;
+    const privacyLinkEs = `[Privacidad](${PRIVACY_URL})`;
     const descriptor = STATEMENT_SUFFIX();
 
     if (lang === 'es') {
         return {
             submit: {
-                message: `PredictaCore — USD $349 hoy (Reporte Titán). Monitoreo $25/mes: primer reporte de seguimiento al mes 1; primer cobro en esa fecha (no es prueba gratis). Al pagar aceptas ${termsLinkEs} y ${privacyLinkEs}. Estado de cuenta: ${descriptor}. Ventas finales.`,
+                message: `$349 hoy (Reporte Titán). Monitoreo $25/mes desde el día 30. Al pagar aceptas ${termsLinkEs} y ${privacyLinkEs}. Estado de cuenta: ${descriptor}.`,
             },
         };
     }
 
     return {
         submit: {
-            message: `PredictaCore — USD $349 charged today (Titan Report). $25/mo monitoring: first follow-up report at month 1; first charge on that date (not a free trial). By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}. All sales final.`,
+            message: `$349 charged today (Titan Report). $25/month monitoring starts 30 days from purchase. By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}.`,
         },
     };
 }
