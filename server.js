@@ -19,6 +19,7 @@ const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
 const { Resend } = require('resend');
+const { marked } = require('marked');
 const {
     getPool,
     initDatabase,
@@ -30,6 +31,8 @@ const {
     completeJob,
     failJob,
     getJobProgress,
+    getJobsByEmail,
+    markStaleRunningJobs,
     healthCheck,
 } = require('./db/init');
 const {
@@ -180,11 +183,42 @@ function titanInternalKey() {
 }
 
 function requireTitanInternalKey(req, res, next) {
-    const key = req.body?.key;
+    const key = req.body?.key || req.query?.key;
     if (!key || key !== titanInternalKey()) {
         return res.status(401).json({ error: 'Invalid access key' });
     }
     next();
+}
+
+function buildJobDeliveryHint(job) {
+    if (!job) return 'No Titan job found for this email.';
+    if (job.estado === 'failed') {
+        return `Titan failed: ${job.error_msg || 'unknown error'}. Retry from Playground or Titan Lab.`;
+    }
+    if (job.estado === 'running') {
+        const mins = job.creado_en ? Math.round((Date.now() - new Date(job.creado_en).getTime()) / 60000) : 0;
+        if (job.secciones >= 11) return `Titan almost done (${job.secciones}/11 sections, ${mins} min) — email should arrive shortly.`;
+        if (mins > 60) return `Titan stuck (${job.secciones}/11 sections after ${mins} min) — likely interrupted by deploy. Retry the audit.`;
+        return `Titan in progress (${job.secciones}/11 sections, ~${mins} min elapsed). PDF takes 10–25 min.`;
+    }
+    if (job.estado === 'completed') return 'Titan completed — check inbox and spam. If missing, retry from Playground.';
+    return null;
+}
+
+async function getJobStatusByEmail(email) {
+    const jobs = await getJobsByEmail(email, 5);
+    const titanJobs = jobs.filter((j) => j.modo === 'TITAN');
+    const last = titanJobs[0] || null;
+    return {
+        email: String(email).trim().toLowerCase(),
+        recent_jobs: jobs,
+        last_titan: last,
+        hint: buildJobDeliveryHint(last),
+    };
+}
+
+function persistJobMeta(jobId, progress, meta) {
+    return updateJobProgress(jobId, { ...progress, __meta__: meta });
 }
 
 function requirePlayground(req, res, next) {
@@ -571,6 +605,8 @@ app.get('/health', async (req, res) => {
         stripe_terms_url: TERMS_URL,
         stripe_statement_descriptor: process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE',
         playground: !!process.env.API_KEY,
+        resend: !!process.env.RESEND_API_KEY,
+        resend_from: getResendFrom(),
         timestamp: new Date().toISOString(),
     });
 });
@@ -656,7 +692,12 @@ app.post('/titan-interno', requireTitanInternalKey, async (req, res) => {
 
     const normalizedEmail = String(email).trim().toLowerCase();
     console.log(`>>> [TITAN INTERNO / ${resolved.assetType}] ${normalizedEmail} — ${resolved.url}`);
-    iniciarAuditoria(resolved.url, normalizedEmail, 'TITAN');
+    let started;
+    try {
+        started = await iniciarAuditoria(resolved.url, normalizedEmail, 'TITAN');
+    } catch (err) {
+        return res.status(400).json({ error: err.message || 'Could not start audit' });
+    }
 
     const label = resolved.assetType === 'social'
         ? `${resolved.platform} profile`
@@ -664,11 +705,23 @@ app.post('/titan-interno', requireTitanInternalKey, async (req, res) => {
 
     res.json({
         status: 'started',
+        job_id: started.jobId,
         mode: 'TITAN',
         assetType: resolved.assetType,
         target: resolved.url,
         message: `Titan ${label} audit started. PDF may take up to 60 minutes at ${normalizedEmail}.`,
     });
+});
+
+app.post('/titan-interno/status', requireTitanInternalKey, async (req, res) => {
+    const email = req.body?.email || req.query?.email;
+    if (!email) return res.status(400).json({ error: 'Email required' });
+    try {
+        const status = await getJobStatusByEmail(email);
+        res.json(status);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.get('/playground', requirePlayground, (req, res) => {
@@ -731,6 +784,17 @@ app.post('/portal-cliente', async (req, res) => {
     }
 });
 
+app.get('/playground/job-status', requirePlayground, async (req, res) => {
+    const email = req.query.email;
+    if (!email) return res.status(400).json({ error: 'email query param required' });
+    try {
+        const status = await getJobStatusByEmail(email);
+        res.json(status);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.post('/playground/titan', requirePlayground, async (req, res) => {
     const { dna, email } = req.body;
     if (!dna || !email) {
@@ -738,13 +802,18 @@ app.post('/playground/titan', requirePlayground, async (req, res) => {
     }
 
     console.log(`>>> [PLAYGROUND] Titán sin cobro para ${email} — ${dna}`);
-    iniciarAuditoria(dna, email, 'TITAN');
-
-    res.json({
-        status: 'started',
-        mode: 'TITAN',
-        message: 'Auditoría Titán completa iniciada. El PDF llegará por email en ~10-20 min.',
-    });
+    try {
+        const started = await iniciarAuditoria(dna, email, 'TITAN');
+        res.json({
+            status: 'started',
+            job_id: started.jobId,
+            mode: 'TITAN',
+            target: started.targetUrl,
+            message: 'Auditoría Titán completa iniciada. El PDF llegará por email en ~10-25 min.',
+        });
+    } catch (err) {
+        res.status(400).json({ error: err.message || 'No se pudo iniciar la auditoría' });
+    }
 });
 
 app.post('/playground/replay-delivery', requirePlayground, async (req, res) => {
@@ -806,11 +875,11 @@ app.post('/start-lite', async (req, res) => {
         return res.status(400).json({ error: 'Invalid email address' });
     }
     try {
-        await iniciarAuditoria(dna, normalizedEmail, 'LITE');
-        res.json({ status: 'started' });
+        const started = await iniciarAuditoria(dna, normalizedEmail, 'LITE');
+        res.json({ status: 'started', job_id: started.jobId });
     } catch (err) {
         console.error('!!! /start-lite:', err?.message || err);
-        res.status(500).json({ error: 'Could not start scan' });
+        res.status(400).json({ error: err.message || 'Could not start scan' });
     }
 });
 
@@ -854,33 +923,41 @@ app.post('/start', async (req, res) => {
 
 async function iniciarAuditoria(dna, email, modo) {
     const targetUrl = normalizeUrl(dna);
-    if (!targetUrl) return;
+    if (!targetUrl) {
+        throw new Error('Invalid or missing URL');
+    }
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+        throw new Error('Invalid email address');
+    }
 
     const jobId = `${modo}-${Date.now()}`;
 
     jobsMemoria[jobId] = {
         status: 'running',
         progress: {},
-        email,
+        email: normalizedEmail,
         modo,
         dossier: null,
         initialSummary: null,
     };
 
     if (modo === 'DELTA') {
-        const cliente = await getClienteByEmail(email);
+        const cliente = await getClienteByEmail(normalizedEmail);
         const titan = await getLatestTitanReport(cliente?.id);
         jobsMemoria[jobId].initialSummary = extractInitialSummary(titan?.secciones_json);
         jobsMemoria[jobId].prevDossier = titan?.dossier_scrape || '';
     }
 
-    await createJob(jobId, email, targetUrl, modo);
+    await createJob(jobId, normalizedEmail, targetUrl, modo);
 
-    console.log(`>>> [SISTEMA] Iniciando Reporte ${modo} para: ${targetUrl}`);
+    console.log(`>>> [SISTEMA] Iniciando Reporte ${modo} para: ${targetUrl} (job ${jobId})`);
     ejecutarAuditoriaFondo(targetUrl, jobId, modo).catch(async (e) => {
         console.error('!!! ERROR:', e);
         await failJob(jobId, e.message);
     });
+
+    return { jobId, targetUrl, email: normalizedEmail };
 }
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
@@ -900,6 +977,13 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             aiScore: datosTarget.aiScore,
             assetType: datosTarget.assetType,
         };
+
+        await persistJobMeta(jobId, jobsMemoria[jobId].progress, {
+            dossier: dossierTexto,
+            reportLocale: jobsMemoria[jobId].reportLocale,
+            captures: jobsMemoria[jobId].captures,
+            targetUrl,
+        });
 
         const credenciales = JSON.parse(process.env.GOOGLE_CREDS);
         const auth = new GoogleAuth({
@@ -1000,7 +1084,12 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             if (sectionText) {
                 sectionText = postProcessSection(etapaId, sectionText, reportLocale, dossierTexto);
                 jobsMemoria[jobId].progress[etapaId] = sectionText;
-                await updateJobProgress(jobId, jobsMemoria[jobId].progress);
+                await persistJobMeta(jobId, jobsMemoria[jobId].progress, {
+                    dossier: dossierTexto,
+                    reportLocale: jobsMemoria[jobId].reportLocale,
+                    captures: jobsMemoria[jobId].captures,
+                    targetUrl,
+                });
             }
             await new Promise((r) => setTimeout(r, 2000));
         }
@@ -1039,15 +1128,31 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
     let browser;
     try {
         const jobDb = await getJobProgress(jobId);
-        const job = jobsMemoria[jobId] || {
+        const memJob = jobsMemoria[jobId];
+        const job = memJob || {
             progress: jobDb?.progress || {},
             email: jobDb?.email || emailDestino,
             modo,
+            dossier: jobDb?.meta?.dossier || '',
+            reportLocale: jobDb?.meta?.reportLocale,
+            captures: jobDb?.meta?.captures || {},
         };
 
-        const captures = jobsMemoria[jobId]?.captures || {};
-        const dossier = jobsMemoria[jobId]?.dossier || jobDb?.dossier || '';
-        const reportLocale = jobsMemoria[jobId]?.reportLocale || getLocaleFromDossier(dossier);
+        if (!memJob && jobDb?.meta) {
+            jobsMemoria[jobId] = {
+                status: 'running',
+                progress: jobDb.progress,
+                email: jobDb.email,
+                modo: jobDb.modo,
+                dossier: jobDb.meta.dossier,
+                reportLocale: jobDb.meta.reportLocale,
+                captures: jobDb.meta.captures || {},
+            };
+        }
+
+        const captures = job.captures || jobsMemoria[jobId]?.captures || jobDb?.meta?.captures || {};
+        const dossier = jobsMemoria[jobId]?.dossier || jobDb?.meta?.dossier || '';
+        const reportLocale = jobsMemoria[jobId]?.reportLocale || jobDb?.meta?.reportLocale || getLocaleFromDossier(dossier);
         const langCode = reportLocale.code.startsWith('es') ? 'es' : 'en';
         const pdfUi = getPdfUiStrings(reportLocale);
 
@@ -1091,7 +1196,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
         const page = await browser.newPage();
-        await page.setContent(htmlBase, { waitUntil: 'networkidle0' });
+        await page.setContent(htmlBase, { waitUntil: 'load', timeout: 90000 });
 
         const metricsHtml = getPdfCoverMetricsHtml({
             loadTimeSec: captures.loadTimeSec,
@@ -1102,11 +1207,14 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         });
 
         const progressForPdf = {};
+        const progressHtml = {};
         for (const [key, value] of Object.entries(job.progress || {})) {
+            if (key === '__meta__') continue;
             progressForPdf[key] = postProcessSection(key, value, reportLocale, dossier);
+            progressHtml[key] = marked.parse(progressForPdf[key]);
         }
 
-        await page.evaluate((progressData, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang) => {
+        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang) => {
             if (htmlLang) document.documentElement.lang = htmlLang;
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
@@ -1141,10 +1249,10 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                 evidenceTargets.forEach((el) => el.appendChild(block.cloneNode(true)));
             }
 
-            for (const key in progressData) {
+            for (const key in sectionsHtml) {
                 const div = document.createElement('div');
                 div.className = 'report-section markdown-content';
-                div.innerHTML = marked.parse(progressData[key]);
+                div.innerHTML = sectionsHtml[key];
                 reporte.appendChild(div);
             }
 
@@ -1163,10 +1271,14 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                     + '<p><strong>' + titanUpgradeUrl + '</strong></p>';
                 reporte.appendChild(cta);
             }
-        }, progressForPdf, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode);
+        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode);
 
-        const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+        const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, timeout: 120000 });
         await browser.close();
+
+        if (!process.env.RESEND_API_KEY) {
+            throw new Error('RESEND_API_KEY not configured — cannot send email');
+        }
 
         const mailPayload = {
             from: getResendFrom(),
@@ -1190,6 +1302,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
 
 async function startServer() {
     await initDatabase();
+    await markStaleRunningJobs(75);
 
     app.listen(port, '0.0.0.0', () => {
         console.log(`MOTOR UNIFICADO ONLINE - FASE 2 - Puerto ${port}`);

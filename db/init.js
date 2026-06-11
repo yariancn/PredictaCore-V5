@@ -144,17 +144,78 @@ async function getJobProgress(jobId) {
     const p = getPool();
     if (!p) return null;
     const result = await p.query(
-        `SELECT email, url_sitio, modo, progreso_json FROM jobs_auditoria WHERE job_id = $1`,
+        `SELECT email, url_sitio, modo, progreso_json, estado, error_msg, creado_en, completado_en
+         FROM jobs_auditoria WHERE job_id = $1`,
         [jobId]
     );
     if (result.rows.length === 0) return null;
     const row = result.rows[0];
+    const progress = row.progreso_json || {};
+    const meta = progress.__meta__ || null;
+    const sections = { ...progress };
+    delete sections.__meta__;
     return {
         email: row.email,
         urlSitio: row.url_sitio,
+        modo: row.modo,
+        estado: row.estado,
+        errorMsg: row.error_msg,
+        creadoEn: row.creado_en,
+        completadoEn: row.completado_en,
         isLite: row.modo === 'LITE',
-        progress: row.progreso_json || {},
+        progress: sections,
+        meta,
     };
+}
+
+async function getJobsByEmail(email, limit = 5) {
+    const p = getPool();
+    if (!p || !email) return [];
+    const normalized = String(email).trim().toLowerCase();
+    const result = await p.query(
+        `SELECT job_id, email, url_sitio, modo, estado, error_msg, creado_en, completado_en,
+                progreso_json
+         FROM jobs_auditoria
+         WHERE lower(email) = $1
+         ORDER BY creado_en DESC
+         LIMIT $2`,
+        [normalized, limit]
+    );
+    return result.rows.map((row) => {
+        const progress = row.progreso_json || {};
+        const sectionKeys = Object.keys(progress).filter((k) => k !== '__meta__');
+        return {
+            job_id: row.job_id,
+            email: row.email,
+            url_sitio: row.url_sitio,
+            modo: row.modo,
+            estado: row.estado,
+            error_msg: row.error_msg,
+            creado_en: row.creado_en,
+            completado_en: row.completado_en,
+            secciones: sectionKeys.length,
+            seccion_ids: sectionKeys,
+        };
+    });
+}
+
+async function markStaleRunningJobs(maxAgeMinutes = 75) {
+    const p = getPool();
+    if (!p) return 0;
+    const result = await p.query(
+        `UPDATE jobs_auditoria
+         SET estado = 'failed',
+             error_msg = COALESCE(error_msg, 'Job interrupted (server restart or timeout)'),
+             completado_en = NOW()
+         WHERE estado = 'running'
+           AND creado_en < NOW() - ($1 || ' minutes')::interval
+         RETURNING job_id`,
+        [String(maxAgeMinutes)]
+    );
+    if (result.rows.length) {
+        console.warn(`>>> [BD] ${result.rows.length} job(s) running marcados como failed (stale)`);
+    }
+    return result.rows.length;
 }
 
 async function healthCheck() {
@@ -205,6 +266,8 @@ module.exports = {
     completeJob,
     failJob,
     getJobProgress,
+    getJobsByEmail,
+    markStaleRunningJobs,
     healthCheck,
     isDbReady,
 };

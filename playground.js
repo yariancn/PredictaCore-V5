@@ -42,8 +42,12 @@ function getPlaygroundHTML() {
         <pre id="out-lite" class="mt-3 text-zinc-400">—</pre>
     </section>
 
-    <section class="mb-8 border border-emerald-500/30 bg-emerald-950/10 p-4 rounded">
-        <h2 class="text-emerald-500 text-[10px] uppercase tracking-widest mb-3">02b — Titán Completo (sin pago)</h2>
+    <section class="mb-8 border border-amber-500/30 bg-amber-950/10 p-4 rounded">
+        <h2 class="text-amber-500 text-[10px] uppercase tracking-widest mb-3">02c — Estado del job (email)</h2>
+        <p class="text-zinc-500 text-[10px] mb-2">Si no llegó el PDF: revisa si falló, sigue en progreso, o completó.</p>
+        <button onclick="runJobStatus()" class="bg-amber-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">GET /playground/job-status</button>
+        <pre id="out-job-status" class="mt-3 text-amber-300">—</pre>
+    </section>
         <p class="text-zinc-400 text-[10px] mb-2">Reporte forense completo — 11 secciones. Mismo motor que producción. ~10-20 min. Revisa el PDF y luego ajusta código en GitHub.</p>
         <button onclick="runTitan()" class="bg-emerald-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/titan</button>
         <pre id="out-titan" class="mt-3 text-emerald-400">—</pre>
@@ -102,6 +106,16 @@ function getPlaygroundHTML() {
             const email = document.getElementById('pg-email').value;
             const r = await api('/start-lite', { method: 'POST', body: JSON.stringify({ dna, email }) });
             document.getElementById('out-lite').textContent = JSON.stringify(r.data, null, 2);
+        }
+
+        async function runJobStatus() {
+            const email = document.getElementById('pg-email').value;
+            if (!email) {
+                document.getElementById('out-job-status').textContent = 'Ingresa email arriba';
+                return;
+            }
+            const r = await api('/playground/job-status?email=' + encodeURIComponent(email));
+            document.getElementById('out-job-status').textContent = JSON.stringify(r.data, null, 2);
         }
 
         async function runTitan() {
