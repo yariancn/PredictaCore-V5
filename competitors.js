@@ -24,6 +24,10 @@ const BLOCKLIST = new Set([
     'bodegaaurrera.com.mx', 'soriana.com', 'coppel.com', 'liverpool.com.mx', 'elektra.com.mx',
     'elpalaciodehierro.com', 'palaciodehierro.com', 'infoisinfo.com.mx', 'infoisinfo.com',
     'dollargeneral.com', 'misuperdollargeneral.com', 'nuevaescuelamexicana.org', 'conaliteg.gob.mx',
+    'zara.com', 'shein.com.mx', 'shein.com', 'hm.com', 'www2.hm.com', 'bershka.com', 'oldnavy.mx',
+    'stradivarius.com', 'cyamoda.com', 'privalia.com.mx', 'sanborns.com.mx', 'modatelas.com.mx',
+    'guiainfantil.com', 'babycenter.com', 'unicef.org', 'wikipedia.org',
+    'regalador.com', 'fabricadesuenos.com.mx', 'unbonitodetalle.com', 'enviaflores.com',
 ]);
 
 const PLATFORM_DOMAIN_RE = /^(shopify|myshopify|wix|wixsite|squarespace|weebly|godaddy|webflow|wordpress|ecwid|bigcommerce|volusion|shift4shop|tiendanube|nuvemshop)\./i;
@@ -71,6 +75,80 @@ function isSpanishLocale(locale, geo, onPage) {
     return lang.startsWith('es');
 }
 
+function extractProductSignals(onPage, clientDesc, clientTitle) {
+    const blob = `${onPage?.textSample || ''} ${onPage?.metaDescription || ''} ${clientDesc || ''} ${clientTitle || ''} ${onPage?.h1Text || ''}`.toLowerCase();
+    return {
+        baby: /\b(beb[eé]|baby|reci[eé]n nacido|recien nacido|maternidad|pañalero|canastilla)\b/.test(blob),
+        personalized: /personaliz|bordad|custom|dise[nñ]a desde|a tu gusto|nombre del beb|100% personaliz/.test(blob),
+        cotton: /algod[oó]n|cotton/.test(blob),
+        welcomeKit: /kit de bienvenida|kit bienvenida|canastilla|welcome kit/.test(blob),
+        bedding: /juego de cuna|juegos de cuna|cuna|nido|manta mensual|dona de lactancia|swaddle|babero/.test(blob),
+        clothing: /\b(ropa|pañalero|mameluco|body|babero|manta)\b/.test(blob),
+    };
+}
+
+function inferNicheFromSignals(signals, es) {
+    if (signals.baby && signals.personalized && signals.cotton) {
+        return es ? 'productos bebe personalizados algodon' : 'personalized cotton baby products';
+    }
+    if (signals.baby && signals.personalized && signals.bedding) {
+        return es ? 'productos bebe personalizados cuna kit' : 'personalized baby crib welcome kit';
+    }
+    if (signals.baby && signals.personalized) {
+        return es ? 'productos bebe personalizados' : 'personalized baby products';
+    }
+    if (signals.baby && signals.cotton) {
+        return es ? 'ropa productos bebe algodon' : 'cotton baby clothing products';
+    }
+    if (signals.baby && signals.welcomeKit) {
+        return es ? 'kit bienvenida bebe personalizado' : 'personalized baby welcome kit';
+    }
+    return null;
+}
+
+function getCategorySeedCandidates(signals, geo) {
+    const mx = geo?.marketCountry === 'MX' || geo?.country === 'MX';
+    if (!mx || !signals.baby) return [];
+    const seeds = [];
+    if (signals.personalized || signals.welcomeKit || signals.bedding) {
+        seeds.push('bebedeparis.mx', 'creacionesbabyjonathan.com', 'hilodeluz.mx');
+    }
+    if (signals.cotton || signals.clothing) {
+        seeds.push('creacionesbabyjonathan.com', 'bebedeparis.mx');
+    }
+    return [...new Set(seeds)];
+}
+
+function buildSignalQueries(signals, es, geo) {
+    if (!signals.baby) return [];
+    const mx = es || geo?.marketCountry === 'MX';
+    const q = [];
+    if (signals.personalized) {
+        q.push(
+            mx ? 'canastilla bebe personalizada mexico tienda' : 'personalized baby gift basket store',
+            mx ? 'regalos bebe personalizados mexico tienda online' : 'personalized baby gifts online store',
+            mx ? 'productos bebe personalizados algodon mexico' : 'personalized cotton baby products store',
+            mx ? 'pijamas familia bebe personalizadas mexico' : 'personalized family baby pajamas store',
+        );
+    }
+    if (signals.bedding || signals.welcomeKit) {
+        q.push(
+            mx ? 'kit bienvenida bebe personalizado tienda mexico' : 'personalized baby welcome kit store',
+            mx ? 'juego cuna bebe personalizado tienda online' : 'personalized baby crib bedding store',
+        );
+    }
+    if (signals.cotton && signals.clothing) {
+        q.push(
+            mx ? 'ropa bebe algodon tienda online mexico' : 'cotton baby clothes online store',
+            mx ? 'pañalero algodon tienda mexico online' : 'cotton baby onesies online store',
+        );
+    }
+    if (signals.baby && !q.length) {
+        q.push(mx ? 'tienda productos bebe mexico online' : 'baby products online store');
+    }
+    return q;
+}
+
 function normalizeNichePhrase(raw, brandTokens) {
     let p = String(raw || '').trim()
         .replace(/^(mejor|comprar|best|buy)\s+/i, '')
@@ -90,7 +168,12 @@ function normalizeNichePhrase(raw, brandTokens) {
 
 function extractProductNiche(onPage, url, clientTitle, clientDesc, locale, geo) {
     const brandTokens = clientBrandTokens(url, clientTitle);
-    const loc = locale || { code: isSpanishLocale(null, geo, onPage) ? 'es-LATAM' : 'en-US' };
+    const es = isSpanishLocale(locale, geo, onPage);
+    const signals = extractProductSignals(onPage, clientDesc, clientTitle);
+    const signalNiche = inferNicheFromSignals(signals, es);
+    if (signalNiche) return signalNiche;
+
+    const loc = locale || { code: es ? 'es-LATAM' : 'en-US' };
     const phrases = inferKeywords(onPage, loc, url, clientTitle);
     const productPart = productTitleCore(onPage, brandTokens);
     const meta = (onPage?.metaDescription || clientDesc || '').trim();
@@ -130,10 +213,18 @@ function tokenizeNiche(text, brandTokens) {
             && ![...(brandTokens || [])].some((bt) => bt.length >= 4 && (w.includes(bt) || bt.includes(w))));
 }
 
-function deriveNicheSearchVariants(niche, onPage, clientDesc, es) {
+function deriveNicheSearchVariants(niche, onPage, clientDesc, es, signals) {
     const variants = new Set([niche]);
     const blob = `${onPage?.metaDescription || ''} ${onPage?.textSample || ''} ${clientDesc || ''}`.toLowerCase();
-    if (/\b(beb[eé]|baby|infant|reci[eé]n nacido)\b/.test(blob)) {
+    const sig = signals || extractProductSignals(onPage, clientDesc, '');
+    if (sig.baby) {
+        variants.add(es ? 'productos bebe personalizados' : 'personalized baby products');
+        variants.add(es ? 'ropa bebe algodon' : 'cotton baby clothes');
+        variants.add(es ? 'regalos bebe personalizados' : 'personalized baby gifts');
+        if (sig.personalized) variants.add(es ? 'canastilla bebe personalizada' : 'personalized baby gift basket');
+        if (sig.bedding) variants.add(es ? 'kit bienvenida bebe' : 'baby welcome kit');
+        if (sig.cotton) variants.add(es ? 'productos bebe algodon' : 'cotton baby products');
+    } else if (/\b(beb[eé]|baby|infant|reci[eé]n nacido)\b/.test(blob)) {
         variants.add(es ? 'ropa bebe' : 'baby clothes');
         variants.add(es ? 'accesorios bebe' : 'baby accessories');
         variants.add(es ? 'tienda bebe online' : 'baby store online');
@@ -141,18 +232,19 @@ function deriveNicheSearchVariants(niche, onPage, clientDesc, es) {
     if (/\b(ropa|clothing|fashion|moda)\b/.test(blob) && /\b(beb[eé]|baby|ni[nñ]o)\b/.test(blob)) {
         variants.add(es ? 'ropa bebe tienda' : 'baby clothing store');
     }
-    return [...variants].slice(0, 5);
+    return [...variants].slice(0, 8);
 }
 
 function buildSearchQueries(onPage, url, isSocial, giro, clientTitle, clientDesc, geo, locale) {
     const niche = extractProductNiche(onPage, url, clientTitle, clientDesc, locale, geo);
     const es = isSpanishLocale(locale, geo, onPage);
-    const nicheVariants = deriveNicheSearchVariants(niche, onPage, clientDesc, es);
-    let queries = [];
+    const signals = extractProductSignals(onPage, clientDesc, clientTitle);
+    const nicheVariants = deriveNicheSearchVariants(niche, onPage, clientDesc, es, signals);
+    let queries = [...buildSignalQueries(signals, es, geo)];
     for (const n of nicheVariants) {
         queries.push(...buildSearchQueriesForNiche(n, isSocial, giro, geo, locale, es));
     }
-    return [...new Set(queries.filter(Boolean))].slice(0, 10);
+    return [...new Set(queries.filter(Boolean))].slice(0, 16);
 }
 
 function buildSearchQueriesForNiche(niche, isSocial, giro, geo, locale, es) {
@@ -316,31 +408,47 @@ function parseDomainsFromHtml(html, clientDomain) {
 }
 
 async function fetchPageSnapshot(domain) {
-    try {
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 8000);
-        const res = await fetch(`https://${domain}`, {
-            signal: ctrl.signal,
-            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PredictaCore/1.0)' },
-            redirect: 'follow',
-        });
-        clearTimeout(timer);
-        if (!res.ok) return null;
-        const html = (await res.text()).slice(0, 15000);
-        const title = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim().slice(0, 150) || '';
-        const meta = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)?.[1]
-            || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i)?.[1]
-            || '';
-        const bodyText = html.replace(/<script[\s\S]*?<\/script>/gi, ' ')
-            .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-            .replace(/<[^>]+>/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim()
-            .slice(0, 800);
-        return { title, description: meta.slice(0, 250), bodyText, html: html.slice(0, 4000) };
-    } catch {
-        return null;
+    const hosts = [domain];
+    if (!domain.startsWith('www.')) hosts.push(`www.${domain}`);
+    for (const host of hosts) {
+        try {
+            const ctrl = new AbortController();
+            const timer = setTimeout(() => ctrl.abort(), 10000);
+            const res = await fetch(`https://${host}`, {
+                signal: ctrl.signal,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'es-MX,es;q=0.9,en;q=0.5',
+                },
+                redirect: 'follow',
+            });
+            clearTimeout(timer);
+            if (!res.ok) continue;
+            const html = (await res.text()).slice(0, 18000);
+            const title = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim().slice(0, 150) || '';
+            const meta = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)?.[1]
+                || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i)?.[1]
+                || '';
+            const bodyText = html.replace(/<script[\s\S]*?<\/script>/gi, ' ')
+                .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+                .replace(/<[^>]+>/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .slice(0, 1200);
+            if (title) return { title, description: meta.slice(0, 250), bodyText, html: html.slice(0, 5000) };
+        } catch {
+            /* try next host */
+        }
     }
+    return null;
+}
+
+function stemToken(w) {
+    let t = String(w || '').toLowerCase();
+    if (t.endsWith('es') && t.length > 5) t = t.slice(0, -2);
+    else if (t.endsWith('s') && t.length > 4) t = t.slice(0, -1);
+    return t;
 }
 
 function tokenSet(text) {
@@ -350,6 +458,7 @@ function tokenSet(text) {
             .replace(/[^\w\s]/g, ' ')
             .split(/\s+/)
             .filter((w) => w.length > 3 && !STOPWORDS.has(w))
+            .map(stemToken)
     );
 }
 
@@ -406,20 +515,40 @@ function isNonCompetitorDomain(domain, snapshot, clientBrandTokensSet) {
 
 function nicheSemanticMatch(nicheCorpus, compText) {
     const rules = [
-        [/beb[eé]|baby|infant|reci[eé]n nacido/i, /\b(beb[eé]|baby|infant|reci[eé]n nacido|maternidad|pañal|panal|bodys?|manta|babero|ni[nñ]os?)\b/i],
-        [/boda|wedding|matrimonio|novios/i, /\b(boda|wedding|matrimonio|novios|bride|groom|fotograf[aá]|photograph|photo studio|estudio fotogr[aá]fico)\b/i],
-        [/restaurant|restaurante/i, /\b(restaurant|restaurante|men[uú]|reserv|comida|cocina)\b/i],
-        [/cl[ií]nica|consultorio|salud|medical|dental/i, /\b(cl[ií]nica|consultorio|doctor|m[eé]dico|dental|salud|patient|paciente)\b/i],
+        [/beb[eé]|baby|infant|reci[eé]n nacido|productos para bebe|productos bebe/i,
+            /\b(beb[eé]|baby|infant|reci[eé]n nacido|maternidad|pañal|panal|pañalero|bodys?|manta|babero|ni[nñ]os?|canastilla|cuna|nido|regalo.*bebe|bebe.*regalo|ropa.*bebe|bebe.*ropa|algod[oó]n.*bebe|bebe.*algod)\b/i],
+        [/personaliz|bordad|custom/i,
+            /personaliz|bordad|custom|nombre|a medida|canastilla|kit de bienvenida/i],
+        [/boda|wedding|matrimonio|novios/i,
+            /\b(boda|wedding|matrimonio|novios|bride|groom|fotograf[aá]|photograph|photo studio|estudio fotogr[aá]fico)\b/i],
+        [/restaurant|restaurante/i,
+            /\b(restaurant|restaurante|men[uú]|reserv|comida|cocina)\b/i],
+        [/cl[ií]nica|consultorio|salud|medical|dental/i,
+            /\b(cl[ií]nica|consultorio|doctor|m[eé]dico|dental|salud|patient|paciente)\b/i],
     ];
     for (const [nicheRe, compRe] of rules) {
-        if (nicheRe.test(nicheCorpus) && !compRe.test(compText)) return false;
+        if (!nicheRe.test(nicheCorpus)) continue;
+        if (compRe.test(compText)) continue;
+        if (/beb[eé]|productos bebe/i.test(nicheCorpus)) {
+            const familyBabyAdjacent = /\b(pijama|pijamas)\b/i.test(compText)
+                && /personaliz/i.test(compText)
+                && /\b(familia|familiares|infantil|ni[nñ]o|reci[eé]n nacido|kit)\b/i.test(compText);
+            if (familyBabyAdjacent) continue;
+        }
+        return false;
     }
     return true;
 }
 
 function hasCommercialSignals(snapshot, giroId) {
     const blob = `${snapshot?.title || ''} ${snapshot?.description || ''} ${snapshot?.bodyText || ''} ${snapshot?.html || ''}`;
-    if (giroId === 'ecommerce') return ECOMMERCE_SIGNALS.test(blob);
+    if (giroId === 'ecommerce') {
+        if (ECOMMERCE_SIGNALS.test(blob)) return true;
+        if (/\b(tienda online|online shop|online store|e-?commerce|comprar en línea|shopify|woocommerce|buy online)\b/i.test(blob)) return true;
+        if (/\b(canastillas?|pañalero|pañaleros|ropa de beb[eé]|productos para beb[eé]|productos bebe|juego de cuna|kit de bienvenida|pijamas?|precio|mxn|\$\s*\d)\b/i.test(blob)) return true;
+        if (/"@type"\s*:\s*"(?:Store|Product|OnlineStore|Organization)"/i.test(snapshot?.html || '')) return true;
+        return (snapshot?.title || '').length > 10 && (snapshot?.description || '').length > 20;
+    }
     return blob.length > 80;
 }
 
@@ -454,8 +583,16 @@ async function validateCompetitor(domain, nicheCorpus, giro, clientBrandTokensSe
     if (!nicheSemanticMatch(nicheCorpus, compText)) return null;
     const nicheScore = nicheSpecificOverlap(nicheCorpus, compText);
     const score = overlapScore(nicheCorpus, compText);
-    if (/\b(beb[eé]|baby|infant|reci[eé]n nacido)\b/i.test(nicheCorpus)
-        && !/\b(beb[eé]|baby|infant|reci[eé]n nacido|maternidad|pañal|panal|bodys?|manta|babero)\b/i.test(compText)) {
+    if (/\b(beb[eé]|baby|productos bebe|productos para bebe)\b/i.test(nicheCorpus)) {
+        const hasBabyFocus = /\b(beb[eé]|baby|reci[eé]n nacido|canastilla|pañalero|maternidad|cuna|nido|manta|babero|ni[nñ]o|infantil|infant)\b/i.test(compText);
+        const hasFamilyBabyAdjacent = /\b(pijama|pijamas)\b/i.test(compText)
+            && /personaliz/i.test(compText)
+            && /\b(familia|familiares|infantil|ni[nñ]o|reci[eé]n nacido|kit)\b/i.test(compText);
+        if (!hasBabyFocus && !hasFamilyBabyAdjacent) return null;
+    }
+    if (/\b(beb[eé]|baby|productos bebe)\b/i.test(nicheCorpus)
+        && /\b(regalos originales|globos|desayunos sorpresa|flores a domicilio|envoltorios asombrosos)\b/i.test(compText)
+        && !/\b(beb[eé]|baby|canastilla|reci[eé]n nacido)\b/i.test(compText)) {
         return null;
     }
     if (nicheScore < minNicheOverlap && score < minOverlap) return null;
@@ -485,7 +622,7 @@ async function collectCandidates(queries, clientDomain, acceptLanguage) {
                 candidates.push(d);
             }
         }
-        if (candidates.length >= 30) break;
+        if (candidates.length >= 45) break;
     }
     return candidates;
 }
@@ -525,15 +662,11 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
     const nicheCorpus = [niche, ctx.clientDesc, onPage?.metaDescription, onPage?.h1Text, onPage?.textSample?.slice(0, 500), giro.label]
         .filter(Boolean).join(' ');
 
+    const signals = extractProductSignals(onPage, ctx.clientDesc, ctx.clientTitle);
     const acceptLanguage = searchAcceptLanguage(locale, geo, onPage);
     const queries = buildSearchQueries(onPage, url, isSocial, giro, ctx.clientTitle, ctx.clientDesc, geo, locale);
-    let candidates = await collectCandidates(queries, clientDomain, acceptLanguage);
 
-    if (candidates.length < 15) {
-        const extra = await collectCandidates(fallbackQueries(giro.id, locale, geo, niche), clientDomain, acceptLanguage);
-        candidates = [...new Set([...candidates, ...extra])];
-    }
-
+    const seeds = getCategorySeedCandidates(signals, geo);
     const passes = [
         { strictGeo: true, minOverlap: 1, minNicheOverlap: 1 },
         { strictGeo: true, minOverlap: 1, minNicheOverlap: 0 },
@@ -541,7 +674,17 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
         { strictGeo: false, minOverlap: 0, minNicheOverlap: 0 },
     ];
 
-    let competitors = await pickCompetitors(candidates, nicheCorpus, giro, clientBrand, geo, passes);
+    let competitors = await pickCompetitors(seeds, nicheCorpus, giro, clientBrand, geo, passes);
+
+    if (competitors.length < MIN_COMPETITORS) {
+        let candidates = await collectCandidates(queries.slice(0, 10), clientDomain, acceptLanguage);
+        candidates = [...new Set([...seeds, ...candidates])];
+        if (candidates.length < 20) {
+            const extra = await collectCandidates(fallbackQueries(giro.id, locale, geo, niche), clientDomain, acceptLanguage);
+            candidates = [...new Set([...candidates, ...extra])];
+        }
+        competitors = await pickCompetitors(candidates, nicheCorpus, giro, clientBrand, geo, passes);
+    }
 
     if (competitors.length > 0 && competitors.length < MIN_COMPETITORS) {
         competitors = [];
