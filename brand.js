@@ -58,12 +58,25 @@ function getEmailBrandHeader(lang = 'en') {
 </div>`;
 }
 
-/** Branded header for PDF cover (Lite / Titán) */
+/** Branded header for PDF cover (Lite / Titán) — logo PNG embebido para Puppeteer */
 function getPdfCoverBrandHtml() {
-    return `<div class="pc-brand-cover">
-  <div class="pc-logo-circle">
+    const fs = require('fs');
+    const path = require('path');
+    let logoImg = '';
+    try {
+        const logoPath = path.join(__dirname, 'static', 'apple-touch-icon.png');
+        if (fs.existsSync(logoPath)) {
+            const b64 = fs.readFileSync(logoPath).toString('base64');
+            logoImg = `<img src="data:image/png;base64,${b64}" width="56" height="56" alt="PredictaCore" class="pc-logo-img" />`;
+        }
+    } catch { /* fallback below */ }
+    if (!logoImg) {
+        logoImg = `<div class="pc-logo-circle">
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-  </div>
+  </div>`;
+    }
+    return `<div class="pc-brand-cover">
+  ${logoImg}
   <div class="pc-wordmark">PREDICTA<span class="pc-accent">CORE</span></div>
   <div class="pc-tagline">Business Intelligence</div>
 </div>`;
@@ -92,6 +105,7 @@ function getPdfCoverMetricsHtml({ loadTimeSec, seoScore, aiScore, assetType, lan
 /** Shared CSS for PDF brand blocks */
 function getPdfBrandStyles() {
     return `.pc-brand-cover { margin-bottom: 18px; }
+.pc-logo-img { width: 56px; height: 56px; border-radius: 50%; margin-bottom: 12px; display: block; object-fit: cover; -webkit-print-color-adjust: exact; }
 .pc-logo-circle { width: 52px; height: 52px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
 .pc-wordmark { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.04em; text-transform: uppercase; color: #0f172a; line-height: 1; }
 .pc-accent { color: #10b981; }

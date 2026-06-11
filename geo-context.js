@@ -68,12 +68,12 @@ function extractGeoContext(onPage, url, giro) {
         || inferCountryFromLang(onPage?.htmlLang)
         || (region && /^[A-Z]{2}$/.test(region) ? 'US' : null);
 
-    const hasLocalSignals = !!(city || /\b(dirección|address|ubicación|location|horario|hours|visit us|visítanos|sucursal|branch)\b/i.test(sample));
+    const hasLocalSignals = !!(city || /\b(dirección|address|ubicación|location|horario|hours|visit us|visítanos|sucursal|branch|our store|nuestra tienda|showroom|walk-?in|tienda física|physical store)\b/i.test(sample));
     const giroId = giro?.id || 'general';
     let scope = 'NATIONAL';
     if (LOCAL_GIROS.has(giroId) && hasLocalSignals) scope = 'LOCAL';
-    if (giroId === 'ecommerce' && city && hasLocalSignals) scope = 'LOCAL';
-    if (giroId === 'ecommerce' && !city && !hasLocalSignals) scope = 'NATIONAL';
+    if (giroId === 'ecommerce') scope = 'NATIONAL';
+    if (giroId === 'salud' || giroId === 'restaurante') scope = hasLocalSignals ? 'LOCAL' : 'NATIONAL';
 
     const parts = [city, region, country].filter(Boolean);
     const label = parts.length ? parts.join(', ') : (country || 'NO_DETECTADA');

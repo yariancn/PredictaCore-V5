@@ -4,6 +4,7 @@ const { resolveReportLocale, parseLocaleFromDossier } = require('./idioma');
 const {
     buildFugasFromDossier,
     stripPlaceholderLeaks,
+    hasPlaceholderLeaks,
     PLACEHOLDER_RE,
 } = require('./fugas-builder');
 
@@ -304,7 +305,7 @@ function postProcessSection(etapaId, text, locale, dossier = '') {
 
     if (etapaId === 'FUGAS' || etapaId === 'FUGAS_LITE') {
         const targetCount = etapaId === 'FUGAS_LITE' ? 3 : 15;
-        if (dossier && dossier.includes('SIMULATION_RESULTS')) {
+        if (hasPlaceholderLeaks(text) && dossier.includes('SIMULATION_RESULTS')) {
             const headerMatch = (text || '').match(/^(###[^\n]+)/);
             return buildFugasFromDossier(dossier, locale, {
                 target: targetCount,
@@ -312,7 +313,12 @@ function postProcessSection(etapaId, text, locale, dossier = '') {
             });
         }
         const cleaned = stripPlaceholderLeaks(out);
-        return normalizeNumberedList(cleaned, { minItems: 2, targetItems: targetCount, mode: 'fugas' });
+        out = normalizeNumberedList(cleaned, { minItems: Math.min(targetCount, 3), targetItems: targetCount, mode: 'fugas' });
+        const after = countNumberedItems(out.replace(/^###[^\n]+\n?/, ''));
+        if (after < targetCount - 1) {
+            out = normalizeNumberedList(cleaned, { minItems: 2, targetItems: targetCount, mode: 'auto' });
+        }
+        return out;
     }
 
     if (target) {

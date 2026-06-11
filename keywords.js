@@ -1,35 +1,67 @@
-/** Long-tail keywords inferidas del HTML scrapeado (sin API de volumen) */
+/** Long-tail keywords inferidas del HTML scrapeado (sin API de volumen) — solo producto/servicio, sin marca */
 
 const STOP = new Set([
     'the', 'and', 'for', 'with', 'your', 'our', 'de', 'la', 'el', 'en', 'y', 'a', 'los', 'las', 'del', 'un', 'una',
     'home', 'inicio', 'welcome', 'bienvenido', 'menu', 'contact', 'contacto', 'about', 'nosotros',
     'privacy', 'policy', 'cookie', 'cookies', 'terms', 'conditions', 'consent', 'gdpr', 'legal',
     'politica', 'privacidad', 'datos', 'personales', 'value', 'valores',
+    'shop', 'store', 'official', 'website', 'online', 'buy', 'best',
 ]);
 
 const LEGAL_PHRASE = /\b(privacy|policy|cookie|gdpr|terms|conditions|consent|legal|política|privacidad|datos personales)\b/i;
 
-function tokenize(text) {
+function brandTokensFrom(url, clientTitle) {
+    const tokens = new Set();
+    try {
+        const host = new URL(url).hostname.replace(/^www\./, '').split('.')[0].toLowerCase();
+        if (host.length >= 3) tokens.add(host);
+    } catch { /* skip */ }
+    (clientTitle || '').split(/\s*[|\-–—]\s*/).forEach((part) => {
+        part.toLowerCase().split(/\s+/).forEach((w) => {
+            const clean = w.replace(/[^\w]/g, '');
+            if (clean.length >= 3) tokens.add(clean);
+        });
+    });
+    return tokens;
+}
+
+function tokenize(text, brandTokens) {
     return (text || '')
         .toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/[^\w\s]/g, ' ')
         .split(/\s+/)
-        .filter((w) => w.length > 3 && !STOP.has(w));
+        .filter((w) => w.length > 3 && !STOP.has(w)
+            && ![...(brandTokens || [])].some((bt) => bt.length >= 3 && w.includes(bt)));
 }
 
-function inferKeywords(onPage, locale) {
+function productTitleCore(onPage, brandTokens) {
+    const title = (onPage?.title || '').replace(/&/g, ' ').trim();
+    const parts = title.split(/\s*[|\-–—]\s*/).map((p) => p.trim()).filter(Boolean);
+    const productPart = parts.find((p) => {
+        const lower = p.toLowerCase();
+        return ![...(brandTokens || [])].some((bt) => bt.length >= 3 && lower.includes(bt));
+    });
+    return productPart || parts[0] || title;
+}
+
+function inferKeywords(onPage, locale, url = '', clientTitle = '') {
     const es = locale?.code?.startsWith('es');
-    const title = (onPage?.title || '').replace(/&/g, ' ');
+    const brandTokens = brandTokensFrom(url, clientTitle || onPage?.title);
+    const titleCore = productTitleCore(onPage, brandTokens);
     const h1 = onPage?.h1Text && onPage.h1Text !== 'AUSENTE' && onPage.h1Text !== 'ABSENT'
         ? onPage.h1Text : '';
     const h2 = onPage?.h2Sample && !/privacy|policy|cookie|privacidad/i.test(onPage.h2Sample)
         ? onPage.h2Sample : '';
 
-    const titleCore = title.split(/\s*[|\-–—]\s*/)[0].trim();
-    const tokens = [...new Set([...tokenize(titleCore), ...tokenize(title), ...tokenize(h1), ...tokenize(h2)])].slice(0, 12);
-    const core = tokens.slice(0, 5).join(' ') || (es ? 'servicio local' : 'local service');
+    const tokens = [...new Set([
+        ...tokenize(titleCore, brandTokens),
+        ...tokenize(h1, brandTokens),
+        ...tokenize(h2, brandTokens),
+    ])].slice(0, 8);
+    const core = tokens.slice(0, 5).join(' ') || titleCore.toLowerCase().replace(/[^\w\s-]/g, ' ').trim()
+        || (es ? 'servicio local' : 'local service');
 
     const sample = onPage?.textSample || onPage?.bioSnippet || '';
     const locationMatch = !LEGAL_PHRASE.test(sample) && (
@@ -40,14 +72,16 @@ function inferKeywords(onPage, locale) {
 
     const phrases = es
         ? [
-            titleCore || `${core}`.trim(),
+            titleCore.trim(),
+            core,
             `${core}${location ? ` ${location}` : ''}`.trim(),
             `mejor ${core}`.trim(),
             `${core} precio`.trim(),
-            `contratar ${core}`.trim(),
+            `comprar ${core}`.trim(),
         ]
         : [
-            titleCore || `${core}`.trim(),
+            titleCore.trim(),
+            core,
             `${core}${location ? ` ${location}` : ''}`.trim(),
             `best ${core}`.trim(),
             `${core} price`.trim(),
@@ -59,20 +93,20 @@ function inferKeywords(onPage, locale) {
         .slice(0, 5);
 }
 
-function formatKeywordsBlock(onPage, locale) {
-    const phrases = inferKeywords(onPage, locale);
+function formatKeywordsBlock(onPage, locale, url = '', clientTitle = '') {
+    const phrases = inferKeywords(onPage, locale, url, clientTitle);
     const es = locale?.code?.startsWith('es');
     const rule = es
-        ? 'Presenta como "keywords transaccionales inferidas". PROHIBIDO afirmar volumen de búsqueda o posición SERP. PROHIBIDO keywords de políticas legales/privacidad.'
-        : 'Present as "inferred transactional keywords". PROHIBITED to claim search volume or SERP rank. PROHIBITED legal/privacy policy keywords.';
+        ? 'Presenta como "keywords transaccionales inferidas". PROHIBIDO afirmar volumen de búsqueda o posición SERP. PROHIBIDO keywords de políticas legales/privacidad. PROHIBIDO incluir nombre comercial/marca del activo — solo productos o servicios.'
+        : 'Present as "inferred transactional keywords". PROHIBITED to claim search volume or SERP rank. PROHIBITED legal/privacy policy keywords. PROHIBITED brand/business name tokens — products or services only.';
 
     return `
 === KEYWORDS_INFERIDAS (NO VERIFICADAS — USAR EN SECCIÓN IV) ===
-FUENTE: title, H1, H2 (excluye footer legal/privacidad)
+FUENTE: title (parte producto), H1, H2 — excluye nombre comercial/marca y footer legal
 VOLUMEN_MERCADO: NO_DISPONIBLE (cliente solo proporcionó URL)
 REGLA_IA: ${rule}
 ${phrases.length ? phrases.map((p, i) => `KW_${i + 1}: ${p}`).join('\n') : 'KW_1: (sin keywords inferidas — usar title/H1 del dossier)'}
 === FIN KEYWORDS_INFERIDAS ===`;
 }
 
-module.exports = { inferKeywords, formatKeywordsBlock };
+module.exports = { inferKeywords, formatKeywordsBlock, brandTokensFrom, productTitleCore };

@@ -189,7 +189,7 @@ async function captureAndScrape(url) {
                 hasContact,
             });
             simulationBlock = formatSimulationBlock(sim, 'website');
-            keywordsBlock = formatKeywordsBlock(forensics.onPage, locale);
+            keywordsBlock = formatKeywordsBlock(forensics.onPage, locale, url, dataForense.titulo);
             const bench = await findCompetitors(url, forensics.onPage, false, {
                 giro,
                 clientTitle: dataForense.titulo,

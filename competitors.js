@@ -75,11 +75,8 @@ function extractNicheTerms(onPage, giro, clientTitle, clientDesc, url, geo) {
 function appendGeo(queries, geo) {
     if (!geo?.label || geo.label === 'NO_DETECTADA') return queries;
     const out = [...queries];
-    if (geo.city) {
-        out.push(...queries.map((q) => `${q} ${geo.city}`).slice(0, 2));
-    }
-    if (geo.country && geo.country !== 'NO_DETECTADA') {
-        out.push(...queries.slice(0, 2).map((q) => `${q} ${geo.country}`));
+    if (geo.scope === 'LOCAL' && geo.city) {
+        out.push(...queries.slice(0, 2).map((q) => `${q} ${geo.city}`));
     }
     return out;
 }
@@ -292,16 +289,26 @@ function summarizeWhatTheyDo(snapshot) {
     return summary;
 }
 
-async function validateCompetitor(domain, nicheCorpus, giro, clientBrandTokensSet, clientGeo) {
+async function validateCompetitor(domain, nicheCorpus, giro, clientBrandTokensSet, clientGeo, opts = {}) {
+    const strictGeo = opts.strictGeo !== false;
+    const minOverlap = opts.minOverlap ?? 1;
+
     const snapshot = await fetchPageSnapshot(domain);
     if (!snapshot || !snapshot.title) return null;
     if (isNonCompetitorDomain(domain, snapshot, clientBrandTokensSet)) return null;
     if (!hasCommercialSignals(snapshot, giro?.id)) return null;
-    if (!geoMatchesMarket(clientGeo, snapshot, domain)) return null;
+
+    if (strictGeo) {
+        if (!geoMatchesMarket(clientGeo, snapshot, domain)) return null;
+    } else if (clientGeo?.country && clientGeo.country !== 'NO_DETECTADA') {
+        const { inferCountryFromSnapshot } = require('./geo-context');
+        const compCountry = inferCountryFromSnapshot(snapshot, domain);
+        if (compCountry && compCountry !== clientGeo.country) return null;
+    }
 
     const compText = `${snapshot.title} ${snapshot.description} ${snapshot.bodyText}`;
     const score = overlapScore(nicheCorpus, compText);
-    if (score < 1) return null;
+    if (score < minOverlap) return null;
 
     const queHace = summarizeWhatTheyDo(snapshot);
     if (!queHace) return null;
@@ -344,8 +351,16 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
     const competitors = [];
     for (const domain of candidates) {
         if (competitors.length >= 3) break;
-        const validated = await validateCompetitor(domain, nicheCorpus, giro, clientBrand, geo);
+        const validated = await validateCompetitor(domain, nicheCorpus, giro, clientBrand, geo, { strictGeo: true, minOverlap: 1 });
         if (validated) competitors.push(validated);
+    }
+
+    if (competitors.length === 0) {
+        for (const domain of candidates) {
+            if (competitors.length >= 3) break;
+            const validated = await validateCompetitor(domain, nicheCorpus, giro, clientBrand, geo, { strictGeo: false, minOverlap: 0 });
+            if (validated) competitors.push(validated);
+        }
     }
 
     const usedQuery = queries.join(' | ') || 'N/A';

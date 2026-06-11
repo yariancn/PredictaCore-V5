@@ -56,8 +56,16 @@ function getHTML() {
                 }
 
                 .markdown-content h4 {
-                    font-size: 10pt !important; margin: 1rem 0 0.5rem !important; color: var(--pc-dark) !important;
-                    page-break-after: avoid;
+                    font-size: 10pt !important; margin: 1.25rem 0 0.65rem !important; color: var(--pc-dark) !important;
+                    page-break-after: avoid; font-weight: 800 !important; text-transform: uppercase;
+                    letter-spacing: 0.08em; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.35rem;
+                }
+
+                .markdown-content p strong:only-child,
+                .markdown-content li strong:first-child {
+                    display: block;
+                    margin-top: 0.75rem;
+                    margin-bottom: 0.35rem;
                 }
 
                 /* Alineación Perfecta de Viñetas */
