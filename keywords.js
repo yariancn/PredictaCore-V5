@@ -10,18 +10,33 @@ const STOP = new Set([
 
 const LEGAL_PHRASE = /\b(privacy|policy|cookie|gdpr|terms|conditions|consent|legal|política|privacidad|datos personales)\b/i;
 
+function normalizeToken(w) {
+    return String(w || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\w]/g, '');
+}
+
+/** Marca = primer segmento del title (antes de | - —) + hostname; NO la parte producto/servicio */
 function brandTokensFrom(url, clientTitle) {
     const tokens = new Set();
     try {
         const host = new URL(url).hostname.replace(/^www\./, '').split('.')[0].toLowerCase();
         if (host.length >= 3) tokens.add(host);
-    } catch { /* skip */ }
-    (clientTitle || '').split(/\s*[|\-–—]\s*/).forEach((part) => {
-        part.toLowerCase().split(/\s+/).forEach((w) => {
-            const clean = w.replace(/[^\w]/g, '');
-            if (clean.length >= 3) tokens.add(clean);
+        const brandSegment = (clientTitle || '').split(/\s*[|\-–—]\s*/)[0] || '';
+        brandSegment.toLowerCase().split(/\s+/).forEach((w) => {
+            const clean = normalizeToken(w);
+            if (clean.length >= 3) {
+                tokens.add(clean);
+                if (host.includes(clean) && clean.length >= 4) tokens.add(clean);
+            }
         });
-    });
+        brandSegment.toLowerCase().split(/\s+/).forEach((w) => {
+            const clean = normalizeToken(w);
+            if (clean.length >= 4 && host.includes(clean)) tokens.add(clean);
+        });
+    } catch { /* skip */ }
     return tokens;
 }
 
@@ -37,19 +52,23 @@ function tokenize(text, brandTokens) {
 }
 
 function productTitleCore(onPage, brandTokens) {
-    const title = (onPage?.title || '').replace(/&/g, ' ').trim();
+    const title = (onPage?.title || onPage?.metaTitle || '').replace(/&/g, ' ').trim();
     const parts = title.split(/\s*[|\-–—]\s*/).map((p) => p.trim()).filter(Boolean);
-    const productPart = parts.find((p) => {
+    const productPart = parts.slice(1).find((p) => {
+        const lower = normalizeToken(p);
+        return lower.length > 8 && ![...(brandTokens || [])].some((bt) => bt.length >= 4 && lower.includes(bt));
+    }) || parts.find((p) => {
         const lower = p.toLowerCase();
-        return ![...(brandTokens || [])].some((bt) => bt.length >= 3 && lower.includes(bt));
+        return ![...(brandTokens || [])].some((bt) => bt.length >= 4 && lower.includes(bt));
     });
-    return productPart || parts[0] || title;
+    return productPart || parts[parts.length - 1] || title;
 }
 
 function inferKeywords(onPage, locale, url = '', clientTitle = '') {
     const es = locale?.code?.startsWith('es');
     const brandTokens = brandTokensFrom(url, clientTitle || onPage?.title);
     const titleCore = productTitleCore(onPage, brandTokens);
+    const metaCore = (onPage?.metaDescription || '').split(/[.!?|,;]/)[0].trim();
     const h1 = onPage?.h1Text && onPage.h1Text !== 'AUSENTE' && onPage.h1Text !== 'ABSENT'
         ? onPage.h1Text : '';
     const h2 = onPage?.h2Sample && !/privacy|policy|cookie|privacidad/i.test(onPage.h2Sample)
@@ -57,6 +76,7 @@ function inferKeywords(onPage, locale, url = '', clientTitle = '') {
 
     const tokens = [...new Set([
         ...tokenize(titleCore, brandTokens),
+        ...tokenize(metaCore, brandTokens),
         ...tokenize(h1, brandTokens),
         ...tokenize(h2, brandTokens),
     ])].slice(0, 8);

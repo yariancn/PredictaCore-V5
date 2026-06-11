@@ -284,6 +284,11 @@ function competitorServesShippingMarket(snapshot, domain, clientGeo) {
     const compCountry = inferCountryFromSnapshot(snapshot, domain);
     if (clientGeo.marketCountry && compCountry === clientGeo.marketCountry) return true;
     if (ship.inferred && compCountry === clientGeo.marketCountry) return true;
+    if (clientGeo.marketCountry === 'MX' && /\.(com\.mx|mx)$/i.test(domain)) return true;
+    if (clientGeo.marketCountry === 'MX' && /\b(m[eé]xico|mxn|env[ií]o|carrito|comprar|tienda)\b/i.test(blob)
+        && !/\b(ships?\s+(?:only\s+)?to\s+(?:the\s+)?(?:us|usa|united states|canada))\b/i.test(blob)) {
+        return true;
+    }
     if (!compCountry && clientGeo.marketCountry !== 'NO_DETECTADA') return true;
     return false;
 }
@@ -329,6 +334,7 @@ module.exports = {
     formatGeoBlock,
     geoMatchesMarket,
     inferCountryFromDomain,
+    inferCountryFromSnapshot,
     detectShippingMarket,
     benchmarkRuleForGeo,
     GIRO_MARKET_BASIS,

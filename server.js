@@ -1166,14 +1166,14 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         if (modo === 'LITE') {
             htmlBase = getHTMLLite();
             liteTitanUrl = buildTitanUpgradeUrl({ email: emailDestino, dna: targetUrl, lang: langCode });
-            const mail = getReportEmailCopy('LITE', reportLocale, { titanUrl: liteTitanUrl });
+            const mail = getReportEmailCopy('LITE', reportLocale, { titanUrl: liteTitanUrl, targetUrl });
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
             emailHtml = mail.html ? getEmailBrandHeader(langCode) + mail.html : null;
         } else if (modo === 'DELTA') {
             htmlBase = getHTMLDelta();
-            const mail = getReportEmailCopy('DELTA', reportLocale);
+            const mail = getReportEmailCopy('DELTA', reportLocale, { targetUrl });
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
@@ -1185,7 +1185,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                 const cid = await resolveStripeCustomerId(emailDestino);
                 if (cid) portalUrl = await createCustomerPortalUrl(cid);
             } catch (_) { /* optional */ }
-            const mail = getReportEmailCopy('TITAN', reportLocale, { portalUrl, social });
+            const mail = getReportEmailCopy('TITAN', reportLocale, { portalUrl, social, targetUrl });
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
@@ -1196,6 +1196,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
         const page = await browser.newPage();
+        await page.setViewport({ width: 1280, height: 900, deviceScaleFactor: 2 });
         await page.setContent(htmlBase, { waitUntil: 'load', timeout: 90000 });
 
         const metricsHtml = getPdfCoverMetricsHtml({
@@ -1228,6 +1229,8 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             const titleEl = document.getElementById('pdf-cover-title');
             if (titleEl && titanUpgradeUrl && ui.liteTitle) titleEl.innerText = ui.liteTitle;
             else if (titleEl && ui.coverTitle) titleEl.innerText = ui.coverTitle;
+            const brandTagline = document.querySelector('.pc-tagline');
+            if (brandTagline && ui.brandTagline) brandTagline.innerText = ui.brandTagline;
             const dateEl = document.getElementById('pdf-date');
             if (dateEl) {
                 dateEl.innerText = new Date().toLocaleDateString(dateLocale, { year: 'numeric', month: 'long', day: 'numeric' });

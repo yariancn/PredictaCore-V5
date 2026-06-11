@@ -1,4 +1,4 @@
-const { MEGA_RETAILER_RE } = require('./competitors');
+const { MEGA_RETAILER_RE, BLOCKLIST } = require('./competitors');
 const { hasPlaceholderLeaks } = require('./fugas-builder');
 
 const MEGA_RETAILER_DOMAINS = [
@@ -87,6 +87,14 @@ function validateSection(etapaId, content, dossier, locale) {
         const mentioned = compDomains.filter((d) => text.toLowerCase().includes(d.toLowerCase()));
         if (compDomains.length && mentioned.length === 0) {
             issues.push(`Debe usar competidores verificados: ${compDomains.join(', ')}`);
+        }
+        if (compDomains.length < 3) {
+            issues.push(`Se requieren al menos 3 competidores verificados en dossier — encontrados: ${compDomains.length}`);
+        }
+        for (const d of compDomains) {
+            if (BLOCKLIST.has(d) || /^(ecwid|shopify|wix|squarespace|bigcommerce|tiendanube)\./i.test(d)) {
+                issues.push(`PROHIBIDO plataforma/SaaS como competidor: ${d}`);
+            }
         }
         const allowed = new Set(compDomains.map((d) => d.toLowerCase()));
         const clientDomain = (dossier.match(/URL:\s*(https?:\/\/)?([\w.-]+)/i) || [])[2];

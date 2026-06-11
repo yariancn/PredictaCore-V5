@@ -65,11 +65,11 @@ async function captureAndScrape(url) {
         }
         
         const loadTime = ((Date.now() - startTime) / 1000).toFixed(2);
-        const desktopBase64 = await page.screenshot({ type: 'jpeg', quality: 60, encoding: 'base64' });
+        const desktopBase64 = await page.screenshot({ type: 'jpeg', quality: 88, encoding: 'base64' });
 
         await page.setViewport({ width: 390, height: 844, isMobile: true });
         await new Promise(r => setTimeout(r, 1000)); 
-        const mobileBase64 = await page.screenshot({ type: 'jpeg', quality: 60, encoding: 'base64' });
+        const mobileBase64 = await page.screenshot({ type: 'jpeg', quality: 88, encoding: 'base64' });
 
         // 1. EXTRACCIÓN BASE + SONDA DE LOGOS (SVGs y atributos ocultos)
         const dataForense = await page.evaluate(() => {
@@ -161,6 +161,7 @@ async function captureAndScrape(url) {
                 giro,
                 clientTitle: dataForense.titulo,
                 clientDesc: dataForense.descripcion,
+                locale,
             });
             benchmarkBlock = bench.block;
         } else {
@@ -194,6 +195,7 @@ async function captureAndScrape(url) {
                 giro,
                 clientTitle: dataForense.titulo,
                 clientDesc: dataForense.descripcion,
+                locale,
             });
             benchmarkBlock = bench.block;
         }

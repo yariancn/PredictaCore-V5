@@ -45,7 +45,7 @@ function getFaviconHeadTags() {
 
 /** Branded header for transactional emails (Resend). Uses hosted logo + wordmark. */
 function getEmailBrandHeader(lang = 'en') {
-    const tagline = lang === 'es' ? 'Business Intelligence' : 'Business Intelligence';
+    const tagline = lang === 'es' ? 'Inteligencia de Negocios' : 'Business Intelligence';
     const logoUrl = `${publicSiteUrl()}/apple-touch-icon.png`;
     return `<div style="text-align:center;margin:0 0 28px 0;padding-bottom:24px;border-bottom:1px solid rgba(16,185,129,0.25);">
   <img src="${logoUrl}" width="56" height="56" alt="PredictaCore" style="display:inline-block;border-radius:50%;margin-bottom:14px;" />
@@ -59,7 +59,9 @@ function getEmailBrandHeader(lang = 'en') {
 }
 
 /** Branded header for PDF cover (Lite / Titán) — logo PNG embebido para Puppeteer */
-function getPdfCoverBrandHtml() {
+function getPdfCoverBrandHtml(lang = 'en') {
+    const es = lang === 'es' || String(lang).startsWith('es');
+    const tagline = es ? 'Inteligencia de Negocios' : 'Business Intelligence';
     const fs = require('fs');
     const path = require('path');
     let logoImg = '';
@@ -79,7 +81,7 @@ function getPdfCoverBrandHtml() {
   <div class="pc-brand-mark">${logoImg}</div>
   <div class="pc-brand-text">
     <div class="pc-wordmark">PREDICTA<span class="pc-accent">CORE</span></div>
-    <div class="pc-tagline">Business Intelligence</div>
+    <div class="pc-tagline">${tagline}</div>
   </div>
 </div>`;
 }
@@ -148,7 +150,7 @@ function getPdfBrandStyles() {
 .forensic-evidence h3 { font-size: 10pt; text-transform: uppercase; letter-spacing: 0.15em; color: #0f172a; margin: 0 0 12px 0; border: none; }
 .forensic-shots { display: flex; gap: 12px; flex-wrap: wrap; }
 .forensic-shots figure { margin: 0; flex: 1; min-width: 200px; }
-.forensic-shots img { width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; }
+.forensic-shots img { width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; }
 .forensic-shots figcaption { font-size: 7pt; text-transform: uppercase; color: #64748b; margin-top: 4px; text-align: center; }`;
 }
 

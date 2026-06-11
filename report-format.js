@@ -226,6 +226,7 @@ function getPdfUiStrings(locale) {
             liteTitle: 'Reporte Lite',
             liteCtaTitle: 'Activa el Reporte Titán',
             liteCtaBody: 'Auditoría forense completa de 11 secciones (USD $349). Tu correo y URL ya están listos:',
+            brandTagline: 'Inteligencia de Negocios',
         };
     }
     return {
@@ -238,16 +239,29 @@ function getPdfUiStrings(locale) {
         liteTitle: 'Lite Intelligence Report',
         liteCtaTitle: 'Upgrade to Titan Report',
         liteCtaBody: 'Full 11-section forensic audit (USD $349). Your email and URL are pre-filled:',
+        brandTagline: 'Business Intelligence',
     };
 }
 
-function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social } = {}) {
+function buildReportFilename(modo, targetUrl, { social } = {}) {
+    let hostSlug = 'activo';
+    try {
+        hostSlug = new URL(targetUrl).hostname.replace(/^www\./, '');
+    } catch { /* keep default */ }
+    hostSlug = hostSlug.replace(/[^a-zA-Z0-9.-]+/g, '-').slice(0, 80);
+    if (modo === 'LITE') return `PREDICTACORE_LITE_${hostSlug}.pdf`;
+    if (modo === 'DELTA') return `PREDICTACORE_MONITORING_${hostSlug}.pdf`;
+    if (social) return `PREDICTACORE_TITAN_SOCIAL_${hostSlug}.pdf`;
+    return `PREDICTACORE_TITAN_${hostSlug}.pdf`;
+}
+
+function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetUrl } = {}) {
     const es = locale.code.startsWith('es');
     if (modo === 'LITE') {
         const url = titanUrl || '';
         return {
             subject: es ? 'PredictaCore — Tu auditoría Lite' : 'PredictaCore — Your Lite audit',
-            filename: 'PREDICTACORE_LITE.pdf',
+            filename: buildReportFilename('LITE', targetUrl),
             text: es
                 ? `Tu auditoría Lite PredictaCore va adjunta.\n\nReporte Titán completo (11 secciones, USD $349):\n${url}`
                 : `Your PredictaCore Lite audit is attached.\n\nFull Titan Report (11 sections, USD $349):\n${url}`,
@@ -268,7 +282,7 @@ function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social } = {}) 
     if (modo === 'DELTA') {
         return {
             subject: es ? 'PredictaCore — Reporte mensual de seguimiento' : 'PredictaCore — Monthly monitoring report',
-            filename: 'PREDICTACORE_MONITORING.pdf',
+            filename: buildReportFilename('DELTA', targetUrl),
             text: es ? 'Tu reporte mensual de monitoreo PredictaCore va adjunto.' : 'Your monthly PredictaCore monitoring report is attached.',
             html: null,
         };
@@ -285,7 +299,7 @@ function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social } = {}) 
             : 'Your PredictaCore Titan report is attached.\n\nDelivery may take up to 60 minutes.');
     return {
         subject,
-        filename: social ? 'PREDICTACORE_TITAN_SOCIAL.pdf' : 'PREDICTACORE_TITAN.pdf',
+        filename: buildReportFilename('TITAN', targetUrl, { social }),
         text,
         html: null,
     };
@@ -341,6 +355,7 @@ module.exports = {
     getVisionPromptLabels,
     getPdfUiStrings,
     getReportEmailCopy,
+    buildReportFilename,
     postProcessSection,
     NUMBERED_SECTIONS,
     PLACEHOLDER_RE,

@@ -34,12 +34,7 @@ function getHTML() {
                 .max-w-6xl { max-width: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
                 #impresion-area { width: 100%; overflow: visible; }
 
-                /* Raya de autoridad — dentro del área imprimible */
-                body::after {
-                    content: ""; position: fixed; right: 0; top: 0; bottom: 0; width: 4px;
-                    background: var(--pc-gold); z-index: 999; -webkit-print-color-adjust: exact; print-color-adjust: exact;
-                }
-
+                /* Portada */
                 .cover-page {
                     display: flex !important;
                     flex-direction: column;
