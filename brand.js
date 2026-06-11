@@ -67,7 +67,7 @@ function getPdfCoverBrandHtml() {
         const logoPath = path.join(__dirname, 'static', 'apple-touch-icon.png');
         if (fs.existsSync(logoPath)) {
             const b64 = fs.readFileSync(logoPath).toString('base64');
-            logoImg = `<img src="data:image/png;base64,${b64}" width="56" height="56" alt="PredictaCore" class="pc-logo-img" />`;
+            logoImg = `<img src="data:image/png;base64,${b64}" width="52" height="52" alt="PredictaCore" class="pc-logo-img" />`;
         }
     } catch { /* fallback below */ }
     if (!logoImg) {
@@ -76,9 +76,32 @@ function getPdfCoverBrandHtml() {
   </div>`;
     }
     return `<div class="pc-brand-cover">
-  ${logoImg}
-  <div class="pc-wordmark">PREDICTA<span class="pc-accent">CORE</span></div>
-  <div class="pc-tagline">Business Intelligence</div>
+  <div class="pc-brand-mark">${logoImg}</div>
+  <div class="pc-brand-text">
+    <div class="pc-wordmark">PREDICTA<span class="pc-accent">CORE</span></div>
+    <div class="pc-tagline">Business Intelligence</div>
+  </div>
+</div>`;
+}
+
+/** Cierre institucional al final del PDF Titán */
+function getPdfClosingHtml(lang = 'en') {
+    const es = lang === 'es' || String(lang).startsWith('es');
+    const support = getSupportEmail();
+    const site = publicSiteUrl().replace(/^https?:\/\//, '');
+    if (es) {
+        return `<div class="pc-report-closing">
+  <div class="pc-closing-rule"></div>
+  <p class="pc-closing-lead">Fin del reporte forense PredictaCore Titán</p>
+  <p>Este documento se elaboró exclusivamente a partir de datos públicos del activo analizado. PredictaCore no accede a analytics internos, paneles de administración ni información privada del negocio. La implementación de las recomendaciones queda a criterio del titular del activo.</p>
+  <p class="pc-closing-meta">PredictaCore · ${site} · ${support}</p>
+</div>`;
+    }
+    return `<div class="pc-report-closing">
+  <div class="pc-closing-rule"></div>
+  <p class="pc-closing-lead">End of PredictaCore Titan forensic report</p>
+  <p>This document was prepared exclusively from publicly available data on the analyzed asset. PredictaCore does not access internal analytics, admin panels, or private business data. Implementation of recommendations remains at the asset owner's discretion.</p>
+  <p class="pc-closing-meta">PredictaCore · ${site} · ${support}</p>
 </div>`;
 }
 
@@ -104,16 +127,23 @@ function getPdfCoverMetricsHtml({ loadTimeSec, seoScore, aiScore, assetType, lan
 
 /** Shared CSS for PDF brand blocks */
 function getPdfBrandStyles() {
-    return `.pc-brand-cover { margin-bottom: 18px; }
-.pc-logo-img { width: 56px; height: 56px; border-radius: 50%; margin-bottom: 12px; display: block; object-fit: cover; -webkit-print-color-adjust: exact; }
-.pc-logo-circle { width: 52px; height: 52px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-.pc-wordmark { font-size: 1.75rem; font-weight: 900; letter-spacing: -0.04em; text-transform: uppercase; color: #0f172a; line-height: 1; }
+    return `.pc-brand-cover { display: flex; align-items: center; gap: 14px; margin: 0 0 28px 0; page-break-inside: avoid; }
+.pc-brand-mark { flex-shrink: 0; line-height: 0; }
+.pc-brand-text { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.pc-logo-img { width: 52px; height: 52px; border-radius: 50%; display: block; object-fit: cover; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.pc-logo-circle { width: 52px; height: 52px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.pc-wordmark { font-size: 1.65rem; font-weight: 900; letter-spacing: -0.04em; text-transform: uppercase; color: #0f172a; line-height: 1.05; }
 .pc-accent { color: #10b981; }
-.pc-tagline { font-size: 8pt; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: #64748b; margin-top: 6px; }
+.pc-tagline { font-size: 7.5pt; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: #64748b; margin-top: 4px; }
 .pc-metrics { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 8px 0; page-break-inside: avoid; }
 .pc-metric { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; min-width: 100px; background: #f8fafc; }
 .pc-metric-k { display: block; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.12em; color: #64748b; font-weight: 700; }
 .pc-metric-v { display: block; font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 2px; }
+.pc-report-closing { margin-top: 28px; padding-top: 18px; page-break-inside: avoid; color: #475569; font-size: 9pt; line-height: 1.55; }
+.pc-closing-rule { width: 72px; height: 4px; background: #10b981; margin-bottom: 14px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.pc-closing-lead { font-size: 10pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #0f172a; margin: 0 0 10px 0; }
+.pc-report-closing p { margin: 0 0 10px 0; color: #475569 !important; text-align: left; }
+.pc-closing-meta { font-size: 8pt !important; font-weight: 700; letter-spacing: 0.06em; color: #64748b !important; margin-top: 14px !important; }
 .forensic-evidence { page-break-inside: avoid; margin: 0 0 24px 0; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
 .forensic-evidence h3 { font-size: 10pt; text-transform: uppercase; letter-spacing: 0.15em; color: #0f172a; margin: 0 0 12px 0; border: none; }
 .forensic-shots { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -127,6 +157,7 @@ module.exports = {
     getEmailBrandHeader,
     getPdfCoverBrandHtml,
     getPdfCoverMetricsHtml,
+    getPdfClosingHtml,
     getPdfBrandStyles,
     FAVICON_VERSION,
     publicSiteUrl,

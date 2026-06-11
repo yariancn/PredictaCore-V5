@@ -27,32 +27,54 @@ function getHTML() {
             .terminal-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; }
 
             @media print {
-                @page { size: A4; margin: 1in; }
-                body { background: #ffffff !important; color: var(--pc-dark) !important; padding: 0 !important; }
-                .no-print { display: none !important; }
+                @page { size: A4; margin: 14mm 16mm 14mm 22mm; }
 
-                /* Ralla de Autoridad Derecha */
+                html, body { background: #ffffff !important; color: var(--pc-dark) !important; padding: 0 !important; margin: 0 !important; }
+                .no-print { display: none !important; }
+                .max-w-6xl { max-width: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+                #impresion-area { width: 100%; overflow: visible; }
+
+                /* Raya de autoridad — dentro del área imprimible */
                 body::after {
-                    content: ""; position: fixed; right: -0.7in; top: -1in; bottom: -1in; width: 6px;
-                    background: var(--pc-gold); z-index: 999; -webkit-print-color-adjust: exact;
+                    content: ""; position: fixed; right: 0; top: 0; bottom: 0; width: 4px;
+                    background: var(--pc-gold); z-index: 999; -webkit-print-color-adjust: exact; print-color-adjust: exact;
                 }
 
-                .cover-page { height: 9in; display: flex; flex-direction: column; justify-content: center; page-break-after: always; }
-                .cover-title { font-size: 3.5rem; font-weight: 800; color: var(--pc-dark) !important; text-transform: uppercase; line-height: 1.1; }
-                .cover-accent { width: 100px; height: 8px; background: var(--pc-green); margin: 2rem 0; -webkit-print-color-adjust: exact; }
+                .cover-page {
+                    display: flex !important;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    min-height: 250mm;
+                    page-break-after: always;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                .cover-page .cover-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 8mm; }
+                .cover-title { font-size: 2.25rem; font-weight: 800; color: var(--pc-dark) !important; text-transform: uppercase; line-height: 1.1; margin-top: 0.5rem; }
+                .cover-accent { width: 100px; height: 8px; background: var(--pc-green); margin: 1.25rem 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .cover-tag { color: #059669; font-weight: 700; text-transform: uppercase; letter-spacing: 0.28em; font-size: 9pt; margin-top: 1rem; }
+                .cover-domain { font-size: 1.15rem; color: #64748b; margin-top: 0.75rem; word-break: break-word; }
+                .cover-date-row { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; text-align: right; }
+                .cover-date-row span { font-weight: 700; color: #0f172a; font-size: 10pt; }
+
+                .evidence-page { display: block !important; page-break-after: always; page-break-inside: avoid; }
+                #pdf-closing { display: block !important; page-break-inside: avoid; }
 
                 /* CADA SECCIÓN EN PÁGINA NUEVA */
                 .report-section { 
                     page-break-before: always; 
                     clear: both;
+                    padding-left: 2px;
+                    padding-right: 4px;
+                    box-sizing: border-box;
                 }
-                #section-INTRO { page-break-before: avoid; }
+                #section-INTRO, .report-section:first-of-type { page-break-before: avoid; }
 
                 .markdown-content h3 { 
                     color: var(--pc-dark) !important; font-size: 1.15rem !important; font-weight: 800 !important;
                     border-bottom: 2px solid var(--pc-green); padding-bottom: 0.4rem; margin: 0 0 1.25rem 0 !important;
                     text-transform: uppercase; page-break-after: avoid; line-height: 1.25 !important;
-                    -webkit-print-color-adjust: exact;
+                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
                 }
 
                 .markdown-content h4 {
@@ -68,15 +90,17 @@ function getHTML() {
                     margin-bottom: 0.35rem;
                 }
 
-                /* Alineación Perfecta de Viñetas */
+                /* Listas — margen izquierdo amplio para no cortar numeración */
                 .markdown-content ol {
-                    padding-left: 1.5rem !important;
+                    padding-left: 2rem !important;
+                    margin-left: 0.15rem !important;
                     margin-bottom: 1.5rem !important;
                     list-style-type: decimal !important;
                     list-style-position: outside !important;
                 }
                 .markdown-content ul {
-                    padding-left: 1.5rem !important;
+                    padding-left: 1.75rem !important;
+                    margin-left: 0.15rem !important;
                     margin-bottom: 1.5rem !important;
                     list-style-type: disc !important;
                     list-style-position: outside !important;
@@ -85,7 +109,7 @@ function getHTML() {
                     margin-bottom: 0.8rem !important; 
                     line-height: 1.6 !important; 
                     color: var(--pc-dark) !important; 
-                    padding-left: 0.5rem;
+                    padding-left: 0.35rem;
                 }
 
                 .markdown-content p { font-size: 10pt; line-height: 1.55; color: var(--pc-dark) !important; text-align: left; margin-bottom: 0.85rem; }
@@ -98,17 +122,20 @@ function getHTML() {
                     background: var(--pc-table-head) !important; color: #ffffff !important; padding: 8px 6px !important; 
                     text-transform: uppercase; font-size: 7pt; text-align: left; border: 1px solid var(--pc-border) !important;
                     vertical-align: top; word-wrap: break-word; overflow-wrap: anywhere; line-height: 1.3;
-                    -webkit-print-color-adjust: exact; 
+                    -webkit-print-color-adjust: exact; print-color-adjust: exact;
                 }
                 td { 
                     padding: 8px 6px !important; border: 1px solid var(--pc-border) !important; color: var(--pc-dark) !important;
                     font-size: 8pt; vertical-align: top; word-wrap: break-word; overflow-wrap: anywhere; line-height: 1.35;
                     hyphens: auto;
                 }
-                tr:nth-child(even) td { background: #f8fafc !important; -webkit-print-color-adjust: exact; }
+                tr:nth-child(even) td { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 
                 ${getPdfBrandStyles()}
             }
+
+            /* Portada y cierre solo en PDF — no depender de Tailwind print: */
+            .cover-page, .evidence-page, #pdf-closing { display: none; }
         </style>
     </head>
     <body class="p-6 md:p-20">
@@ -124,19 +151,22 @@ function getHTML() {
             </header>
 
             <div id="impresion-area">
-                <div class="hidden print:flex cover-page">
+                <div class="cover-page">
                     ${getPdfCoverBrandHtml()}
-                    <div class="text-emerald-600 font-bold uppercase tracking-[0.35em] mb-2 text-[9pt]" id="pdf-cover-tag">Forensic Conversion Report</div>
-                    <div class="cover-accent"></div>
-                    <div class="cover-title" style="font-size:2rem;" id="pdf-cover-title">Titán Intelligence</div>
-                    <div class="text-xl text-gray-500 mt-4" id="pdf-domain">Asset Analysis</div>
-                    <div id="pdf-metrics"></div>
-                    <div id="pdf-evidence"></div>
-                    <div class="mt-auto pt-10 border-t border-gray-200 flex justify-end items-end">
-                        <span id="pdf-date" class="font-bold text-gray-900"></span>
+                    <div class="cover-main">
+                        <div class="cover-tag" id="pdf-cover-tag">Forensic Conversion Report</div>
+                        <div class="cover-accent"></div>
+                        <div class="cover-title" id="pdf-cover-title">Titán Intelligence</div>
+                        <div class="cover-domain" id="pdf-domain">Asset Analysis</div>
+                        <div id="pdf-metrics"></div>
+                    </div>
+                    <div class="cover-date-row">
+                        <span id="pdf-date"></span>
                     </div>
                 </div>
+                <div class="evidence-page" id="pdf-evidence-page"></div>
                 <div id="reporte"></div>
+                <div id="pdf-closing"></div>
             </div>
 
             <div class="terminal-box p-10 mt-20 no-print">

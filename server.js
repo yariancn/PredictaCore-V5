@@ -45,7 +45,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
-const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml, getResendFrom } = require('./brand');
+const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml, getResendFrom, getPdfClosingHtml } = require('./brand');
 const {
     getLocaleFromDossier,
     getLanguageLockInstruction,
@@ -1214,7 +1214,9 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             progressHtml[key] = marked.parse(progressForPdf[key]);
         }
 
-        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang) => {
+        const closingHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfClosingHtml(langCode) : '';
+
+        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang, closingBlock) => {
             if (htmlLang) document.documentElement.lang = htmlLang;
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
@@ -1235,8 +1237,8 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             if (metricsEl && metricsBlock) metricsEl.innerHTML = metricsBlock;
 
             const evidenceTargets = [
+                document.getElementById('pdf-evidence-page'),
                 document.getElementById('evidence-area'),
-                document.getElementById('pdf-evidence'),
             ].filter(Boolean);
 
             if (desktopB64 && evidenceTargets.length) {
@@ -1259,9 +1261,19 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             document.querySelectorAll('.report-section.markdown-content').forEach(function(section) {
                 section.querySelectorAll('ol').forEach(function(ol) {
                     ol.style.listStyleType = 'decimal';
-                    ol.style.paddingLeft = '1.5rem';
+                    ol.style.paddingLeft = '2rem';
+                    ol.style.marginLeft = '0.15rem';
+                    ol.style.listStylePosition = 'outside';
+                });
+                section.querySelectorAll('ul').forEach(function(ul) {
+                    ul.style.paddingLeft = '1.75rem';
+                    ul.style.marginLeft = '0.15rem';
+                    ul.style.listStylePosition = 'outside';
                 });
             });
+
+            const closingEl = document.getElementById('pdf-closing');
+            if (closingEl && closingBlock) closingEl.innerHTML = closingBlock;
 
             if (titanUpgradeUrl) {
                 const cta = document.createElement('div');
@@ -1271,7 +1283,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                     + '<p><strong>' + titanUpgradeUrl + '</strong></p>';
                 reporte.appendChild(cta);
             }
-        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode);
+        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, timeout: 120000 });
         await browser.close();
