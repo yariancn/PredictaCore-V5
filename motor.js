@@ -22,7 +22,7 @@ ESCALA: ${escala}
 PERSONALIZACION: ${personalized ? 'SI — productos personalizados/artesanales' : 'NO_DETECTADA'}
 SENALES_NAVEGACION: ${wc} palabras públicas | ${links} enlaces internos | ${imgs} imágenes
 GIRO: ${giro?.label || 'NO_DETECTADO'}
-REGLA_BENCHMARK: Activo boutique/PYME del nicho (GIRO). Competidores = mismo nicho comercial + mismo mercado geográfico (UBICACION_MERCADO). PROHIBIDO mega-retailers (Amazon, Walmart, Target, Costco).
+REGLA_BENCHMARK: Activo boutique/PYME del nicho (GIRO). Lee UBICACION_MERCADO: e-commerce = misma zona de ENVÍO (no domicilio); consultorio/clínica/restaurante = misma CIUDAD; servicios = mismo país. PROHIBIDO mega-retailers (Amazon, Walmart, Target, Costco).
 === FIN PERFIL_NEGOCIO ===`;
 }
 

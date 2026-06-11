@@ -73,8 +73,24 @@ function extractNicheTerms(onPage, giro, clientTitle, clientDesc, url, geo) {
 }
 
 function appendGeo(queries, geo) {
-    if (!geo?.label || geo.label === 'NO_DETECTADA') return queries;
+    if (!geo) return queries;
     const out = [...queries];
+
+    if (geo.marketBasis === 'LOCAL' && geo.city) {
+        out.push(...queries.slice(0, 2).map((q) => `${q} ${geo.city}`));
+        if (geo.region && /^[A-Z]{2}$/.test(geo.region)) {
+            out.push(`${queries[0]} ${geo.city} ${geo.region}`);
+        }
+        return out;
+    }
+
+    if (geo.marketBasis === 'SHIPPING' && geo.marketCountry && geo.marketCountry !== 'NO_DETECTADA' && geo.marketCountry !== 'GLOBAL') {
+        const countryTerm = { US: 'USA', MX: 'Mexico', ES: 'Spain', GB: 'UK', CA: 'Canada', AU: 'Australia' }[geo.marketCountry]
+            || geo.marketCountry;
+        out.push(...queries.slice(0, 2).map((q) => `${q} ${countryTerm}`));
+        return out;
+    }
+
     if (geo.scope === 'LOCAL' && geo.city) {
         out.push(...queries.slice(0, 2).map((q) => `${q} ${geo.city}`));
     }
@@ -327,7 +343,7 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
     try {
         clientDomain = new URL(url).hostname.replace(/^www\./, '');
     } catch {
-        return { competitors: [], block: formatBenchmarkBlock([], '', ctx.giro?.label, null) };
+        return { competitors: [], block: formatBenchmarkBlock([], '', ctx.giro?.label, null, ctx.giro) };
     }
 
     const giro = ctx.giro || { id: 'general', label: 'Negocio local' };
@@ -369,12 +385,12 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
         query: queries[0] || 'N/A',
         queries,
         geo,
-        block: formatBenchmarkBlock(competitors, usedQuery, giro.label, geo),
+        block: formatBenchmarkBlock(competitors, usedQuery, giro.label, geo, giro),
     };
 }
 
-function formatBenchmarkBlock(competitors, query, giroLabel, geo) {
-    const geoBlock = geo ? formatGeoBlock(geo) : '';
+function formatBenchmarkBlock(competitors, query, giroLabel, geo, giro) {
+    const geoBlock = geo ? formatGeoBlock(geo, giro || { id: geo.giroId, label: giroLabel }) : '';
     if (!competitors.length) {
         return `${geoBlock}
 === BENCHMARK_VERIFIED (DATOS REALES — USAR EN SECCIÓN V) ===
