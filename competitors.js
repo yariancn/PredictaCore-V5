@@ -18,7 +18,7 @@ const BLOCKLIST = new Set([
 
 const PLATFORM_RE = /^(shopify|myshopify|wix|wixsite|squarespace|weebly|godaddy|ecwid|bigcommerce)\./i;
 const MEGA_RE = /\b(amazon|walmart|mercadolibre|liverpool|coppel|soriana|target|costco)\b/i;
-const JUNK_RE = /\b(wikipedia|directorio|directory|website builder|saas platform|plataforma ecommerce)\b/i;
+const JUNK_RE = /\b(wikipedia|directorio|directory|website builder|saas platform|plataforma ecommerce|concepto\.de|economipedia|nuevaescuelamexicana)\b/i;
 const LISTICLE_RE = /\b(los \d+ mejores|top \d+|listado de|ranking de|blog)\b/i;
 
 const STOP = new Set([
@@ -26,6 +26,7 @@ const STOP = new Set([
     'tienda', 'online', 'comprar', 'shop', 'store', 'best', 'mejor', 'site', 'page',
     'productos', 'product', 'servicios', 'service', 'handcrafted', 'unique', 'quality',
     'high', 'made', 'with', 'love', 'create', 'magical', 'moments', 'little', 'ones',
+    'mexico', 'usa', 'canada', 'espana', 'spain',
 ]);
 
 function decodeEntities(s) {
@@ -61,8 +62,72 @@ function toOfferingPhrase(c) {
     return (lastSpace > 40 ? cut.slice(0, lastSpace) : cut).trim();
 }
 
-/** 1. Qué hace — meta description primero (más limpia que el title) */
-function extractWhat(onPage, clientTitle, clientDesc, url) {
+const NOISE_RE = /\b(tu carrito|carrito esta|carrito está|add to cart|agregar al carrito|envios gratis|envío gratis|articulos donde|artículos donde|your cart is empty|cart is empty|disena desde|diseña desde)\b/gi;
+
+function summarizeVisibleText(text, url, clientTitle) {
+    if (!text) return '';
+    let t = stripBrandFromText(text, url, clientTitle);
+    t = t.replace(NOISE_RE, ' ').replace(/\s+/g, ' ').trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const tokens = t.split(/\s+/).filter((w) => w.length >= 4 && !STOP.has(w) && !/^\d+$/.test(w));
+    if (tokens.length < 2) return '';
+    const freq = {};
+    tokens.forEach((w) => { freq[w] = (freq[w] || 0) + 1; });
+    const top = [...new Set(tokens)]
+        .sort((a, b) => (freq[b] - freq[a]) || a.localeCompare(b))
+        .slice(0, 5);
+    return top.join(' ');
+}
+
+function extractPhraseFromBody(text, url, clientTitle) {
+    const t = stripBrandFromText(text, url, clientTitle).replace(NOISE_RE, ' ');
+    const patterns = [
+        /\b([\wáéíóúñ-]+\s+para\s+[\wáéíóúñ-]+)/gi,
+        /\b([\wáéíóúñ-]+\s+for\s+[\wáéíóúñ-]+(?:\s+[\wáéíóúñ-]+){0,2})/gi,
+        /\b(juegos?\s+de\s+[\wáéíóúñ-]+)/gi,
+        /\b(kits?\s+de\s+[\wáéíóúñ-]+)/gi,
+    ];
+    for (const re of patterns) {
+        const hits = [...t.matchAll(re)]
+            .map((m) => m[1].trim())
+            .filter((p) => !/vaci|empty|carrito|cart|donde|where/i.test(p));
+        if (hits.length) {
+            return hits.sort((a, b) => b.split(/\s+/).length - a.split(/\s+/).length)[0];
+        }
+    }
+    return '';
+}
+
+function extractFromVisibleText(text, url, clientTitle) {
+    const phrase = extractPhraseFromBody(text, url, clientTitle);
+    if (phrase) return phrase;
+    const summary = summarizeVisibleText(text, url, clientTitle);
+    if (summary) return summary;
+    if (!text) return '';
+    let t = stripBrandFromText(text, url, clientTitle);
+    t = t.replace(NOISE_RE, ' ').replace(/\s+/g, ' ').trim();
+    if (t.length < 20 || t.split(/\s+/).length < 4) return '';
+    const cut = t.slice(0, 120);
+    const lastSpace = cut.lastIndexOf(' ');
+    return (lastSpace > 30 ? cut.slice(0, lastSpace) : cut).trim();
+}
+
+function compactOffering(what) {
+    const words = what.replace(/[^\w\s]/g, ' ').split(/\s+/)
+        .filter((w) => w.length >= 4 && !STOP.has(w));
+    if (words.length >= 2) return words.slice(0, 5).join(' ');
+    return what.split(/\s+/).slice(0, 6).join(' ');
+}
+
+function isWeakPhrase(c) {
+    if (!c || c.length < 10) return true;
+    const lower = c.toLowerCase();
+    return lower === 'products and services' || lower === 'productos y servicios'
+        || /^corazon|algodon|algod[oó]n/i.test(lower) && c.split(/\s+/).length <= 3;
+}
+
+/** 1. Qué hace — meta, H1, título; si faltan, texto visible de la página */
+function extractWhat(onPage, clientTitle, clientDesc, url, clientBody) {
     const metaRaw = cleanText(clientDesc || onPage?.metaDescription);
     const shopFor = metaRaw.match(/^shop\s+.+?\s+for\s+(.+)/i);
     const meta = stripBrandFromText(shopFor ? shopFor[1] : metaRaw, url, clientTitle);
@@ -70,8 +135,15 @@ function extractWhat(onPage, clientTitle, clientDesc, url) {
         ? stripBrandFromText(onPage.h1Text, url, clientTitle) : '';
     const title = clientTitle || onPage?.title || '';
     const afterBar = stripBrandFromText(title.split(/\s*[|]\s*/).slice(1).join(' '), url, clientTitle);
+    const brandOnlyTitle = stripBrandFromText(title.split(/\s*[|]\s*/)[0], url, clientTitle);
+    const fromTitle = afterBar.length >= 10 ? afterBar : (brandOnlyTitle.length >= 10 && !isWeakPhrase(brandOnlyTitle) ? brandOnlyTitle : '');
+    const fromBody = extractFromVisibleText(
+        onPage?.textSample || clientBody || '',
+        url,
+        clientTitle,
+    );
 
-    const candidates = [meta, h1, afterBar].filter((c) => c.length >= 10);
+    const candidates = [fromBody, meta, h1, fromTitle].filter((c) => c.length >= 10 && !isWeakPhrase(c));
 
     for (const c of candidates) {
         if (c.split(/\s+/).length >= 3) return toOfferingPhrase(c);
@@ -79,7 +151,7 @@ function extractWhat(onPage, clientTitle, clientDesc, url) {
     for (const c of candidates) {
         if (c.split(/\s+/).length >= 2) return toOfferingPhrase(c);
     }
-    return toOfferingPhrase(candidates[0] || 'products and services');
+    return toOfferingPhrase(fromBody || candidates[0] || 'products and services');
 }
 
 /** Palabras clave del offering para validar competidores */
@@ -104,11 +176,20 @@ function marketSearchTerm(geo) {
 /** 2. Búsqueda: qué + país (corto, no el label largo del geo) */
 function buildQueries(what, geo, locale, onPage) {
     const where = marketSearchTerm(geo);
+    const core = compactOffering(what);
     const es = isSpanish(locale, geo, onPage);
     if (es) {
-        return [`${what} ${where}`, `empresas ${what} ${where}`];
+        return [
+            `${core} ${where}`,
+            `tienda online ${core} ${where}`,
+            `${core} tienda ${where}`,
+        ];
     }
-    return [`${what} ${where}`, `${what} companies ${where}`];
+    return [
+        `${core} ${where}`,
+        `${core} online store ${where}`,
+        `${core} shop ${where}`,
+    ];
 }
 
 function extractDomain(href) {
@@ -140,6 +221,20 @@ function parseDomains(html, clientDomain) {
         found.push(domain);
         if (found.length >= 25) break;
     }
+    const citeRe = /<cite[^>]*>([\s\S]*?)<\/cite>/gi;
+    while ((m = citeRe.exec(html)) !== null) {
+        const citeText = m[1].replace(/<[^>]+>/g, ' ').trim();
+        const urlMatch = citeText.match(/(?:https?:\/\/)?(?:www\.)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)/i);
+        if (!urlMatch) continue;
+        const domain = extractDomain(`https://${urlMatch[1]}`);
+        if (!domain || seen.has(domain)) continue;
+        if (BLOCKLIST.has(domain) || PLATFORM_RE.test(domain)) continue;
+        if (/duckduckgo|bing\.|microsoft\.|google\./.test(domain)) continue;
+        if (domain === clientDomain) continue;
+        seen.add(domain);
+        found.push(domain);
+        if (found.length >= 25) break;
+    }
     return found;
 }
 
@@ -147,6 +242,7 @@ async function searchDomains(query, clientDomain, acceptLanguage, geo) {
     const q = encodeURIComponent(query);
     const cc = geo?.marketCountry === 'MX' ? 'MX&setlang=es' : geo?.marketCountry === 'US' ? 'US&setlang=en' : '';
     const urls = [
+        `https://search.brave.com/search?q=${q}`,
         `https://html.duckduckgo.com/html/?q=${q}`,
         `https://www.bing.com/search?q=${q}&count=15${cc ? `&cc=${cc}` : ''}`,
     ];
@@ -237,7 +333,7 @@ async function findCompetitors(url, onPage, isSocial = false, ctx = {}) {
 
     const giro = ctx.giro || { id: 'general', label: 'Negocio' };
     const geo = extractGeoContext(onPage, url, giro);
-    const what = extractWhat(onPage, ctx.clientTitle, ctx.clientDesc, url);
+    const what = extractWhat(onPage, ctx.clientTitle, ctx.clientDesc, url, ctx.clientBody);
     const clientBrand = brandTokensFrom(url, ctx.clientTitle);
     const acceptLanguage = isSpanish(ctx.locale, geo, onPage) ? 'es-MX,es;q=0.9' : 'en-US,en;q=0.9';
     const queries = buildQueries(what, geo, ctx.locale, onPage);

@@ -161,6 +161,7 @@ async function captureAndScrape(url) {
                 giro,
                 clientTitle: dataForense.titulo,
                 clientDesc: dataForense.descripcion,
+                clientBody: dataForense.cuerpo?.slice(0, 1200),
                 locale,
             });
             benchmarkBlock = bench.block;
@@ -195,6 +196,7 @@ async function captureAndScrape(url) {
                 giro,
                 clientTitle: dataForense.titulo,
                 clientDesc: dataForense.descripcion,
+                clientBody: dataForense.cuerpo?.slice(0, 1200),
                 locale,
             });
             benchmarkBlock = bench.block;
