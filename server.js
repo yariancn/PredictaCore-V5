@@ -54,7 +54,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
-const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml, getResendFrom, getPdfClosingHtml } = require('./brand');
+const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml, getResendFrom, getPdfClosingHtml, getPdfHeaderDisclaimerHtml } = require('./brand');
 const {
     getLocaleFromDossier,
     getLanguageLockInstruction,
@@ -1074,6 +1074,7 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
                 datosTarget.texto,
                 jobsMemoria[jobId].reportLocale
             );
+            jobsMemoria[jobId].progress.SCORECARD_IS_HTML = true;
         }
         jobsMemoria[jobId].dossier = dossierTexto;
         jobsMemoria[jobId].captures = {
@@ -1337,7 +1338,11 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const pdfKeys = deltaKeys || Object.keys(job.progress || {});
         for (const key of pdfKeys) {
             const value = job.progress[key];
-            if (!value || key === '__meta__') continue;
+            if (!value || key === '__meta__' || key === 'SCORECARD_IS_HTML') continue;
+            if (modo === 'DELTA' && key === 'SCORECARD' && job.progress.SCORECARD_IS_HTML) {
+                progressHtml[key] = value;
+                continue;
+            }
             progressForPdf[key] = postProcessSection(key, value, reportLocale, dossier, {
                 modo,
                 nuevasSection: job.progress?.NUEVAS,
@@ -1345,14 +1350,18 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             progressHtml[key] = marked.parse(progressForPdf[key]);
         }
 
-        const closingHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfClosingHtml(langCode) : '';
+        const closingHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfClosingHtml(langCode, modo) : '';
+        const headerDisclaimerHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfHeaderDisclaimerHtml(langCode) : '';
 
-        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang, closingBlock) => {
+        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang, closingBlock, headerDisclaimerBlock) => {
             if (htmlLang) document.documentElement.lang = htmlLang;
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
             if (dEl && dominio) dEl.innerText = dominio.replace(/^https?:\/\//, '');
             else if (dEl && ui.assetDefault) dEl.innerText = ui.assetDefault;
+
+            const disclaimerEl = document.getElementById('pdf-header-disclaimer');
+            if (disclaimerEl && headerDisclaimerBlock) disclaimerEl.innerHTML = headerDisclaimerBlock;
 
             const tagEl = document.getElementById('pdf-cover-tag');
             if (tagEl && ui.coverTag) tagEl.innerText = ui.coverTag;
@@ -1416,7 +1425,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                     + '<p><strong>' + titanUpgradeUrl + '</strong></p>';
                 reporte.appendChild(cta);
             }
-        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml);
+        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, timeout: 120000 });
         await browser.close();

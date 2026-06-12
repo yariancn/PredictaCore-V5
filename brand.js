@@ -86,25 +86,37 @@ function getPdfCoverBrandHtml(lang = 'en') {
 </div>`;
 }
 
-/** Cierre institucional al final del PDF Titán */
-function getPdfClosingHtml(lang = 'en') {
+/** Cierre institucional al final del PDF Titán / Seguimiento */
+function getPdfClosingHtml(lang = 'en', modo = 'TITAN') {
     const es = lang === 'es' || String(lang).startsWith('es');
     const support = getSupportEmail();
     const site = publicSiteUrl().replace(/^https?:\/\//, '');
-    if (es) {
-        return `<div class="pc-report-closing">
-  <div class="pc-closing-rule"></div>
-  <p class="pc-closing-lead">Fin del reporte forense PredictaCore Titán</p>
-  <p>Este documento se elaboró exclusivamente a partir de datos públicos del activo analizado. PredictaCore no accede a analytics internos, paneles de administración ni información privada del negocio. La implementación de las recomendaciones queda a criterio del titular del activo.</p>
-  <p class="pc-closing-meta">PredictaCore · ${site} · ${support}</p>
-</div>`;
-    }
+    const isDelta = modo === 'DELTA';
+    const lead = es
+        ? (isDelta ? 'Fin del reporte de seguimiento PredictaCore' : 'Fin del reporte forense PredictaCore Titán')
+        : (isDelta ? 'End of PredictaCore monitoring report' : 'End of PredictaCore Titan forensic report');
+    const disclaimer = es
+        ? 'Aviso legal: PredictaCore no garantiza resultados comerciales, de tráfico, posicionamiento ni ingresos. Las recomendaciones se basan únicamente en información pública disponible al momento del análisis (sitio web, metadatos, señales técnicas visibles) y pueden contener errores u omisiones. Los scores pueden variar entre mediciones sin que el sitio haya cambiado. Verifique cada hallazgo antes de implementar.'
+        : 'Legal notice: PredictaCore does not guarantee business results, traffic, rankings, or revenue. Recommendations are based solely on publicly available information at the time of analysis (website, metadata, visible technical signals) and may contain errors or omissions. Scores may vary between measurements without site changes. Verify each finding before implementing.';
+    const scope = es
+        ? 'Este documento se elaboró exclusivamente a partir de datos públicos del activo analizado. PredictaCore no accede a analytics internos, paneles de administración ni información privada del negocio. La implementación de las recomendaciones queda a criterio del titular del activo.'
+        : 'This document was prepared exclusively from publicly available data on the analyzed asset. PredictaCore does not access internal analytics, admin panels, or private business data. Implementation of recommendations remains at the asset owner\'s discretion.';
     return `<div class="pc-report-closing">
   <div class="pc-closing-rule"></div>
-  <p class="pc-closing-lead">End of PredictaCore Titan forensic report</p>
-  <p>This document was prepared exclusively from publicly available data on the analyzed asset. PredictaCore does not access internal analytics, admin panels, or private business data. Implementation of recommendations remains at the asset owner's discretion.</p>
+  <p class="pc-closing-lead">${lead}</p>
+  <p class="pc-disclaimer"><strong>${es ? 'Descargo de responsabilidad' : 'Disclaimer'}:</strong> ${disclaimer}</p>
+  <p>${scope}</p>
   <p class="pc-closing-meta">PredictaCore · ${site} · ${support}</p>
 </div>`;
+}
+
+/** Aviso breve bajo el encabezado del PDF */
+function getPdfHeaderDisclaimerHtml(lang = 'en') {
+    const es = lang === 'es' || String(lang).startsWith('es');
+    const text = es
+        ? 'Análisis basado en información pública. No garantizamos resultados. Puede contener errores — verifique antes de actuar.'
+        : 'Analysis based on public information. No results guaranteed. May contain errors — verify before acting.';
+    return `<p class="pc-header-disclaimer">${text}</p>`;
 }
 
 function getPdfCoverMetricsHtml({ loadTimeSec, seoScore, aiScore, assetType, lang = 'es' }) {
@@ -146,6 +158,8 @@ function getPdfBrandStyles() {
 .pc-closing-lead { font-size: 10pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #0f172a; margin: 0 0 10px 0; }
 .pc-report-closing p { margin: 0 0 10px 0; color: #475569 !important; text-align: left; }
 .pc-closing-meta { font-size: 8pt !important; font-weight: 700; letter-spacing: 0.06em; color: #64748b !important; margin-top: 14px !important; }
+.pc-disclaimer { font-size: 8.5pt !important; background: #f8fafc; border-left: 3px solid #f59e0b; padding: 8px 10px; margin: 0 0 10px 0 !important; }
+.pc-header-disclaimer { font-size: 7.5pt; color: #64748b; line-height: 1.4; margin: 8px 0 0 0; padding: 6px 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; }
 .forensic-evidence { page-break-inside: avoid; margin: 0 0 24px 0; padding: 16px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
 .forensic-evidence h3 { font-size: 10pt; text-transform: uppercase; letter-spacing: 0.15em; color: #0f172a; margin: 0 0 12px 0; border: none; }
 .forensic-shots { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -160,6 +174,7 @@ module.exports = {
     getPdfCoverBrandHtml,
     getPdfCoverMetricsHtml,
     getPdfClosingHtml,
+    getPdfHeaderDisclaimerHtml,
     getPdfBrandStyles,
     FAVICON_VERSION,
     publicSiteUrl,

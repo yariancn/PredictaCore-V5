@@ -175,18 +175,21 @@ function validateSection(etapaId, content, dossier, locale, opts = {}) {
 
     if (opts.modo === 'DELTA' && dossierHas(dossier, 'CAMBIOS_VERIFICADOS')) {
         if (etapaId === 'IMPLEMENTADAS') {
-            const ninguna = /MEJORAS_VERIFICADAS:\s*NINGUNA/i.test(dossier);
+            const ninguna = /MEJORAS_IMPLEMENTACION:\s*NINGUNA/i.test(dossier);
             const hasList = countNumbered(text) > 0;
             const hasEmptyPhrase = /sin evidencia de implementaci[oó]n|no verifiable implementation/i.test(text);
             if (ninguna && hasList && !hasEmptyPhrase) {
-                issues.push('IMPLEMENTADAS inventó cambios — CAMBIOS_VERIFICADOS indica NINGUNA mejora verificada');
+                issues.push('IMPLEMENTADAS inventó cambios — CAMBIOS_VERIFICADOS indica MEJORAS_IMPLEMENTACION: NINGUNA');
             }
             if (!ninguna && hasList) {
-                const mejoras = (dossier.match(/MEJORAS_VERIFICADAS:\s*([^\n]+)/i) || [])[1] || '';
-                const claimed = /\b(title|meta|h1|contact|email|schema|alt text|t[ií]tulo|contacto)\b/i.test(text);
-                if (claimed && !/\b(TITLE|META|H1|CONTACT|ALT|JSON_LD)\b/i.test(mejoras)) {
-                    issues.push('IMPLEMENTADAS cita campos no listados en MEJORAS_VERIFICADAS del dossier');
+                const mejoras = (dossier.match(/MEJORAS_IMPLEMENTACION:\s*([^\n]+)/i) || [])[1] || '';
+                const claimed = /\b(title|meta|contact|email|correo|t[ií]tulo|contacto|seo score|seo t[eé]cnico)\b/i.test(text);
+                if (claimed && !/\b(TITLE|META|H1|JSON_LD|SITEMAP)\b/i.test(mejoras)) {
+                    issues.push('IMPLEMENTADAS cita campos no listados en MEJORAS_IMPLEMENTACION del dossier');
                 }
+            }
+            if (/\b(meta description|contact email|descriptive meta)\b/i.test(text) && /MEJORAS_IMPLEMENTACION:\s*NINGUNA/i.test(dossier)) {
+                issues.push('PROHIBIDO afirmar meta/contacto implementado — MEJORAS_IMPLEMENTACION: NINGUNA');
             }
         }
         if (etapaId === 'NUEVAS') {

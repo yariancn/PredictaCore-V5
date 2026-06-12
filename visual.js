@@ -154,6 +154,7 @@ function getHTML() {
                         <div class="cover-title" id="pdf-cover-title">Titán Intelligence</div>
                         <div class="cover-domain" id="pdf-domain">Asset Analysis</div>
                         <div id="pdf-metrics"></div>
+                        <div id="pdf-header-disclaimer"></div>
                     </div>
                     <div class="cover-date-row">
                         <span id="pdf-date"></span>
