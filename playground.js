@@ -160,11 +160,11 @@ function getPlaygroundHTML() {
             }
             sel.innerHTML = titanClientsCache.map(c => {
                 const fecha = c.titan_en ? new Date(c.titan_en).toLocaleDateString('es') : '?';
-                const deltas = c.deltas > 0 ? ` · ${c.deltas} delta(s)` : '';
-                const label = `${c.email} — ${c.url_sitio || 'sin url'} (Titán ${fecha}${deltas})`;
-                return `<option value="${c.cliente_id}">${label}</option>`;
+                const deltas = c.deltas > 0 ? ' · ' + c.deltas + ' delta(s)' : '';
+                const label = c.email + ' — ' + (c.url_sitio || 'sin url') + ' (Titán ' + fecha + deltas + ')';
+                return '<option value="' + c.cliente_id + '">' + label + '</option>';
             }).join('');
-            hint.textContent = `${titanClientsCache.length} cliente(s) con baseline Titán.`;
+            hint.textContent = titanClientsCache.length + ' cliente(s) con baseline Titán.';
             const first = titanClientsCache[0];
             if (first) {
                 document.getElementById('pg-email').value = first.email;
