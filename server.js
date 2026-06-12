@@ -733,6 +733,41 @@ app.post('/titan-interno/status', requireTitanInternalKey, async (req, res) => {
     }
 });
 
+app.post('/delta-interno', requireTitanInternalKey, async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ error: 'Email required' });
+    }
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const cliente = await getClienteByEmail(normalizedEmail);
+    if (!cliente) {
+        return res.status(404).json({ error: 'Cliente no encontrado en BD' });
+    }
+    const titan = await getLatestTitanReport(cliente.id);
+    if (!titan) {
+        return res.status(400).json({ error: 'Sin reporte Titán previo en BD' });
+    }
+    const urlSitio = cliente.url_sitio;
+    if (!urlSitio) {
+        return res.status(400).json({ error: 'Cliente sin URL registrada' });
+    }
+
+    console.log(`>>> [DELTA INTERNO] ${normalizedEmail} — ${urlSitio}`);
+    try {
+        const started = await iniciarAuditoria(urlSitio, normalizedEmail, 'DELTA');
+        res.json({
+            status: 'started',
+            job_id: started.jobId,
+            mode: 'DELTA',
+            target: started.targetUrl,
+            message: `Seguimiento DELTA iniciado. PDF en ~5-15 min a ${normalizedEmail}.`,
+        });
+    } catch (err) {
+        res.status(400).json({ error: err.message || 'No se pudo iniciar el seguimiento' });
+    }
+});
+
 app.get('/playground', requirePlayground, (req, res) => {
     res.send(getPlaygroundHTML());
 });
