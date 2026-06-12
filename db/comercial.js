@@ -68,6 +68,28 @@ async function getLatestTitanReport(clienteId) {
     return result.rows[0] || null;
 }
 
+/** Clientes con al menos un reporte Titán guardado (para pruebas de seguimiento) */
+async function listClientesConTitan(limit = 50) {
+    const pool = getPool();
+    if (!pool) return [];
+
+    const result = await pool.query(
+        `SELECT c.id AS cliente_id, c.email, c.url_sitio,
+                r.creado_en AS titan_en, r.id AS reporte_id,
+                (SELECT COUNT(*)::int FROM reportes d WHERE d.cliente_id = c.id AND d.tipo = 'delta') AS deltas
+         FROM clientes c
+         INNER JOIN LATERAL (
+             SELECT id, creado_en FROM reportes
+             WHERE cliente_id = c.id AND tipo = 'titan'
+             ORDER BY creado_en DESC LIMIT 1
+         ) r ON true
+         ORDER BY r.creado_en DESC
+         LIMIT $1`,
+        [limit]
+    );
+    return result.rows;
+}
+
 async function registrarComisionRecurrente(invoiceId, email, refCode) {
     const pool = getPool();
     if (!pool) return;
@@ -152,6 +174,7 @@ module.exports = {
     upsertCliente,
     getClienteByEmail,
     getLatestTitanReport,
+    listClientesConTitan,
     registrarComisionRecurrente,
     saveReporte,
 };

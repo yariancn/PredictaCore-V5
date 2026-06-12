@@ -4,7 +4,7 @@ const express = require('express');
 const cerebroWeb = require('./cerebro');
 const cerebroSocial = require('./cerebro_social');
 const { PROMPTS_LITE } = require('./cerebro_lite');
-const { PROMPTS_DELTA, extractInitialSummary, formatScoreDiffBlock } = require('./cerebro_delta');
+const { PROMPTS_DELTA, buildPromptsDelta, extractInitialSummary, formatScoreDiffBlock } = require('./cerebro_delta');
 const { buildReportLanguagePrompt } = require('./idioma');
 const { getHTML } = require('./visual');
 const { getHTMLLite } = require('./visual_lite');
@@ -40,6 +40,7 @@ const {
     upsertCliente,
     getClienteByEmail,
     getLatestTitanReport,
+    listClientesConTitan,
     registrarComisionRecurrente,
     saveReporte,
 } = require('./db/comercial');
@@ -816,6 +817,63 @@ app.post('/playground/titan', requirePlayground, async (req, res) => {
     }
 });
 
+app.get('/playground/titan-clients', requirePlayground, async (req, res) => {
+    try {
+        const clientes = await listClientesConTitan(50);
+        res.json({ count: clientes.length, clientes });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/playground/delta', requirePlayground, async (req, res) => {
+    const { email, cliente_id } = req.body || {};
+    let resolvedEmail = email ? String(email).trim().toLowerCase() : '';
+    let urlSitio = '';
+
+    try {
+        if (cliente_id) {
+            const pool = getPool();
+            if (!pool) return res.status(503).json({ error: 'BD no disponible' });
+            const row = await pool.query(
+                `SELECT c.email, c.url_sitio,
+                        (SELECT id FROM reportes WHERE cliente_id = c.id AND tipo = 'titan' LIMIT 1) AS tiene_titan
+                 FROM clientes c WHERE c.id = $1`,
+                [cliente_id]
+            );
+            if (!row.rows[0]) return res.status(404).json({ error: 'Cliente no encontrado' });
+            if (!row.rows[0].tiene_titan) {
+                return res.status(400).json({ error: 'Este cliente no tiene reporte Titán en BD' });
+            }
+            resolvedEmail = row.rows[0].email;
+            urlSitio = row.rows[0].url_sitio;
+        } else if (resolvedEmail) {
+            const cliente = await getClienteByEmail(resolvedEmail);
+            if (!cliente) return res.status(404).json({ error: 'Cliente no encontrado' });
+            const titan = await getLatestTitanReport(cliente.id);
+            if (!titan) return res.status(400).json({ error: 'Sin reporte Titán previo en BD' });
+            urlSitio = cliente.url_sitio;
+        } else {
+            return res.status(400).json({ error: 'email o cliente_id requerido' });
+        }
+
+        if (!urlSitio) return res.status(400).json({ error: 'Cliente sin URL registrada' });
+
+        console.log(`>>> [PLAYGROUND] Seguimiento DELTA sin cobro para ${resolvedEmail} — ${urlSitio}`);
+        const started = await iniciarAuditoria(urlSitio, resolvedEmail, 'DELTA');
+        res.json({
+            status: 'started',
+            job_id: started.jobId,
+            mode: 'DELTA',
+            email: resolvedEmail,
+            target: started.targetUrl,
+            message: 'Seguimiento mensual DELTA iniciado. PDF comprimido (~2-3 hojas) por email en ~5-10 min.',
+        });
+    } catch (err) {
+        res.status(400).json({ error: err.message || 'No se pudo iniciar el seguimiento' });
+    }
+});
+
 app.post('/playground/replay-delivery', requirePlayground, async (req, res) => {
     try {
         const sessionId = req.body?.session_id;
@@ -962,7 +1020,7 @@ async function iniciarAuditoria(dna, email, modo) {
 
 async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
     try {
-        const datosTarget = await captureAndScrape(targetUrl);
+        const datosTarget = await captureAndScrape(targetUrl, { modo });
         let dossierTexto = datosTarget.texto;
         if (modo === 'DELTA' && jobsMemoria[jobId].prevDossier) {
             dossierTexto += formatScoreDiffBlock(jobsMemoria[jobId].prevDossier, datosTarget.texto);
@@ -1003,8 +1061,9 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
         const languageLock = getLanguageLockInstruction(reportLocale);
 
         if (modo === 'DELTA') {
-            promptsAUsar = PROMPTS_DELTA;
-            regla = 'REGLA: Reporte de seguimiento mensual comparativo.';
+            const isSocial = isSocialMediaUrl(targetUrl);
+            promptsAUsar = buildPromptsDelta(isSocial);
+            regla = `REGLA: Seguimiento mensual — ${isSocial ? 'perfil social' : 'sitio web'}.`;
         } else if (modo === 'LITE') {
             promptsAUsar = PROMPTS_LITE;
             regla = '';

@@ -26,7 +26,8 @@ REGLA_BENCHMARK: Activo boutique/PYME del nicho (GIRO). Lee UBICACION_MERCADO: e
 === FIN PERFIL_NEGOCIO ===`;
 }
 
-async function captureAndScrape(url) {
+async function captureAndScrape(url, opts = {}) {
+    const isDelta = opts.modo === 'DELTA';
     let browser;
     try {
         const isSocialMedia = isSocialMediaUrl(url);
@@ -157,14 +158,16 @@ async function captureAndScrape(url) {
                 platform: forensics.platform,
             });
             simulationBlock = formatSimulationBlock(sim, 'social');
-            const bench = await findCompetitors(url, forensics.onPage, true, {
-                giro,
-                clientTitle: dataForense.titulo,
-                clientDesc: dataForense.descripcion,
-                clientBody: dataForense.cuerpo?.slice(0, 1200),
-                locale,
-            });
-            benchmarkBlock = bench.block;
+            if (!isDelta) {
+                const bench = await findCompetitors(url, forensics.onPage, true, {
+                    giro,
+                    clientTitle: dataForense.titulo,
+                    clientDesc: dataForense.descripcion,
+                    clientBody: dataForense.cuerpo?.slice(0, 1200),
+                    locale,
+                });
+                benchmarkBlock = bench.block;
+            }
         } else {
             const bodySample = dataForense.cuerpo.slice(0, 2000);
             const hasContact = /[\w.+-]+@[\w.-]+\.\w+/.test(bodySample)
@@ -191,15 +194,17 @@ async function captureAndScrape(url) {
                 hasContact,
             });
             simulationBlock = formatSimulationBlock(sim, 'website');
-            keywordsBlock = formatKeywordsBlock(forensics.onPage, locale, url, dataForense.titulo);
-            const bench = await findCompetitors(url, forensics.onPage, false, {
-                giro,
-                clientTitle: dataForense.titulo,
-                clientDesc: dataForense.descripcion,
-                clientBody: dataForense.cuerpo?.slice(0, 1200),
-                locale,
-            });
-            benchmarkBlock = bench.block;
+            if (!isDelta) {
+                keywordsBlock = formatKeywordsBlock(forensics.onPage, locale, url, dataForense.titulo);
+                const bench = await findCompetitors(url, forensics.onPage, false, {
+                    giro,
+                    clientTitle: dataForense.titulo,
+                    clientDesc: dataForense.descripcion,
+                    clientBody: dataForense.cuerpo?.slice(0, 1200),
+                    locale,
+                });
+                benchmarkBlock = bench.block;
+            }
         }
 
         await browser.close();
@@ -217,7 +222,7 @@ async function captureAndScrape(url) {
             dataForense.descripcion
         );
 
-        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${idiomaBlock}${businessProfileBlock}${forensicsBlock}${simulationBlock}${benchmarkBlock}${keywordsBlock}`;
+        const dossierTexto = `FECHA: ${fechaHoy} | URL: ${url} | TITULO: ${dataForense.titulo} | CTAS_INICIO: ${dataForense.interactores} | LOGOS_SVG: ${dataForense.svgs} | BOTONES_PRODUCTO: ${botonesProducto} | IMAGENES: ${dataForense.visual} | TEXTO: ${dataForense.cuerpo}${idiomaBlock}${businessProfileBlock}${forensicsBlock}${simulationBlock}${benchmarkBlock}${keywordsBlock}${isDelta ? '\n=== MODO_SEGUIMIENTO: DELTA (comparar vs Titán inicial) ===' : ''}`;
 
         return {
             isUrl: true,

@@ -48,9 +48,25 @@ function getPlaygroundHTML() {
         <button onclick="runJobStatus()" class="bg-amber-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">GET /playground/job-status</button>
         <pre id="out-job-status" class="mt-3 text-amber-300">—</pre>
     </section>
+    <section class="mb-8 border border-emerald-500/30 bg-emerald-950/10 p-4 rounded">
+        <h2 class="text-emerald-500 text-[10px] uppercase tracking-widest mb-3">02b — Titán completo (sin pago)</h2>
         <p class="text-zinc-400 text-[10px] mb-2">Reporte forense completo — 11 secciones. Mismo motor que producción. ~10-20 min. Revisa el PDF y luego ajusta código en GitHub.</p>
         <button onclick="runTitan()" class="bg-emerald-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/titan</button>
         <pre id="out-titan" class="mt-3 text-emerald-400">—</pre>
+    </section>
+
+    <section class="mb-8 border border-cyan-500/30 bg-cyan-950/10 p-4 rounded">
+        <h2 class="text-cyan-400 text-[10px] uppercase tracking-widest mb-3">02d — Seguimiento mensual DELTA ($25 simulado)</h2>
+        <p class="text-zinc-500 text-[10px] mb-3">Solo clientes con reporte Titán guardado en Postgres. Compara vs baseline y genera PDF comprimido (~2-3 hojas).</p>
+        <div class="flex flex-wrap gap-2 mb-2">
+            <button onclick="loadTitanClients()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">Cargar clientes Titán</button>
+            <button onclick="runDelta()" class="bg-cyan-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/delta</button>
+        </div>
+        <select id="pg-delta-client" class="bg-black border border-zinc-700 p-3 rounded text-white w-full mb-2 text-[11px]">
+            <option value="">— Carga clientes primero —</option>
+        </select>
+        <p id="pg-delta-hint" class="text-zinc-600 text-[10px]">Selecciona un cliente con Titán en BD.</p>
+        <pre id="out-delta" class="mt-3 text-cyan-300">—</pre>
     </section>
 
     <section class="mb-8">
@@ -127,6 +143,45 @@ function getPlaygroundHTML() {
             }
             const r = await api('/playground/titan', { method: 'POST', body: JSON.stringify({ dna, email }) });
             document.getElementById('out-titan').textContent = JSON.stringify(r.data, null, 2);
+        }
+
+        let titanClientsCache = [];
+
+        async function loadTitanClients() {
+            const sel = document.getElementById('pg-delta-client');
+            const hint = document.getElementById('pg-delta-hint');
+            sel.innerHTML = '<option value="">Cargando…</option>';
+            const r = await api('/playground/titan-clients');
+            titanClientsCache = r.data?.clientes || [];
+            if (!titanClientsCache.length) {
+                sel.innerHTML = '<option value="">Sin clientes con Titán en BD</option>';
+                hint.textContent = 'Ejecuta Titán desde el playground primero (se guarda al completar).';
+                return;
+            }
+            sel.innerHTML = titanClientsCache.map(c => {
+                const fecha = c.titan_en ? new Date(c.titan_en).toLocaleDateString('es') : '?';
+                const deltas = c.deltas > 0 ? ` · ${c.deltas} delta(s)` : '';
+                const label = `${c.email} — ${c.url_sitio || 'sin url'} (Titán ${fecha}${deltas})`;
+                return `<option value="${c.cliente_id}">${label}</option>`;
+            }).join('');
+            hint.textContent = `${titanClientsCache.length} cliente(s) con baseline Titán.`;
+            const first = titanClientsCache[0];
+            if (first) {
+                document.getElementById('pg-email').value = first.email;
+                if (first.url_sitio) document.getElementById('pg-url').value = first.url_sitio.replace(/^https?:\\/\\//, '');
+            }
+        }
+
+        async function runDelta() {
+            const clienteId = document.getElementById('pg-delta-client').value;
+            if (!clienteId) {
+                document.getElementById('out-delta').textContent = 'Selecciona un cliente (carga la lista primero)';
+                return;
+            }
+            const r = await api('/playground/delta', { method: 'POST', body: JSON.stringify({ cliente_id: Number(clienteId) }) });
+            document.getElementById('out-delta').textContent = JSON.stringify(r.data, null, 2);
+            const picked = titanClientsCache.find(c => String(c.cliente_id) === String(clienteId));
+            if (picked?.email) document.getElementById('pg-email').value = picked.email;
         }
 
         async function runCheckout() {
