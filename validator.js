@@ -39,9 +39,10 @@ const NUMBERED_SECTIONS = {
     OMNI: 9,
 };
 
-function validateSection(etapaId, content, dossier, locale) {
+function validateSection(etapaId, content, dossier, locale, opts = {}) {
     const issues = [];
     const text = content || '';
+    const countNumbered = (t) => ((t || '').match(/^\s*\d+\.\s+/gm) || []).length;
 
     if (!SKIP_MONEY_CHECK.has(etapaId) && MONEY_RE.test(text)) {
         issues.push('Contiene cifras monetarias o ROI — prohibido sin datos del cliente');
@@ -170,6 +171,41 @@ function validateSection(etapaId, content, dossier, locale) {
 
     if (etapaId === 'FUGAS' && /\bP[1-4]\s+(?:CRITICAL|SEVERE|MODERATE|MINOR|HEMORRHAGE|LEAK)\b/i.test(text)) {
         issues.push('PROHIBIDO códigos P1/P2/P3/P4 — usa **[Critical]**, **[High]**, **[Medium]**, **[Low]**');
+    }
+
+    if (opts.modo === 'DELTA' && dossierHas(dossier, 'CAMBIOS_VERIFICADOS')) {
+        if (etapaId === 'IMPLEMENTADAS') {
+            const ninguna = /MEJORAS_VERIFICADAS:\s*NINGUNA/i.test(dossier);
+            const hasList = countNumbered(text) > 0;
+            const hasEmptyPhrase = /sin evidencia de implementaci[oó]n|no verifiable implementation/i.test(text);
+            if (ninguna && hasList && !hasEmptyPhrase) {
+                issues.push('IMPLEMENTADAS inventó cambios — CAMBIOS_VERIFICADOS indica NINGUNA mejora verificada');
+            }
+            if (!ninguna && hasList) {
+                const mejoras = (dossier.match(/MEJORAS_VERIFICADAS:\s*([^\n]+)/i) || [])[1] || '';
+                const claimed = /\b(title|meta|h1|contact|email|schema|alt text|t[ií]tulo|contacto)\b/i.test(text);
+                if (claimed && !/\b(TITLE|META|H1|CONTACT|ALT|JSON_LD)\b/i.test(mejoras)) {
+                    issues.push('IMPLEMENTADAS cita campos no listados en MEJORAS_VERIFICADAS del dossier');
+                }
+            }
+        }
+        if (etapaId === 'NUEVAS') {
+            const count = countNumbered(text);
+            if (count < 3) {
+                issues.push(`Sección IV requiere mínimo 3 fricciones numeradas. Encontradas: ${count}`);
+            }
+        }
+        if (etapaId === 'ACCIONES_NUEVAS') {
+            const ivCount = countNumbered(opts.nuevasSection || '');
+            const actionCount = countNumbered(text);
+            const expected = Math.max(3, ivCount || 3);
+            if (actionCount < expected) {
+                issues.push(`Sección V debe tener ${expected} acciones (1:1 con sección IV). Encontradas: ${actionCount}`);
+            }
+            if (ivCount > 0 && /resolve.*\bh1\b|schema\.org|main headline/i.test(text) && !/\bh1\b|headline|schema/i.test(opts.nuevasSection || '')) {
+                issues.push('ACCIONES_NUEVAS debe resolver las fricciones de la sección IV — no repetir pendientes del Titán');
+            }
+        }
     }
 
     if (locale) {

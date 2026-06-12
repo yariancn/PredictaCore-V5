@@ -313,9 +313,21 @@ const NUMBERED_SECTIONS = {
     OMNI: 9,
 };
 
-function postProcessSection(etapaId, text, locale, dossier = '') {
+function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
     let out = stripPlaceholderLeaks(text || '');
     const target = NUMBERED_SECTIONS[etapaId];
+
+    if (opts.modo === 'DELTA') {
+        if (etapaId === 'NUEVAS') {
+            out = normalizeNumberedList(out, { minItems: 3, targetItems: 3, mode: 'auto' });
+        }
+        if (etapaId === 'ACCIONES_NUEVAS') {
+            const ivCount = countNumberedItems((opts.nuevasSection || '').replace(/^###[^\n]+\n?/, ''));
+            const targetActions = Math.max(3, ivCount || 3);
+            out = normalizeNumberedList(out, { minItems: targetActions, targetItems: targetActions, mode: 'auto' });
+        }
+        return out;
+    }
 
     if (etapaId === 'FUGAS' || etapaId === 'FUGAS_LITE') {
         const targetCount = etapaId === 'FUGAS_LITE' ? 3 : 15;

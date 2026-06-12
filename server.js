@@ -4,7 +4,15 @@ const express = require('express');
 const cerebroWeb = require('./cerebro');
 const cerebroSocial = require('./cerebro_social');
 const { PROMPTS_LITE } = require('./cerebro_lite');
-const { PROMPTS_DELTA, buildPromptsDelta, extractInitialSummary, formatScoreDiffBlock } = require('./cerebro_delta');
+const {
+    PROMPTS_DELTA,
+    buildPromptsDelta,
+    extractInitialSummary,
+    formatScoreDiffBlock,
+    buildStructuralDiff,
+    buildDeltaScorecard,
+    DELTA_SECTION_ORDER,
+} = require('./cerebro_delta');
 const { buildReportLanguagePrompt } = require('./idioma');
 const { getHTML } = require('./visual');
 const { getHTMLLite } = require('./visual_lite');
@@ -1022,11 +1030,17 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
     try {
         const datosTarget = await captureAndScrape(targetUrl, { modo });
         let dossierTexto = datosTarget.texto;
+        jobsMemoria[jobId].reportLocale = datosTarget.reportLocale || getLocaleFromDossier(dossierTexto);
         if (modo === 'DELTA' && jobsMemoria[jobId].prevDossier) {
             dossierTexto += formatScoreDiffBlock(jobsMemoria[jobId].prevDossier, datosTarget.texto);
+            dossierTexto += buildStructuralDiff(jobsMemoria[jobId].prevDossier, datosTarget.texto).block;
+            jobsMemoria[jobId].progress.SCORECARD = buildDeltaScorecard(
+                jobsMemoria[jobId].prevDossier,
+                datosTarget.texto,
+                jobsMemoria[jobId].reportLocale
+            );
         }
         jobsMemoria[jobId].dossier = dossierTexto;
-        jobsMemoria[jobId].reportLocale = datosTarget.reportLocale || getLocaleFromDossier(dossierTexto);
         jobsMemoria[jobId].captures = {
             desktopBase64: datosTarget.desktopBase64,
             mobileBase64: datosTarget.mobileBase64,
@@ -1062,8 +1076,8 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
 
         if (modo === 'DELTA') {
             const isSocial = isSocialMediaUrl(targetUrl);
-            promptsAUsar = buildPromptsDelta(isSocial);
-            regla = `REGLA: Seguimiento mensual — ${isSocial ? 'perfil social' : 'sitio web'}.`;
+            promptsAUsar = buildPromptsDelta(isSocial, reportLocale);
+            regla = `REGLA: Seguimiento mensual — ${isSocial ? 'perfil social' : 'sitio web'}. Usa CAMBIOS_VERIFICADOS; no inventes cambios.`;
         } else if (modo === 'LITE') {
             promptsAUsar = PROMPTS_LITE;
             regla = '';
@@ -1074,9 +1088,15 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
         }
 
         for (const etapaId in promptsAUsar) {
-            const promptFinal = modo === 'DELTA'
-                ? promptsAUsar[etapaId](dossierTexto, inicial)
-                : promptsAUsar[etapaId](dossierTexto);
+            let promptFinal;
+            if (modo === 'DELTA') {
+                if (etapaId === 'SCORECARD') continue;
+                promptFinal = etapaId === 'ACCIONES_NUEVAS'
+                    ? promptsAUsar[etapaId](dossierTexto, inicial, jobsMemoria[jobId].progress.NUEVAS || '')
+                    : promptsAUsar[etapaId](dossierTexto, inicial);
+            } else {
+                promptFinal = promptsAUsar[etapaId](dossierTexto);
+            }
 
             const parts = [
                 { text: FIREWALL_IA },
@@ -1110,7 +1130,9 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
                     contents: [{ role: 'user', parts: attemptParts }],
                     generationConfig: {
                         temperature: 0.1,
-                        maxOutputTokens: modo === 'DELTA' ? 4096 : 8192,
+                        maxOutputTokens: modo === 'DELTA'
+                            ? (etapaId === 'ACCIONES_NUEVAS' ? 6144 : 4096)
+                            : 8192,
                     },
                 };
 
@@ -1129,7 +1151,10 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
                 sectionText = SKIP_MONEY_CHECK.has(etapaId)
                     ? vertexData.candidates[0].content.parts[0].text
                     : stripFinancialClaims(vertexData.candidates[0].content.parts[0].text);
-                const validation = validateSection(etapaId, sectionText, dossierTexto, reportLocale);
+                const validation = validateSection(etapaId, sectionText, dossierTexto, reportLocale, {
+                    modo,
+                    nuevasSection: jobsMemoria[jobId].progress.NUEVAS,
+                });
                 if (validation.ok || retries >= maxRetries) {
                     if (!validation.ok && retries >= maxRetries) {
                         console.warn(`>>> [VALIDATOR] ${etapaId} con issues: ${validation.issues.join('; ')}`);
@@ -1141,7 +1166,10 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             }
 
             if (sectionText) {
-                sectionText = postProcessSection(etapaId, sectionText, reportLocale, dossierTexto);
+                sectionText = postProcessSection(etapaId, sectionText, reportLocale, dossierTexto, {
+                    modo,
+                    nuevasSection: jobsMemoria[jobId].progress.NUEVAS,
+                });
                 jobsMemoria[jobId].progress[etapaId] = sectionText;
                 await persistJobMeta(jobId, jobsMemoria[jobId].progress, {
                     dossier: dossierTexto,
@@ -1268,9 +1296,17 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
 
         const progressForPdf = {};
         const progressHtml = {};
-        for (const [key, value] of Object.entries(job.progress || {})) {
-            if (key === '__meta__') continue;
-            progressForPdf[key] = postProcessSection(key, value, reportLocale, dossier);
+        const deltaKeys = modo === 'DELTA'
+            ? DELTA_SECTION_ORDER.filter((k) => job.progress?.[k])
+            : null;
+        const pdfKeys = deltaKeys || Object.keys(job.progress || {});
+        for (const key of pdfKeys) {
+            const value = job.progress[key];
+            if (!value || key === '__meta__') continue;
+            progressForPdf[key] = postProcessSection(key, value, reportLocale, dossier, {
+                modo,
+                nuevasSection: job.progress?.NUEVAS,
+            });
             progressHtml[key] = marked.parse(progressForPdf[key]);
         }
 
