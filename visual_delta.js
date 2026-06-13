@@ -27,6 +27,8 @@ function getHTMLDelta() {
             .delta-scorecard-legend { font-size: 8.5pt; margin: 0 0 12px 0; padding-left: 18px; color: #475569; }
             .delta-scorecard-legend li { margin-bottom: 4px; }
             .delta-scorecard h3 { font-size: 1.05rem; font-weight: 800; color: #0f172a; margin: 0 0 8px; text-transform: uppercase; }
+            .delta-glance { font-size: 9pt; margin: 0 0 12px 0; padding: 10px 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; list-style: none; }
+            .delta-glance li { margin-bottom: 4px; color: #334155; }
             .pc-header-disclaimer { font-size: 7.5pt; color: #64748b; line-height: 1.4; margin: 8px 0 0 0; padding: 6px 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; }
             .pc-report-closing { margin-top: 28px; padding-top: 18px; page-break-inside: avoid; color: #475569; font-size: 9pt; line-height: 1.55; }
             .pc-closing-rule { width: 72px; height: 4px; background: #10b981; margin-bottom: 14px; }

@@ -10,8 +10,9 @@ const {
     extractInitialSummary,
     formatScoreDiffBlock,
     buildStructuralDiff,
-    buildDeltaScorecard,
+    buildDeterministicDeltaSections,
     DELTA_SECTION_ORDER,
+    DELTA_LLM_SECTIONS,
 } = require('./cerebro_delta');
 const { buildReportLanguagePrompt } = require('./idioma');
 const { getHTML } = require('./visual');
@@ -1067,14 +1068,21 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
         let dossierTexto = datosTarget.texto;
         jobsMemoria[jobId].reportLocale = datosTarget.reportLocale || getLocaleFromDossier(dossierTexto);
         if (modo === 'DELTA' && jobsMemoria[jobId].prevDossier) {
-            dossierTexto += formatScoreDiffBlock(jobsMemoria[jobId].prevDossier, datosTarget.texto);
-            dossierTexto += buildStructuralDiff(jobsMemoria[jobId].prevDossier, datosTarget.texto).block;
-            jobsMemoria[jobId].progress.SCORECARD = buildDeltaScorecard(
+            const det = buildDeterministicDeltaSections(
                 jobsMemoria[jobId].prevDossier,
                 datosTarget.texto,
                 jobsMemoria[jobId].reportLocale
             );
-            jobsMemoria[jobId].progress.SCORECARD_IS_HTML = true;
+            jobsMemoria[jobId].structuralDiff = det.diff;
+            dossierTexto += formatScoreDiffBlock(jobsMemoria[jobId].prevDossier, datosTarget.texto);
+            dossierTexto += det.diff.block;
+            Object.assign(jobsMemoria[jobId].progress, {
+                SCORECARD: det.SCORECARD,
+                SCORECARD_IS_HTML: true,
+                RESUMEN: det.RESUMEN,
+                IMPLEMENTADAS: det.IMPLEMENTADAS,
+                NUEVAS: det.NUEVAS,
+            });
         }
         jobsMemoria[jobId].dossier = dossierTexto;
         jobsMemoria[jobId].captures = {
@@ -1123,10 +1131,15 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
             regla = cerebroActivo.REGLA_NUCLEAR;
         }
 
-        for (const etapaId in promptsAUsar) {
+        const etapas = modo === 'DELTA'
+            ? [...DELTA_LLM_SECTIONS]
+            : Object.keys(promptsAUsar);
+
+        for (const etapaId of etapas) {
+            if (modo === 'DELTA' && !DELTA_LLM_SECTIONS.has(etapaId)) continue;
+
             let promptFinal;
             if (modo === 'DELTA') {
-                if (etapaId === 'SCORECARD') continue;
                 promptFinal = etapaId === 'ACCIONES_NUEVAS'
                     ? promptsAUsar[etapaId](dossierTexto, inicial, jobsMemoria[jobId].progress.NUEVAS || '')
                     : promptsAUsar[etapaId](dossierTexto, inicial);

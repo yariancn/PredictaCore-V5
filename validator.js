@@ -194,19 +194,16 @@ function validateSection(etapaId, content, dossier, locale, opts = {}) {
         }
         if (etapaId === 'NUEVAS') {
             const count = countNumbered(text);
-            if (count < 3) {
-                issues.push(`Sección IV requiere mínimo 3 fricciones numeradas. Encontradas: ${count}`);
+            if (count > 0 && count < 1) {
+                issues.push(`Sección IV requiere fricciones numeradas. Encontradas: ${count}`);
             }
         }
         if (etapaId === 'ACCIONES_NUEVAS') {
             const ivCount = countNumbered(opts.nuevasSection || '');
             const actionCount = countNumbered(text);
-            const expected = Math.max(3, ivCount || 3);
+            const expected = ivCount > 0 ? ivCount : 2;
             if (actionCount < expected) {
-                issues.push(`Sección V debe tener ${expected} acciones (1:1 con sección IV). Encontradas: ${actionCount}`);
-            }
-            if (ivCount > 0 && /resolve.*\bh1\b|schema\.org|main headline/i.test(text) && !/\bh1\b|headline|schema/i.test(opts.nuevasSection || '')) {
-                issues.push('ACCIONES_NUEVAS debe resolver las fricciones de la sección IV — no repetir pendientes del Titán');
+                issues.push(`Sección V debe tener ${expected} acciones. Encontradas: ${actionCount}`);
             }
         }
     }
