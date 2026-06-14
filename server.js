@@ -495,6 +495,26 @@ async function registrarVentaComisiones(session, email, refCode) {
 
 app.use(express.json({ limit: '10mb' }));
 
+const ADS_ORIGIN = (process.env.ADS_ORIGIN || 'https://predictacore-ads-production.up.railway.app').replace(/\/$/, '');
+
+// predictacore.ai/ads/* → servicio Next.js Predictacore Ads (Railway)
+if (ADS_ORIGIN) {
+    const { createProxyMiddleware } = require('http-proxy-middleware');
+    app.use(
+        createProxyMiddleware({
+            target: ADS_ORIGIN,
+            changeOrigin: true,
+            pathFilter: (pathname) => pathname === '/ads' || pathname.startsWith('/ads/'),
+            on: {
+                proxyReq(proxyReq) {
+                    proxyReq.setHeader('x-forwarded-host', 'predictacore.ai');
+                    proxyReq.setHeader('x-forwarded-proto', 'https');
+                },
+            },
+        }),
+    );
+}
+
 app.get('/checkout-status', async (req, res) => {
     try {
         const sessionId = req.query.session_id;
