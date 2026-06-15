@@ -115,13 +115,17 @@ function getEmailBrandHeaderBlock(lang = 'en') {
 }
 
 /** Full HTML email shell — dark card so wordmark is never on a white client canvas. */
-function wrapPredictaCoreEmail(lang, bodyHtml) {
+function wrapPredictaCoreEmail(lang, bodyHtml, preheader = '') {
     const langAttr = lang === 'es' ? 'es' : 'en';
     const header = getEmailBrandHeaderBlock(lang);
+    const preheaderBlock = preheader
+        ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;mso-hide:all;font-size:1px;line-height:1px;">${preheader}</div>`
+        : '';
     return `<!DOCTYPE html>
 <html lang="${langAttr}">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:20px 12px;background:#e4e4e7;font-family:Inter,Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;">
+  ${preheaderBlock}
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;margin:0 auto;">
     <tr>
       <td style="background:#050505;border-radius:10px;border:1px solid #3f3f46;padding:0;">

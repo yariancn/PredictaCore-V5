@@ -230,7 +230,7 @@ function getLandingHTML() {
                             <li id="od-3">✓ AI discoverability (GEO) · technical proxy score 0–100</li>
                             <li id="od-4">✓ 4 buyer profiles by industry + friction findings</li>
                             <li id="od-5">✓ 15 drop-offs + 15 tactical actions · 21-day roadmap</li>
-                            <li id="od-6">✓ Web or Instagram / Facebook / TikTok profile</li>
+                            <li id="od-6">✓ One asset per scan: website OR one Instagram, Facebook, or TikTok profile</li>
                         </ul>
                     </div>
                 </div>
@@ -408,7 +408,7 @@ function getLandingHTML() {
                     od3: "✓ AI discoverability (GEO) · technical proxy score 0–100",
                     od4: "✓ 4 buyer profiles by industry + friction findings",
                     od5: "✓ 15 drop-offs + 15 tactical actions · 21-day roadmap",
-                    od6: "✓ Web or Instagram / Facebook / TikTok profile",
+                    od6: "✓ One asset per scan: website OR one Instagram, Facebook, or TikTok profile",
                     liteBoxTitle: "Lite — Free",
                     liteBoxList: "<li>· 3 critical conversion leaks</li><li>· SEO + AI visibility snapshot</li><li>· Buyer profiles by industry (summary)</li>",
                     titanBoxTitle: "Titan — USD $199 (intro)",
@@ -436,7 +436,7 @@ function getLandingHTML() {
                     subPrice2: "USD $25/mo monitoring starts 30 days after purchase. Renews unless cancelled — cancellation: audit@predictacore.ai or billing portal after purchase (see Terms).",
                     btnTitan: "Get Full Titan Report — $199",
                     titanPriceNote: "USD · introductory · one-time",
-                    urlHint: "Instagram, Facebook, TikTok, or any public website — no login required.",
+                    urlHint: "Pick one: your website or a single public profile — no login required.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "Consultant or Agency? Join our Forensic Audit network.",
                     disclaimerText: 'PredictaCore audits. $199 intro price today. $25/mo monitoring from day 30; renews unless cancelled per <a href="/terms" class="text-emerald-600 underline">Terms</a> (audit@predictacore.ai). Statement: PREDICTACORE.',
@@ -480,7 +480,7 @@ function getLandingHTML() {
                     od3: "✓ Visibilidad en IAs (GEO) · score técnico 0–100",
                     od4: "✓ 4 perfiles de comprador por giro + hallazgos de fricción",
                     od5: "✓ 15 fugas + 15 acciones tácticas · roadmap 21 días",
-                    od6: "✓ Web o perfil Instagram / Facebook / TikTok",
+                    od6: "✓ Un activo por escaneo: tu web O un perfil de Instagram, Facebook o TikTok",
                     liteBoxTitle: "Lite — Gratis",
                     liteBoxList: "<li>· 3 fugas críticas de conversión</li><li>· Snapshot SEO + visibilidad IA</li><li>· Perfiles de comprador por giro (resumen)</li>",
                     titanBoxTitle: "Titán — USD $199 (intro)",
@@ -508,7 +508,7 @@ function getLandingHTML() {
                     subPrice2: "Monitoreo USD $25/mes desde el día 30. Se renueva salvo cancelación — solicitud: audit@predictacore.ai o portal en correo de activación (ver Términos).",
                     btnTitan: "Obtener Reporte Titán completo — $199",
                     titanPriceNote: "USD · precio introductorio · pago único",
-                    urlHint: "Instagram, Facebook, TikTok o cualquier web pública — sin login.",
+                    urlHint: "Elige uno: tu web o un perfil público — sin login.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
                     disclaimerText: 'Auditorías PredictaCore. $199 precio introductorio hoy. Monitoreo $25/mes desde día 30; se renueva salvo cancelación según <a href="/terms" class="text-emerald-600 underline">Términos</a> (audit@predictacore.ai). Estado de cuenta: PREDICTACORE.',

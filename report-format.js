@@ -282,9 +282,18 @@ function getLiteReportIntro(lang) {
         : 'Attached is your Lite audit: 3 critical leaks and an SEO + AI snapshot. That is only the tip — most pages lose customers at 15+ drop-off points the Lite does not show.';
 }
 
+function getLiteEmailPreheader(lang) {
+    return lang === 'es'
+        ? 'PDF Lite adjunto — 3 fugas detectadas. Desbloquea las 15 restantes con el Reporte Titán.'
+        : 'Lite PDF attached — 3 leaks found. Unlock the other 12 with the Titan Report.';
+}
+
 function buildLiteUpsellEmailHtml(lang, { titanUrl, targetUrl }) {
     const es = lang === 'es';
     const title = es ? 'Encontramos fugas — te faltan 12 más' : 'We found leaks — 12 more are still hidden';
+    const pdfBanner = es
+        ? '<strong style="color:#10b981;">PDF Lite adjunto</strong> — ábrelo primero. Luego desbloquea el Reporte Titán completo abajo.'
+        : '<strong style="color:#10b981;">Lite PDF attached</strong> — open it first. Then unlock the full Titan Report below.';
     const hook = es
         ? `Tu escaneo Lite de <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> detectó fricción real. Pero cada día que pasa sin arreglar <strong style="color:#10b981;">las 15 fugas principales</strong>, sigues perdiendo visitantes que ya llegaron y se van en silencio.`
         : `Your Lite scan of <strong style="color:#fff;">${targetUrl || 'your page'}</strong> found real friction. But every day you leave <strong style="color:#10b981;">all 15 major drop-off points</strong> unfixed, you keep losing visitors who already arrived and leave in silence.`;
@@ -303,12 +312,13 @@ function buildLiteUpsellEmailHtml(lang, { titanUrl, targetUrl }) {
         ];
     const ctaLabel = es ? `Pagar $${TITAN_PRICE_USD} — Reporte Titán` : `Pay $${TITAN_PRICE_USD} — Titan Report`;
     const pdfNote = es
-        ? 'El PDF Lite va adjunto. El Reporte Titán llega por correo tras el pago.'
-        : 'Your Lite PDF is attached. The Titan Report arrives by email after payment.';
+        ? 'El Reporte Titán llega por correo tras el pago (hasta 60 min).'
+        : 'The Titan Report arrives by email after payment (up to 60 min).';
     const cancelHtml = getSubscriptionCancellationEmailHtml(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
     const bulletHtml = bullets.map((b) => `<li style="margin:0 0 8px 0;">${b}</li>`).join('');
 
-    return `<h1 style="color:#fff;font-size:20px;text-align:center;margin:0 0 12px 0;line-height:1.3;">${title}</h1>
+    return `<p style="margin:0 0 18px 0;padding:12px 14px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.35);border-radius:6px;font-size:13px;line-height:1.5;color:#d1d5db;text-align:center;">${pdfBanner}</p>
+  <h1 style="color:#fff;font-size:20px;text-align:center;margin:0 0 12px 0;line-height:1.3;">${title}</h1>
   <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;color:#d1d5db;">${getLiteReportIntro(lang)}</p>
   <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;color:#d1d5db;">${hook}</p>
   <ul style="font-size:13px;line-height:1.55;margin:0 0 20px 0;padding-left:18px;color:#a1a1aa;">${bulletHtml}</ul>
@@ -366,6 +376,7 @@ function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetU
             subject: es
                 ? 'PredictaCore — Encontramos fugas en tu página (desbloquea las 15 restantes)'
                 : 'PredictaCore — We found leaks on your page (unlock the other 12)',
+            preheader: getLiteEmailPreheader(lang),
             filename: buildReportFilename('LITE', targetUrl),
             text: buildLiteUpsellEmailText(lang, { titanUrl: url, targetUrl }),
             html: buildLiteUpsellEmailHtml(lang, { titanUrl: url, targetUrl }),

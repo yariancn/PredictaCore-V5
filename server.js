@@ -1051,14 +1051,14 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
                 payload = {
                     subject: mail.subject,
                     text: `${mail.text}\n\n${previewNote}`,
-                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null,
+                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html, mail.preheader) : null,
                 };
             } else if (t === 'delta') {
                 const mail = getReportEmailCopy('DELTA', reportLocale, { portalUrl, targetUrl });
                 payload = {
                     subject: mail.subject,
                     text: `${mail.text}\n\n${previewNote}`,
-                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null,
+                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html, mail.preheader) : null,
                 };
             } else if (t === 'lite') {
                 const titanUrl = buildTitanUpgradeUrl({ email: normalizedEmail, dna: targetUrl, lang: langCode });
@@ -1066,7 +1066,7 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
                 payload = {
                     subject: mail.subject,
                     text: `${mail.text}\n\n${previewNote}`,
-                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null,
+                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html, mail.preheader) : null,
                 };
             }
 
@@ -1450,7 +1450,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
-            emailHtml = mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null;
+            emailHtml = mail.html ? wrapPredictaCoreEmail(langCode, mail.html, mail.preheader) : null;
         } else if (modo === 'DELTA') {
             htmlBase = getHTMLDelta();
             let portalUrl = null;
@@ -1462,7 +1462,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
-            emailHtml = mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null;
+            emailHtml = mail.html ? wrapPredictaCoreEmail(langCode, mail.html, mail.preheader) : null;
         } else {
             htmlBase = getHTML();
             const social = isSocialMediaUrl(targetUrl);
@@ -1475,7 +1475,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
-            emailHtml = mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null;
+            emailHtml = mail.html ? wrapPredictaCoreEmail(langCode, mail.html, mail.preheader) : null;
         }
 
         browser = await puppeteer.launch({
