@@ -1,6 +1,7 @@
 /** Post-procesado y UI del PDF según idioma del activo */
 
 const { resolveReportLocale, parseLocaleFromDossier } = require('./idioma');
+const { TITAN_PRICE_USD } = require('./stripe-predictacore');
 const {
     buildFugasFromDossier,
     stripPlaceholderLeaks,
@@ -225,7 +226,7 @@ function getPdfUiStrings(locale) {
             assetDefault: 'Análisis del activo',
             liteTitle: 'Reporte Lite',
             liteCtaTitle: 'Activa el Reporte Titán',
-            liteCtaBody: 'Auditoría forense completa de 11 secciones (USD $349). Tu correo y URL ya están listos:',
+            liteCtaBody: `Auditoría forense completa de 11 secciones (USD $${TITAN_PRICE_USD}, precio introductorio). Tu correo y URL ya están listos:`,
             brandTagline: 'Inteligencia de Negocios',
         };
     }
@@ -238,7 +239,7 @@ function getPdfUiStrings(locale) {
         assetDefault: 'Asset analysis',
         liteTitle: 'Lite Intelligence Report',
         liteCtaTitle: 'Upgrade to Titan Report',
-        liteCtaBody: 'Full 11-section forensic audit (USD $349). Your email and URL are pre-filled:',
+        liteCtaBody: `Full 11-section forensic audit (USD $${TITAN_PRICE_USD} introductory price). Your email and URL are pre-filled:`,
         brandTagline: 'Business Intelligence',
     };
 }
@@ -263,19 +264,19 @@ function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetU
             subject: es ? 'PredictaCore — Tu auditoría Lite' : 'PredictaCore — Your Lite audit',
             filename: buildReportFilename('LITE', targetUrl),
             text: es
-                ? `Tu auditoría Lite PredictaCore va adjunta.\n\nReporte Titán completo (11 secciones, USD $349):\n${url}`
-                : `Your PredictaCore Lite audit is attached.\n\nFull Titan Report (11 sections, USD $349):\n${url}`,
+                ? `Tu auditoría Lite PredictaCore va adjunta.\n\nReporte Titán completo (11 secciones, USD $${TITAN_PRICE_USD}):\n${url}`
+                : `Your PredictaCore Lite audit is attached.\n\nFull Titan Report (11 sections, USD $${TITAN_PRICE_USD}):\n${url}`,
             html: es ? `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
   <h1 style="color:#fff;font-size:18px;text-align:center;">Tu auditoría Lite va adjunta</h1>
   <p style="font-size:14px;line-height:1.6;">El procesamiento puede tardar hasta 60 minutos. Revisa spam si no llega pronto.</p>
-  <p style="font-size:14px;line-height:1.6;">Incluye snapshot SEO + visibilidad IA. Activa el Reporte Titán completo (USD $349):</p>
-  <p style="margin:24px 0;text-align:center;"><a href="${url}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activar Reporte Titán — $349</a></p>
+  <p style="font-size:14px;line-height:1.6;">Incluye snapshot SEO + visibilidad IA. Activa el Reporte Titán completo (USD $${TITAN_PRICE_USD}):</p>
+  <p style="margin:24px 0;text-align:center;"><a href="${url}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activar Reporte Titán — $${TITAN_PRICE_USD}</a></p>
   <p style="font-size:11px;color:#71717a;text-align:center;">PredictaCore · predictacore.ai</p></div>`
                 : `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
   <h1 style="color:#fff;font-size:18px;text-align:center;">Your Lite audit is attached</h1>
   <p style="font-size:14px;line-height:1.6;">Processing can take up to 60 minutes. Check spam if you don't see this message soon.</p>
-  <p style="font-size:14px;line-height:1.6;">Includes real SEO + AI visibility snapshot. Upgrade to the full Titan Report (USD $349):</p>
-  <p style="margin:24px 0;text-align:center;"><a href="${url}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activate Titan Report — $349</a></p>
+  <p style="font-size:14px;line-height:1.6;">Includes real SEO + AI visibility snapshot. Upgrade to the full Titan Report (USD $${TITAN_PRICE_USD}):</p>
+  <p style="margin:24px 0;text-align:center;"><a href="${url}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activate Titan Report — $${TITAN_PRICE_USD}</a></p>
   <p style="font-size:11px;color:#71717a;text-align:center;">PredictaCore · predictacore.ai</p></div>`,
         };
     }

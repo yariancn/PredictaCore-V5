@@ -4,6 +4,11 @@
  */
 
 const BRAND = 'predictacore';
+const LEGAL_ENTITY = 'Regenoxy LLC';
+const TITAN_PRICE_USD = 199;
+const TITAN_PRICE_CENTS = 19900;
+const MONITORING_PRICE_USD = 25;
+const MONITORING_PRICE_CENTS = 2500;
 const TERMS_URL = 'https://predictacore.ai/terms';
 const PRIVACY_URL = 'https://predictacore.ai/privacy';
 const STATEMENT_SUFFIX = () => (process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE').slice(0, 22);
@@ -43,11 +48,11 @@ function buildCheckoutLineItems() {
             price_data: {
                 currency: 'usd',
                 product_data: {
-                    name: 'PredictaCore Titan Report',
-                    description: 'Full forensic website audit. USD $349 charged today.',
+                    name: 'Predictacore Titan',
+                    description: `Introductory Titan Report. USD $${TITAN_PRICE_USD} charged today.`,
                     metadata: { brand: BRAND, product: BRAND },
                 },
-                unit_amount: 34900,
+                unit_amount: TITAN_PRICE_CENTS,
             },
             quantity: 1,
         },
@@ -56,10 +61,10 @@ function buildCheckoutLineItems() {
                 currency: 'usd',
                 product_data: {
                     name: 'PredictaCore Monthly Monitoring',
-                    description: 'USD $25/month. Starts 30 days after purchase.',
+                    description: `USD $${MONITORING_PRICE_USD}/month. Starts 30 days after purchase.`,
                     metadata: { brand: BRAND, product: BRAND },
                 },
-                unit_amount: 2500,
+                unit_amount: MONITORING_PRICE_CENTS,
                 recurring: { interval: 'month' },
             },
             quantity: 1,
@@ -77,14 +82,14 @@ function getCheckoutCustomText(lang = 'en') {
     if (lang === 'es') {
         return {
             submit: {
-                message: `$349 hoy (Reporte Titán). Monitoreo $25/mes desde el día 30. Al pagar aceptas ${termsLinkEs} y ${privacyLinkEs}. Estado de cuenta: ${descriptor}.`,
+                message: `$${TITAN_PRICE_USD} hoy (Reporte Titán — precio introductorio). Monitoreo $${MONITORING_PRICE_USD}/mes desde el día 30. Al pagar aceptas ${termsLinkEs} y ${privacyLinkEs}. Estado de cuenta: ${descriptor}.`,
             },
         };
     }
 
     return {
         submit: {
-            message: `$349 charged today (Titan Report). $25/month monitoring starts 30 days from purchase. By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}.`,
+            message: `$${TITAN_PRICE_USD} charged today (Titan Report — introductory price). $${MONITORING_PRICE_USD}/month monitoring starts 30 days from purchase. By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}.`,
         },
     };
 }
@@ -165,6 +170,13 @@ async function validateCheckoutPrices(stripe) {
         if (!sub.active) errors.push('STRIPE_PRICE_SUBSCRIPTION is inactive in Stripe.');
         if (!sub.recurring) errors.push('STRIPE_PRICE_SUBSCRIPTION must be a recurring (monthly) price.');
         if (titan.currency !== sub.currency) errors.push('Titan and subscription prices must use the same currency.');
+
+        if (titan.unit_amount !== TITAN_PRICE_CENTS) {
+            errors.push(`STRIPE_PRICE_TITAN should be USD $${TITAN_PRICE_USD} (${TITAN_PRICE_CENTS} cents); Stripe price has ${titan.unit_amount} cents.`);
+        }
+        if (sub.unit_amount !== MONITORING_PRICE_CENTS) {
+            errors.push(`STRIPE_PRICE_SUBSCRIPTION should be USD $${MONITORING_PRICE_USD}/mo (${MONITORING_PRICE_CENTS} cents).`);
+        }
 
         if (mode === 'test' && (titan.livemode || sub.livemode)) {
             errors.push('Stripe is in Test mode but your Price IDs are Live. Create Test prices and update Railway.');
@@ -303,6 +315,11 @@ function isPredictacoreInvoice(invoice, subscriptionMeta) {
 
 module.exports = {
     BRAND,
+    LEGAL_ENTITY,
+    TITAN_PRICE_USD,
+    TITAN_PRICE_CENTS,
+    MONITORING_PRICE_USD,
+    MONITORING_PRICE_CENTS,
     TERMS_URL,
     PRIVACY_URL,
     STATEMENT_SUFFIX,

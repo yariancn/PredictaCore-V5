@@ -23,7 +23,7 @@ const PROMPTS_LITE = {
 
   FUGAS_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### V. LAS 3 HEMORRAGIAS CRÍTICAS | EN: ### V. 3 CRITICAL LEAKS\nExactamente 3 puntos numerados 1. 2. 3. de FALLAS_PRIORITARIAS (SIMULATION_RESULTS), alineados al GIRO_DETECTADO. Formato: 1. **[P1 — HEMORRAGIA CRÍTICA]** …, 2. **[P2 — FUGA GRAVE]** …, 3. **[P3 — FUGA MODERADA]** … (traduce etiquetas al idioma del activo). ${FORMATO_LISTAS}. Cita #id. Impacto cualitativo. Dossier: ${d}`,
 
-  UPSELL: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### VI. ACTIVA PROTECCIÓN TITÁN | EN: ### VI. ACTIVATE TITAN PROTECTION\nPárrafo persuasivo: estas 3 fugas son solo el inicio.\nLista exacta (traducida al idioma del activo): ${PILARES_11}\nMenciona Reporte Titán (USD $349): 15 fugas + 15 acciones copy-paste + SEO forense completo + roadmap 21 días.\nCierra sobre fricción de conversión detectada. Dossier: ${d}`,
+  UPSELL: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### VI. ACTIVA PROTECCIÓN TITÁN | EN: ### VI. ACTIVATE TITAN PROTECTION\nPárrafo persuasivo: estas 3 fugas son solo el inicio.\nLista exacta (traducida al idioma del activo): ${PILARES_11}\nMenciona Reporte Titán (USD $199, precio introductorio): 15 fugas + 15 acciones copy-paste + SEO forense completo + roadmap 21 días.\nCierra sobre fricción de conversión detectada. Dossier: ${d}`,
 };
 
 module.exports = { PROMPTS_LITE, IDIOMA, REGLA_NUCLEAR, PILARES_11 };

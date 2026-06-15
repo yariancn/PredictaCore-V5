@@ -37,7 +37,7 @@ const EXPECTED_TABLES = {
   },
   ventas_comisiones: {
     required: true,
-    usedBy: 'server.js webhook — registro de ventas $349',
+    usedBy: 'server.js webhook — registro de ventas $199',
     columns: [
       'id_venta_stripe',
       'cliente_email',

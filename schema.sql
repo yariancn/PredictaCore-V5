@@ -1,5 +1,5 @@
 -- PredictaCore — Schema PostgreSQL (Launch v1)
--- Comisiones: venta inicial $349 → 30/10/5% | suscripción $25/mes → 15/10/5%
+-- Comisiones: venta inicial $199 → 30/10/5% | suscripción $25/mes → 15/10/5%
 -- Ejecutar: psql "$DATABASE_URL" -f schema.sql
 
 BEGIN;
@@ -59,12 +59,12 @@ CREATE TABLE IF NOT EXISTS clientes (
 CREATE INDEX IF NOT EXISTS idx_clientes_email ON clientes(email);
 CREATE INDEX IF NOT EXISTS idx_clientes_subscription ON clientes(stripe_subscription_id);
 
--- ─── Ventas iniciales + comisiones $349 (30/10/5%) — usado por server.js ───
+-- ─── Ventas iniciales + comisiones $199 (30/10/5%) — usado por server.js ───
 CREATE TABLE IF NOT EXISTS ventas_comisiones (
     id                      SERIAL PRIMARY KEY,
     id_venta_stripe         VARCHAR(255) NOT NULL UNIQUE,
     cliente_email           VARCHAR(255) NOT NULL,
-    monto_total             NUMERIC(10, 2) NOT NULL DEFAULT 349.00,
+    monto_total             NUMERIC(10, 2) NOT NULL DEFAULT 199.00,
     afiliado_nivel_1_id     INTEGER REFERENCES afiliados(id) ON DELETE SET NULL,
     comision_nivel_1        NUMERIC(10, 2),
     afiliado_nivel_2_id     INTEGER REFERENCES afiliados(id) ON DELETE SET NULL,

@@ -70,6 +70,9 @@ const { validateSection, stripFinancialClaims, SKIP_MONEY_CHECK } = require('./v
 const {
     BRAND,
     TERMS_URL,
+    TITAN_PRICE_USD,
+    TITAN_PRICE_CENTS,
+    MONITORING_PRICE_USD,
     buildCheckoutSessionParams,
     createMonitoringSubscription,
     checkoutMetadata,
@@ -128,8 +131,8 @@ function buildTitanActivationEmail(lang, portalUrl) {
     const brandHeader = getEmailBrandHeader(lang);
     const manageBlock = portalUrl
         ? (es
-            ? `<p style="margin:24px 0;"><a href="${portalUrl}" style="color:#10b981;font-weight:bold;">Gestionar suscripción</a> — cancela al menos 5 días hábiles antes de la renovación si no deseas continuar el monitoreo ($25/mes).</p>`
-            : `<p style="margin:24px 0;"><a href="${portalUrl}" style="color:#10b981;font-weight:bold;">Manage subscription</a> — cancel at least 5 business days before renewal if you do not wish to continue monitoring ($25/mo).</p>`)
+            ? `<p style="margin:24px 0;"><a href="${portalUrl}" style="color:#10b981;font-weight:bold;">Gestionar suscripción</a> — cancela al menos 5 días hábiles antes de la renovación si no deseas continuar el monitoreo ($${MONITORING_PRICE_USD}/mes).</p>`
+            : `<p style="margin:24px 0;"><a href="${portalUrl}" style="color:#10b981;font-weight:bold;">Manage subscription</a> — cancel at least 5 business days before renewal if you do not wish to continue monitoring ($${MONITORING_PRICE_USD}/mo).</p>`)
         : '';
 
     const subject = es ? 'PredictaCore — Protección Titán activada' : 'PredictaCore — Titan Protection Activated';
@@ -138,9 +141,9 @@ function buildTitanActivationEmail(lang, portalUrl) {
   <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;background:#0a0a0a;">
     ${brandHeader}
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">PROTECCIÓN TITÁN ACTIVADA</h1>
-    <p>Tu pago de <strong>USD $349</strong> fue procesado. El motor forense ya analiza tu activo digital.</p>
+    <p>Tu pago de <strong>USD $${TITAN_PRICE_USD}</strong> fue procesado. El motor forense ya analiza tu activo digital.</p>
     <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">Recibirás el Reporte Titán completo en tu correo en los próximos minutos (hasta 60 min).</p>
-    <p>Monitoreo PredictaCore (<strong>$25/mes</strong>) activo. Primer cobro el <strong>día 30</strong>. Estado de cuenta: <strong>PREDICTACORE</strong>.</p>
+    <p>Monitoreo PredictaCore (<strong>$${MONITORING_PRICE_USD}/mes</strong>) activo. Primer cobro el <strong>día 30</strong>. Estado de cuenta: <strong>PREDICTACORE</strong>.</p>
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;">Ventas finales — sin reembolsos.</p>
   </div>
@@ -149,9 +152,9 @@ function buildTitanActivationEmail(lang, portalUrl) {
   <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;background:#0a0a0a;">
     ${brandHeader}
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">TITAN PROTECTION ACTIVATED</h1>
-    <p>Your <strong>USD $349</strong> payment was processed successfully. Our forensic engine is analyzing your digital asset.</p>
+    <p>Your <strong>USD $${TITAN_PRICE_USD}</strong> payment was processed successfully. Our forensic engine is analyzing your digital asset.</p>
     <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">You will receive the full Titan Report in your email within the next few minutes (up to 60 minutes).</p>
-    <p>PredictaCore monitoring (<strong>$25/mo</strong>) is active. First charge on <strong>day 30</strong>. Statement: <strong>PREDICTACORE</strong>.</p>
+    <p>PredictaCore monitoring (<strong>$${MONITORING_PRICE_USD}/mo</strong>) is active. First charge on <strong>day 30</strong>. Statement: <strong>PREDICTACORE</strong>.</p>
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;">All sales final — no refunds.</p>
   </div>
@@ -161,8 +164,8 @@ function buildTitanActivationEmail(lang, portalUrl) {
         ? (es ? `\n\nGestionar suscripción: ${portalUrl}` : `\n\nManage subscription: ${portalUrl}`)
         : '';
     const text = es
-        ? `PROTECCIÓN TITÁN ACTIVADA\n\nPago USD $349 confirmado. Reporte Titán en los próximos minutos.\nMonitoreo $25/mes; primer cobro el día 30. PREDICTACORE en el estado de cuenta.${textManage}`
-        : `TITAN PROTECTION ACTIVATED\n\nUSD $349 payment confirmed. Titan Report arriving in the next few minutes.\nMonitoring $25/mo; first charge on day 30. Statement: PREDICTACORE.${textManage}`;
+        ? `PROTECCIÓN TITÁN ACTIVADA\n\nPago USD $${TITAN_PRICE_USD} confirmado. Reporte Titán en los próximos minutos.\nMonitoreo $${MONITORING_PRICE_USD}/mes; primer cobro el día 30. PREDICTACORE en el estado de cuenta.${textManage}`
+        : `TITAN PROTECTION ACTIVATED\n\nUSD $${TITAN_PRICE_USD} payment confirmed. Titan Report arriving in the next few minutes.\nMonitoring $${MONITORING_PRICE_USD}/mo; first charge on day 30. Statement: PREDICTACORE.${textManage}`;
 
     return { subject, html, text };
 }
@@ -340,7 +343,7 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
     }
 
     try {
-        console.log(`>>> [PAGO $349 / ${source}] ${email}. Titán + suscripción (${subscriptionStatus})...`);
+        console.log(`>>> [PAGO $${TITAN_PRICE_USD} / ${source}] ${email}. Titán + suscripción (${subscriptionStatus})...`);
 
         await upsertCliente({
             email,
@@ -454,6 +457,11 @@ async function registrarVentaComisiones(session, email, refCode) {
     const pool = getPool();
     if (!pool) return;
 
+    const montoTotal = Math.round((session?.amount_total ?? TITAN_PRICE_CENTS)) / 100;
+    const comision1 = Math.round(montoTotal * 0.30 * 100) / 100;
+    const comision2 = Math.round(montoTotal * 0.10 * 100) / 100;
+    const comision3 = Math.round(montoTotal * 0.05 * 100) / 100;
+
     try {
         if (refCode && refCode !== 'null' && refCode !== '') {
             const res1 = await pool.query(
@@ -476,18 +484,18 @@ async function registrarVentaComisiones(session, email, refCode) {
                 await pool.query(`
                     INSERT INTO ventas_comisiones
                     (id_venta_stripe, cliente_email, monto_total, afiliado_nivel_1_id, comision_nivel_1, afiliado_nivel_2_id, comision_nivel_2, afiliado_nivel_3_id, comision_nivel_3)
-                    VALUES ($1, $2, 349.00, $3, 104.70, $4, 34.90, $5, 17.45)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                     ON CONFLICT (id_venta_stripe) DO NOTHING
-                `, [session.id, email, nivel1_id, nivel2_id, nivel3_id]);
+                `, [session.id, email, montoTotal, nivel1_id, comision1, nivel2_id, comision2, nivel3_id, comision3]);
                 return;
             }
         }
 
         await pool.query(`
             INSERT INTO ventas_comisiones (id_venta_stripe, cliente_email, monto_total)
-            VALUES ($1, $2, 349.00)
+            VALUES ($1, $2, $3)
             ON CONFLICT (id_venta_stripe) DO NOTHING
-        `, [session.id, email]);
+        `, [session.id, email, montoTotal]);
     } catch (dbError) {
         console.error('!!! Error registrando comisiones en la BD:', dbError);
     }
@@ -619,12 +627,30 @@ app.post('/fulfill-checkout', async (req, res) => {
 
 app.get('/health', async (req, res) => {
     const db = await healthCheck();
+    let priceCheck = null;
+    if (normalizeStripeSecretKey(process.env.STRIPE_SECRET_KEY)
+        && process.env.STRIPE_PRICE_TITAN
+        && process.env.STRIPE_PRICE_SUBSCRIPTION) {
+        try {
+            priceCheck = await validateCheckoutPrices(stripe);
+        } catch (err) {
+            priceCheck = { ok: false, errors: [err?.message || 'Price validation failed'] };
+        }
+    }
     res.status(db.ok ? 200 : 503).json({
         status: db.ok ? 'ok' : 'degraded',
         service: 'predictacore-titan',
         phase: '2',
         database: db,
         stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
+        stripe_price_validation: priceCheck
+            ? {
+                ok: priceCheck.ok,
+                errors: priceCheck.errors || [],
+                expected_titan_usd: TITAN_PRICE_USD,
+                expected_monitoring_usd: MONITORING_PRICE_USD,
+            }
+            : null,
         stripe: {
             ...stripeKeyDiagnostics(),
             restricted_key_warning: stripeKeyDiagnostics().restricted

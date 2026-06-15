@@ -10,7 +10,7 @@ function getLandingHTML() {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>PredictaCore | Auditoría forense para emprendedores</title>
-        <meta name="description" content="PredictaCore audita tu web o perfil social (solo URL) para encontrar por qué pierdes clientes y cómo arreglarlo. Escaneo Lite gratis. Reporte Titán USD $349.">
+        <meta name="description" content="PredictaCore audita tu web o perfil social (solo URL) para encontrar por qué pierdes clientes y cómo arreglarlo. Escaneo Lite gratis. Reporte Titán USD $199 (precio introductorio).">
         <meta name="application-name" content="PredictaCore">
         <meta property="og:site_name" content="PredictaCore">
         ${getFaviconHeadTags()}
@@ -137,7 +137,7 @@ function getLandingHTML() {
                     </div>
                     <div class="p-6 border border-emerald-500/20 rounded-xl bg-emerald-950/10">
                         <h3 id="why-2-t" class="text-emerald-400 font-bold text-sm mb-3">Beat agencies on the same page</h3>
-                        <p id="why-2-d" class="text-sm text-zinc-300 leading-relaxed pc-readable">Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $349.</p>
+                        <p id="why-2-d" class="text-sm text-zinc-300 leading-relaxed pc-readable">Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $199.</p>
                     </div>
                     <div class="p-6 border border-zinc-800 rounded-xl bg-white/[0.03]">
                         <h3 id="why-3-t" class="text-white font-bold text-sm mb-3">Beat generic AI</h3>
@@ -222,7 +222,7 @@ function getLandingHTML() {
                         </ul>
                     </div>
                     <div class="border border-emerald-500/40 rounded-xl p-6 bg-emerald-950/20">
-                        <h4 id="titan-box-title" class="text-emerald-400 text-xs font-bold uppercase tracking-wide mb-3">Titan — USD $349</h4>
+                        <h4 id="titan-box-title" class="text-emerald-400 text-xs font-bold uppercase tracking-wide mb-3">Titan — USD $199 <span class="text-zinc-500 normal-case">(intro)</span></h4>
                         <ul id="titan-box-list" class="text-sm text-zinc-300 space-y-2 font-mono pc-readable">
                             <li>· Full 11-section forensic PDF</li>
                             <li>· 15 leaks + 15 copy-paste actions</li>
@@ -297,13 +297,13 @@ function getLandingHTML() {
                     </div>
 
                     <div class="border-t border-zinc-800 pt-8">
-                        <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$349 <span id="titan-price-note" class="text-xs text-zinc-500 font-normal">USD · one-time</span></h4>
-                        <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-2">Charged today: USD $349 (Titan Report)</p>
+                        <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$199 <span id="titan-price-note" class="text-xs text-zinc-500 font-normal">USD · introductory · one-time</span></h4>
+                        <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-2">Charged today: USD $199 (Titan Report — intro price)</p>
                         <p id="sub-price-2" class="text-xs text-zinc-400 mb-4 leading-relaxed pc-readable">$25/month monitoring starts 30 days after purchase. Cancel anytime from your subscription portal.</p>
                         <p id="titan-eta-before" class="text-[10px] text-zinc-500 mb-4 leading-relaxed">After payment, your Titan PDF may take up to 60 minutes to arrive by email.</p>
                         
                         <button type="button" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2 transition-opacity disabled:opacity-60 disabled:cursor-wait" id="btn-titan">
-                            Get Full Titan Report — $349
+                            Get Full Titan Report — $199
                         </button>
                         <p id="checkout-error" class="hidden-flow text-[10px] text-red-400 mb-2 leading-relaxed" role="alert"></p>
                         <p id="cancel-badge" class="text-[9px] text-zinc-500 uppercase tracking-widest mb-4">By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a></p>
@@ -324,7 +324,7 @@ function getLandingHTML() {
             <div class="max-w-4xl mx-auto px-6">
                 <p id="footer-text" class="text-xs text-emerald-600 uppercase tracking-wide mb-4">Consultant or Agency? Join our Forensic Audit network.</p>
                 <p id="disclaimer-text" class="text-xs text-zinc-500 leading-relaxed mb-4 max-w-2xl mx-auto pc-readable">
-                    PredictaCore AI website audits. USD $349 charged today. Monitoring $25/mo: first follow-up at month 1, first charge then. Card statement shows PREDICTACORE. All sales final. Cancel at least 5 business days before renewal.
+                    PredictaCore AI website audits. USD $199 introductory price charged today. Monitoring $25/mo: first follow-up at month 1, first charge then. Card statement shows PREDICTACORE. All sales final. Cancel at least 5 business days before renewal.
                 </p>
                 <p class="text-xs text-zinc-600 mb-4">
                     <a href="/terms" class="text-emerald-600 hover:underline">Terms</a> · <a href="/privacy" class="text-emerald-600 hover:underline">Privacy</a>
@@ -353,7 +353,7 @@ function getLandingHTML() {
                     whyTitle: "Why PredictaCore",
                     whySub: "The spearhead audit for entrepreneurs who can't afford to guess.",
                     why1T: "Our only focus", why1D: "Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We find friction, invisible errors, and missed trust signals. Goal: stop losing customers you never knew you had.",
-                    why2T: "Beat agencies on the same page", why2D: "Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $349.",
+                    why2T: "Beat agencies on the same page", why2D: "Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $199.",
                     why3T: "Beat generic AI", why3D: "ChatGPT guesses. We scrape, score, simulate buyer psychology by your industry, validate outputs, and deliver a structured 11-section PDF — not a paragraph you have to interpret.",
                     whyFoot: "Not for Fortune 500 data rooms. For the shop owner, clinic, creator, or local brand who needs their page to convert — today.",
                     dosSample: "SAMPLE EXTRACT",
@@ -368,7 +368,7 @@ function getLandingHTML() {
                     od6: "✓ Web or Instagram / Facebook / TikTok profile",
                     liteBoxTitle: "Lite — Free",
                     liteBoxList: "<li>· 3 critical conversion leaks</li><li>· SEO + AI visibility snapshot</li><li>· Buyer profiles by industry (summary)</li>",
-                    titanBoxTitle: "Titan — USD $349",
+                    titanBoxTitle: "Titan — USD $199 (intro)",
                     titanBoxList: "<li>· Full 11-section forensic PDF</li><li>· 15 leaks + 15 copy-paste actions</li><li>· SEO forensics + AI (GEO) + benchmark</li><li>· Monthly monitoring report ($25/mo from day 30)</li>",
                     methodTitle: "The 11 forensic pillars",
                     pillarsTitle: "What your PDF includes",
@@ -379,14 +379,14 @@ function getLandingHTML() {
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
                     upT: "X-Ray Sealed", upSt: "Successfully sent to",
                     boxText: "Initial scan shows critical bottlenecks. You are losing sales today due to purchasing obstacles. The Titan Report dissects your website and delivers the exact instructions to fix these leaks.",
-                    subPrice: "Charged today: USD $349 (Titan Report)",
+                    subPrice: "Charged today: USD $199 (Titan Report — intro price)",
                     subPrice2: "$25/month monitoring starts 30 days after purchase. Cancel anytime from your subscription portal.",
-                    btnTitan: "Get Full Titan Report — $349",
-                    titanPriceNote: "USD · one-time",
+                    btnTitan: "Get Full Titan Report — $199",
+                    titanPriceNote: "USD · introductory · one-time",
                     urlHint: "Instagram, Facebook, TikTok, or any public website — no login required.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "Consultant or Agency? Join our Forensic Audit network.",
-                    disclaimerText: "PredictaCore audits. $349 charged today. $25/month monitoring starts day 30. Statement: PREDICTACORE.",
+                    disclaimerText: "PredictaCore audits. $199 intro price today. $25/month monitoring starts day 30. Statement: PREDICTACORE.",
                     checkoutLoading: "Opening secure checkout…",
                     checkoutOverlayTitle: "Secure checkout",
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
@@ -413,7 +413,7 @@ function getLandingHTML() {
                     whyTitle: "Por qué PredictaCore",
                     whySub: "La auditoría punta de lanza para emprendedores que no pueden permitirse adivinar.",
                     why1T: "Nuestro único foco", why1D: "Tu web o perfil social en vivo — lo que ve un visitante real antes de comprar, reservar o irse. Detectamos fricción, errores invisibles y señales de confianza faltantes. Objetivo: dejar de perder clientes que ni sabías que tenías.",
-                    why2T: "Mejor que agencias sobre la misma página", why2D: "Un consultor que solo ve tu URL entrega un deck de opinión. Tú recibes scores SEO + IA medidos, perfiles de comprador por giro, competencia verificada cuando existe, 15 fugas, 15 acciones copy-paste, capturas y roadmap 21 días — por $349.",
+                    why2T: "Mejor que agencias sobre la misma página", why2D: "Un consultor que solo ve tu URL entrega un deck de opinión. Tú recibes scores SEO + IA medidos, perfiles de comprador por giro, competencia verificada cuando existe, 15 fugas, 15 acciones copy-paste, capturas y roadmap 21 días — por $199.",
                     why3T: "Mejor que IA genérica", why3D: "ChatGPT adivina. Nosotros scrapeamos, medimos, simulamos psicología de comprador según tu giro, validamos el output y entregamos un PDF de 11 secciones — no un párrafo que debes interpretar.",
                     whyFoot: "No es para data rooms de Fortune 500. Es para la tienda, clínica, creador o marca local que necesita que su página convierta — hoy.",
                     dosSample: "EXTRACTO DE MUESTRA",
@@ -428,7 +428,7 @@ function getLandingHTML() {
                     od6: "✓ Web o perfil Instagram / Facebook / TikTok",
                     liteBoxTitle: "Lite — Gratis",
                     liteBoxList: "<li>· 3 fugas críticas de conversión</li><li>· Snapshot SEO + visibilidad IA</li><li>· Perfiles de comprador por giro (resumen)</li>",
-                    titanBoxTitle: "Titán — USD $349",
+                    titanBoxTitle: "Titán — USD $199 (intro)",
                     titanBoxList: "<li>· PDF forense completo (11 secciones)</li><li>· 15 fugas + 15 acciones copy-paste</li><li>· SEO forense + IA (GEO) + benchmark</li><li>· Reporte mensual de seguimiento ($25/mes desde día 30)</li>",
                     methodTitle: "Los 11 pilares forenses",
                     pillarsTitle: "Qué incluye tu PDF",
@@ -439,14 +439,14 @@ function getLandingHTML() {
                     logInit: ">> INICIALIZANDO NÚCLEO PREDICTACORE...",
                     upT: "Radiografía Sellada", upSt: "Enviado con éxito a",
                     boxText: "El escaneo inicial muestra cuellos de botella críticos. Estás perdiendo ventas hoy por obstáculos de compra. El Reporte Titán disecta tu sitio y entrega las instrucciones exactas para arreglar estas fugas.",
-                    subPrice: "Cobro hoy: USD $349 (Reporte Titán)",
+                    subPrice: "Cobro hoy: USD $199 (Reporte Titán — precio introductorio)",
                     subPrice2: "Monitoreo $25/mes desde el día 30. Cancela cuando quieras desde tu portal de suscripción.",
-                    btnTitan: "Obtener Reporte Titán completo — $349",
-                    titanPriceNote: "USD · pago único",
+                    btnTitan: "Obtener Reporte Titán completo — $199",
+                    titanPriceNote: "USD · precio introductorio · pago único",
                     urlHint: "Instagram, Facebook, TikTok o cualquier web pública — sin login.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
-                    disclaimerText: "Auditorías PredictaCore. $349 hoy. Monitoreo $25/mes desde el día 30. Estado de cuenta: PREDICTACORE.",
+                    disclaimerText: "Auditorías PredictaCore. $199 precio introductorio hoy. Monitoreo $25/mes desde el día 30. Estado de cuenta: PREDICTACORE.",
                     checkoutLoading: "Abriendo pago seguro…",
                     checkoutOverlayTitle: "Pago seguro",
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",

@@ -3,6 +3,7 @@
  */
 
 const { getFaviconHeadTags, getSupportEmail } = require('./brand');
+const { TITAN_PRICE_USD, MONITORING_PRICE_USD, LEGAL_ENTITY } = require('./stripe-predictacore');
 
 const UPDATED = 'May 27, 2026';
 
@@ -45,16 +46,16 @@ function getTerminosHTML() {
         </div>`,
         bodyHtml: `
         <div><h2 class="text-white font-bold mb-2">1. Provider</h2>
-            <p>PredictaCore is provided at predictacore.ai. Support: ${support}</p></div>
+            <p><strong>PredictaCore</strong> is operated by ${LEGAL_ENTITY}. Service and support at predictacore.ai. Support: ${support}</p></div>
         <div><h2 class="text-white font-bold mb-2">2. Service</h2>
             <p>AI-powered website and digital profile audits delivered as PDF reports. We do not edit your website or guarantee revenue outcomes.</p></div>
         <div><h2 class="text-white font-bold mb-2">3. Pricing</h2>
-            <p><strong>Titan Report:</strong> USD $349.00 — charged at purchase.</p>
-            <p class="mt-2"><strong>Monthly monitoring (subscription):</strong> USD $25.00/month — starts 30 days after purchase.</p></div>
+            <p><strong>Titan Report:</strong> USD $${TITAN_PRICE_USD}.00 — introductory price, charged at purchase.</p>
+            <p class="mt-2"><strong>Monthly monitoring (subscription):</strong> USD $${MONITORING_PRICE_USD}.00/month — starts 30 days after purchase.</p></div>
         <div><h2 class="text-white font-bold mb-2">4. Card charges</h2>
             <p>Charges should appear on your statement as <strong>PREDICTACORE</strong> (or similar PredictaCore descriptor). If you do not recognize a charge, contact ${support} before disputing with your bank.</p></div>
         <div><h2 class="text-white font-bold mb-2">5. No refunds</h2>
-            <p><strong>ALL SALES ARE FINAL.</strong> USD $349 and processed USD $25 monthly charges are non-refundable.</p></div>
+            <p><strong>ALL SALES ARE FINAL.</strong> USD $${TITAN_PRICE_USD} and processed USD $${MONITORING_PRICE_USD} monthly charges are non-refundable.</p></div>
         <div><h2 class="text-white font-bold mb-2">6. Cancellation</h2>
             <p>Cancel monitoring via the Stripe customer portal linked from predictacore.ai. Cancel at least <strong>5 business days</strong> before renewal to avoid the next monthly charge.</p></div>
         <div><h2 class="text-white font-bold mb-2">7. Limitation of liability</h2>
