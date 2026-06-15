@@ -226,8 +226,8 @@ function getPdfUiStrings(locale) {
             mobile: 'Móvil',
             assetDefault: 'Análisis del activo',
             liteTitle: 'Reporte Lite',
-            liteCtaTitle: 'Activa el Reporte Titán',
-            liteCtaBody: `Auditoría forense completa de 11 secciones (USD $${TITAN_PRICE_USD}, precio introductorio). Tu correo y URL ya están listos:`,
+            liteCtaTitle: 'Desbloquea las 15 fugas que ahuyentan clientes',
+            liteCtaBody: `El Lite solo muestra 3. Reporte Titán completo (USD $${TITAN_PRICE_USD}) — tu correo y URL listos, un clic para pagar:`,
             brandTagline: 'Inteligencia de Negocios',
         };
     }
@@ -239,8 +239,8 @@ function getPdfUiStrings(locale) {
         mobile: 'Mobile',
         assetDefault: 'Asset analysis',
         liteTitle: 'Lite Intelligence Report',
-        liteCtaTitle: 'Upgrade to Titan Report',
-        liteCtaBody: `Full 11-section forensic audit (USD $${TITAN_PRICE_USD} introductory price). Your email and URL are pre-filled:`,
+        liteCtaTitle: 'Unlock all 15 leaks driving customers away',
+        liteCtaBody: `Lite shows 3 only. Full Titan Report (USD $${TITAN_PRICE_USD}) — email and URL ready, one click to pay:`,
         brandTagline: 'Business Intelligence',
     };
 }
@@ -278,8 +278,72 @@ function getDeltaReportIntro(lang) {
 
 function getLiteReportIntro(lang) {
     return lang === 'es'
-        ? 'Aquí está tu auditoría Lite. Incluye snapshot SEO + visibilidad IA y 3 fugas críticas de conversión.'
-        : 'Here is your Lite audit. It includes an SEO + AI visibility snapshot and 3 critical conversion leaks.';
+        ? 'Adjunto va tu auditoría Lite: 3 fugas críticas y un snapshot SEO + IA. Es solo la punta del iceberg — la mayoría de las páginas pierden clientes en más de 15 puntos que el Lite no muestra.'
+        : 'Attached is your Lite audit: 3 critical leaks and an SEO + AI snapshot. That is only the tip — most pages lose customers at 15+ drop-off points the Lite does not show.';
+}
+
+function buildLiteUpsellEmailHtml(lang, { titanUrl, targetUrl }) {
+    const es = lang === 'es';
+    const title = es ? 'Encontramos fugas — te faltan 12 más' : 'We found leaks — 12 more are still hidden';
+    const hook = es
+        ? `Tu escaneo Lite de <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> detectó fricción real. Pero cada día que pasa sin arreglar <strong style="color:#10b981;">las 15 fugas principales</strong>, sigues perdiendo visitantes que ya llegaron y se van en silencio.`
+        : `Your Lite scan of <strong style="color:#fff;">${targetUrl || 'your page'}</strong> found real friction. But every day you leave <strong style="color:#10b981;">all 15 major drop-off points</strong> unfixed, you keep losing visitors who already arrived and leave in silence.`;
+    const bullets = es
+        ? [
+            'Las <strong>15 fugas</strong> que ahuyentan compradores (no solo 3)',
+            '<strong>15 acciones copy-paste</strong> listas para implementar hoy',
+            'PDF completo de 11 secciones · benchmark · roadmap 21 días',
+            'Tu correo y URL ya están listos — un clic y pagas',
+        ]
+        : [
+            'All <strong>15 leaks</strong> driving customers away (not just 3)',
+            '<strong>15 copy-paste actions</strong> ready to implement today',
+            'Full 11-section PDF · benchmark · 21-day roadmap',
+            'Your email and URL are pre-filled — one click to pay',
+        ];
+    const ctaLabel = es ? `Pagar $${TITAN_PRICE_USD} — Reporte Titán` : `Pay $${TITAN_PRICE_USD} — Titan Report`;
+    const pdfNote = es
+        ? 'El PDF Lite va adjunto. El Reporte Titán llega por correo tras el pago.'
+        : 'Your Lite PDF is attached. The Titan Report arrives by email after payment.';
+    const cancelHtml = getSubscriptionCancellationEmailHtml(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
+    const bulletHtml = bullets.map((b) => `<li style="margin:0 0 8px 0;">${b}</li>`).join('');
+
+    return `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
+  <h1 style="color:#fff;font-size:20px;text-align:center;margin:0 0 12px 0;line-height:1.3;">${title}</h1>
+  <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;">${getLiteReportIntro(lang)}</p>
+  <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;">${hook}</p>
+  <ul style="font-size:13px;line-height:1.55;margin:0 0 20px 0;padding-left:18px;color:#a1a1aa;">${bulletHtml}</ul>
+  <p style="margin:28px 0;text-align:center;"><a href="${titanUrl}" style="background:#10b981;color:#000;padding:14px 28px;text-decoration:none;font-weight:900;border-radius:6px;display:inline-block;font-size:14px;text-transform:uppercase;letter-spacing:0.04em;">${ctaLabel}</a></p>
+  <p style="font-size:11px;color:#71717a;text-align:center;margin:0 0 8px 0;">${pdfNote}</p>
+  ${cancelHtml}
+  <p style="font-size:11px;color:#71717a;text-align:center;margin-top:16px;">PredictaCore · predictacore.ai</p>
+</div>`;
+}
+
+function buildLiteUpsellEmailText(lang, { titanUrl, targetUrl }) {
+    const es = lang === 'es';
+    const lines = es
+        ? [
+            getLiteReportIntro(lang),
+            '',
+            `Tu Lite de ${targetUrl || 'tu página'} solo muestra 3 fugas. El Reporte Titán encuentra las 15 principales que ahuyentan clientes, más 15 acciones copy-paste y el PDF completo de 11 secciones (USD $${TITAN_PRICE_USD}).`,
+            '',
+            `Un clic — tu correo y URL ya están listos:`,
+            titanUrl,
+            '',
+            getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD),
+        ]
+        : [
+            getLiteReportIntro(lang),
+            '',
+            `Your Lite for ${targetUrl || 'your page'} shows only 3 leaks. The Titan Report finds all 15 major drop-off points driving customers away, plus 15 copy-paste actions and the full 11-section PDF (USD $${TITAN_PRICE_USD}).`,
+            '',
+            `One click — your email and URL are pre-filled:`,
+            titanUrl,
+            '',
+            getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD),
+        ];
+    return lines.join('\n');
 }
 
 function buildReportDeliveryEmailHtml(lang, { title, intro, portalUrl }) {
@@ -302,27 +366,13 @@ function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetU
     if (modo === 'LITE') {
         const lang = es ? 'es' : 'en';
         const url = titanUrl || '';
-        const intro = getLiteReportIntro(lang);
-        const title = es ? 'Tu auditoría Lite' : 'Your Lite audit';
-        const upsell = es
-            ? `Reporte Titán completo (11 secciones, USD $${TITAN_PRICE_USD}): ${url}`
-            : `Full Titan Report (11 sections, USD $${TITAN_PRICE_USD}): ${url}`;
         return {
-            subject: es ? 'PredictaCore — Tu auditoría Lite' : 'PredictaCore — Your Lite audit',
+            subject: es
+                ? 'PredictaCore — Encontramos fugas en tu página (desbloquea las 15 restantes)'
+                : 'PredictaCore — We found leaks on your page (unlock the other 12)',
             filename: buildReportFilename('LITE', targetUrl),
-            text: `${intro}\n\n${upsell}`,
-            html: es ? `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
-  <h1 style="color:#fff;font-size:18px;text-align:center;">${title}</h1>
-  <p style="font-size:14px;line-height:1.6;">${intro}</p>
-  <p style="font-size:14px;line-height:1.6;">Activa el Reporte Titán completo (USD $${TITAN_PRICE_USD}):</p>
-  <p style="margin:24px 0;text-align:center;"><a href="${url}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activar Reporte Titán — $${TITAN_PRICE_USD}</a></p>
-  <p style="font-size:11px;color:#71717a;text-align:center;">PredictaCore · predictacore.ai</p></div>`
-                : `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
-  <h1 style="color:#fff;font-size:18px;text-align:center;">${title}</h1>
-  <p style="font-size:14px;line-height:1.6;">${intro}</p>
-  <p style="font-size:14px;line-height:1.6;">Upgrade to the full Titan Report (USD $${TITAN_PRICE_USD}):</p>
-  <p style="margin:24px 0;text-align:center;"><a href="${url}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activate Titan Report — $${TITAN_PRICE_USD}</a></p>
-  <p style="font-size:11px;color:#71717a;text-align:center;">PredictaCore · predictacore.ai</p></div>`,
+            text: buildLiteUpsellEmailText(lang, { titanUrl: url, targetUrl }),
+            html: buildLiteUpsellEmailHtml(lang, { titanUrl: url, targetUrl }),
         };
     }
     if (modo === 'DELTA') {

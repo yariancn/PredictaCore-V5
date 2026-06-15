@@ -82,14 +82,13 @@ function getSubscriptionCancellationEmailHtml(lang = 'en', monitoringUsd = 25, t
         + `<a href="${site}/terms" style="color:#10b981;text-decoration:underline;">Terms</a>.</p>`;
 }
 
-/** Deep link to landing upsell with email + URL prefilled for Titan checkout */
+/** Deep link to Titan upsell page — email + URL prefilled, one-click checkout */
 function buildTitanUpgradeUrl({ email, dna, lang = 'en' }) {
     const params = new URLSearchParams();
     if (email) params.set('email', String(email).trim().toLowerCase());
     if (dna) params.set('dna', String(dna).trim());
     if (lang === 'es') params.set('lang', 'es');
-    params.set('titan', '1');
-    return `${publicSiteUrl()}/?${params.toString()}#terminal-section`;
+    return `${publicSiteUrl()}/titan?${params.toString()}`;
 }
 
 function getFaviconHeadTags() {

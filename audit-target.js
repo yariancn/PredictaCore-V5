@@ -65,11 +65,29 @@ function buildSocialProfileUrl(platform, handle) {
     return '';
 }
 
+function inferSocialPlatformFromUrl(url) {
+    const u = String(url || '').toLowerCase();
+    if (u.includes('instagram.com')) return 'instagram';
+    if (u.includes('facebook.com')) return 'facebook';
+    if (u.includes('tiktok.com')) return 'tiktok';
+    return null;
+}
+
 function resolveAuditTarget({ assetType, dna, platform, handle }) {
+    const normalized = normalizeUrl(dna);
+
+    // Lite upsell / checkout with full social URL already resolved
+    if ((!assetType || assetType === 'web') && normalized && isSocialMediaUrl(normalized) && !platform && !handle) {
+        const inferred = inferSocialPlatformFromUrl(normalized);
+        if (inferred) {
+            return { ok: true, url: normalized, assetType: 'social', platform: inferred };
+        }
+    }
+
     const type = assetType === 'social' ? 'social' : 'web';
 
     if (type === 'web') {
-        const url = normalizeUrl(dna);
+        const url = normalized;
         if (!url) return { ok: false, error: 'Website URL required' };
         if (isSocialMediaUrl(url)) {
             return { ok: false, error: 'Use Social Profile mode for Instagram, Facebook, or TikTok URLs' };

@@ -235,7 +235,7 @@ async function createMonitoringSubscription(stripe, { customerId, metadata }) {
     });
 }
 
-function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang }) {
+function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang, cancelUrl }) {
     const meta = checkoutMetadata({ dna, email, refCode, lang });
     const locale = meta.lang === 'es' ? 'es' : 'en';
 
@@ -248,7 +248,7 @@ function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang
         locale,
         custom_text: getCheckoutCustomText(meta.lang),
         success_url: `${host}/exito?session_id={CHECKOUT_SESSION_ID}&email=${encodeURIComponent(meta.email || email)}&lang=${meta.lang}`,
-        cancel_url: `${host}/`,
+        cancel_url: cancelUrl || `${host}/`,
         metadata: meta,
     };
 }

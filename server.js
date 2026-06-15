@@ -19,6 +19,7 @@ const { getHTML } = require('./visual');
 const { getHTMLLite } = require('./visual_lite');
 const { getHTMLDelta } = require('./visual_delta');
 const { getLandingHTML } = require('./landing');
+const { getTitanUpgradeHTML } = require('./titan-upgrade');
 const { getSuccessHTML } = require('./success');
 const { getTitanInternalHTML } = require('./titan-internal');
 const { getPlaygroundHTML } = require('./playground');
@@ -688,6 +689,10 @@ app.get('/', (req, res) => {
     }
     res.send(getLandingHTML());
 });
+app.get('/titan', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.send(getTitanUpgradeHTML());
+});
 app.get('/terms', (req, res) => res.send(getTerminosHTML()));
 app.get('/privacy', (req, res) => res.send(getPrivacidadHTML()));
 app.get('/terminos', (req, res) => res.redirect(301, '/terms'));
@@ -1126,7 +1131,7 @@ app.post('/start-lite', async (req, res) => {
 
 app.post('/start', async (req, res) => {
     try {
-        const { dna, email, refCode, lang, assetType, platform, handle } = req.body;
+        const { dna, email, refCode, lang, assetType, platform, handle, cancelUrl } = req.body;
 
         const resolved = resolveAuditTarget({ assetType, dna, platform, handle });
         if (!resolved.ok) {
@@ -1146,6 +1151,10 @@ app.post('/start', async (req, res) => {
             return res.status(400).json({ error: validation.errors.join(' ') });
         }
 
+        const safeCancelUrl = typeof cancelUrl === 'string' && cancelUrl.startsWith(publicBaseUrl())
+            ? cancelUrl
+            : undefined;
+
         const session = await stripe.checkout.sessions.create(
             buildCheckoutSessionParams({
                 host: publicBaseUrl(),
@@ -1154,6 +1163,7 @@ app.post('/start', async (req, res) => {
                 refCode,
                 lang,
                 lineItems: validation.lineItems,
+                cancelUrl: safeCancelUrl,
             })
         );
 
