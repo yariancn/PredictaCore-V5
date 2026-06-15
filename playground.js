@@ -100,7 +100,7 @@ function getPlaygroundHTML() {
         <div class="grid gap-2 mb-3 sm:grid-cols-2">
             <select id="pg-email-type" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
                 <option value="all">Todos (activación + titán + delta + lite)</option>
-                <option value="activation">Activación post-pago</option>
+                <option value="activation">Confirmación de pago (post-checkout)</option>
                 <option value="titan">Entrega Reporte Titán</option>
                 <option value="delta">Reporte mensual DELTA</option>
                 <option value="lite">Entrega Lite + upsell</option>

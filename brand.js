@@ -32,7 +32,7 @@ function getSubscriptionCancellationNotice(lang = 'en', monitoringUsd = 25, tita
     if (lang === 'es' || String(lang).startsWith('es')) {
         return `El monitoreo mensual (USD $${monitoringUsd}/mes, desde el día 30) se renueva salvo cancelación. `
             + `Para solicitar la cancelación del monitoreo recurrente, escriba a <a href="mailto:${support}" class="text-emerald-500 hover:underline">${support}</a> `
-            + `desde el correo de compra o use el portal de facturación Stripe enviado en su correo de activación. `
+            + `desde el correo de compra o use el portal de facturación Stripe enviado en su correo de confirmación de pago. `
             + `Debe cancelar al menos <strong>5 días hábiles</strong> antes de la renovación para evitar el siguiente cobro. `
             + `El Reporte Titán (USD $${titanUsd}) es venta final. Ver <a href="${site}/terms" class="text-emerald-500 hover:underline">Términos</a>.`;
     }
@@ -47,9 +47,9 @@ function getSubscriptionCancellationPlain(lang = 'en', monitoringUsd = 25, titan
     const support = getSupportEmail();
     const site = publicSiteUrl();
     if (lang === 'es' || String(lang).startsWith('es')) {
-        return `Monitoreo USD $${monitoringUsd}/mes se renueva salvo cancelación. Cancelación del monitoreo recurrente: ${support} o portal Stripe en correo de activación. Mínimo 5 días hábiles antes de renovación. Reporte Titán (USD $${titanUsd}) venta final. ${site}/terms`;
+        return `Monitoreo USD $${monitoringUsd}/mes se renueva salvo cancelación. Cancelación del monitoreo recurrente: ${support} o portal Stripe en correo de confirmación de pago. Mínimo 5 días hábiles antes de renovación. Reporte Titán (USD $${titanUsd}) venta final. ${site}/terms`;
     }
-    return `Monitoring USD $${monitoringUsd}/mo renews unless cancelled. Recurring monitoring cancellation: ${support} or Stripe portal in activation email. At least 5 business days before renewal. Titan Report (USD $${titanUsd}) final sale. ${site}/terms`;
+    return `Monitoring USD $${monitoringUsd}/mo renews unless cancelled. Recurring monitoring cancellation: ${support} or Stripe portal in payment confirmation email. At least 5 business days before renewal. Titan Report (USD $${titanUsd}) final sale. ${site}/terms`;
 }
 
 /** Inline HTML block for report / transactional emails (Resend). */

@@ -257,6 +257,31 @@ function buildReportFilename(modo, targetUrl, { social } = {}) {
     return `PREDICTACORE_TITAN_${hostSlug}.pdf`;
 }
 
+function getTitanReportIntro(lang, { social = false } = {}) {
+    if (lang === 'es') {
+        if (social) {
+            return 'Aquí está tu Reporte Titán. Encontrarás dónde pierdes clientes en tu perfil, cómo te perciben los compradores y acciones copy-paste para recuperar conversiones.';
+        }
+        return 'Aquí está tu Reporte Titán. Encontrarás dónde pierdes clientes, cómo te ven tus compradores y correcciones copy-paste para aumentar ingresos.';
+    }
+    if (social) {
+        return 'Here is your Titan Report. Inside you\'ll find where your profile loses customers, how buyers perceive you, and copy-paste fixes to recover conversions.';
+    }
+    return 'Here is your Titan Report. Inside you\'ll find where you\'re losing customers, how buyers see your page, and easy copy-paste fixes to increase revenue.';
+}
+
+function getDeltaReportIntro(lang) {
+    return lang === 'es'
+        ? 'Aquí está tu reporte mensual de monitoreo. Revisa qué cambió en tu página y qué acciones priorizar este mes.'
+        : 'Here is your monthly monitoring report. See what changed on your page and which actions to prioritize this month.';
+}
+
+function getLiteReportIntro(lang) {
+    return lang === 'es'
+        ? 'Aquí está tu auditoría Lite. Incluye snapshot SEO + visibilidad IA y 3 fugas críticas de conversión.'
+        : 'Here is your Lite audit. It includes an SEO + AI visibility snapshot and 3 critical conversion leaks.';
+}
+
 function buildReportDeliveryEmailHtml(lang, { title, intro, portalUrl }) {
     const cancelHtml = getSubscriptionCancellationEmailHtml(
         lang,
@@ -275,23 +300,27 @@ function buildReportDeliveryEmailHtml(lang, { title, intro, portalUrl }) {
 function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetUrl } = {}) {
     const es = locale.code.startsWith('es');
     if (modo === 'LITE') {
+        const lang = es ? 'es' : 'en';
         const url = titanUrl || '';
+        const intro = getLiteReportIntro(lang);
+        const title = es ? 'Tu auditoría Lite' : 'Your Lite audit';
+        const upsell = es
+            ? `Reporte Titán completo (11 secciones, USD $${TITAN_PRICE_USD}): ${url}`
+            : `Full Titan Report (11 sections, USD $${TITAN_PRICE_USD}): ${url}`;
         return {
             subject: es ? 'PredictaCore — Tu auditoría Lite' : 'PredictaCore — Your Lite audit',
             filename: buildReportFilename('LITE', targetUrl),
-            text: es
-                ? `Tu auditoría Lite PredictaCore va adjunta.\n\nReporte Titán completo (11 secciones, USD $${TITAN_PRICE_USD}):\n${url}`
-                : `Your PredictaCore Lite audit is attached.\n\nFull Titan Report (11 sections, USD $${TITAN_PRICE_USD}):\n${url}`,
+            text: `${intro}\n\n${upsell}`,
             html: es ? `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
-  <h1 style="color:#fff;font-size:18px;text-align:center;">Tu auditoría Lite va adjunta</h1>
-  <p style="font-size:14px;line-height:1.6;">El procesamiento puede tardar hasta 60 minutos. Revisa spam si no llega pronto.</p>
-  <p style="font-size:14px;line-height:1.6;">Incluye snapshot SEO + visibilidad IA. Activa el Reporte Titán completo (USD $${TITAN_PRICE_USD}):</p>
+  <h1 style="color:#fff;font-size:18px;text-align:center;">${title}</h1>
+  <p style="font-size:14px;line-height:1.6;">${intro}</p>
+  <p style="font-size:14px;line-height:1.6;">Activa el Reporte Titán completo (USD $${TITAN_PRICE_USD}):</p>
   <p style="margin:24px 0;text-align:center;"><a href="${url}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activar Reporte Titán — $${TITAN_PRICE_USD}</a></p>
   <p style="font-size:11px;color:#71717a;text-align:center;">PredictaCore · predictacore.ai</p></div>`
                 : `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
-  <h1 style="color:#fff;font-size:18px;text-align:center;">Your Lite audit is attached</h1>
-  <p style="font-size:14px;line-height:1.6;">Processing can take up to 60 minutes. Check spam if you don't see this message soon.</p>
-  <p style="font-size:14px;line-height:1.6;">Includes real SEO + AI visibility snapshot. Upgrade to the full Titan Report (USD $${TITAN_PRICE_USD}):</p>
+  <h1 style="color:#fff;font-size:18px;text-align:center;">${title}</h1>
+  <p style="font-size:14px;line-height:1.6;">${intro}</p>
+  <p style="font-size:14px;line-height:1.6;">Upgrade to the full Titan Report (USD $${TITAN_PRICE_USD}):</p>
   <p style="margin:24px 0;text-align:center;"><a href="${url}" style="background:#10b981;color:#000;padding:12px 20px;text-decoration:none;font-weight:bold;border-radius:6px;display:inline-block;">Activate Titan Report — $${TITAN_PRICE_USD}</a></p>
   <p style="font-size:11px;color:#71717a;text-align:center;">PredictaCore · predictacore.ai</p></div>`,
         };
@@ -299,15 +328,14 @@ function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetU
     if (modo === 'DELTA') {
         const lang = es ? 'es' : 'en';
         const cancelPlain = getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
-        const portalLine = portalUrl ? (es ? `\nPortal: ${portalUrl}` : `\nPortal: ${portalUrl}`) : '';
-        const intro = es
-            ? 'Tu reporte mensual de monitoreo PredictaCore va adjunto.'
-            : 'Your monthly PredictaCore monitoring report is attached.';
+        const portalLine = portalUrl ? `\nPortal: ${portalUrl}` : '';
+        const intro = getDeltaReportIntro(lang);
+        const title = es ? 'Reporte mensual de monitoreo' : 'Monthly monitoring report';
         return {
             subject: es ? 'PredictaCore — Reporte mensual de seguimiento' : 'PredictaCore — Monthly monitoring report',
             filename: buildReportFilename('DELTA', targetUrl),
             text: `${intro}\n\n${cancelPlain}${portalLine}`,
-            html: buildReportDeliveryEmailHtml(lang, { title: intro, intro, portalUrl }),
+            html: buildReportDeliveryEmailHtml(lang, { title, intro, portalUrl }),
         };
     }
     const subject = social
@@ -315,9 +343,7 @@ function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetU
         : (es ? 'PredictaCore — Reporte Titán forense' : 'PredictaCore — Titan forensic report');
     const lang = es ? 'es' : 'en';
     const cancelPlain = getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
-    const intro = es
-        ? 'Tu Reporte Titán PredictaCore va adjunto. La entrega puede tardar hasta 60 minutos; revisa spam si no lo ves pronto.'
-        : 'Your PredictaCore Titan report is attached. Delivery may take up to 60 minutes; check spam if you do not see it soon.';
+    const intro = getTitanReportIntro(lang, { social });
     const title = social
         ? (es ? 'Reporte Titán — perfil social' : 'Titan Report — social profile')
         : (es ? 'Reporte Titán forense' : 'Titan forensic report');
