@@ -1012,6 +1012,94 @@ app.post('/playground/replay-delivery', requirePlayground, async (req, res) => {
     }
 });
 
+app.post('/playground/preview-email', requirePlayground, async (req, res) => {
+    try {
+        const { email, type = 'all', lang = 'en', dna = 'https://example.com' } = req.body || {};
+        const normalizedEmail = String(email || '').trim().toLowerCase();
+        if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+            return res.status(400).json({ error: 'Valid email required' });
+        }
+
+        const allowed = ['activation', 'titan', 'delta', 'lite', 'all'];
+        const kind = String(type || 'all').toLowerCase();
+        if (!allowed.includes(kind)) {
+            return res.status(400).json({ error: `type must be one of: ${allowed.join(', ')}` });
+        }
+
+        if (!process.env.RESEND_API_KEY) {
+            return res.status(503).json({ error: 'RESEND_API_KEY not configured' });
+        }
+
+        const langCode = lang === 'es' ? 'es' : 'en';
+        const reportLocale = { code: langCode === 'es' ? 'es-MX' : 'en-US' };
+        const previewPrefix = '[PREVIEW] ';
+        const previewNote = langCode === 'es'
+            ? '[Vista previa — sin PDF adjunto, sin generar reporte]'
+            : '[Preview — no PDF attached, report not generated]';
+
+        let portalUrl = null;
+        try {
+            const cid = await resolveStripeCustomerId(normalizedEmail);
+            if (cid) portalUrl = await createCustomerPortalUrl(cid);
+        } catch (_) { /* optional */ }
+
+        const targetUrl = normalizeUrl(dna) || 'https://example.com';
+        const types = kind === 'all' ? ['activation', 'titan', 'delta', 'lite'] : [kind];
+        const sent = [];
+
+        for (const t of types) {
+            let payload;
+            if (t === 'activation') {
+                payload = buildTitanActivationEmail(langCode, portalUrl);
+            } else if (t === 'titan') {
+                const mail = getReportEmailCopy('TITAN', reportLocale, { portalUrl, targetUrl });
+                payload = {
+                    subject: mail.subject,
+                    text: `${mail.text}\n\n${previewNote}`,
+                    html: mail.html ? getEmailBrandHeader(langCode) + mail.html : null,
+                };
+            } else if (t === 'delta') {
+                const mail = getReportEmailCopy('DELTA', reportLocale, { portalUrl, targetUrl });
+                payload = {
+                    subject: mail.subject,
+                    text: `${mail.text}\n\n${previewNote}`,
+                    html: mail.html ? getEmailBrandHeader(langCode) + mail.html : null,
+                };
+            } else if (t === 'lite') {
+                const titanUrl = buildTitanUpgradeUrl({ email: normalizedEmail, dna: targetUrl, lang: langCode });
+                const mail = getReportEmailCopy('LITE', reportLocale, { titanUrl, targetUrl });
+                payload = {
+                    subject: mail.subject,
+                    text: `${mail.text}\n\n${previewNote}`,
+                    html: mail.html ? getEmailBrandHeader(langCode) + mail.html : null,
+                };
+            }
+
+            const { error } = await resend.emails.send({
+                from: getResendFrom(),
+                to: normalizedEmail,
+                subject: previewPrefix + payload.subject,
+                text: payload.text,
+                html: payload.html || undefined,
+            });
+            if (error) throw new Error(`${t}: ${error.message}`);
+            sent.push(t);
+        }
+
+        res.json({
+            ok: true,
+            email: normalizedEmail,
+            sent,
+            lang: langCode,
+            portal_included: !!portalUrl,
+            note: 'Preview emails sent without PDF attachments or report generation.',
+        });
+    } catch (err) {
+        console.error('!!! preview-email:', err.message);
+        res.status(500).json({ error: err.message || 'Could not send preview email' });
+    }
+});
+
 app.post('/start-lite', async (req, res) => {
     const { dna, email } = req.body || {};
     const normalizedEmail = String(email || '').trim().toLowerCase();

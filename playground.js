@@ -94,6 +94,26 @@ function getPlaygroundHTML() {
         <pre id="out-fulfill" class="mt-3 text-amber-400">—</pre>
     </section>
 
+    <section class="mb-8 border border-violet-500/30 bg-violet-950/10 p-4 rounded">
+        <h2 class="text-violet-400 text-[10px] uppercase tracking-widest mb-3">07 — Vista previa de correos (sin reporte)</h2>
+        <p class="text-zinc-500 text-[10px] mb-3">Envía el HTML del correo a tu bandeja. Sin PDF, sin IA, sin cobro. Asunto: [PREVIEW].</p>
+        <div class="grid gap-2 mb-3 sm:grid-cols-2">
+            <select id="pg-email-type" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
+                <option value="all">Todos (activación + titán + delta + lite)</option>
+                <option value="activation">Activación post-pago</option>
+                <option value="titan">Entrega Reporte Titán</option>
+                <option value="delta">Reporte mensual DELTA</option>
+                <option value="lite">Entrega Lite + upsell</option>
+            </select>
+            <select id="pg-lang" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
+                <option value="en">English</option>
+                <option value="es">Español</option>
+            </select>
+        </div>
+        <button onclick="runEmailPreview()" class="bg-violet-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/preview-email</button>
+        <pre id="out-email-preview" class="mt-3 text-violet-300">—</pre>
+    </section>
+
     <section>
         <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">05 — DB Snapshot</h2>
         <button onclick="runDb()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">GET /playground/db</button>
@@ -217,6 +237,22 @@ function getPlaygroundHTML() {
             const r = await fetch('/checkout-status?session_id=' + encodeURIComponent(session_id));
             const data = await r.json();
             document.getElementById('out-fulfill').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function runEmailPreview() {
+            const email = document.getElementById('pg-email').value;
+            const type = document.getElementById('pg-email-type').value;
+            const lang = document.getElementById('pg-lang').value;
+            const dna = document.getElementById('pg-url').value || 'https://example.com';
+            if (!email) {
+                document.getElementById('out-email-preview').textContent = 'Ingresa email arriba';
+                return;
+            }
+            const r = await api('/playground/preview-email', {
+                method: 'POST',
+                body: JSON.stringify({ email, type, lang, dna }),
+            });
+            document.getElementById('out-email-preview').textContent = JSON.stringify(r.data, null, 2);
         }
 
         async function runDb() {
