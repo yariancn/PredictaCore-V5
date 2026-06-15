@@ -77,6 +77,29 @@ function getLandingHTML() {
                 font-size: 0.6875rem;
                 letter-spacing: 0.12em;
             }
+            .asset-option {
+                position: relative;
+                cursor: pointer;
+                border: 1px solid #3f3f46;
+                border-radius: 0.5rem;
+                padding: 0.65rem 0.5rem;
+                text-align: center;
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                color: #a1a1aa;
+                background: #0a0a0a;
+                transition: all 0.15s;
+            }
+            .asset-option:hover { border-color: #52525b; color: #e4e4e7; }
+            .asset-option.selected {
+                border-color: #10b981;
+                color: #10b981;
+                background: rgba(16, 185, 129, 0.08);
+                box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25);
+            }
+            .asset-option input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
         </style>
     </head>
     <body class="antialiased">
@@ -261,10 +284,30 @@ function getLandingHTML() {
             <div class="max-w-2xl mx-auto px-6">
                 
                 <div id="setup-stage" class="terminal-box p-8 md:p-10 shadow-[0_0_50px_rgba(16,185,129,0.1)] border border-zinc-800 bg-black/80 relative">
-                    <h2 id="term-title" class="text-2xl font-black text-white mb-2 uppercase tracking-tighter text-center">Start Forensic Diagnostic</h2>
-                    <p id="term-sub" class="text-sm text-zinc-400 text-center mb-6 pc-readable">Paste your website or public Instagram, Facebook, or TikTok URL. No login required.</p>
+                    <h2 id="term-title" class="text-2xl font-black text-white mb-2 uppercase tracking-tighter text-center">Start your free scan</h2>
+                    <p id="term-sub" class="text-sm text-zinc-400 text-center mb-6 pc-readable">Pick where you sell. Enter only your website or @handle — we add the rest automatically.</p>
+                    <p id="asset-picker-label" class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-2 pc-label-xs">Where is your page?</p>
+                    <div id="asset-type-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                        <label class="asset-option selected" data-asset="web">
+                            <input type="radio" name="asset-type" value="web" checked>
+                            <span id="asset-label-web">Website</span>
+                        </label>
+                        <label class="asset-option" data-asset="instagram">
+                            <input type="radio" name="asset-type" value="instagram">
+                            <span id="asset-label-instagram">Instagram</span>
+                        </label>
+                        <label class="asset-option" data-asset="facebook">
+                            <input type="radio" name="asset-type" value="facebook">
+                            <span id="asset-label-facebook">Facebook</span>
+                        </label>
+                        <label class="asset-option" data-asset="tiktok">
+                            <input type="radio" name="asset-type" value="tiktok">
+                            <span id="asset-label-tiktok">TikTok</span>
+                        </label>
+                    </div>
                     <div class="space-y-4">
-                        <input type="url" id="dna-url" placeholder="Website or social profile URL (yourbusiness.com · instagram.com/brand)" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input">
+                        <input type="text" id="dna-url" placeholder="yourbusiness.com" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input" autocomplete="off">
+                        <p id="url-preview" class="text-[10px] text-zinc-600 text-center font-mono break-all"></p>
                         <input type="email" id="user-email" placeholder="Your Email" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input">
                         <p id="lite-eta-before" class="text-xs text-zinc-500 leading-relaxed text-center pc-readable">Report delivery can take up to 60 minutes while our engine processes your site.</p>
                         <p id="setup-error" class="hidden-flow text-sm text-red-400 text-center font-medium" role="alert"></p>
@@ -373,11 +416,21 @@ function getLandingHTML() {
                     methodTitle: "The 11 forensic pillars",
                     pillarsTitle: "What your PDF includes",
                     p1: "Asset X-Ray", p2: "Psychological Profiles", p3: "Health Scorecard", p4: "Visibility & SEO", p5: "Competitive Benchmark", p6: "SWOT Matrix", p7: "Wishlist", p8: "15 Drop-off Points", p9: "15 Tactical Actions", p10: "Scaling Tools", p11: "21-Day Roadmap",
-                    termTitle: "Start Forensic Diagnostic",
-                    termSub: "Paste your website or public Instagram, Facebook, or TikTok URL. No login required.",
-                    btnStart: "Execute Free Scan",
+                    termTitle: "Start your free scan",
+                    termSub: "Pick where you sell. Enter only your website or @handle — we add the rest automatically.",
+                    assetPickerLabel: "Where is your page?",
+                    assetWeb: "Website",
+                    assetInstagram: "Instagram",
+                    assetFacebook: "Facebook",
+                    assetTiktok: "TikTok",
+                    phWeb: "yourbusiness.com",
+                    phInstagram: "yourbrand",
+                    phFacebook: "pagename",
+                    phTiktok: "pamandander",
+                    urlPreviewPrefix: "We'll scan:",
+                    btnStart: "Run free scan",
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
-                    upT: "X-Ray Sealed", upSt: "Successfully sent to",
+                    upT: "Scan complete", upSt: "Successfully sent to",
                     boxText: "Initial scan shows critical bottlenecks. You are losing sales today due to purchasing obstacles. The Titan Report dissects your website and delivers the exact instructions to fix these leaks.",
                     subPrice: "Charged today: USD $199 (Titan Report — intro price)",
                     subPrice2: "USD $25/mo monitoring starts 30 days after purchase. Renews unless cancelled — cancellation: audit@predictacore.ai or billing portal after purchase (see Terms).",
@@ -392,15 +445,17 @@ function getLandingHTML() {
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
                     checkoutError: "Could not start checkout. Try again or contact support.",
                     checkoutNetwork: "Network error. Check your connection and try again.",
-                    alertError: "URL and email are required.",
+                    alertError: "Enter your page and email.",
                     invalidEmail: "Enter a valid email address.",
+                    invalidUrl: "Enter a valid website (e.g. yourbusiness.com).",
+                    useSocialPicker: "For Instagram, Facebook, or TikTok, select that network above.",
                     scanError: "Could not start the scan. Try again in a moment.",
-                    liteEtaBefore: "Report delivery can take up to 60 minutes while our engine processes your site.",
+                    liteEtaBefore: "Your Lite report will arrive by email once processing finishes.",
                     liteQueued: "Your Lite report is being generated and will arrive by email.",
-                    liteEtaAfter: "Delivery may take up to 60 minutes due to forensic processing volume. Check spam.",
+                    liteEtaAfter: "Check your inbox and spam folder for the PDF.",
                     titanEtaBefore: "After payment, your Titan PDF may take up to 60 minutes to arrive by email.",
                     successPayment: "Payment confirmed! Your Titan report is being processed by the AI and will arrive in your email shortly.",
-                    phUrl: "Website or social profile URL (yourbusiness.com · instagram.com/brand)", phEmail: "Your Email"
+                    phEmail: "Your Email"
                 },
                 es: {
                     pageTitle: "PredictaCore | Auditoría forense para emprendedores",
@@ -433,11 +488,21 @@ function getLandingHTML() {
                     methodTitle: "Los 11 pilares forenses",
                     pillarsTitle: "Qué incluye tu PDF",
                     p1: "Radiografía del Activo", p2: "Perfiles Psicológicos", p3: "Scorecard de Salud", p4: "Visibilidad y SEO", p5: "Benchmark Competitivo", p6: "Matriz Estratégica", p7: "Lista de Deseos", p8: "15 Puntos de Fuga", p9: "15 Acciones Tácticas", p10: "Herramientas de Escala", p11: "Hoja de Ruta a 21 Días",
-                    termTitle: "Iniciar diagnóstico forense",
-                    termSub: "Pega tu web o URL pública de Instagram, Facebook o TikTok. Sin login.",
-                    btnStart: "Ejecutar escaneo gratuito",
+                    termTitle: "Inicia tu escaneo gratis",
+                    termSub: "Elige dónde vendes. Solo pon tu web o @usuario — nosotros armamos el enlace.",
+                    assetPickerLabel: "¿Dónde está tu página?",
+                    assetWeb: "Sitio web",
+                    assetInstagram: "Instagram",
+                    assetFacebook: "Facebook",
+                    assetTiktok: "TikTok",
+                    phWeb: "tunegocio.com",
+                    phInstagram: "tumarca",
+                    phFacebook: "pagina",
+                    phTiktok: "pamandander",
+                    urlPreviewPrefix: "Analizaremos:",
+                    btnStart: "Ejecutar escaneo gratis",
                     logInit: ">> INICIALIZANDO NÚCLEO PREDICTACORE...",
-                    upT: "Radiografía Sellada", upSt: "Enviado con éxito a",
+                    upT: "Escaneo listo", upSt: "Enviado con éxito a",
                     boxText: "El escaneo inicial muestra cuellos de botella críticos. Estás perdiendo ventas hoy por obstáculos de compra. El Reporte Titán disecta tu sitio y entrega las instrucciones exactas para arreglar estas fugas.",
                     subPrice: "Cobro hoy: USD $199 (Reporte Titán — precio introductorio)",
                     subPrice2: "Monitoreo USD $25/mes desde el día 30. Se renueva salvo cancelación — solicitud: audit@predictacore.ai o portal en correo de activación (ver Términos).",
@@ -452,15 +517,17 @@ function getLandingHTML() {
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
                     checkoutError: "No se pudo iniciar el pago. Reintenta o contacta soporte.",
                     checkoutNetwork: "Error de red. Revisa tu conexión e intenta de nuevo.",
-                    alertError: "URL y email son obligatorios.",
+                    alertError: "Ingresa tu página y email.",
                     invalidEmail: "Ingresa un email válido.",
+                    invalidUrl: "Ingresa una web válida (ej. tunegocio.com).",
+                    useSocialPicker: "Para Instagram, Facebook o TikTok, selecciona esa red arriba.",
                     scanError: "No se pudo iniciar el escaneo. Intenta de nuevo en un momento.",
-                    liteEtaBefore: "La entrega puede tardar hasta 60 minutos mientras procesamos tu sitio.",
+                    liteEtaBefore: "Tu reporte Lite llegará por correo cuando termine el procesamiento.",
                     liteQueued: "Tu reporte Lite se está generando y llegará por correo.",
-                    liteEtaAfter: "La entrega puede tardar hasta 60 minutos por el volumen de análisis. Revisa spam.",
+                    liteEtaAfter: "Revisa tu bandeja y la carpeta spam por el PDF.",
                     titanEtaBefore: "Tras el pago, tu PDF Titán puede tardar hasta 60 minutos en llegar por correo.",
                     successPayment: "¡Pago confirmado! Tu reporte Titán está siendo procesado por la IA y llegará a tu correo a la brevedad.",
-                    phUrl: "URL web o perfil social (tunegocio.com · instagram.com/marca)", phEmail: "Tu Email"
+                    phEmail: "Tu Email"
                 }
             };
 
@@ -521,8 +588,8 @@ function getLandingHTML() {
                 document.getElementById('term-title').innerText = d.termTitle;
                 if (d.termSub) document.getElementById('term-sub').innerText = d.termSub;
                 document.getElementById('btn-start').innerText = d.btnStart;
-                document.getElementById('dna-url').placeholder = d.phUrl;
                 document.getElementById('user-email').placeholder = d.phEmail;
+                updateAssetUi();
                 document.getElementById('log-init').innerText = d.logInit;
                 
                 document.getElementById('up-t').innerText = d.upT;
@@ -540,6 +607,91 @@ function getLandingHTML() {
                 
                 document.getElementById('footer-text').innerText = d.footerText;
                 document.getElementById('disclaimer-text').innerHTML = d.disclaimerText;
+            }
+
+            function getSelectedAssetType() {
+                const el = document.querySelector('input[name="asset-type"]:checked');
+                return el ? el.value : 'web';
+            }
+
+            function buildSocialUrl(platform, raw) {
+                let handle = String(raw || '').trim();
+                if (!handle) return '';
+                if (/instagram\\.com/i.test(handle)) {
+                    const m = handle.match(/instagram\\.com\\/([^/?#]+)/i);
+                    if (m) handle = m[1];
+                } else if (/facebook\\.com/i.test(handle)) {
+                    const m = handle.match(/facebook\\.com\\/([^/?#]+)/i);
+                    if (m) handle = m[1];
+                } else if (/tiktok\\.com/i.test(handle)) {
+                    const m = handle.match(/tiktok\\.com\\/@?([^/?#]+)/i);
+                    if (m) handle = m[1];
+                }
+                handle = handle.replace(/^@/, '').replace(/\\/$/, '');
+                if (platform === 'instagram') return 'https://www.instagram.com/' + handle + '/';
+                if (platform === 'facebook') return 'https://www.facebook.com/' + handle;
+                if (platform === 'tiktok') return 'https://www.tiktok.com/@' + handle.replace(/^@/, '');
+                return '';
+            }
+
+            function buildWebUrl(raw) {
+                let url = String(raw || '').trim();
+                if (!url) return '';
+                if (!/^https?:\\/\\//i.test(url)) url = 'https://' + url.replace(/^\\/\\//, '');
+                return url;
+            }
+
+            function buildScanPayload() {
+                const d = dictionary[currentLang];
+                const raw = (document.getElementById('dna-url')?.value || '').trim();
+                const assetType = getSelectedAssetType();
+                if (!raw) return { error: d.alertError };
+                if (assetType === 'web') {
+                    const url = buildWebUrl(raw);
+                    try { new URL(url); } catch { return { error: d.invalidUrl }; }
+                    if (/instagram\\.com|facebook\\.com|tiktok\\.com/i.test(url)) {
+                        return { error: d.useSocialPicker };
+                    }
+                    return { assetType: 'web', dna: url };
+                }
+                const url = buildSocialUrl(assetType, raw);
+                if (!url) return { error: d.alertError };
+                return { assetType: 'social', platform: assetType, handle: raw.replace(/^@/, ''), dna: url };
+            }
+
+            function updateAssetUi() {
+                const d = dictionary[currentLang];
+                const assetType = getSelectedAssetType();
+                document.querySelectorAll('.asset-option').forEach((el) => {
+                    const input = el.querySelector('input[name="asset-type"]');
+                    el.classList.toggle('selected', input && input.checked);
+                });
+                if (d.assetPickerLabel) document.getElementById('asset-picker-label').innerText = d.assetPickerLabel;
+                if (d.assetWeb) document.getElementById('asset-label-web').innerText = d.assetWeb;
+                if (d.assetInstagram) document.getElementById('asset-label-instagram').innerText = d.assetInstagram;
+                if (d.assetFacebook) document.getElementById('asset-label-facebook').innerText = d.assetFacebook;
+                if (d.assetTiktok) document.getElementById('asset-label-tiktok').innerText = d.assetTiktok;
+                const phMap = {
+                    web: d.phWeb,
+                    instagram: d.phInstagram,
+                    facebook: d.phFacebook,
+                    tiktok: d.phTiktok,
+                };
+                const input = document.getElementById('dna-url');
+                if (input) input.placeholder = phMap[assetType] || d.phWeb;
+                const raw = (input?.value || '').trim();
+                const preview = document.getElementById('url-preview');
+                if (!preview) return;
+                if (!raw) {
+                    preview.innerText = '';
+                    return;
+                }
+                const payload = buildScanPayload();
+                if (payload.error) {
+                    preview.innerText = '';
+                    return;
+                }
+                preview.innerText = (d.urlPreviewPrefix || "We'll scan:") + ' ' + payload.dna;
             }
 
             function setSetupError(msg) {
@@ -573,13 +725,17 @@ function getLandingHTML() {
             }
 
             async function iniciarEscaneo() {
-                const url = (document.getElementById('dna-url')?.value || '').trim();
                 const email = (document.getElementById('user-email')?.value || '').trim();
                 const d = dictionary[currentLang];
                 const btn = document.getElementById('btn-start');
                 const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+                const payload = buildScanPayload();
 
-                if (!url || !email) {
+                if (payload.error) {
+                    setSetupError(payload.error);
+                    return;
+                }
+                if (!email) {
                     setSetupError(d.alertError);
                     return;
                 }
@@ -608,13 +764,16 @@ function getLandingHTML() {
                 const logs = currentLang === 'es'
                     ? [">> Conectando nodos...", ">> Analizando página pública...", ">> Detectando fricción y fugas...", ">> Generando reporte Lite...", ">> Enviando por correo..."]
                     : [">> Connecting nodes...", ">> Scanning public page...", ">> Detecting friction and leaks...", ">> Building Lite report...", ">> Sending email..."];
+                if (payload.platform === 'tiktok') {
+                    logs.splice(1, 0, currentLang === 'es' ? ">> Perfil TikTok detectado..." : ">> TikTok profile detected...");
+                }
 
                 let fetchOk = false;
                 try {
                     const res = await fetch('/start-lite', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ dna: url, email }),
+                        body: JSON.stringify({ email, ...payload }),
                     });
                     fetchOk = res.ok;
                     if (!res.ok) {
@@ -669,13 +828,17 @@ function getLandingHTML() {
             }
 
             async function comprarTitan() {
-                const url = document.getElementById('dna-url').value;
                 const email = document.getElementById('user-email').value;
                 const d = dictionary[currentLang];
                 const btn = document.getElementById('btn-titan');
                 const btnLabel = d.btnTitan;
+                const payload = buildScanPayload();
 
-                if (!url || !email) {
+                if (payload.error) {
+                    setCheckoutError(payload.error);
+                    return;
+                }
+                if (!email) {
                     setCheckoutError(d.alertError);
                     return;
                 }
@@ -689,7 +852,7 @@ function getLandingHTML() {
                     const res = await fetch('/start', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ dna: url, email, refCode, lang: currentLang }),
+                        body: JSON.stringify({ email, refCode, lang: currentLang, ...payload }),
                     });
                     const data = await res.json().catch(() => ({}));
 
@@ -729,6 +892,11 @@ function getLandingHTML() {
                 document.getElementById('lang-en')?.addEventListener('click', () => setLanguage('en'));
                 document.getElementById('lang-es')?.addEventListener('click', () => setLanguage('es'));
 
+                document.querySelectorAll('input[name="asset-type"]').forEach((radio) => {
+                    radio.addEventListener('change', updateAssetUi);
+                });
+                document.getElementById('dna-url')?.addEventListener('input', updateAssetUi);
+
                 document.getElementById('dna-url')?.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') iniciarEscaneo();
                 });
@@ -741,6 +909,7 @@ function getLandingHTML() {
                         document.getElementById('terminal-section').scrollIntoView({ behavior: 'smooth' });
                     }, 400);
                 }
+                updateAssetUi();
             })();
         </script>
     </body>

@@ -1101,18 +1101,23 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
 });
 
 app.post('/start-lite', async (req, res) => {
-    const { dna, email } = req.body || {};
+    const { dna, email, assetType, platform, handle } = req.body || {};
     const normalizedEmail = String(email || '').trim().toLowerCase();
-    const targetUrl = normalizeUrl(dna);
-    if (!targetUrl || !normalizedEmail) {
-        return res.status(400).json({ error: 'URL and email required' });
+
+    const resolved = resolveAuditTarget({ assetType, dna, platform, handle });
+    if (!resolved.ok) {
+        return res.status(400).json({ error: resolved.error });
+    }
+    if (!normalizedEmail) {
+        return res.status(400).json({ error: 'Email required' });
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
         return res.status(400).json({ error: 'Invalid email address' });
     }
     try {
-        const started = await iniciarAuditoria(dna, normalizedEmail, 'LITE');
-        res.json({ status: 'started', job_id: started.jobId });
+        console.log(`>>> [LITE / ${resolved.assetType}] ${normalizedEmail} — ${resolved.url}`);
+        const started = await iniciarAuditoria(resolved.url, normalizedEmail, 'LITE');
+        res.json({ status: 'started', job_id: started.jobId, target: resolved.url });
     } catch (err) {
         console.error('!!! /start-lite:', err?.message || err);
         res.status(400).json({ error: err.message || 'Could not start scan' });
@@ -1121,8 +1126,13 @@ app.post('/start-lite', async (req, res) => {
 
 app.post('/start', async (req, res) => {
     try {
-        const { dna, email, refCode, lang } = req.body;
-        if (!dna || !email) {
+        const { dna, email, refCode, lang, assetType, platform, handle } = req.body;
+
+        const resolved = resolveAuditTarget({ assetType, dna, platform, handle });
+        if (!resolved.ok) {
+            return res.status(400).json({ error: resolved.error });
+        }
+        if (!email) {
             return res.status(400).json({ error: 'URL y email requeridos' });
         }
 
@@ -1139,7 +1149,7 @@ app.post('/start', async (req, res) => {
         const session = await stripe.checkout.sessions.create(
             buildCheckoutSessionParams({
                 host: publicBaseUrl(),
-                dna,
+                dna: resolved.url,
                 email,
                 refCode,
                 lang,
