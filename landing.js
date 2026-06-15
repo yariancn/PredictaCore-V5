@@ -111,7 +111,7 @@ function getLandingHTML() {
                     </div>
                     <div class="border-l-4 border-zinc-700 pl-6 flex flex-col justify-center">
                         <p id="hero-desc-right" class="text-base text-zinc-400 leading-relaxed pc-readable">
-                            If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 copy-paste fixes to recover conversions. Deeper than generic chat AI. More deliverables than agencies charging $3k+ to review the same page.
+                            If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 copy-paste fixes to recover conversions. We do a much deeper analysis than any generic AI, pinpointing exactly where your page loses clients. More deliverables than agencies charging $3k+ to review the same page.
                         </p>
                     </div>
                 </div>
@@ -348,7 +348,7 @@ function getLandingHTML() {
                     heroCta: "Run free scan",
                     heroTitle: "TRAFFIC DOES NOT GUARANTEE <br><span class='text-emerald-500'>PROFITABILITY.</span>",
                     heroDescLeft: "Your public page is where strangers decide yes or no. We don't need your analytics — we forensic-scan what every customer sees and show you exactly what's making them leave.",
-                    heroDescRight: "If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 copy-paste fixes to recover conversions. Deeper than generic chat AI. More deliverables than agencies charging $3k+ to review the same page.",
+                    heroDescRight: "If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 copy-paste fixes to recover conversions. We do a much deeper analysis than any generic AI, pinpointing exactly where your page loses clients. More deliverables than agencies charging $3k+ to review the same page.",
                     heroTagline: "We don't value your internal data. We value what your page is doing to your next customer.",
                     whyTitle: "Why PredictaCore",
                     whySub: "The spearhead audit for entrepreneurs who can't afford to guess.",
@@ -386,7 +386,7 @@ function getLandingHTML() {
                     urlHint: "Instagram, Facebook, TikTok, or any public website — no login required.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "Consultant or Agency? Join our Forensic Audit network.",
-                    disclaimerText: "PredictaCore audits. $199 intro price today. $25/mo monitoring from day 30; renews unless cancelled per Terms. Statement: PREDICTACORE.",
+                    disclaimerText: 'PredictaCore audits. $199 intro price today. $25/mo monitoring from day 30; renews unless cancelled per <a href="/terms" class="text-emerald-600 underline">Terms</a> (audit@predictacore.ai). Statement: PREDICTACORE.',
                     checkoutLoading: "Opening secure checkout…",
                     checkoutOverlayTitle: "Secure checkout",
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
@@ -408,7 +408,7 @@ function getLandingHTML() {
                     heroCta: "Ejecutar escaneo gratuito",
                     heroTitle: "TENER TRÁFICO NO GARANTIZA <br><span class='text-emerald-500'>RENTABILIDAD.</span>",
                     heroDescLeft: "Tu página pública es donde un desconocido dice sí o no. No necesitamos tu analytics — escaneamos lo que ve cada cliente y te mostramos qué lo hace irse.",
-                    heroDescRight: "Si tu página pierde visitantes en silencio, estás regalando ventas. Una URL. Un PDF. Mapeamos cada punto donde un cliente duda, abandona o se va con la competencia — y te damos 15 correcciones copy-paste para recuperar conversiones. Más rigor que una IA genérica. Más entregables que agencias que cobran $3k+ por revisar la misma página.",
+                    heroDescRight: "Si tu página pierde visitantes en silencio, estás regalando ventas. Una URL. Un PDF. Mapeamos cada punto donde un cliente duda, abandona o se va con la competencia — y te damos 15 correcciones copy-paste para recuperar conversiones. Hacemos un análisis mucho más profundo que cualquier IA genérica, señalando con precisión dónde tu página pierde clientes. Más entregables que agencias que cobran $3k+ por revisar la misma página.",
                     heroTagline: "No valoramos tus datos internos. Valoramos lo que tu página le hace a tu próximo cliente.",
                     whyTitle: "Por qué PredictaCore",
                     whySub: "La auditoría punta de lanza para emprendedores que no pueden permitirse adivinar.",
@@ -446,7 +446,7 @@ function getLandingHTML() {
                     urlHint: "Instagram, Facebook, TikTok o cualquier web pública — sin login.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
-                    disclaimerText: "Auditorías PredictaCore. $199 precio introductorio hoy. Monitoreo $25/mes desde día 30; se renueva salvo cancelación según Términos. Estado de cuenta: PREDICTACORE.",
+                    disclaimerText: 'Auditorías PredictaCore. $199 precio introductorio hoy. Monitoreo $25/mes desde día 30; se renueva salvo cancelación según <a href="/terms" class="text-emerald-600 underline">Términos</a> (audit@predictacore.ai). Estado de cuenta: PREDICTACORE.',
                     checkoutLoading: "Abriendo pago seguro…",
                     checkoutOverlayTitle: "Pago seguro",
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
@@ -539,7 +539,7 @@ function getLandingHTML() {
                 document.getElementById('titan-eta-before').innerText = d.titanEtaBefore;
                 
                 document.getElementById('footer-text').innerText = d.footerText;
-                document.getElementById('disclaimer-text').innerText = d.disclaimerText;
+                document.getElementById('disclaimer-text').innerHTML = d.disclaimerText;
             }
 
             function setSetupError(msg) {
