@@ -1,7 +1,8 @@
 /** Post-procesado y UI del PDF según idioma del activo */
 
 const { resolveReportLocale, parseLocaleFromDossier } = require('./idioma');
-const { TITAN_PRICE_USD } = require('./stripe-predictacore');
+const { TITAN_PRICE_USD, MONITORING_PRICE_USD } = require('./stripe-predictacore');
+const { getSubscriptionCancellationPlain, getSubscriptionCancellationEmailHtml } = require('./brand');
 const {
     buildFugasFromDossier,
     stripPlaceholderLeaks,
@@ -256,6 +257,21 @@ function buildReportFilename(modo, targetUrl, { social } = {}) {
     return `PREDICTACORE_TITAN_${hostSlug}.pdf`;
 }
 
+function buildReportDeliveryEmailHtml(lang, { title, intro, portalUrl }) {
+    const cancelHtml = getSubscriptionCancellationEmailHtml(
+        lang,
+        MONITORING_PRICE_USD,
+        TITAN_PRICE_USD,
+        portalUrl,
+    );
+    return `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
+  <h1 style="color:#fff;font-size:18px;text-align:center;margin:0 0 16px 0;">${title}</h1>
+  <p style="font-size:14px;line-height:1.6;margin:0 0 12px 0;">${intro}</p>
+  ${cancelHtml}
+  <p style="font-size:11px;color:#71717a;text-align:center;margin-top:20px;">PredictaCore · predictacore.ai</p>
+</div>`;
+}
+
 function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetUrl } = {}) {
     const es = locale.code.startsWith('es');
     if (modo === 'LITE') {
@@ -281,28 +297,37 @@ function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetU
         };
     }
     if (modo === 'DELTA') {
+        const lang = es ? 'es' : 'en';
+        const cancelPlain = getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
+        const portalLine = portalUrl ? (es ? `\nPortal: ${portalUrl}` : `\nPortal: ${portalUrl}`) : '';
+        const intro = es
+            ? 'Tu reporte mensual de monitoreo PredictaCore va adjunto.'
+            : 'Your monthly PredictaCore monitoring report is attached.';
         return {
             subject: es ? 'PredictaCore — Reporte mensual de seguimiento' : 'PredictaCore — Monthly monitoring report',
             filename: buildReportFilename('DELTA', targetUrl),
-            text: es ? 'Tu reporte mensual de monitoreo PredictaCore va adjunto.' : 'Your monthly PredictaCore monitoring report is attached.',
-            html: null,
+            text: `${intro}\n\n${cancelPlain}${portalLine}`,
+            html: buildReportDeliveryEmailHtml(lang, { title: intro, intro, portalUrl }),
         };
     }
     const subject = social
         ? (es ? 'PredictaCore — Reporte Titán (perfil social)' : 'PredictaCore — Titan Social Audit')
         : (es ? 'PredictaCore — Reporte Titán forense' : 'PredictaCore — Titan forensic report');
-    const text = es
-        ? (portalUrl
-            ? `Tu Reporte Titán PredictaCore va adjunto.\n\nNota: la entrega puede tardar hasta 60 minutos.\n\nGestionar suscripción: ${portalUrl}`
-            : 'Tu Reporte Titán PredictaCore va adjunto.\n\nNota: la entrega puede tardar hasta 60 minutos.')
-        : (portalUrl
-            ? `Your PredictaCore Titan report is attached.\n\nDelivery may take up to 60 minutes.\n\nManage subscription: ${portalUrl}`
-            : 'Your PredictaCore Titan report is attached.\n\nDelivery may take up to 60 minutes.');
+    const lang = es ? 'es' : 'en';
+    const cancelPlain = getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
+    const intro = es
+        ? 'Tu Reporte Titán PredictaCore va adjunto. La entrega puede tardar hasta 60 minutos; revisa spam si no lo ves pronto.'
+        : 'Your PredictaCore Titan report is attached. Delivery may take up to 60 minutes; check spam if you do not see it soon.';
+    const title = social
+        ? (es ? 'Reporte Titán — perfil social' : 'Titan Report — social profile')
+        : (es ? 'Reporte Titán forense' : 'Titan forensic report');
+    const portalLine = portalUrl ? `\nPortal: ${portalUrl}` : '';
+    const text = `${intro}\n\n${cancelPlain}${portalLine}`;
     return {
         subject,
         filename: buildReportFilename('TITAN', targetUrl, { social }),
         text,
-        html: null,
+        html: buildReportDeliveryEmailHtml(lang, { title, intro, portalUrl }),
     };
 }
 

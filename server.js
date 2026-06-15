@@ -55,7 +55,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
-const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml, getResendFrom, getPdfClosingHtml, getPdfHeaderDisclaimerHtml } = require('./brand');
+const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml, getResendFrom, getPdfClosingHtml, getPdfHeaderDisclaimerHtml, getSubscriptionCancellationPlain } = require('./brand');
 const {
     getLocaleFromDossier,
     getLanguageLockInstruction,
@@ -129,11 +129,11 @@ async function createCustomerPortalUrl(customerId) {
 function buildTitanActivationEmail(lang, portalUrl) {
     const es = lang === 'es';
     const brandHeader = getEmailBrandHeader(lang);
-    const manageBlock = portalUrl
-        ? (es
-            ? `<p style="margin:24px 0;"><a href="${portalUrl}" style="color:#10b981;font-weight:bold;">Gestionar suscripción</a> — cancela al menos 5 días hábiles antes de la renovación si no deseas continuar el monitoreo ($${MONITORING_PRICE_USD}/mes).</p>`
-            : `<p style="margin:24px 0;"><a href="${portalUrl}" style="color:#10b981;font-weight:bold;">Manage subscription</a> — cancel at least 5 business days before renewal if you do not wish to continue monitoring ($${MONITORING_PRICE_USD}/mo).</p>`)
+    const cancelPlain = getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
+    const portalLine = portalUrl
+        ? (es ? `Portal de facturación: ${portalUrl}` : `Billing portal: ${portalUrl}`)
         : '';
+    const manageBlock = `<p style="margin:20px 0 0 0;font-size:11px;color:#71717a;line-height:1.55;border-top:1px solid rgba(113,113,122,0.35);padding-top:16px;">${cancelPlain}${portalLine ? `<br/>${portalLine}` : ''}</p>`;
 
     const subject = es ? 'PredictaCore — Protección Titán activada' : 'PredictaCore — Titan Protection Activated';
     const html = es ? `
@@ -161,8 +161,8 @@ function buildTitanActivationEmail(lang, portalUrl) {
 </body></html>`;
 
     const textManage = portalUrl
-        ? (es ? `\n\nGestionar suscripción: ${portalUrl}` : `\n\nManage subscription: ${portalUrl}`)
-        : '';
+        ? (es ? `\n\n${cancelPlain}\nPortal: ${portalUrl}` : `\n\n${cancelPlain}\nPortal: ${portalUrl}`)
+        : `\n\n${cancelPlain}`;
     const text = es
         ? `PROTECCIÓN TITÁN ACTIVADA\n\nPago USD $${TITAN_PRICE_USD} confirmado. Reporte Titán en los próximos minutos.\nMonitoreo $${MONITORING_PRICE_USD}/mes; primer cobro el día 30. PREDICTACORE en el estado de cuenta.${textManage}`
         : `TITAN PROTECTION ACTIVATED\n\nUSD $${TITAN_PRICE_USD} payment confirmed. Titan Report arriving in the next few minutes.\nMonitoring $${MONITORING_PRICE_USD}/mo; first charge on day 30. Statement: PREDICTACORE.${textManage}`;
@@ -1355,10 +1355,16 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             emailHtml = mail.html ? getEmailBrandHeader(langCode) + mail.html : null;
         } else if (modo === 'DELTA') {
             htmlBase = getHTMLDelta();
-            const mail = getReportEmailCopy('DELTA', reportLocale, { targetUrl });
+            let portalUrl = null;
+            try {
+                const cid = await resolveStripeCustomerId(emailDestino);
+                if (cid) portalUrl = await createCustomerPortalUrl(cid);
+            } catch (_) { /* optional */ }
+            const mail = getReportEmailCopy('DELTA', reportLocale, { portalUrl, targetUrl });
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
+            emailHtml = mail.html ? getEmailBrandHeader(langCode) + mail.html : null;
         } else {
             htmlBase = getHTML();
             const social = isSocialMediaUrl(targetUrl);
@@ -1371,6 +1377,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
+            emailHtml = mail.html ? getEmailBrandHeader(langCode) + mail.html : null;
         }
 
         browser = await puppeteer.launch({

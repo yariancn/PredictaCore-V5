@@ -25,6 +25,63 @@ function getResendFrom() {
     return `PredictaCore <audit@${mailDomain()}>`;
 }
 
+/** Neutral subscription cancellation disclosure (legal notice — not a marketing CTA). */
+function getSubscriptionCancellationNotice(lang = 'en', monitoringUsd = 25, titanUsd = 199) {
+    const support = getSupportEmail();
+    const site = publicSiteUrl();
+    if (lang === 'es' || String(lang).startsWith('es')) {
+        return `El monitoreo mensual (USD $${monitoringUsd}/mes, desde el día 30) se renueva salvo cancelación. `
+            + `Para solicitar la cancelación del monitoreo recurrente, escriba a <a href="mailto:${support}" class="text-emerald-500 hover:underline">${support}</a> `
+            + `desde el correo de compra o use el portal de facturación Stripe enviado en su correo de activación. `
+            + `Debe cancelar al menos <strong>5 días hábiles</strong> antes de la renovación para evitar el siguiente cobro. `
+            + `El Reporte Titán (USD $${titanUsd}) es venta final. Ver <a href="${site}/terms" class="text-emerald-500 hover:underline">Términos</a>.`;
+    }
+    return `Monthly monitoring (USD $${monitoringUsd}/mo, starting day 30) renews unless cancelled. `
+        + `To request cancellation of recurring monitoring, email <a href="mailto:${support}" class="text-emerald-500 hover:underline">${support}</a> `
+        + `from your purchase email or use the Stripe billing portal sent in your activation email. `
+        + `Cancel at least <strong>5 business days</strong> before renewal to avoid the next charge. `
+        + `The Titan Report (USD $${titanUsd}) is a final sale. See <a href="${site}/terms" class="text-emerald-500 hover:underline">Terms</a>.`;
+}
+
+function getSubscriptionCancellationPlain(lang = 'en', monitoringUsd = 25, titanUsd = 199) {
+    const support = getSupportEmail();
+    const site = publicSiteUrl();
+    if (lang === 'es' || String(lang).startsWith('es')) {
+        return `Monitoreo USD $${monitoringUsd}/mes se renueva salvo cancelación. Cancelación del monitoreo recurrente: ${support} o portal Stripe en correo de activación. Mínimo 5 días hábiles antes de renovación. Reporte Titán (USD $${titanUsd}) venta final. ${site}/terms`;
+    }
+    return `Monitoring USD $${monitoringUsd}/mo renews unless cancelled. Recurring monitoring cancellation: ${support} or Stripe portal in activation email. At least 5 business days before renewal. Titan Report (USD $${titanUsd}) final sale. ${site}/terms`;
+}
+
+/** Inline HTML block for report / transactional emails (Resend). */
+function getSubscriptionCancellationEmailHtml(lang = 'en', monitoringUsd = 25, titanUsd = 199, portalUrl = null) {
+    const support = getSupportEmail();
+    const site = publicSiteUrl();
+    const es = lang === 'es' || String(lang).startsWith('es');
+    const portalBlock = portalUrl
+        ? (es
+            ? `<br/>Portal de facturación: <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;">gestionar suscripción</a>`
+            : `<br/>Billing portal: <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;">manage subscription</a>`)
+        : '';
+    if (es) {
+        return `<p style="margin:20px 0 0 0;font-size:11px;color:#71717a;line-height:1.55;border-top:1px solid rgba(113,113,122,0.35);padding-top:16px;">`
+            + `El monitoreo mensual (USD $${monitoringUsd}/mes) se renueva salvo cancelación. `
+            + `Para solicitar la cancelación del monitoreo recurrente, escriba a `
+            + `<a href="mailto:${support}" style="color:#10b981;text-decoration:underline;">${support}</a> `
+            + `desde el correo de compra o use el portal de facturación Stripe.${portalBlock} `
+            + `Debe cancelar al menos <strong>5 días hábiles</strong> antes de la renovación. `
+            + `Reporte Titán (USD $${titanUsd}) venta final. `
+            + `<a href="${site}/terms" style="color:#10b981;text-decoration:underline;">Términos</a>.</p>`;
+    }
+    return `<p style="margin:20px 0 0 0;font-size:11px;color:#71717a;line-height:1.55;border-top:1px solid rgba(113,113,122,0.35);padding-top:16px;">`
+        + `Monthly monitoring (USD $${monitoringUsd}/mo) renews unless cancelled. `
+        + `To request cancellation of recurring monitoring, email `
+        + `<a href="mailto:${support}" style="color:#10b981;text-decoration:underline;">${support}</a> `
+        + `from your purchase email or use the Stripe billing portal.${portalBlock} `
+        + `Cancel at least <strong>5 business days</strong> before renewal. `
+        + `Titan Report (USD $${titanUsd}) is a final sale. `
+        + `<a href="${site}/terms" style="color:#10b981;text-decoration:underline;">Terms</a>.</p>`;
+}
+
 /** Deep link to landing upsell with email + URL prefilled for Titan checkout */
 function buildTitanUpgradeUrl({ email, dna, lang = 'en' }) {
     const params = new URLSearchParams();
@@ -180,5 +237,8 @@ module.exports = {
     publicSiteUrl,
     getSupportEmail,
     getResendFrom,
+    getSubscriptionCancellationNotice,
+    getSubscriptionCancellationPlain,
+    getSubscriptionCancellationEmailHtml,
     buildTitanUpgradeUrl,
 };

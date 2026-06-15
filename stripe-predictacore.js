@@ -3,6 +3,8 @@
  * Customer-facing copy and descriptors use PredictaCore only.
  */
 
+const { getSupportEmail } = require('./brand');
+
 const BRAND = 'predictacore';
 const LEGAL_ENTITY = 'Regenoxy LLC';
 const TITAN_PRICE_USD = 199;
@@ -78,18 +80,19 @@ function getCheckoutCustomText(lang = 'en') {
     const termsLinkEs = `[Términos](${TERMS_URL})`;
     const privacyLinkEs = `[Privacidad](${PRIVACY_URL})`;
     const descriptor = STATEMENT_SUFFIX();
+    const support = getSupportEmail();
 
     if (lang === 'es') {
         return {
             submit: {
-                message: `$${TITAN_PRICE_USD} hoy (Reporte Titán — precio introductorio). Monitoreo $${MONITORING_PRICE_USD}/mes desde el día 30. Al pagar aceptas ${termsLinkEs} y ${privacyLinkEs}. Estado de cuenta: ${descriptor}.`,
+                message: `$${TITAN_PRICE_USD} hoy (Reporte Titán — precio introductorio). Monitoreo $${MONITORING_PRICE_USD}/mes desde el día 30 (se renueva salvo cancelación; solicitud: ${support} o portal en correo de activación). Al pagar aceptas ${termsLinkEs} y ${privacyLinkEs}. Estado de cuenta: ${descriptor}.`,
             },
         };
     }
 
     return {
         submit: {
-            message: `$${TITAN_PRICE_USD} charged today (Titan Report — introductory price). $${MONITORING_PRICE_USD}/month monitoring starts 30 days from purchase. By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}.`,
+            message: `$${TITAN_PRICE_USD} charged today (Titan Report — introductory price). $${MONITORING_PRICE_USD}/month monitoring starts day 30 (renews unless cancelled; request via ${support} or portal in activation email). By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}.`,
         },
     };
 }

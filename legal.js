@@ -2,7 +2,7 @@
  * PredictaCore legal pages (predictacore.ai only).
  */
 
-const { getFaviconHeadTags, getSupportEmail } = require('./brand');
+const { getFaviconHeadTags, getSupportEmail, getSubscriptionCancellationNotice } = require('./brand');
 const { TITAN_PRICE_USD, MONITORING_PRICE_USD, LEGAL_ENTITY } = require('./stripe-predictacore');
 
 const UPDATED = 'May 27, 2026';
@@ -38,6 +38,7 @@ function wrapPredictacorePage({ title, intro, bodyHtml, footerLinks }) {
 
 function getTerminosHTML() {
     const support = getSupportEmail();
+    const cancelNotice = getSubscriptionCancellationNotice('en', MONITORING_PRICE_USD, TITAN_PRICE_USD);
     return wrapPredictacorePage({
         title: 'Terms of Service',
         intro: `<div class="border border-emerald-900/50 bg-emerald-950/30 p-4 rounded mb-8 text-xs text-emerald-100/90">
@@ -56,8 +57,8 @@ function getTerminosHTML() {
             <p>Charges should appear on your statement as <strong>PREDICTACORE</strong> (or similar PredictaCore descriptor). If you do not recognize a charge, contact ${support} before disputing with your bank.</p></div>
         <div><h2 class="text-white font-bold mb-2">5. No refunds</h2>
             <p><strong>ALL SALES ARE FINAL.</strong> USD $${TITAN_PRICE_USD} and processed USD $${MONITORING_PRICE_USD} monthly charges are non-refundable.</p></div>
-        <div><h2 class="text-white font-bold mb-2">6. Cancellation</h2>
-            <p>Cancel monitoring via the Stripe customer portal linked from predictacore.ai. Cancel at least <strong>5 business days</strong> before renewal to avoid the next monthly charge.</p></div>
+        <div><h2 class="text-white font-bold mb-2">6. Subscription cancellation</h2>
+            <p class="text-zinc-400 text-xs leading-relaxed">${cancelNotice}</p></div>
         <div><h2 class="text-white font-bold mb-2">7. Limitation of liability</h2>
             <p>To the maximum extent permitted by law, liability is limited to amounts you paid in the prior 12 months. AI output may contain errors.</p></div>
         <div><h2 class="text-white font-bold mb-2">8. Intellectual property</h2>

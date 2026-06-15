@@ -299,7 +299,7 @@ function getLandingHTML() {
                     <div class="border-t border-zinc-800 pt-8">
                         <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$199 <span id="titan-price-note" class="text-xs text-zinc-500 font-normal">USD · introductory · one-time</span></h4>
                         <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-2">Charged today: USD $199 (Titan Report — intro price)</p>
-                        <p id="sub-price-2" class="text-xs text-zinc-400 mb-4 leading-relaxed pc-readable">$25/month monitoring starts 30 days after purchase. Cancel anytime from your subscription portal.</p>
+                        <p id="sub-price-2" class="text-xs text-zinc-400 mb-4 leading-relaxed pc-readable">USD $25/mo monitoring starts 30 days after purchase. Renews unless cancelled — cancellation: audit@predictacore.ai or billing portal after purchase (see Terms).</p>
                         <p id="titan-eta-before" class="text-[10px] text-zinc-500 mb-4 leading-relaxed">After payment, your Titan PDF may take up to 60 minutes to arrive by email.</p>
                         
                         <button type="button" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2 transition-opacity disabled:opacity-60 disabled:cursor-wait" id="btn-titan">
@@ -324,7 +324,7 @@ function getLandingHTML() {
             <div class="max-w-4xl mx-auto px-6">
                 <p id="footer-text" class="text-xs text-emerald-600 uppercase tracking-wide mb-4">Consultant or Agency? Join our Forensic Audit network.</p>
                 <p id="disclaimer-text" class="text-xs text-zinc-500 leading-relaxed mb-4 max-w-2xl mx-auto pc-readable">
-                    PredictaCore AI website audits. USD $199 introductory price charged today. Monitoring $25/mo: first follow-up at month 1, first charge then. Card statement shows PREDICTACORE. All sales final. Cancel at least 5 business days before renewal.
+                    PredictaCore AI website audits. USD $199 introductory price charged today. Monitoring $25/mo from day 30; renews unless cancelled per <a href="/terms" class="text-emerald-600 underline">Terms</a> (audit@predictacore.ai). Card statement: PREDICTACORE. Titan Report — all sales final.
                 </p>
                 <p class="text-xs text-zinc-600 mb-4">
                     <a href="/terms" class="text-emerald-600 hover:underline">Terms</a> · <a href="/privacy" class="text-emerald-600 hover:underline">Privacy</a>
@@ -380,13 +380,13 @@ function getLandingHTML() {
                     upT: "X-Ray Sealed", upSt: "Successfully sent to",
                     boxText: "Initial scan shows critical bottlenecks. You are losing sales today due to purchasing obstacles. The Titan Report dissects your website and delivers the exact instructions to fix these leaks.",
                     subPrice: "Charged today: USD $199 (Titan Report — intro price)",
-                    subPrice2: "$25/month monitoring starts 30 days after purchase. Cancel anytime from your subscription portal.",
+                    subPrice2: "USD $25/mo monitoring starts 30 days after purchase. Renews unless cancelled — cancellation: audit@predictacore.ai or billing portal after purchase (see Terms).",
                     btnTitan: "Get Full Titan Report — $199",
                     titanPriceNote: "USD · introductory · one-time",
                     urlHint: "Instagram, Facebook, TikTok, or any public website — no login required.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "Consultant or Agency? Join our Forensic Audit network.",
-                    disclaimerText: "PredictaCore audits. $199 intro price today. $25/month monitoring starts day 30. Statement: PREDICTACORE.",
+                    disclaimerText: "PredictaCore audits. $199 intro price today. $25/mo monitoring from day 30; renews unless cancelled per Terms. Statement: PREDICTACORE.",
                     checkoutLoading: "Opening secure checkout…",
                     checkoutOverlayTitle: "Secure checkout",
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
@@ -440,13 +440,13 @@ function getLandingHTML() {
                     upT: "Radiografía Sellada", upSt: "Enviado con éxito a",
                     boxText: "El escaneo inicial muestra cuellos de botella críticos. Estás perdiendo ventas hoy por obstáculos de compra. El Reporte Titán disecta tu sitio y entrega las instrucciones exactas para arreglar estas fugas.",
                     subPrice: "Cobro hoy: USD $199 (Reporte Titán — precio introductorio)",
-                    subPrice2: "Monitoreo $25/mes desde el día 30. Cancela cuando quieras desde tu portal de suscripción.",
+                    subPrice2: "Monitoreo USD $25/mes desde el día 30. Se renueva salvo cancelación — solicitud: audit@predictacore.ai o portal en correo de activación (ver Términos).",
                     btnTitan: "Obtener Reporte Titán completo — $199",
                     titanPriceNote: "USD · precio introductorio · pago único",
                     urlHint: "Instagram, Facebook, TikTok o cualquier web pública — sin login.",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
                     footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
-                    disclaimerText: "Auditorías PredictaCore. $199 precio introductorio hoy. Monitoreo $25/mes desde el día 30. Estado de cuenta: PREDICTACORE.",
+                    disclaimerText: "Auditorías PredictaCore. $199 precio introductorio hoy. Monitoreo $25/mes desde día 30; se renueva salvo cancelación según Términos. Estado de cuenta: PREDICTACORE.",
                     checkoutLoading: "Abriendo pago seguro…",
                     checkoutOverlayTitle: "Pago seguro",
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
