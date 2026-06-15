@@ -134,7 +134,7 @@ function getLandingHTML() {
                     </div>
                     <div class="border-l-4 border-zinc-700 pl-6 flex flex-col justify-center">
                         <p id="hero-desc-right" class="text-base text-zinc-400 leading-relaxed pc-readable">
-                            If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 copy-paste fixes to recover conversions. We do a much deeper analysis than any generic AI, pinpointing exactly where your page loses clients. More deliverables than agencies charging $3k+ to review the same page.
+                            If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 concrete fixes to recover conversions. We do a much deeper analysis than any generic AI, pinpointing exactly where your page loses clients. More deliverables than agencies charging $3k+ to review the same page.
                         </p>
                     </div>
                 </div>
@@ -160,7 +160,7 @@ function getLandingHTML() {
                     </div>
                     <div class="p-6 border border-emerald-500/20 rounded-xl bg-emerald-950/10">
                         <h3 id="why-2-t" class="text-emerald-400 font-bold text-sm mb-3">Beat agencies on the same page</h3>
-                        <p id="why-2-d" class="text-sm text-zinc-300 leading-relaxed pc-readable">Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $199.</p>
+                        <p id="why-2-d" class="text-sm text-zinc-300 leading-relaxed pc-readable">Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 tactical actions, captures, and a 21-day roadmap — for $199.</p>
                     </div>
                     <div class="p-6 border border-zinc-800 rounded-xl bg-white/[0.03]">
                         <h3 id="why-3-t" class="text-white font-bold text-sm mb-3">Beat generic AI</h3>
@@ -222,14 +222,14 @@ function getLandingHTML() {
                         <h2 id="offer-title" class="text-xs text-emerald-500 font-bold tracking-[0.3em] uppercase mb-4">What we deliver</h2>
                         <h3 id="offer-sub" class="text-4xl font-extrabold text-white mb-6 leading-none">A Boardroom Level Blueprint.</h3>
                         <p id="offer-desc" class="text-zinc-300 mb-6 leading-relaxed">
-                            The Titan Report is an 11-section PDF delivered by email. We detect your business type, simulate how each buyer profile reacts, and give copy-paste fixes — plus real SEO and AI visibility scores.
+                            The Titan Report is an 11-section PDF delivered by email. We detect your business type, simulate how each buyer profile reacts, and give tactical fixes — plus real SEO and AI visibility scores.
                         </p>
                         <ul id="offer-deliverables" class="space-y-2 font-mono text-xs text-zinc-400 mb-8 border-l border-emerald-500/30 pl-4 pc-readable">
                             <li id="od-1">✓ Desktop + mobile capture · measured load time</li>
                             <li id="od-2">✓ SEO forensics (title, meta, schema, sitemap, robots)</li>
                             <li id="od-3">✓ AI discoverability (GEO) · technical proxy score 0–100</li>
                             <li id="od-4">✓ 4 buyer profiles by industry + friction findings</li>
-                            <li id="od-5">✓ 15 drop-offs + 15 copy-paste actions · 21-day roadmap</li>
+                            <li id="od-5">✓ 15 drop-offs + 15 tactical actions · 21-day roadmap</li>
                             <li id="od-6">✓ Web or Instagram / Facebook / TikTok profile</li>
                         </ul>
                     </div>
@@ -248,7 +248,7 @@ function getLandingHTML() {
                         <h4 id="titan-box-title" class="text-emerald-400 text-xs font-bold uppercase tracking-wide mb-3">Titan — USD $199 <span class="text-zinc-500 normal-case">(intro)</span></h4>
                         <ul id="titan-box-list" class="text-sm text-zinc-300 space-y-2 font-mono pc-readable">
                             <li>· Full 11-section forensic PDF</li>
-                            <li>· 15 leaks + 15 copy-paste actions</li>
+                            <li>· 15 leaks + 15 tactical actions</li>
                             <li>· SEO forensics + AI (GEO) + benchmark</li>
                             <li>· Monthly monitoring report ($25/mo from day 30)</li>
                         </ul>
@@ -391,28 +391,28 @@ function getLandingHTML() {
                     heroCta: "Run free scan",
                     heroTitle: "TRAFFIC DOES NOT GUARANTEE <br><span class='text-emerald-500'>PROFITABILITY.</span>",
                     heroDescLeft: "Your public page is where strangers decide yes or no. We don't need your analytics — we forensic-scan what every customer sees and show you exactly what's making them leave.",
-                    heroDescRight: "If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 copy-paste fixes to recover conversions. We do a much deeper analysis than any generic AI, pinpointing exactly where your page loses clients. More deliverables than agencies charging $3k+ to review the same page.",
+                    heroDescRight: "If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 concrete fixes to recover conversions. We do a much deeper analysis than any generic AI, pinpointing exactly where your page loses clients. More deliverables than agencies charging $3k+ to review the same page.",
                     heroTagline: "We don't value your internal data. We value what your page is doing to your next customer.",
                     whyTitle: "Why PredictaCore",
                     whySub: "The spearhead audit for entrepreneurs who can't afford to guess.",
                     why1T: "Our only focus", why1D: "Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We find friction, invisible errors, and missed trust signals. Goal: stop losing customers you never knew you had.",
-                    why2T: "Beat agencies on the same page", why2D: "Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 copy-paste actions, captures, and a 21-day roadmap — for $199.",
+                    why2T: "Beat agencies on the same page", why2D: "Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 tactical actions, captures, and a 21-day roadmap — for $199.",
                     why3T: "Beat generic AI", why3D: "ChatGPT guesses. We scrape, score, simulate buyer psychology by your industry, validate outputs, and deliver a structured 11-section PDF — not a paragraph you have to interpret.",
                     whyFoot: "Not for Fortune 500 data rooms. For the shop owner, clinic, creator, or local brand who needs their page to convert — today.",
                     dosSample: "SAMPLE EXTRACT",
                     dosTitle: "Vital Signs",
                     dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 01 ] - Checkout Friction:</strong><br>Express payment buttons bypass cart and reduce AOV.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Restrict express buttons to final screen.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 02 ] - Authority Weakness:</strong><br>Website disconnected from positive external reviews.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Inject dynamic social proof carousel.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 03 ] - Visual Paralysis:</strong><br>Cluttered main menu fragments user attention.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Consolidate navigation into "Shop By Item".</p></div>',
-                    offerTitle: "What we deliver", offerSub: "A Boardroom Level Blueprint.", offerDesc: "The Titan Report is an 11-section PDF delivered by email. We detect your business type, simulate how each buyer profile reacts, and give copy-paste fixes — plus real SEO and AI visibility scores.",
+                    offerTitle: "What we deliver", offerSub: "A Boardroom Level Blueprint.", offerDesc: "The Titan Report is an 11-section PDF delivered by email. We detect your business type, simulate how each buyer profile reacts, and give tactical fixes — plus real SEO and AI visibility scores.",
                     od1: "✓ Desktop + mobile capture · measured load time",
                     od2: "✓ SEO forensics (title, meta, schema, sitemap, robots)",
                     od3: "✓ AI discoverability (GEO) · technical proxy score 0–100",
                     od4: "✓ 4 buyer profiles by industry + friction findings",
-                    od5: "✓ 15 drop-offs + 15 copy-paste actions · 21-day roadmap",
+                    od5: "✓ 15 drop-offs + 15 tactical actions · 21-day roadmap",
                     od6: "✓ Web or Instagram / Facebook / TikTok profile",
                     liteBoxTitle: "Lite — Free",
                     liteBoxList: "<li>· 3 critical conversion leaks</li><li>· SEO + AI visibility snapshot</li><li>· Buyer profiles by industry (summary)</li>",
                     titanBoxTitle: "Titan — USD $199 (intro)",
-                    titanBoxList: "<li>· Full 11-section forensic PDF</li><li>· 15 leaks + 15 copy-paste actions</li><li>· SEO forensics + AI (GEO) + benchmark</li><li>· Monthly monitoring report ($25/mo from day 30)</li>",
+                    titanBoxList: "<li>· Full 11-section forensic PDF</li><li>· 15 leaks + 15 tactical actions</li><li>· SEO forensics + AI (GEO) + benchmark</li><li>· Monthly monitoring report ($25/mo from day 30)</li>",
                     methodTitle: "The 11 forensic pillars",
                     pillarsTitle: "What your PDF includes",
                     p1: "Asset X-Ray", p2: "Psychological Profiles", p3: "Health Scorecard", p4: "Visibility & SEO", p5: "Competitive Benchmark", p6: "SWOT Matrix", p7: "Wishlist", p8: "15 Drop-off Points", p9: "15 Tactical Actions", p10: "Scaling Tools", p11: "21-Day Roadmap",
@@ -463,28 +463,28 @@ function getLandingHTML() {
                     heroCta: "Ejecutar escaneo gratuito",
                     heroTitle: "TENER TRÁFICO NO GARANTIZA <br><span class='text-emerald-500'>RENTABILIDAD.</span>",
                     heroDescLeft: "Tu página pública es donde un desconocido dice sí o no. No necesitamos tu analytics — escaneamos lo que ve cada cliente y te mostramos qué lo hace irse.",
-                    heroDescRight: "Si tu página pierde visitantes en silencio, estás regalando ventas. Una URL. Un PDF. Mapeamos cada punto donde un cliente duda, abandona o se va con la competencia — y te damos 15 correcciones copy-paste para recuperar conversiones. Hacemos un análisis mucho más profundo que cualquier IA genérica, señalando con precisión dónde tu página pierde clientes. Más entregables que agencias que cobran $3k+ por revisar la misma página.",
+                    heroDescRight: "Si tu página pierde visitantes en silencio, estás regalando ventas. Una URL. Un PDF. Mapeamos cada punto donde un cliente duda, abandona o se va con la competencia — y te damos 15 correcciones concretas para recuperar conversiones. Hacemos un análisis mucho más profundo que cualquier IA genérica, señalando con precisión dónde tu página pierde clientes. Más entregables que agencias que cobran $3k+ por revisar la misma página.",
                     heroTagline: "No valoramos tus datos internos. Valoramos lo que tu página le hace a tu próximo cliente.",
                     whyTitle: "Por qué PredictaCore",
                     whySub: "La auditoría punta de lanza para emprendedores que no pueden permitirse adivinar.",
                     why1T: "Nuestro único foco", why1D: "Tu web o perfil social en vivo — lo que ve un visitante real antes de comprar, reservar o irse. Detectamos fricción, errores invisibles y señales de confianza faltantes. Objetivo: dejar de perder clientes que ni sabías que tenías.",
-                    why2T: "Mejor que agencias sobre la misma página", why2D: "Un consultor que solo ve tu URL entrega un deck de opinión. Tú recibes scores SEO + IA medidos, perfiles de comprador por giro, competencia verificada cuando existe, 15 fugas, 15 acciones copy-paste, capturas y roadmap 21 días — por $199.",
+                    why2T: "Mejor que agencias sobre la misma página", why2D: "Un consultor que solo ve tu URL entrega un deck de opinión. Tú recibes scores SEO + IA medidos, perfiles de comprador por giro, competencia verificada cuando existe, 15 fugas, 15 acciones tácticas, capturas y roadmap 21 días — por $199.",
                     why3T: "Mejor que IA genérica", why3D: "ChatGPT adivina. Nosotros scrapeamos, medimos, simulamos psicología de comprador según tu giro, validamos el output y entregamos un PDF de 11 secciones — no un párrafo que debes interpretar.",
                     whyFoot: "No es para data rooms de Fortune 500. Es para la tienda, clínica, creador o marca local que necesita que su página convierta — hoy.",
                     dosSample: "EXTRACTO DE MUESTRA",
                     dosTitle: "Signos Vitales",
                     dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 01 ] - Fricción de Checkout:</strong><br>Botones de pago rápido saltan el carrito y reducen el Ticket Promedio.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Restringir botones express a la pantalla final.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 02 ] - Debilidad de Autoridad:</strong><br>Sitio web desconectado de reseñas externas positivas.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Inyectar carrusel dinámico de prueba social.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 03 ] - Parálisis Visual:</strong><br>Menú principal saturado fragmenta la atención.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Consolidar navegación en "Shop By Item".</p></div>',
-                    offerTitle: "Lo que entregamos", offerSub: "Un Mapa de Acción Definitivo.", offerDesc: "El Reporte Titán es un PDF de 11 secciones por email. Detectamos tu giro, simulamos cómo reacciona cada perfil de comprador y entregamos correcciones copy-paste — más scores SEO e IA reales.",
+                    offerTitle: "Lo que entregamos", offerSub: "Un Mapa de Acción Definitivo.", offerDesc: "El Reporte Titán es un PDF de 11 secciones por email. Detectamos tu giro, simulamos cómo reacciona cada perfil de comprador y entregamos correcciones concretas — más scores SEO e IA reales.",
                     od1: "✓ Captura desktop/móvil · tiempo de carga medido",
                     od2: "✓ SEO forense (title, meta, schema, sitemap, robots)",
                     od3: "✓ Visibilidad en IAs (GEO) · score técnico 0–100",
                     od4: "✓ 4 perfiles de comprador por giro + hallazgos de fricción",
-                    od5: "✓ 15 fugas + 15 acciones copy-paste · roadmap 21 días",
+                    od5: "✓ 15 fugas + 15 acciones tácticas · roadmap 21 días",
                     od6: "✓ Web o perfil Instagram / Facebook / TikTok",
                     liteBoxTitle: "Lite — Gratis",
                     liteBoxList: "<li>· 3 fugas críticas de conversión</li><li>· Snapshot SEO + visibilidad IA</li><li>· Perfiles de comprador por giro (resumen)</li>",
                     titanBoxTitle: "Titán — USD $199 (intro)",
-                    titanBoxList: "<li>· PDF forense completo (11 secciones)</li><li>· 15 fugas + 15 acciones copy-paste</li><li>· SEO forense + IA (GEO) + benchmark</li><li>· Reporte mensual de seguimiento ($25/mes desde día 30)</li>",
+                    titanBoxList: "<li>· PDF forense completo (11 secciones)</li><li>· 15 fugas + 15 acciones tácticas</li><li>· SEO forense + IA (GEO) + benchmark</li><li>· Reporte mensual de seguimiento ($25/mes desde día 30)</li>",
                     methodTitle: "Los 11 pilares forenses",
                     pillarsTitle: "Qué incluye tu PDF",
                     p1: "Radiografía del Activo", p2: "Perfiles Psicológicos", p3: "Scorecard de Salud", p4: "Visibilidad y SEO", p5: "Benchmark Competitivo", p6: "Matriz Estratégica", p7: "Lista de Deseos", p8: "15 Puntos de Fuga", p9: "15 Acciones Tácticas", p10: "Herramientas de Escala", p11: "Hoja de Ruta a 21 Días",

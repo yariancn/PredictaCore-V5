@@ -40,7 +40,7 @@ function getTitanUpgradeHTML() {
             Stop losing customers you never knew you had
         </h1>
         <p id="subhead" class="text-sm text-zinc-400 text-center leading-relaxed mb-8">
-            Your Lite report only shows <strong class="text-white">3 critical leaks</strong>. The Titan Report finds <strong class="text-emerald-400">all 15 drop-off points</strong> that make strangers leave — plus copy-paste fixes to recover sales.
+            Your Lite report only shows <strong class="text-white">3 critical leaks</strong>. The Titan Report finds <strong class="text-emerald-400">all 15 drop-off points</strong> that make strangers leave — plus concrete fixes to recover sales.
         </p>
 
         <div class="rounded-lg border border-zinc-800 bg-zinc-950/80 p-5 mb-6 space-y-3">
@@ -59,7 +59,7 @@ function getTitanUpgradeHTML() {
             <ul id="feature-list" class="text-sm text-zinc-300 space-y-2.5 leading-relaxed">
                 <li>· Full 11-section PDF delivered to your email</li>
                 <li>· <strong class="text-white">15 conversion leaks</strong> ranked by severity — not just 3</li>
-                <li>· <strong class="text-white">15 copy-paste actions</strong> to fix what scares buyers away</li>
+                <li>· <strong class="text-white">15 tactical actions</strong> to fix what scares buyers away</li>
                 <li>· Desktop + mobile capture · measured load time</li>
                 <li>· SEO + AI visibility scores · competitive benchmark</li>
                 <li>· 4 buyer psychology profiles by your industry</li>
@@ -101,14 +101,14 @@ function getTitanUpgradeHTML() {
                 en: {
                     badge: 'After your free Lite scan',
                     headline: 'Stop losing customers you never knew you had',
-                    subhead: 'Your Lite report only shows <strong class="text-white">3 critical leaks</strong>. The Titan Report finds <strong class="text-emerald-400">all 15 drop-off points</strong> that make strangers leave — plus copy-paste fixes to recover sales.',
+                    subhead: 'Your Lite report only shows <strong class="text-white">3 critical leaks</strong>. The Titan Report finds <strong class="text-emerald-400">all 15 drop-off points</strong> that make strangers leave — plus concrete fixes to recover sales.',
                     lblPage: 'Your page',
                     lblEmail: 'Report email',
                     boxTitle: 'Titan Report — USD $${TITAN_PRICE_USD} (intro)',
                     features: [
                         '· Full 11-section PDF delivered to your email',
                         '· <strong class="text-white">15 conversion leaks</strong> ranked by severity — not just 3',
-                        '· <strong class="text-white">15 copy-paste actions</strong> to fix what scares buyers away',
+                        '· <strong class="text-white">15 tactical actions</strong> to fix what scares buyers away',
                         '· Desktop + mobile capture · measured load time',
                         '· SEO + AI visibility scores · competitive benchmark',
                         '· 4 buyer psychology profiles by your industry',
@@ -129,14 +129,14 @@ function getTitanUpgradeHTML() {
                 es: {
                     badge: 'Tras tu escaneo Lite gratis',
                     headline: 'Deja de perder clientes que ni sabías que tenías',
-                    subhead: 'Tu reporte Lite solo muestra <strong class="text-white">3 fugas críticas</strong>. El Reporte Titán encuentra <strong class="text-emerald-400">las 15 fugas</strong> que hacen que los desconocidos se vayan — más correcciones copy-paste para recuperar ventas.',
+                    subhead: 'Tu reporte Lite solo muestra <strong class="text-white">3 fugas críticas</strong>. El Reporte Titán encuentra <strong class="text-emerald-400">las 15 fugas</strong> que hacen que los desconocidos se vayan — más correcciones concretas para recuperar ventas.',
                     lblPage: 'Tu página',
                     lblEmail: 'Correo del reporte',
                     boxTitle: 'Reporte Titán — USD $${TITAN_PRICE_USD} (intro)',
                     features: [
                         '· PDF completo de 11 secciones a tu correo',
                         '· <strong class="text-white">15 fugas de conversión</strong> por gravedad — no solo 3',
-                        '· <strong class="text-white">15 acciones copy-paste</strong> para arreglar lo que ahuyenta compradores',
+                        '· <strong class="text-white">15 acciones tácticas</strong> para arreglar lo que ahuyenta compradores',
                         '· Captura desktop/móvil · tiempo de carga medido',
                         '· Scores SEO + visibilidad IA · benchmark competitivo',
                         '· 4 perfiles de psicología de comprador por tu giro',

@@ -260,14 +260,14 @@ function buildReportFilename(modo, targetUrl, { social } = {}) {
 function getTitanReportIntro(lang, { social = false } = {}) {
     if (lang === 'es') {
         if (social) {
-            return 'Aquí está tu Reporte Titán. Encontrarás dónde pierdes clientes en tu perfil, cómo te perciben los compradores y acciones copy-paste para recuperar conversiones.';
+            return 'Aquí está tu Reporte Titán. Encontrarás dónde pierdes clientes en tu perfil, cómo te perciben los compradores y acciones tácticas para recuperar conversiones.';
         }
-        return 'Aquí está tu Reporte Titán. Encontrarás dónde pierdes clientes, cómo te ven tus compradores y correcciones copy-paste para aumentar ingresos.';
+        return 'Aquí está tu Reporte Titán. Encontrarás dónde pierdes clientes, cómo te ven tus compradores y correcciones concretas para aumentar ingresos.';
     }
     if (social) {
-        return 'Here is your Titan Report. Inside you\'ll find where your profile loses customers, how buyers perceive you, and copy-paste fixes to recover conversions.';
+        return 'Here is your Titan Report. Inside you\'ll find where your profile loses customers, how buyers perceive you, and concrete fixes to recover conversions.';
     }
-    return 'Here is your Titan Report. Inside you\'ll find where you\'re losing customers, how buyers see your page, and easy copy-paste fixes to increase revenue.';
+    return 'Here is your Titan Report. Inside you\'ll find where you\'re losing customers, how buyers see your page, and concrete, actionable fixes to increase revenue.';
 }
 
 function getDeltaReportIntro(lang) {
@@ -291,13 +291,13 @@ function buildLiteUpsellEmailHtml(lang, { titanUrl, targetUrl }) {
     const bullets = es
         ? [
             'Las <strong>15 fugas</strong> que ahuyentan compradores (no solo 3)',
-            '<strong>15 acciones copy-paste</strong> listas para implementar hoy',
+            '<strong>15 acciones tácticas</strong> listas para implementar hoy',
             'PDF completo de 11 secciones · benchmark · roadmap 21 días',
             'Tu correo y URL ya están listos — un clic y pagas',
         ]
         : [
             'All <strong>15 leaks</strong> driving customers away (not just 3)',
-            '<strong>15 copy-paste actions</strong> ready to implement today',
+            '<strong>15 tactical actions</strong> ready to implement today',
             'Full 11-section PDF · benchmark · 21-day roadmap',
             'Your email and URL are pre-filled — one click to pay',
         ];
@@ -326,7 +326,7 @@ function buildLiteUpsellEmailText(lang, { titanUrl, targetUrl }) {
         ? [
             getLiteReportIntro(lang),
             '',
-            `Tu Lite de ${targetUrl || 'tu página'} solo muestra 3 fugas. El Reporte Titán encuentra las 15 principales que ahuyentan clientes, más 15 acciones copy-paste y el PDF completo de 11 secciones (USD $${TITAN_PRICE_USD}).`,
+            `Tu Lite de ${targetUrl || 'tu página'} solo muestra 3 fugas. El Reporte Titán encuentra las 15 principales que ahuyentan clientes, más 15 acciones tácticas y el PDF completo de 11 secciones (USD $${TITAN_PRICE_USD}).`,
             '',
             `Un clic — tu correo y URL ya están listos:`,
             titanUrl,
@@ -336,7 +336,7 @@ function buildLiteUpsellEmailText(lang, { titanUrl, targetUrl }) {
         : [
             getLiteReportIntro(lang),
             '',
-            `Your Lite for ${targetUrl || 'your page'} shows only 3 leaks. The Titan Report finds all 15 major drop-off points driving customers away, plus 15 copy-paste actions and the full 11-section PDF (USD $${TITAN_PRICE_USD}).`,
+            `Your Lite for ${targetUrl || 'your page'} shows only 3 leaks. The Titan Report finds all 15 major drop-off points driving customers away, plus 15 tactical actions and the full 11-section PDF (USD $${TITAN_PRICE_USD}).`,
             '',
             `One click — your email and URL are pre-filled:`,
             titanUrl,
