@@ -99,11 +99,11 @@ function getFaviconHeadTags() {
     <link rel="apple-touch-icon" href="/static/apple-touch-icon.png?v=${v}">`;
 }
 
-/** Branded header for transactional emails (Resend). Uses hosted logo + wordmark. */
-function getEmailBrandHeader(lang = 'en') {
+/** Logo + wordmark block for dark email backgrounds (use inside wrapPredictaCoreEmail). */
+function getEmailBrandHeaderBlock(lang = 'en') {
     const tagline = lang === 'es' ? 'Inteligencia de Negocios' : 'Business Intelligence';
     const logoUrl = `${publicSiteUrl()}/apple-touch-icon.png`;
-    return `<div style="text-align:center;margin:0 0 28px 0;padding-bottom:24px;border-bottom:1px solid rgba(16,185,129,0.25);">
+    return `<div style="text-align:center;">
   <img src="${logoUrl}" width="56" height="56" alt="PredictaCore" style="display:inline-block;border-radius:50%;margin-bottom:14px;" />
   <div style="font-family:Inter,Arial,sans-serif;font-size:24px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:#ffffff;text-transform:uppercase;">
     PREDICTA<span style="color:#10b981;">CORE</span>
@@ -112,6 +112,35 @@ function getEmailBrandHeader(lang = 'en') {
     ${tagline}
   </div>
 </div>`;
+}
+
+/** Full HTML email shell — dark card so wordmark is never on a white client canvas. */
+function wrapPredictaCoreEmail(lang, bodyHtml) {
+    const langAttr = lang === 'es' ? 'es' : 'en';
+    const header = getEmailBrandHeaderBlock(lang);
+    return `<!DOCTYPE html>
+<html lang="${langAttr}">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:20px 12px;background:#e4e4e7;font-family:Inter,Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;margin:0 auto;">
+    <tr>
+      <td style="background:#050505;border-radius:10px;border:1px solid #3f3f46;padding:0;">
+        <div style="padding:24px 24px 16px;border-bottom:1px solid rgba(16,185,129,0.3);">
+          ${header}
+        </div>
+        <div style="padding:24px;color:#d1d5db;font-size:14px;line-height:1.6;">
+          ${bodyHtml}
+        </div>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+/** @deprecated Prefer wrapPredictaCoreEmail — standalone header breaks on white inboxes (Yahoo, Gmail). */
+function getEmailBrandHeader(lang = 'en') {
+    return getEmailBrandHeaderBlock(lang);
 }
 
 /** Branded header for PDF cover (Lite / Titán) — logo PNG embebido para Puppeteer */
@@ -227,6 +256,8 @@ function getPdfBrandStyles() {
 module.exports = {
     getFaviconHeadTags,
     getEmailBrandHeader,
+    getEmailBrandHeaderBlock,
+    wrapPredictaCoreEmail,
     getPdfCoverBrandHtml,
     getPdfCoverMetricsHtml,
     getPdfClosingHtml,

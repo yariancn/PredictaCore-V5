@@ -56,7 +56,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
-const { buildTitanUpgradeUrl, getEmailBrandHeader, getPdfCoverMetricsHtml, getResendFrom, getPdfClosingHtml, getPdfHeaderDisclaimerHtml, getSubscriptionCancellationPlain } = require('./brand');
+const { buildTitanUpgradeUrl, wrapPredictaCoreEmail, getPdfCoverMetricsHtml, getResendFrom, getPdfClosingHtml, getPdfHeaderDisclaimerHtml, getSubscriptionCancellationPlain } = require('./brand');
 const {
     getLocaleFromDossier,
     getLanguageLockInstruction,
@@ -129,7 +129,6 @@ async function createCustomerPortalUrl(customerId) {
 
 function buildTitanActivationEmail(lang, portalUrl) {
     const es = lang === 'es';
-    const brandHeader = getEmailBrandHeader(lang);
     const cancelPlain = getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
     const portalLine = portalUrl
         ? (es ? `Portal de facturación: ${portalUrl}` : `Billing portal: ${portalUrl}`)
@@ -137,29 +136,20 @@ function buildTitanActivationEmail(lang, portalUrl) {
     const manageBlock = `<p style="margin:20px 0 0 0;font-size:11px;color:#71717a;line-height:1.55;border-top:1px solid rgba(113,113,122,0.35);padding-top:16px;">${cancelPlain}${portalLine ? `<br/>${portalLine}` : ''}</p>`;
 
     const subject = es ? 'PredictaCore — Pago confirmado' : 'PredictaCore — Payment confirmed';
-    const html = es ? `
-<!DOCTYPE html><html><body style="background:#050505;color:#d1d5db;font-family:Inter,Arial,sans-serif;padding:32px;">
-  <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;background:#0a0a0a;">
-    ${brandHeader}
+    const inner = es ? `
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">PAGO CONFIRMADO</h1>
-    <p>Tu pago de <strong>USD $${TITAN_PRICE_USD}</strong> fue procesado. El motor forense PredictaCore ya analiza tu activo digital.</p>
-    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">Recibirás el PDF del Reporte Titán en un correo aparte (puede tardar hasta 60 min). Revisa spam si no lo ves.</p>
-    <p>Monitoreo PredictaCore (<strong>$${MONITORING_PRICE_USD}/mes</strong>) activo. Primer cobro el <strong>día 30</strong>. Estado de cuenta: <strong>PREDICTACORE</strong>.</p>
+    <p style="color:#d1d5db;margin:0 0 12px 0;">Tu pago de <strong style="color:#fff;">USD $${TITAN_PRICE_USD}</strong> fue procesado. El motor forense PredictaCore ya analiza tu activo digital.</p>
+    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;margin:0 0 12px 0;">Recibirás el PDF del Reporte Titán en un correo aparte (puede tardar hasta 60 min). Revisa spam si no lo ves.</p>
+    <p style="color:#d1d5db;margin:0 0 12px 0;">Monitoreo PredictaCore (<strong style="color:#fff;">$${MONITORING_PRICE_USD}/mes</strong>) activo. Primer cobro el <strong style="color:#fff;">día 30</strong>. Estado de cuenta: <strong style="color:#fff;">PREDICTACORE</strong>.</p>
     ${manageBlock}
-    <p style="font-size:11px;color:#71717a;">Ventas finales — sin reembolsos.</p>
-  </div>
-</body></html>` : `
-<!DOCTYPE html><html><body style="background:#050505;color:#d1d5db;font-family:Inter,Arial,sans-serif;padding:32px;">
-  <div style="max-width:520px;margin:0 auto;border:1px solid rgba(16,185,129,0.35);padding:32px;border-radius:8px;background:#0a0a0a;">
-    ${brandHeader}
+    <p style="font-size:11px;color:#71717a;margin:0;">Ventas finales — sin reembolsos.</p>` : `
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">PAYMENT CONFIRMED</h1>
-    <p>Your <strong>USD $${TITAN_PRICE_USD}</strong> payment was processed. The PredictaCore forensic engine is now analyzing your digital asset.</p>
-    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;">Your Titan Report PDF will arrive in a separate email (may take up to 60 minutes). Check spam if needed.</p>
-    <p>PredictaCore monitoring (<strong>$${MONITORING_PRICE_USD}/mo</strong>) is active. First charge on <strong>day 30</strong>. Statement: <strong>PREDICTACORE</strong>.</p>
+    <p style="color:#d1d5db;margin:0 0 12px 0;">Your <strong style="color:#fff;">USD $${TITAN_PRICE_USD}</strong> payment was processed. The PredictaCore forensic engine is now analyzing your digital asset.</p>
+    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;margin:0 0 12px 0;">Your Titan Report PDF will arrive in a separate email (may take up to 60 minutes). Check spam if needed.</p>
+    <p style="color:#d1d5db;margin:0 0 12px 0;">PredictaCore monitoring (<strong style="color:#fff;">$${MONITORING_PRICE_USD}/mo</strong>) is active. First charge on <strong style="color:#fff;">day 30</strong>. Statement: <strong style="color:#fff;">PREDICTACORE</strong>.</p>
     ${manageBlock}
-    <p style="font-size:11px;color:#71717a;">All sales final — no refunds.</p>
-  </div>
-</body></html>`;
+    <p style="font-size:11px;color:#71717a;margin:0;">All sales final — no refunds.</p>`;
+    const html = wrapPredictaCoreEmail(lang, inner);
 
     const textManage = portalUrl
         ? (es ? `\n\n${cancelPlain}\nPortal: ${portalUrl}` : `\n\n${cancelPlain}\nPortal: ${portalUrl}`)
@@ -1061,14 +1051,14 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
                 payload = {
                     subject: mail.subject,
                     text: `${mail.text}\n\n${previewNote}`,
-                    html: mail.html ? getEmailBrandHeader(langCode) + mail.html : null,
+                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null,
                 };
             } else if (t === 'delta') {
                 const mail = getReportEmailCopy('DELTA', reportLocale, { portalUrl, targetUrl });
                 payload = {
                     subject: mail.subject,
                     text: `${mail.text}\n\n${previewNote}`,
-                    html: mail.html ? getEmailBrandHeader(langCode) + mail.html : null,
+                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null,
                 };
             } else if (t === 'lite') {
                 const titanUrl = buildTitanUpgradeUrl({ email: normalizedEmail, dna: targetUrl, lang: langCode });
@@ -1076,7 +1066,7 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
                 payload = {
                     subject: mail.subject,
                     text: `${mail.text}\n\n${previewNote}`,
-                    html: mail.html ? getEmailBrandHeader(langCode) + mail.html : null,
+                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null,
                 };
             }
 
@@ -1460,7 +1450,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
-            emailHtml = mail.html ? getEmailBrandHeader(langCode) + mail.html : null;
+            emailHtml = mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null;
         } else if (modo === 'DELTA') {
             htmlBase = getHTMLDelta();
             let portalUrl = null;
@@ -1472,7 +1462,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
-            emailHtml = mail.html ? getEmailBrandHeader(langCode) + mail.html : null;
+            emailHtml = mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null;
         } else {
             htmlBase = getHTML();
             const social = isSocialMediaUrl(targetUrl);
@@ -1485,7 +1475,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
-            emailHtml = mail.html ? getEmailBrandHeader(langCode) + mail.html : null;
+            emailHtml = mail.html ? wrapPredictaCoreEmail(langCode, mail.html) : null;
         }
 
         browser = await puppeteer.launch({

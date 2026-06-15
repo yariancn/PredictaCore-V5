@@ -308,16 +308,14 @@ function buildLiteUpsellEmailHtml(lang, { titanUrl, targetUrl }) {
     const cancelHtml = getSubscriptionCancellationEmailHtml(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
     const bulletHtml = bullets.map((b) => `<li style="margin:0 0 8px 0;">${b}</li>`).join('');
 
-    return `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
-  <h1 style="color:#fff;font-size:20px;text-align:center;margin:0 0 12px 0;line-height:1.3;">${title}</h1>
-  <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;">${getLiteReportIntro(lang)}</p>
-  <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;">${hook}</p>
+    return `<h1 style="color:#fff;font-size:20px;text-align:center;margin:0 0 12px 0;line-height:1.3;">${title}</h1>
+  <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;color:#d1d5db;">${getLiteReportIntro(lang)}</p>
+  <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;color:#d1d5db;">${hook}</p>
   <ul style="font-size:13px;line-height:1.55;margin:0 0 20px 0;padding-left:18px;color:#a1a1aa;">${bulletHtml}</ul>
   <p style="margin:28px 0;text-align:center;"><a href="${titanUrl}" style="background:#10b981;color:#000;padding:14px 28px;text-decoration:none;font-weight:900;border-radius:6px;display:inline-block;font-size:14px;text-transform:uppercase;letter-spacing:0.04em;">${ctaLabel}</a></p>
   <p style="font-size:11px;color:#71717a;text-align:center;margin:0 0 8px 0;">${pdfNote}</p>
   ${cancelHtml}
-  <p style="font-size:11px;color:#71717a;text-align:center;margin-top:16px;">PredictaCore · predictacore.ai</p>
-</div>`;
+  <p style="font-size:11px;color:#71717a;text-align:center;margin-top:16px;">PredictaCore · predictacore.ai</p>`;
 }
 
 function buildLiteUpsellEmailText(lang, { titanUrl, targetUrl }) {
@@ -353,12 +351,10 @@ function buildReportDeliveryEmailHtml(lang, { title, intro, portalUrl }) {
         TITAN_PRICE_USD,
         portalUrl,
     );
-    return `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;background:#050505;color:#d1d5db;">
-  <h1 style="color:#fff;font-size:18px;text-align:center;margin:0 0 16px 0;">${title}</h1>
-  <p style="font-size:14px;line-height:1.6;margin:0 0 12px 0;">${intro}</p>
+    return `<h1 style="color:#fff;font-size:18px;text-align:center;margin:0 0 16px 0;">${title}</h1>
+  <p style="font-size:14px;line-height:1.6;margin:0 0 12px 0;color:#d1d5db;">${intro}</p>
   ${cancelHtml}
-  <p style="font-size:11px;color:#71717a;text-align:center;margin-top:20px;">PredictaCore · predictacore.ai</p>
-</div>`;
+  <p style="font-size:11px;color:#71717a;text-align:center;margin-top:20px;">PredictaCore · predictacore.ai</p>`;
 }
 
 function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetUrl } = {}) {
