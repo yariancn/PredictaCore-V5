@@ -19,6 +19,11 @@ function getSupportEmail() {
     return process.env.SUPPORT_EMAIL || `audit@${mailDomain()}`;
 }
 
+/** Inbox for internal sale / ops alerts (not customer-facing). */
+function getSalesNotifyEmail() {
+    return process.env.SALES_NOTIFY_EMAIL || 'yarianc@yahoo.com';
+}
+
 /** Resend "from" header — must match a verified domain in Resend */
 function getResendFrom() {
     if (process.env.RESEND_FROM) return process.env.RESEND_FROM;
@@ -270,6 +275,7 @@ module.exports = {
     FAVICON_VERSION,
     publicSiteUrl,
     getSupportEmail,
+    getSalesNotifyEmail,
     getResendFrom,
     getSubscriptionCancellationNotice,
     getSubscriptionCancellationPlain,

@@ -56,7 +56,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
-const { buildTitanUpgradeUrl, wrapPredictaCoreEmail, getPdfCoverMetricsHtml, getResendFrom, getPdfClosingHtml, getPdfHeaderDisclaimerHtml, getSubscriptionCancellationPlain } = require('./brand');
+const { buildTitanUpgradeUrl, wrapPredictaCoreEmail, getPdfCoverMetricsHtml, getResendFrom, getSalesNotifyEmail, getPdfClosingHtml, getPdfHeaderDisclaimerHtml, getSubscriptionCancellationPlain } = require('./brand');
 const {
     getLocaleFromDossier,
     getLanguageLockInstruction,
@@ -159,6 +159,49 @@ function buildTitanActivationEmail(lang, portalUrl) {
         : `PAYMENT CONFIRMED\n\nUSD $${TITAN_PRICE_USD} payment confirmed. Titan Report PDF will arrive in a separate email (up to 60 min).\nMonitoring $${MONITORING_PRICE_USD}/mo; first charge on day 30. Statement: PREDICTACORE.${textManage}`;
 
     return { subject, html, text };
+}
+
+async function sendTitanSaleNotificationEmail({ customerEmail, targetUrl, sessionId, source, lang, amountUsd }) {
+    const notifyTo = getSalesNotifyEmail();
+    if (!notifyTo) return;
+    if (!process.env.RESEND_API_KEY) {
+        console.warn('>>> Sale notification skipped — RESEND_API_KEY not set');
+        return;
+    }
+
+    const amount = amountUsd != null ? amountUsd : TITAN_PRICE_USD;
+    const subject = `PredictaCore — Venta Titán USD $${amount} · ${customerEmail}`;
+    const bodyHtml = `
+  <h1 style="color:#10b981;font-size:16px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 16px 0;text-align:center;">Nueva venta Titán</h1>
+  <p style="color:#d1d5db;margin:0 0 10px 0;"><strong style="color:#fff;">Cliente:</strong> ${customerEmail}</p>
+  <p style="color:#d1d5db;margin:0 0 10px 0;word-break:break-all;"><strong style="color:#fff;">URL:</strong> ${targetUrl}</p>
+  <p style="color:#d1d5db;margin:0 0 10px 0;"><strong style="color:#fff;">Monto:</strong> USD $${amount}</p>
+  <p style="color:#d1d5db;margin:0 0 10px 0;"><strong style="color:#fff;">Origen:</strong> ${source}</p>
+  <p style="color:#d1d5db;margin:0 0 10px 0;word-break:break-all;"><strong style="color:#fff;">Stripe session:</strong> ${sessionId || '—'}</p>
+  <p style="color:#d1d5db;margin:0 0 0 0;"><strong style="color:#fff;">Idioma:</strong> ${lang === 'es' ? 'ES' : 'EN'}</p>
+  <p style="color:#71717a;font-size:11px;margin-top:20px;text-align:center;">El reporte Titán se está generando para el cliente.</p>`;
+    const text = [
+        'Nueva venta Reporte Titán',
+        '',
+        `Cliente: ${customerEmail}`,
+        `URL: ${targetUrl}`,
+        `Monto: USD $${amount}`,
+        `Origen: ${source}`,
+        `Stripe session: ${sessionId || '—'}`,
+        `Idioma: ${lang}`,
+        '',
+        'El reporte Titán se está generando.',
+    ].join('\n');
+
+    const { error } = await resend.emails.send({
+        from: getResendFrom(),
+        to: notifyTo,
+        subject,
+        text,
+        html: wrapPredictaCoreEmail('es', bodyHtml),
+    });
+    if (error) throw new Error(`Sale notification: ${error.message}`);
+    console.log(`>>> Sale notification sent to ${notifyTo}`);
 }
 
 async function sendTitanActivationEmail(email, lang, customerId) {
@@ -353,6 +396,26 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
 
         iniciarAuditoria(dna, email, 'TITAN');
         await registrarVentaComisiones(session, email, refCode);
+
+        const saleNotifyClaim = `sale_notify:${session.id}`;
+        const shouldNotifySale = await claimWebhookEvent(saleNotifyClaim, 'titan_sale_notify');
+        if (shouldNotifySale) {
+            try {
+                const amountUsd = session.amount_total != null
+                    ? Math.round(session.amount_total) / 100
+                    : TITAN_PRICE_USD;
+                await sendTitanSaleNotificationEmail({
+                    customerEmail: email,
+                    targetUrl: dna,
+                    sessionId: session.id,
+                    source,
+                    lang,
+                    amountUsd,
+                });
+            } catch (notifyErr) {
+                console.error('!!! Sale notification:', notifyErr.message);
+            }
+        }
 
         return { ok: true, started: true, email, recovered: !isNew };
     } catch (err) {
