@@ -555,11 +555,10 @@ async function registrarVentaComisiones(session, email, refCode) {
     }
 }
 
-app.use(express.json({ limit: '10mb' }));
-
 const ADS_ORIGIN = (process.env.ADS_ORIGIN || 'https://predictacore-ads-production.up.railway.app').replace(/\/$/, '');
 
 // predictacore.ai/ads/* → servicio Next.js Predictacore Ads (Railway)
+// MUST run before express.json() — otherwise POST bodies are consumed and API calls hang.
 if (ADS_ORIGIN) {
     const { createProxyMiddleware } = require('http-proxy-middleware');
     app.use(
@@ -576,6 +575,8 @@ if (ADS_ORIGIN) {
         }),
     );
 }
+
+app.use(express.json({ limit: '10mb' }));
 
 app.get('/checkout-status', async (req, res) => {
     try {
