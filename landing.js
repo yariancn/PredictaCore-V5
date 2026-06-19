@@ -136,7 +136,7 @@ function getLandingHTML() {
                     <span class="text-zinc-700">/</span>
                     <span id="lang-es" class="lang-btn">ES</span>
                 </div>
-                <a href="#terminal-section" id="nav-access" class="text-xs uppercase font-bold tracking-wide text-emerald-500 border-b border-emerald-500/30 hover:text-emerald-400 transition-colors">Escaneo gratis</a>
+                <a href="#terminal-section" id="nav-access" class="text-xs uppercase font-bold tracking-wide text-emerald-500 border-b border-emerald-500/30 hover:text-emerald-400 transition-colors">Free scan</a>
             </div>
         </nav>
 
@@ -158,7 +158,7 @@ function getLandingHTML() {
                 </div>
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <a href="#terminal-section" id="hero-cta" class="inline-block w-full sm:w-auto text-center bg-emerald-600 text-white font-black py-4 px-8 rounded hover:bg-emerald-500 transition-all uppercase tracking-wide text-sm">
-                        Ejecutar escaneo gratuito
+                        Run free scan
                     </a>
                 </div>
                 <p id="hero-tagline" class="max-w-3xl mx-auto mt-8 text-center text-xs text-emerald-500/90 uppercase tracking-wide font-semibold">
@@ -174,7 +174,7 @@ function getLandingHTML() {
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="p-6 border border-zinc-800 rounded-xl bg-white/[0.03]">
                         <h3 id="why-1-t" class="text-white font-bold text-sm mb-3">Our only focus</h3>
-                        <p id="why-1-d" class="text-sm text-zinc-400 leading-relaxed pc-readable">Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We find friction, invisible errors, and missed trust signals. Goal: stop losing customers you never knew you had.</p>
+                        <p id="why-1-d" class="text-sm text-zinc-400 leading-relaxed pc-readable">Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We pinpoint what sends possible customers away: invisible errors, weak trust signals, and silent drop-offs.</p>
                     </div>
                     <div class="p-6 border border-emerald-500/20 rounded-xl bg-emerald-950/10">
                         <h3 id="why-2-t" class="text-emerald-400 font-bold text-sm mb-3">Beat agencies on the same page</h3>
@@ -246,7 +246,7 @@ function getLandingHTML() {
                             <li id="od-1">✓ Desktop + mobile capture · measured load time</li>
                             <li id="od-2">✓ SEO forensics (title, meta, schema, sitemap, robots)</li>
                             <li id="od-3">✓ AI discoverability (GEO) · technical proxy score 0–100</li>
-                            <li id="od-4">✓ 4 buyer profiles by industry + friction findings</li>
+                            <li id="od-4">✓ 4 buyer profiles by industry + what sends customers away</li>
                             <li id="od-5">✓ 15 drop-offs + 15 tactical actions · 21-day roadmap</li>
                             <li id="od-6">✓ One asset per scan: website OR one Instagram, Facebook, or TikTok profile</li>
                         </ul>
@@ -413,7 +413,7 @@ function getLandingHTML() {
                     heroTagline: "We don't value your internal data. We value what your page is doing to your next customer.",
                     whyTitle: "Why PredictaCore",
                     whySub: "The spearhead audit for entrepreneurs who can't afford to guess.",
-                    why1T: "Our only focus", why1D: "Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We find friction, invisible errors, and missed trust signals. Goal: stop losing customers you never knew you had.",
+                    why1T: "Our only focus", why1D: "Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We pinpoint what sends possible customers away: invisible errors, weak trust signals, and silent drop-offs.",
                     why2T: "Beat agencies on the same page", why2D: "Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 tactical actions, captures, and a 21-day roadmap — for $199.",
                     why3T: "Beat generic AI", why3D: "ChatGPT guesses. We scrape, score, simulate buyer psychology by your industry, validate outputs, and deliver a structured 11-section PDF — not a paragraph you have to interpret.",
                     whyFoot: "Not for Fortune 500 data rooms. For the shop owner, clinic, creator, or local brand who needs their page to convert — today.",
@@ -424,7 +424,7 @@ function getLandingHTML() {
                     od1: "✓ Desktop + mobile capture · measured load time",
                     od2: "✓ SEO forensics (title, meta, schema, sitemap, robots)",
                     od3: "✓ AI discoverability (GEO) · technical proxy score 0–100",
-                    od4: "✓ 4 buyer profiles by industry + friction findings",
+                    od4: "✓ 4 buyer profiles by industry + what sends customers away",
                     od5: "✓ 15 drop-offs + 15 tactical actions · 21-day roadmap",
                     od6: "✓ One asset per scan: website OR one Instagram, Facebook, or TikTok profile",
                     liteBoxTitle: "Lite — Free",
@@ -485,7 +485,7 @@ function getLandingHTML() {
                     heroTagline: "No valoramos tus datos internos. Valoramos lo que tu página le hace a tu próximo cliente.",
                     whyTitle: "Por qué PredictaCore",
                     whySub: "La auditoría punta de lanza para emprendedores que no pueden permitirse adivinar.",
-                    why1T: "Nuestro único foco", why1D: "Tu web o perfil social en vivo — lo que ve un visitante real antes de comprar, reservar o irse. Detectamos fricción, errores invisibles y señales de confianza faltantes. Objetivo: dejar de perder clientes que ni sabías que tenías.",
+                    why1T: "Nuestro único foco", why1D: "Tu web o perfil social en vivo — lo que ve un visitante real antes de comprar, reservar o irse. Señalamos qué ahuyenta a tus posibles clientes: errores invisibles, señales de confianza débiles y abandonos silenciosos.",
                     why2T: "Mejor que agencias sobre la misma página", why2D: "Un consultor que solo ve tu URL entrega un deck de opinión. Tú recibes scores SEO + IA medidos, perfiles de comprador por giro, competencia verificada cuando existe, 15 fugas, 15 acciones tácticas, capturas y roadmap 21 días — por $199.",
                     why3T: "Mejor que IA genérica", why3D: "ChatGPT adivina. Nosotros scrapeamos, medimos, simulamos psicología de comprador según tu giro, validamos el output y entregamos un PDF de 11 secciones — no un párrafo que debes interpretar.",
                     whyFoot: "No es para data rooms de Fortune 500. Es para la tienda, clínica, creador o marca local que necesita que su página convierta — hoy.",
@@ -496,7 +496,7 @@ function getLandingHTML() {
                     od1: "✓ Captura desktop/móvil · tiempo de carga medido",
                     od2: "✓ SEO forense (title, meta, schema, sitemap, robots)",
                     od3: "✓ Visibilidad en IAs (GEO) · score técnico 0–100",
-                    od4: "✓ 4 perfiles de comprador por giro + hallazgos de fricción",
+                    od4: "✓ 4 perfiles de comprador por giro + qué ahuyenta clientes",
                     od5: "✓ 15 fugas + 15 acciones tácticas · roadmap 21 días",
                     od6: "✓ Un activo por escaneo: tu web O un perfil de Instagram, Facebook o TikTok",
                     liteBoxTitle: "Lite — Gratis",
@@ -780,8 +780,8 @@ function getLandingHTML() {
                 }
 
                 const logs = currentLang === 'es'
-                    ? [">> Conectando nodos...", ">> Analizando página pública...", ">> Detectando fricción y fugas...", ">> Generando reporte Lite...", ">> Enviando por correo..."]
-                    : [">> Connecting nodes...", ">> Scanning public page...", ">> Detecting friction and leaks...", ">> Building Lite report...", ">> Sending email..."];
+                    ? [">> Conectando nodos...", ">> Analizando página pública...", ">> Detectando qué ahuyenta clientes...", ">> Generando reporte Lite...", ">> Enviando por correo..."]
+                    : [">> Connecting nodes...", ">> Scanning public page...", ">> Detecting what sends customers away...", ">> Building Lite report...", ">> Sending email..."];
                 if (payload.platform === 'tiktok') {
                     logs.splice(1, 0, currentLang === 'es' ? ">> Perfil TikTok detectado..." : ">> TikTok profile detected...");
                 }
@@ -901,7 +901,7 @@ function getLandingHTML() {
                 const langParam = urlParams.get('lang');
                 if (langParam === 'es') {
                     setLanguage('es');
-                } else if (langParam === 'en') {
+                } else {
                     setLanguage('en');
                 }
 
