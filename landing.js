@@ -119,7 +119,7 @@ function getLandingHTML() {
                 <h1 id="hero-title" class="text-huge text-white mb-5">Find out why your page is <span class="text-emerald-500">losing sales</span></h1>
                 <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-6">PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.</p>
                 <a href="#buy-section" id="hero-cta-mid" class="inline-block mb-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_24px_rgba(16,185,129,0.22)]">Get Titan Report — $199</a>
-                <p id="hero-price-anchor" class="text-sm md:text-base text-emerald-400 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't spend $3,000 on an agency for a report in weeks to deliver — we deliver yours in ~60 minutes. No fluff — hard scores, ranked leaks, and fixes only.</p>
+                <p id="hero-price-anchor" class="text-sm md:text-base text-emerald-400 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. No fluff: hard scores, ranked leaks, and fixes only.</p>
                 <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-6">When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.</p>
                 <div class="inline-flex flex-col sm:flex-row items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 mb-6">
                     <div class="inline-flex items-center gap-2">
@@ -173,7 +173,7 @@ function getLandingHTML() {
                 <div class="customer-extract-box">
                     <div class="customer-extract-pin">
                         <span id="sample-extract-label" class="customer-extract-label">📌 Customer extract</span>
-                        <p id="sample-extract-note" class="customer-extract-note">Don't spend $3,000 on an agency for a report in weeks.<br><span class="text-zinc-300">Custom baby bedding Shopify store (US e-commerce). Scores and findings are real.</span></p>
+                        <p id="sample-extract-note" class="customer-extract-note">Don't pay $3,000 and wait weeks for an agency report.<br><span class="text-zinc-300">Custom baby bedding Shopify store (US e-commerce). Scores and findings are real.</span></p>
                     </div>
                     <div id="sample-extract-metrics" class="extract-metrics">
                         <div class="extract-metric">
@@ -184,7 +184,7 @@ function getLandingHTML() {
                         <div class="extract-metric">
                             <p class="extract-metric-value">61 → 76</p>
                             <p id="sample-metric-2-label" class="extract-metric-label">Google SEO score</p>
-                            <p id="sample-metric-2-sub" class="extract-metric-sub">H1 + meta trim · 5 weeks</p>
+                            <p id="sample-metric-2-sub" class="extract-metric-sub">H1 + meta trim · 8-week window</p>
                         </div>
                         <div class="extract-metric">
                             <p class="extract-metric-value">−13%</p>
@@ -197,7 +197,7 @@ function getLandingHTML() {
                             <p id="sample-metric-4-sub" class="extract-metric-sub">Image compression pass</p>
                         </div>
                     </div>
-                    <p id="sample-metrics-foot" class="text-[11px] text-zinc-500 text-center mb-4 leading-relaxed">Measured ~6 weeks after applying section IX fixes · same Shopify store as extract above</p>
+                    <p id="sample-metrics-foot" class="text-[11px] text-zinc-500 text-center mb-4 leading-relaxed">Results measured ~8 weeks after applying section IX fixes · same Shopify store · second follow-up report window</p>
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start mb-6">
                     <div class="lg:col-span-2 report-card p-6 md:p-7">
                         <div class="flex items-center gap-2 mb-5 pb-4 border-b border-zinc-200">
@@ -504,7 +504,7 @@ function getLandingHTML() {
                     heroCtaTitan: "Get Titan Report — $199",
                     heroCtaMid: "Get Titan Report — $199",
                     heroCtaLite: "Or start with a free Lite scan →",
-                    heroPriceAnchor: "Don't spend $3,000 on an agency for a report in weeks to deliver — we deliver yours in ~60 minutes. No fluff — hard scores, ranked leaks, and fixes only.",
+                    heroPriceAnchor: "Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. No fluff: hard scores, ranked leaks, and fixes only.",
                     heroDelivery: "PDF delivered from ${supportEmail} · usually within 60 minutes",
                     heroTrust: "One asset per scan · web or one Instagram, Facebook, or TikTok profile",
                     pdfMockTag: "Forensic conversion report",
@@ -529,16 +529,16 @@ function getLandingHTML() {
                     sampleTitle: "This is what lands in your inbox",
                     sampleSub: "Below: the PDF you get by email, plus a pinned customer extract from a real audit. Full Titan PDF = <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} pages</strong>, <strong class='text-zinc-200'>11 sections</strong>, <strong class='text-zinc-200'>15 ranked leaks</strong>, and <strong class='text-zinc-200'>15 fixes</strong>.",
                     sampleExtractLabel: "📌 Customer extract",
-                    sampleExtractNote: "Don't spend $3,000 on an agency for a report in weeks.<br><span class='text-zinc-300'>Custom baby bedding Shopify store (US e-commerce). Scores and findings are real.</span>",
+                    sampleExtractNote: "Don't pay $3,000 and wait weeks for an agency report.<br><span class='text-zinc-300'>Custom baby bedding Shopify store (US e-commerce). Scores and findings are real.</span>",
                     sampleMetric1Label: "Add-to-cart · personalized SKUs",
                     sampleMetric1Sub: "After shipping-date badge (fix #09)",
                     sampleMetric2Label: "Google SEO score",
-                    sampleMetric2Sub: "H1 + meta trim · 5 weeks",
+                    sampleMetric2Sub: "H1 + meta trim · 8-week window",
                     sampleMetric3Label: "Bounce rate · product pages",
                     sampleMetric3Sub: "Snippet + headline fixes",
                     sampleMetric4Label: "Mobile load time",
                     sampleMetric4Sub: "Image compression pass",
-                    sampleMetricsFoot: "Measured ~6 weeks after applying section IX fixes · same Shopify store as extract above",
+                    sampleMetricsFoot: "Results measured ~8 weeks after applying section IX fixes · same Shopify store · second follow-up report window",
                     sampleCase: "Custom baby bedding · Shopify",
                     sampleIndustry: "Personalized milestone products · US market",
                     sampleCaption: "Real scores from a live audit — same checks we run on your page.",
@@ -622,7 +622,7 @@ function getLandingHTML() {
                     heroCtaTitan: "Obtener Reporte Titán — $199",
                     heroCtaMid: "Obtener Reporte Titán — $199",
                     heroCtaLite: "O empezar con escaneo Lite gratis →",
-                    heroPriceAnchor: "No gastes $3,000 en una agencia por un reporte que tarda semanas en entregarse — el tuyo en ~60 minutos. Sin relleno: solo datos duros, fugas rankeadas y acciones concretas.",
+                    heroPriceAnchor: "No pagues $3,000 ni esperes semanas por un reporte de agencia — el tuyo llega en ~60 minutos. Sin relleno: datos duros, fugas rankeadas y acciones concretas.",
                     heroDelivery: "PDF enviado desde ${supportEmail} · normalmente en 60 minutos",
                     heroTrust: "Un activo por escaneo · web o un perfil de Instagram, Facebook o TikTok",
                     pdfMockTag: "Reporte forense de conversión",
@@ -647,16 +647,16 @@ function getLandingHTML() {
                     sampleTitle: "Esto es lo que llega a tu correo",
                     sampleSub: "Abajo: el PDF que recibes por email, más un extracto fijado de una auditoría real. Reporte Titán completo = <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} páginas</strong>, <strong class='text-zinc-200'>11 secciones</strong>, <strong class='text-zinc-200'>15 fugas rankeadas</strong> y <strong class='text-zinc-200'>15 correcciones</strong>.",
                     sampleExtractLabel: "📌 Extracto de cliente",
-                    sampleExtractNote: "No gastes $3,000 en una agencia por un reporte en semanas.<br><span class='text-zinc-300'>Tienda Shopify de ropa de cuna personalizada (e-commerce US). Puntuaciones y hallazgos reales.</span>",
+                    sampleExtractNote: "No pagues $3,000 ni esperes semanas por un reporte de agencia.<br><span class='text-zinc-300'>Tienda Shopify de ropa de cuna personalizada (e-commerce US). Puntuaciones y hallazgos reales.</span>",
                     sampleMetric1Label: "Add-to-cart · SKUs personalizados",
                     sampleMetric1Sub: "Tras badge de fecha de envío (fix #09)",
                     sampleMetric2Label: "Score SEO Google",
-                    sampleMetric2Sub: "H1 + meta recortada · 5 semanas",
+                    sampleMetric2Sub: "H1 + meta recortada · ventana 8 semanas",
                     sampleMetric3Label: "Rebote · fichas de producto",
                     sampleMetric3Sub: "Snippet + titular corregidos",
                     sampleMetric4Label: "Carga móvil",
                     sampleMetric4Sub: "Compresión de imágenes",
-                    sampleMetricsFoot: "Medido ~6 semanas tras aplicar fixes de la sección IX · misma tienda Shopify del extracto",
+                    sampleMetricsFoot: "Resultados medidos a las ~8 semanas tras aplicar fixes de la sección IX · misma tienda Shopify · ventana del segundo reporte de seguimiento",
                     sampleCase: "Ropa de cuna personalizada · Shopify",
                     sampleIndustry: "Productos milestone personalizados · mercado US",
                     sampleCaption: "Puntuaciones reales de una auditoría en vivo — las mismas que aplicamos a tu página.",
