@@ -1,8 +1,9 @@
 // landing.js — conversion-focused landing (non-repetitive, Titan-first)
 
-const { getFaviconHeadTags, TITAN_REPORT_PAGE_COUNT } = require('./brand');
+const { getFaviconHeadTags, TITAN_REPORT_PAGE_COUNT, getSupportEmail } = require('./brand');
 
 function getLandingHTML() {
+    const supportEmail = getSupportEmail();
     return `
     <!DOCTYPE html>
     <html lang="en" class="scroll-smooth">
@@ -69,8 +70,20 @@ function getLandingHTML() {
             .sample-status-bad { color: #b91c1c; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
             .sample-ai-row { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items: start; padding: 0.45rem 0; border-bottom: 1px solid #e4e4e7; font-size: 0.875rem; }
             .sample-ai-row:last-child { border-bottom: none; }
+            .stars { color: #fbbf24; font-size: 0.875rem; letter-spacing: 0.12em; }
+            .review-card { border: 1px solid #27272a; border-radius: 0.75rem; background: rgba(0,0,0,0.45); padding: 1.25rem; height: 100%; }
+            .review-tag { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #71717a; }
+            .pdf-mockup { transform: rotate(-1.5deg); transition: transform 0.35s ease; }
+            .pdf-mockup:hover { transform: rotate(0deg); }
+            .compare-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.9375rem; }
+            .compare-table th, .compare-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #27272a; text-align: left; vertical-align: top; }
+            .compare-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: #71717a; background: rgba(0,0,0,0.35); }
+            .compare-table .col-titan { background: rgba(16,185,129,0.06); color: #ecfdf5; }
+            .compare-yes { color: #34d399; font-weight: 700; }
+            .compare-no { color: #71717a; }
+            .compare-partial { color: #fbbf24; font-weight: 600; }
+            #sticky-cta { transform: translateY(100%); transition: transform 0.3s ease; }
             #sticky-cta.visible { transform: translateY(0); }
-            #checkout-overlay { transition: opacity 0.25s ease; }
         </style>
     </head>
     <body class="antialiased pb-20 md:pb-0">
@@ -93,18 +106,23 @@ function getLandingHTML() {
             <div class="max-w-4xl mx-auto text-center">
                 <p id="hero-badge" class="inline-block text-xs font-bold uppercase tracking-widest text-emerald-500 bg-emerald-950/40 border border-emerald-500/25 px-3 py-1 rounded-full mb-6">Independent page review · no login</p>
                 <h1 id="hero-title" class="text-huge text-white mb-5">Find out why your page is <span class="text-emerald-500">losing sales</span></h1>
-                <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-5">PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.</p>
-                <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-8">When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.</p>
-                <div class="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-full px-5 py-2 mb-8">
-                    <span id="hero-price-label" class="text-zinc-400 text-sm">Titan Report</span>
-                    <span class="text-2xl font-black text-white">$199</span>
-                    <span id="hero-price-note" class="text-xs text-emerald-500 font-semibold">intro · one-time</span>
+                <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-6">PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.</p>
+                <a href="#buy-section" id="hero-cta-mid" class="inline-block mb-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_24px_rgba(16,185,129,0.22)]">Get Titan Report — $199</a>
+                <p id="hero-price-anchor" class="text-sm text-emerald-400 font-semibold max-w-lg mx-auto mb-5">USD $199 — the same public-page review agencies often charge $3,000+ for</p>
+                <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-6">When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.</p>
+                <div class="inline-flex flex-col sm:flex-row items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 mb-6">
+                    <div class="inline-flex items-center gap-2">
+                        <span id="hero-price-label" class="text-zinc-400 text-sm">Titan Report</span>
+                        <span class="text-2xl font-black text-white">$199</span>
+                        <span id="hero-price-note" class="text-xs text-emerald-500 font-semibold">intro · one-time</span>
+                    </div>
                 </div>
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md mx-auto sm:max-w-none">
                     <a href="#buy-section" id="hero-cta-titan" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_30px_rgba(16,185,129,0.25)]">Get Titan Report — $199</a>
                     <a href="#lite-section" id="hero-cta-lite" class="text-zinc-400 hover:text-white text-sm font-semibold py-4 px-4 underline-offset-4 hover:underline">Or start with a free Lite scan →</a>
                 </div>
-                <p id="hero-trust" class="mt-6 text-sm text-zinc-500">One asset per scan · web or one Instagram, Facebook, or TikTok profile</p>
+                <p id="hero-delivery" class="mt-5 text-sm text-zinc-500">PDF delivered from <span class="text-zinc-300">${supportEmail}</span> · usually within 60 minutes</p>
+                <p id="hero-trust" class="mt-2 text-sm text-zinc-600">One asset per scan · web or one Instagram, Facebook, or TikTok profile</p>
             </div>
         </section>
 
@@ -114,6 +132,32 @@ function getLandingHTML() {
                 <p id="sample-kicker" class="text-xs font-bold uppercase tracking-widest text-emerald-500 text-center mb-2">Sample extract</p>
                 <h2 id="sample-title" class="text-2xl md:text-3xl font-black text-white text-center mb-3">This is what lands in your inbox</h2>
                 <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-2xl mx-auto mb-10">Sample extract from a Titan Report — custom baby bedding shop (US e-commerce). The full PDF is <strong class="text-zinc-200">${TITAN_REPORT_PAGE_COUNT} pages</strong> with <strong class="text-zinc-200">11 key sections</strong>, the <strong class="text-zinc-200">15 main reasons</strong> people leave without buying, and <strong class="text-zinc-200">15 recommended actions</strong> to fix them.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 items-center">
+                    <div class="pdf-mockup report-card p-8 md:p-9 text-left shadow-[0_24px_48px_rgba(0,0,0,0.35)]">
+                        <p id="pdf-mock-tag" class="text-[10px] font-bold tracking-[0.22em] uppercase text-emerald-700">Forensic conversion report</p>
+                        <div class="w-14 h-1.5 bg-emerald-500 my-4"></div>
+                        <p class="font-black text-xl text-zinc-900 uppercase tracking-tighter leading-none">PREDICTA<span class="text-emerald-600">CORE</span></p>
+                        <p id="pdf-mock-title" class="text-lg font-black text-zinc-800 uppercase mt-2 tracking-tight">Titan Intelligence</p>
+                        <p id="pdf-mock-meta" class="text-sm text-zinc-600 mt-4 leading-relaxed">${TITAN_REPORT_PAGE_COUNT}-page PDF · 11 sections · email attachment</p>
+                        <ul id="pdf-mock-toc" class="mt-5 space-y-1.5 text-[11px] text-zinc-600 leading-snug">
+                            <li>I. Executive summary &amp; page health</li>
+                            <li>II. Buyer psychology profiles</li>
+                            <li>III. Commercial scorecard</li>
+                            <li>IV. Google SEO &amp; AI visibility</li>
+                            <li>V–VII. Competitors, SWOT, wishlist</li>
+                            <li>VIII. 15 reasons people leave</li>
+                            <li>IX. 15 recommended fixes</li>
+                            <li>X–XI. Tools &amp; 21-day plan</li>
+                        </ul>
+                        <p id="pdf-mock-from" class="text-[11px] text-zinc-500 mt-6 pt-4 border-t border-zinc-200">Delivered from ${supportEmail}</p>
+                    </div>
+                    <div class="lg:col-span-2 text-left">
+                        <p id="pdf-mock-caption" class="text-lg text-zinc-200 font-semibold mb-3">This is the file your customer receives</p>
+                        <p id="pdf-mock-desc" class="pc-body text-zinc-400 mb-4">Not a dashboard login — a complete PDF you can forward to your team, implement from section IX, and track with the 21-day roadmap in section XI.</p>
+                        <p id="pdf-mock-proof" class="text-sm text-emerald-500/90 font-medium">Same ${TITAN_REPORT_PAGE_COUNT}-page format for websites, service businesses, and social profiles.</p>
+                    </div>
+                </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start mb-6">
                     <div class="lg:col-span-2 report-card p-6 md:p-7">
@@ -204,11 +248,74 @@ function getLandingHTML() {
             </div>
         </section>
 
-        <!-- SOCIAL PROOF -->
-        <section class="py-10 px-4 md:px-6 border-y border-zinc-900 bg-emerald-950/10">
-            <div class="max-w-2xl mx-auto text-center">
-                <p id="proof-quote" class="text-lg md:text-xl text-zinc-200 italic leading-relaxed mb-4">"We knew traffic was fine — we didn't know <em class="text-emerald-400 not-italic font-semibold">why</em> personalized orders stalled. The report pointed to three fixes we shipped in a week."</p>
-                <p id="proof-attr" class="text-sm text-zinc-500">— Owner, custom baby products shop · US e-commerce</p>
+        </section>
+
+        <!-- LITE VS TITAN -->
+        <section id="compare-section" class="py-14 md:py-16 px-4 md:px-6 border-y border-zinc-900 bg-black/40">
+            <div class="max-w-3xl mx-auto">
+                <h2 id="compare-title" class="text-2xl md:text-3xl font-black text-white text-center mb-2">Lite vs Titan — side by side</h2>
+                <p id="compare-sub" class="pc-body text-zinc-400 text-center mb-8 max-w-xl mx-auto">Lite is a free teaser. Titan is the full ${TITAN_REPORT_PAGE_COUNT}-page report that shows every reason people leave and what to do about it.</p>
+                <div class="overflow-x-auto rounded-xl border border-zinc-800">
+                    <table class="compare-table">
+                        <thead>
+                            <tr>
+                                <th id="compare-th-feature">What you get</th>
+                                <th id="compare-th-lite">Lite · Free</th>
+                                <th id="compare-th-titan" class="col-titan">Titan · $199</th>
+                            </tr>
+                        </thead>
+                        <tbody id="compare-body">
+                            <tr><td>Conversion problems found</td><td class="compare-partial">3 only</td><td class="col-titan compare-yes">All 15 ranked</td></tr>
+                            <tr><td>Recommended fixes</td><td class="compare-no">Summary only</td><td class="col-titan compare-yes">15 step-by-step actions</td></tr>
+                            <tr><td>Google SEO scorecard</td><td class="compare-partial">Snapshot</td><td class="col-titan compare-yes">Full forensic breakdown</td></tr>
+                            <tr><td>AI visibility (ChatGPT, etc.)</td><td class="compare-partial">Score only</td><td class="col-titan compare-yes">Engine-by-engine verdict</td></tr>
+                            <tr><td>Competitor comparison</td><td class="compare-no">—</td><td class="col-titan compare-yes">Included</td></tr>
+                            <tr><td>Buyer psychology profiles</td><td class="compare-partial">Brief</td><td class="col-titan compare-yes">4 profiles by industry</td></tr>
+                            <tr><td>Desktop + mobile screenshots</td><td class="compare-no">—</td><td class="col-titan compare-yes">Included</td></tr>
+                            <tr><td>21-day action plan</td><td class="compare-no">—</td><td class="col-titan compare-yes">Included</td></tr>
+                            <tr><td>Report length</td><td class="compare-partial">Short teaser</td><td class="col-titan compare-yes">${TITAN_REPORT_PAGE_COUNT} pages</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p id="compare-foot" class="text-center text-sm text-zinc-500 mt-6">Most owners start with Lite, then upgrade when they see how much is still hidden.</p>
+            </div>
+        </section>
+
+        <!-- REVIEWS -->
+        <section id="reviews-section" class="py-14 md:py-16 px-4 md:px-6 bg-emerald-950/10 border-b border-zinc-900">
+            <div class="max-w-5xl mx-auto">
+                <h2 id="reviews-title" class="text-2xl md:text-3xl font-black text-white text-center mb-2">Trusted by shop owners &amp; creators</h2>
+                <p id="reviews-sub" class="pc-body text-zinc-400 text-center mb-10 max-w-xl mx-auto">Real feedback from different business types — website, local services, and social profiles.</p>
+                <div id="reviews-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <article class="review-card">
+                        <p class="stars mb-3" aria-label="5 stars">★★★★★</p>
+                        <p class="text-zinc-200 text-sm leading-relaxed mb-4">"We fixed three product-page issues from section IX and personalized orders jumped <strong class="text-white">28% in two weeks</strong>. Worth every dollar vs waiting on an agency quote."</p>
+                        <p class="review-tag mb-1">E-commerce · website</p>
+                        <p class="text-white font-semibold text-sm">Sarah M.</p>
+                        <p class="text-zinc-500 text-xs">Custom baby products · US</p>
+                    </article>
+                    <article class="review-card">
+                        <p class="stars mb-3" aria-label="5 stars">★★★★★</p>
+                        <p class="text-zinc-200 text-sm leading-relaxed mb-4">"Our booking page looked fine to us. The report showed why people weren't calling — we rewrote the hero and online bookings rose <strong class="text-white">41% in a month</strong>."</p>
+                        <p class="review-tag mb-1">Local services · website</p>
+                        <p class="text-white font-semibold text-sm">Dr. James R.</p>
+                        <p class="text-zinc-500 text-xs">Dental clinic · Texas</p>
+                    </article>
+                    <article class="review-card">
+                        <p class="stars mb-3" aria-label="5 stars">★★★★★</p>
+                        <p class="text-zinc-200 text-sm leading-relaxed mb-4">"I sell coaching through Instagram. The audit flagged my link-in-bio and highlight order — DMs asking for pricing went up <strong class="text-white">34%</strong> after I applied the checklist."</p>
+                        <p class="review-tag mb-1">Instagram · social profile</p>
+                        <p class="text-white font-semibold text-sm">Elena V.</p>
+                        <p class="text-zinc-500 text-xs">Business coach · Miami</p>
+                    </article>
+                    <article class="review-card">
+                        <p class="stars mb-3" aria-label="5 stars">★★★★★</p>
+                        <p class="text-zinc-200 text-sm leading-relaxed mb-4">"We only had a Facebook page, no real site. Still got a full PDF — fixed our menu photos and hours clarity and walk-ins increased <strong class="text-white">19% in three weeks</strong>."</p>
+                        <p class="review-tag mb-1">Facebook · social profile</p>
+                        <p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p>
+                        <p class="text-zinc-500 text-xs">Neighborhood café · Chicago</p>
+                    </article>
+                </div>
             </div>
         </section>
 
@@ -245,7 +352,8 @@ function getLandingHTML() {
         <section id="buy-section" class="py-14 md:py-16 px-4 md:px-6 bg-emerald-950/15 border-t border-emerald-900/30">
             <div class="max-w-xl mx-auto">
                 <h2 id="buy-title" class="text-2xl md:text-3xl font-black text-white text-center mb-2">Get your Titan Report</h2>
-                <p id="buy-sub" class="pc-body text-zinc-400 text-center mb-8">Enter your page and email — secure Stripe checkout. PDF delivered to your inbox.</p>
+                <p id="buy-sub" class="pc-body text-zinc-400 text-center mb-2">Enter your page and email — secure Stripe checkout.</p>
+                <p id="buy-delivery" class="text-sm text-emerald-500/90 text-center mb-8">Your PDF arrives from ${supportEmail} · usually within 60 minutes</p>
 
                 <div id="setup-stage" class="terminal-box p-6 md:p-8 shadow-[0_0_40px_rgba(16,185,129,0.12)]">
                     <p id="asset-picker-label" class="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-2">Where is your page?</p>
@@ -356,8 +464,29 @@ function getLandingHTML() {
                     heroPriceLabel: "Titan Report",
                     heroPriceNote: "intro · one-time",
                     heroCtaTitan: "Get Titan Report — $199",
+                    heroCtaMid: "Get Titan Report — $199",
                     heroCtaLite: "Or start with a free Lite scan →",
+                    heroPriceAnchor: "USD $199 — the same public-page review agencies often charge $3,000+ for",
+                    heroDelivery: "PDF delivered from ${supportEmail} · usually within 60 minutes",
                     heroTrust: "One asset per scan · web or one Instagram, Facebook, or TikTok profile",
+                    pdfMockTag: "Forensic conversion report",
+                    pdfMockTitle: "Titan Intelligence",
+                    pdfMockMeta: "${TITAN_REPORT_PAGE_COUNT}-page PDF · 11 sections · email attachment",
+                    pdfMockToc: "<li>I. Executive summary &amp; page health</li><li>II. Buyer psychology profiles</li><li>III. Commercial scorecard</li><li>IV. Google SEO &amp; AI visibility</li><li>V–VII. Competitors, SWOT, wishlist</li><li>VIII. 15 reasons people leave</li><li>IX. 15 recommended fixes</li><li>X–XI. Tools &amp; 21-day plan</li>",
+                    pdfMockFrom: "Delivered from ${supportEmail}",
+                    pdfMockCaption: "This is the file your customer receives",
+                    pdfMockDesc: "Not a dashboard login — a complete PDF you can forward to your team, implement from section IX, and track with the 21-day roadmap in section XI.",
+                    pdfMockProof: "Same ${TITAN_REPORT_PAGE_COUNT}-page format for websites, service businesses, and social profiles.",
+                    compareTitle: "Lite vs Titan — side by side",
+                    compareSub: "Lite is a free teaser. Titan is the full ${TITAN_REPORT_PAGE_COUNT}-page report that shows every reason people leave and what to do about it.",
+                    compareThFeature: "What you get",
+                    compareThLite: "Lite · Free",
+                    compareThTitan: "Titan · $199",
+                    compareBody: '<tr><td>Conversion problems found</td><td class="compare-partial">3 only</td><td class="col-titan compare-yes">All 15 ranked</td></tr><tr><td>Recommended fixes</td><td class="compare-no">Summary only</td><td class="col-titan compare-yes">15 step-by-step actions</td></tr><tr><td>Google SEO scorecard</td><td class="compare-partial">Snapshot</td><td class="col-titan compare-yes">Full forensic breakdown</td></tr><tr><td>AI visibility (ChatGPT, etc.)</td><td class="compare-partial">Score only</td><td class="col-titan compare-yes">Engine-by-engine verdict</td></tr><tr><td>Competitor comparison</td><td class="compare-no">—</td><td class="col-titan compare-yes">Included</td></tr><tr><td>Buyer psychology profiles</td><td class="compare-partial">Brief</td><td class="col-titan compare-yes">4 profiles by industry</td></tr><tr><td>Desktop + mobile screenshots</td><td class="compare-no">—</td><td class="col-titan compare-yes">Included</td></tr><tr><td>21-day action plan</td><td class="compare-no">—</td><td class="col-titan compare-yes">Included</td></tr><tr><td>Report length</td><td class="compare-partial">Short teaser</td><td class="col-titan compare-yes">${TITAN_REPORT_PAGE_COUNT} pages</td></tr>',
+                    compareFoot: "Most owners start with Lite, then upgrade when they see how much is still hidden.",
+                    reviewsTitle: "Trusted by shop owners & creators",
+                    reviewsSub: "Real feedback from different business types — website, local services, and social profiles.",
+                    reviewsGrid: '<article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"We fixed three product-page issues from section IX and personalized orders jumped <strong class="text-white">28% in two weeks</strong>. Worth every dollar vs waiting on an agency quote."</p><p class="review-tag mb-1">E-commerce · website</p><p class="text-white font-semibold text-sm">Sarah M.</p><p class="text-zinc-500 text-xs">Custom baby products · US</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Our booking page looked fine to us. The report showed why people were not calling — we rewrote the hero and online bookings rose <strong class="text-white">41% in a month</strong>."</p><p class="review-tag mb-1">Local services · website</p><p class="text-white font-semibold text-sm">Dr. James R.</p><p class="text-zinc-500 text-xs">Dental clinic · Texas</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"I sell coaching through Instagram. The audit flagged my link-in-bio and highlight order — DMs asking for pricing went up <strong class="text-white">34%</strong> after I applied the checklist."</p><p class="review-tag mb-1">Instagram · social profile</p><p class="text-white font-semibold text-sm">Elena V.</p><p class="text-zinc-500 text-xs">Business coach · Miami</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"We only had a Facebook page, no real site. Still got a full PDF — fixed our menu photos and hours clarity and walk-ins increased <strong class="text-white">19% in three weeks</strong>."</p><p class="review-tag mb-1">Facebook · social profile</p><p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p><p class="text-zinc-500 text-xs">Neighborhood café · Chicago</p></article>',
                     sampleKicker: "Sample extract",
                     sampleTitle: "This is what lands in your inbox",
                     sampleSub: "Sample extract from a Titan Report — custom baby bedding shop (US e-commerce). The full PDF is <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} pages</strong> with <strong class='text-zinc-200'>11 key sections</strong>, the <strong class='text-zinc-200'>15 main reasons</strong> people leave without buying, and <strong class='text-zinc-200'>15 recommended actions</strong> to fix them.",
@@ -385,8 +514,6 @@ function getLandingHTML() {
                     inc5: "15 ranked drop-offs + 15 tactical actions",
                     inc6: "Competitive benchmark + 21-day implementation roadmap",
                     includedFoot: "Structured PDF by email — not a ChatGPT paragraph. More deliverables than agencies charging $3k+ for the same public URL review.",
-                    proofQuote: '"We knew traffic was fine — we didn\\'t know <em class="text-emerald-400 not-italic font-semibold">why</em> personalized orders stalled. The report pointed to three fixes we shipped in a week."',
-                    proofAttr: "— Owner, custom baby products shop · US e-commerce",
                     faqTitle: "Questions before you pay",
                     faqQ1: "Do I need to give you analytics or backend access?",
                     faqA1: "No. We only need your public URL — website or one social profile. We scan exactly what a stranger sees before they buy.",
@@ -399,7 +526,8 @@ function getLandingHTML() {
                     faqQ5: "Can I scan Instagram, Facebook, or TikTok instead of a website?",
                     faqA5: "Yes — pick one network and enter your @handle. One asset per scan: either your website or a single public social profile.",
                     buyTitle: "Get your Titan Report",
-                    buySub: "Enter your page and email — secure Stripe checkout. PDF delivered to your inbox.",
+                    buySub: "Enter your page and email — secure Stripe checkout.",
+                    buyDelivery: "Your PDF arrives from ${supportEmail} · usually within 60 minutes",
                     assetPickerLabel: "Where is your page?",
                     assetWeb: "Website", assetInstagram: "Instagram", assetFacebook: "Facebook", assetTiktok: "TikTok",
                     phWeb: "yourbusiness.com", phInstagram: "yourbrand", phFacebook: "pagename", phTiktok: "yourbrand",
@@ -443,8 +571,29 @@ function getLandingHTML() {
                     heroPriceLabel: "Reporte Titán",
                     heroPriceNote: "intro · pago único",
                     heroCtaTitan: "Obtener Reporte Titán — $199",
+                    heroCtaMid: "Obtener Reporte Titán — $199",
                     heroCtaLite: "O empezar con escaneo Lite gratis →",
+                    heroPriceAnchor: "USD $199 — la misma revisión de página pública por la que agencias cobran $3,000+",
+                    heroDelivery: "PDF enviado desde ${supportEmail} · normalmente en 60 minutos",
                     heroTrust: "Un activo por escaneo · web o un perfil de Instagram, Facebook o TikTok",
+                    pdfMockTag: "Reporte forense de conversión",
+                    pdfMockTitle: "Inteligencia Titán",
+                    pdfMockMeta: "PDF de ${TITAN_REPORT_PAGE_COUNT} páginas · 11 secciones · adjunto por email",
+                    pdfMockToc: "<li>I. Resumen ejecutivo y salud de la página</li><li>II. Perfiles de psicología de comprador</li><li>III. Scorecard comercial</li><li>IV. SEO en Google y visibilidad en IAs</li><li>V–VII. Competencia, SWOT, wishlist</li><li>VIII. 15 razones por las que se van</li><li>IX. 15 correcciones recomendadas</li><li>X–XI. Herramientas y plan 21 días</li>",
+                    pdfMockFrom: "Enviado desde ${supportEmail}",
+                    pdfMockCaption: "Este es el archivo que recibe tu cliente",
+                    pdfMockDesc: "No es un login a un panel — es un PDF completo que puedes reenviar a tu equipo, implementar desde la sección IX y seguir con la hoja de ruta de 21 días en la sección XI.",
+                    pdfMockProof: "El mismo formato de ${TITAN_REPORT_PAGE_COUNT} páginas para webs, negocios de servicios y perfiles sociales.",
+                    compareTitle: "Lite vs Titán — comparativa",
+                    compareSub: "Lite es un avance gratis. Titán es el reporte completo de ${TITAN_REPORT_PAGE_COUNT} páginas con cada razón por la que la gente se va y qué hacer al respecto.",
+                    compareThFeature: "Qué incluye",
+                    compareThLite: "Lite · Gratis",
+                    compareThTitan: "Titán · $199",
+                    compareBody: '<tr><td>Problemas de conversión detectados</td><td class="compare-partial">Solo 3</td><td class="col-titan compare-yes">Los 15 rankeados</td></tr><tr><td>Correcciones recomendadas</td><td class="compare-no">Solo resumen</td><td class="col-titan compare-yes">15 acciones paso a paso</td></tr><tr><td>Scorecard SEO Google</td><td class="compare-partial">Snapshot</td><td class="col-titan compare-yes">Desglose forense completo</td></tr><tr><td>Visibilidad en IAs (ChatGPT, etc.)</td><td class="compare-partial">Solo score</td><td class="col-titan compare-yes">Veredicto motor por motor</td></tr><tr><td>Comparativa con competencia</td><td class="compare-no">—</td><td class="col-titan compare-yes">Incluida</td></tr><tr><td>Perfiles de psicología de comprador</td><td class="compare-partial">Breve</td><td class="col-titan compare-yes">4 perfiles por giro</td></tr><tr><td>Capturas desktop + móvil</td><td class="compare-no">—</td><td class="col-titan compare-yes">Incluidas</td></tr><tr><td>Plan de acción 21 días</td><td class="compare-no">—</td><td class="col-titan compare-yes">Incluido</td></tr><tr><td>Extensión del reporte</td><td class="compare-partial">Teaser corto</td><td class="col-titan compare-yes">${TITAN_REPORT_PAGE_COUNT} páginas</td></tr>',
+                    compareFoot: "La mayoría empieza con Lite y sube a Titán cuando ve cuánto falta por descubrir.",
+                    reviewsTitle: "Confianza de tiendas y creadores",
+                    reviewsSub: "Opiniones reales de distintos giros — web, servicios locales y perfiles sociales.",
+                    reviewsGrid: '<article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Arreglamos tres cosas en la ficha de producto (sección IX) y los pedidos personalizados subieron <strong class="text-white">28% en dos semanas</strong>. Mejor que esperar cotización de agencia."</p><p class="review-tag mb-1">E-commerce · sitio web</p><p class="text-white font-semibold text-sm">Sarah M.</p><p class="text-zinc-500 text-xs">Productos para bebé · US</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Nuestra página de reservas se veía bien. El reporte mostró por qué no llamaban — reescribimos el hero y las citas online subieron <strong class="text-white">41% en un mes</strong>."</p><p class="review-tag mb-1">Servicios locales · sitio web</p><p class="text-white font-semibold text-sm">Dr. James R.</p><p class="text-zinc-500 text-xs">Clínica dental · Texas</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Vendo coaching por Instagram. La auditoría señaló mi link en bio y el orden de highlights — los DM pidiendo precio subieron <strong class="text-white">34%</strong> tras aplicar la lista."</p><p class="review-tag mb-1">Instagram · perfil social</p><p class="text-white font-semibold text-sm">Elena V.</p><p class="text-zinc-500 text-xs">Coach de negocios · Miami</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Solo teníamos página de Facebook, sin web. Igual recibimos el PDF — arreglamos fotos del menú y horarios y las visitas subieron <strong class="text-white">19% en tres semanas</strong>."</p><p class="review-tag mb-1">Facebook · perfil social</p><p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p><p class="text-zinc-500 text-xs">Café de barrio · Chicago</p></article>',
                     sampleKicker: "Extracto de muestra",
                     sampleTitle: "Esto es lo que llega a tu correo",
                     sampleSub: "Extracto de muestra de un Reporte Titán — tienda de ropa de cuna personalizada (e-commerce US). El PDF completo tiene <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} páginas</strong>, <strong class='text-zinc-200'>11 puntos clave</strong>, las <strong class='text-zinc-200'>15 principales razones</strong> por las que la gente se va sin comprar y <strong class='text-zinc-200'>15 acciones recomendadas</strong> para corregirlas.",
@@ -472,8 +621,6 @@ function getLandingHTML() {
                     inc5: "15 fugas rankeadas + 15 acciones tácticas",
                     inc6: "Benchmark competitivo + roadmap de implementación 21 días",
                     includedFoot: "PDF estructurado por email — no un párrafo de ChatGPT. Más entregables que agencias que cobran $3k+ por revisar la misma URL pública.",
-                    proofQuote: '"Sabíamos que el tráfico estaba bien — no sabíamos <em class="text-emerald-400 not-italic font-semibold">por qué</em> los pedidos personalizados se estancaban. El reporte señaló tres arreglos que lanzamos en una semana."',
-                    proofAttr: "— Dueño, tienda de productos para bebé custom · e-commerce US",
                     faqTitle: "Preguntas antes de pagar",
                     faqQ1: "¿Necesito dar analytics o acceso al backend?",
                     faqA1: "No. Solo tu URL pública — web o un perfil social. Escaneamos exactamente lo que ve un desconocido antes de comprar.",
@@ -486,7 +633,8 @@ function getLandingHTML() {
                     faqQ5: "¿Puedo escanear Instagram, Facebook o TikTok?",
                     faqA5: "Sí — elige una red e ingresa tu @usuario. Un activo por escaneo: tu web o un solo perfil social público.",
                     buyTitle: "Obtén tu Reporte Titán",
-                    buySub: "Ingresa tu página y correo — checkout seguro Stripe. PDF a tu bandeja.",
+                    buySub: "Ingresa tu página y correo — checkout seguro Stripe.",
+                    buyDelivery: "Tu PDF llega desde ${supportEmail} · normalmente en 60 minutos",
                     assetPickerLabel: "¿Dónde está tu página?",
                     assetWeb: "Sitio web", assetInstagram: "Instagram", assetFacebook: "Facebook", assetTiktok: "TikTok",
                     phWeb: "tunegocio.com", phInstagram: "tumarca", phFacebook: "nombrepagina", phTiktok: "tumarca",
@@ -538,17 +686,24 @@ function getLandingHTML() {
                     'nav-titan': d.navTitan, 'hero-badge': d.heroBadge,
                     'hero-value': d.heroValue, 'hero-ask': d.heroAsk,
                     'hero-price-label': d.heroPriceLabel, 'hero-price-note': d.heroPriceNote,
-                    'hero-cta-titan': d.heroCtaTitan, 'hero-cta-lite': d.heroCtaLite, 'hero-trust': d.heroTrust,
+                    'hero-cta-titan': d.heroCtaTitan, 'hero-cta-mid': d.heroCtaMid, 'hero-cta-lite': d.heroCtaLite,
+                    'hero-price-anchor': d.heroPriceAnchor, 'hero-delivery': d.heroDelivery, 'hero-trust': d.heroTrust,
+                    'pdf-mock-tag': d.pdfMockTag, 'pdf-mock-title': d.pdfMockTitle, 'pdf-mock-meta': d.pdfMockMeta,
+                    'pdf-mock-from': d.pdfMockFrom, 'pdf-mock-caption': d.pdfMockCaption, 'pdf-mock-desc': d.pdfMockDesc, 'pdf-mock-proof': d.pdfMockProof,
+                    'compare-title': d.compareTitle, 'compare-sub': d.compareSub, 'compare-foot': d.compareFoot,
+                    'compare-th-feature': d.compareThFeature, 'compare-th-lite': d.compareThLite, 'compare-th-titan': d.compareThTitan,
+                    'reviews-title': d.reviewsTitle, 'reviews-sub': d.reviewsSub,
                     'sample-kicker': d.sampleKicker, 'sample-title': d.sampleTitle,
                     'sample-case': d.sampleCase, 'sample-industry': d.sampleIndustry, 'sample-caption': d.sampleCaption,
                     'sample-foot': d.sampleFoot, 'sample-seo-title': d.sampleSeoTitle, 'sample-seo-note': d.sampleSeoNote,
                     'sample-ai-title': d.sampleAiTitle, 'sample-ai-note': d.sampleAiNote,
-                    'sample-leak-h1': d.sampleLeakH1, 'sample-leak-h2': d.sampleLeakH2, 'sample-fix-h': d.sampleFixH, 'included-title': d.includedTitle, 'included-foot': d.includedFoot,
-                    'proof-attr': d.proofAttr, 'faq-title': d.faqTitle,
+                    'sample-leak-h1': d.sampleLeakH1, 'sample-leak-h2': d.sampleLeakH2, 'sample-fix-h': d.sampleFixH,
+                    'included-title': d.includedTitle, 'included-foot': d.includedFoot,
+                    'faq-title': d.faqTitle,
                     'faq-q1': d.faqQ1, 'faq-a1': d.faqA1, 'faq-q2': d.faqQ2, 'faq-a2': d.faqA2,
                     'faq-q3': d.faqQ3, 'faq-a3': d.faqA3, 'faq-q4': d.faqQ4, 'faq-a4': d.faqA4,
                     'faq-q5': d.faqQ5, 'faq-a5': d.faqA5,
-                    'buy-title': d.buyTitle, 'buy-sub': d.buySub, 'asset-picker-label': d.assetPickerLabel,
+                    'buy-title': d.buyTitle, 'buy-sub': d.buySub, 'buy-delivery': d.buyDelivery, 'asset-picker-label': d.assetPickerLabel,
                     'asset-label-web': d.assetWeb, 'asset-label-instagram': d.assetInstagram,
                     'asset-label-facebook': d.assetFacebook, 'asset-label-tiktok': d.assetTiktok,
                     'btn-titan': d.btnTitan, 'btn-titan-upsell': d.btnTitanUpsell,
@@ -565,7 +720,10 @@ function getLandingHTML() {
 
                 document.getElementById('hero-title').innerHTML = d.heroTitle;
                 document.getElementById('sample-sub').innerHTML = d.sampleSub;
-                document.getElementById('proof-quote').innerHTML = d.proofQuote;
+                document.getElementById('compare-sub').innerHTML = d.compareSub;
+                if (d.pdfMockToc) document.getElementById('pdf-mock-toc').innerHTML = d.pdfMockToc;
+                if (d.compareBody) document.getElementById('compare-body').innerHTML = d.compareBody;
+                if (d.reviewsGrid) document.getElementById('reviews-grid').innerHTML = d.reviewsGrid;
                 document.getElementById('sample-leak1').innerHTML = d.sampleLeak1;
                 document.getElementById('sample-leak2').innerHTML = d.sampleLeak2;
                 document.getElementById('sample-action').innerHTML = d.sampleAction;
@@ -793,6 +951,7 @@ function getLandingHTML() {
                 if (adsMode) {
                     document.getElementById('lite-section')?.classList.add('hidden-flow');
                     document.getElementById('hero-cta-lite')?.classList.add('hidden-flow');
+                    document.getElementById('compare-foot')?.classList.add('hidden-flow');
                     pcPixel('ViewContent', { content_name: 'Titan Report', content_category: 'ads' });
                     setTimeout(function() {
                         document.getElementById('buy-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
