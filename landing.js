@@ -1,4 +1,4 @@
-// landing.js — conversion-focused landing (non-repetitive, Titan-first, anonymized sample)
+// landing.js — conversion-focused landing (non-repetitive, Titan-first)
 
 const { getFaviconHeadTags } = require('./brand');
 
@@ -108,12 +108,12 @@ function getLandingHTML() {
             </div>
         </section>
 
-        <!-- SAMPLE REPORT (anonymized real audit — baby bedding e-commerce) -->
+        <!-- SAMPLE REPORT -->
         <section id="sample-section" class="py-14 md:py-16 px-4 md:px-6 border-y border-zinc-900 bg-black/30">
             <div class="max-w-5xl mx-auto">
-                <p id="sample-kicker" class="text-xs font-bold uppercase tracking-widest text-emerald-500 text-center mb-2">Real report preview</p>
+                <p id="sample-kicker" class="text-xs font-bold uppercase tracking-widest text-emerald-500 text-center mb-2">Sample extract</p>
                 <h2 id="sample-title" class="text-2xl md:text-3xl font-black text-white text-center mb-3">This is what lands in your inbox</h2>
-                <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-xl mx-auto mb-10">Anonymized extract from a live Titan audit — custom baby bedding shop, US e-commerce.</p>
+                <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-2xl mx-auto mb-10">From a Titan Report for a custom baby bedding shop (US e-commerce). The full PDF is <strong class="text-zinc-200">35+ pages</strong> with <strong class="text-zinc-200">11 key sections</strong>, the <strong class="text-zinc-200">15 main reasons</strong> people leave without buying, and <strong class="text-zinc-200">15 recommended actions</strong> to fix them.</p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start mb-6">
                     <div class="lg:col-span-2 report-card p-6 md:p-7">
@@ -184,7 +184,7 @@ function getLandingHTML() {
                         <p id="sample-ai-note" class="text-xs text-zinc-500 mt-4 leading-relaxed">AIs are allowed to read this shop, but with no structured product data and no clear main headline they guess — and may recommend a competitor with a clearer page instead.</p>
                     </div>
                 </div>
-                <p id="sample-foot" class="text-sm text-zinc-500 text-center mt-8">+ buyer profiles, competitor comparison, 12 more problems, 14 more fixes &amp; 21-day plan in the full PDF.</p>
+                <p id="sample-foot" class="text-sm text-zinc-500 text-center mt-8">What you see above is a small sample. The full report also includes buyer profiles, competitor comparison, screenshots, and a 21-day action plan.</p>
             </div>
         </section>
 
@@ -358,9 +358,9 @@ function getLandingHTML() {
                     heroCtaTitan: "Get Titan Report — $199",
                     heroCtaLite: "Or start with a free Lite scan →",
                     heroTrust: "One asset per scan · web or one Instagram, Facebook, or TikTok profile",
-                    sampleKicker: "Real report preview",
+                    sampleKicker: "Sample extract",
                     sampleTitle: "This is what lands in your inbox",
-                    sampleSub: "Anonymized extract from a live Titan audit — custom baby bedding shop, US e-commerce.",
+                    sampleSub: "From a Titan Report for a custom baby bedding shop (US e-commerce). The full PDF is <strong class='text-zinc-200'>35+ pages</strong> with <strong class='text-zinc-200'>11 key sections</strong>, the <strong class='text-zinc-200'>15 main reasons</strong> people leave without buying, and <strong class='text-zinc-200'>15 recommended actions</strong> to fix them.",
                     sampleCase: "Custom baby bedding · e-commerce",
                     sampleIndustry: "Personalized milestone products · US market",
                     sampleCaption: "Real scores from a live audit — same checks we run on your page.",
@@ -376,7 +376,7 @@ function getLandingHTML() {
                     sampleAiTitle: "How ChatGPT & other AIs see you",
                     sampleAiRows: '<div class="sample-ai-row"><span>Overall AI readiness</span><span class="score-pill text-emerald-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Allowed — hard to feature</span></div>',
                     sampleAiNote: "AIs are allowed to read this shop, but with no structured product data and no clear main headline they guess — and may recommend a competitor with a clearer page instead.",
-                    sampleFoot: "+ buyer profiles, competitor comparison, 12 more problems, 14 more fixes & 21-day plan in the full PDF.",
+                    sampleFoot: "What you see above is a small sample. The full report also includes buyer profiles, competitor comparison, screenshots, and a 21-day action plan.",
                     includedTitle: "Everything in the Titan Report",
                     inc1: "Desktop + mobile capture with measured load time",
                     inc2: "SEO forensics: title, meta, schema, sitemap, robots",
@@ -445,9 +445,9 @@ function getLandingHTML() {
                     heroCtaTitan: "Obtener Reporte Titán — $199",
                     heroCtaLite: "O empezar con escaneo Lite gratis →",
                     heroTrust: "Un activo por escaneo · web o un perfil de Instagram, Facebook o TikTok",
-                    sampleKicker: "Vista previa real",
+                    sampleKicker: "Extracto de muestra",
                     sampleTitle: "Esto es lo que llega a tu correo",
-                    sampleSub: "Extracto anonimizado de una auditoría Titán real — tienda de ropa de cuna personalizada, e-commerce US.",
+                    sampleSub: "De un Reporte Titán para una tienda de ropa de cuna personalizada (e-commerce US). El PDF completo tiene <strong class='text-zinc-200'>más de 35 páginas</strong>, <strong class='text-zinc-200'>11 puntos clave</strong>, las <strong class='text-zinc-200'>15 principales razones</strong> por las que la gente se va sin comprar y <strong class='text-zinc-200'>15 acciones recomendadas</strong> para corregirlas.",
                     sampleCase: "Ropa de cuna personalizada · e-commerce",
                     sampleIndustry: "Productos milestone personalizados · mercado US",
                     sampleCaption: "Puntuaciones reales de una auditoría en vivo — las mismas que aplicamos a tu página.",
@@ -463,7 +463,7 @@ function getLandingHTML() {
                     sampleAiTitle: "Cómo te ven ChatGPT y otras IAs",
                     sampleAiRows: '<div class="sample-ai-row"><span>Preparación general para IAs</span><span class="score-pill text-emerald-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Permitido — difícil destacar</span></div>',
                     sampleAiNote: "Las IAs pueden leer esta tienda, pero sin datos estructurados de producto ni titular claro adivinan — y pueden recomendar a un competidor con página más clara.",
-                    sampleFoot: "+ perfiles de comprador, comparativa con competencia, 12 problemas más, 14 correcciones y plan de 21 días en el PDF completo.",
+                    sampleFoot: "Lo de arriba es solo una muestra. El reporte completo incluye perfiles de comprador, comparativa con competencia, capturas de pantalla y un plan de acción de 21 días.",
                     includedTitle: "Todo lo que incluye el Reporte Titán",
                     inc1: "Captura desktop + móvil con tiempo de carga medido",
                     inc2: "SEO forense: title, meta, schema, sitemap, robots",
@@ -539,7 +539,7 @@ function getLandingHTML() {
                     'hero-value': d.heroValue, 'hero-ask': d.heroAsk,
                     'hero-price-label': d.heroPriceLabel, 'hero-price-note': d.heroPriceNote,
                     'hero-cta-titan': d.heroCtaTitan, 'hero-cta-lite': d.heroCtaLite, 'hero-trust': d.heroTrust,
-                    'sample-kicker': d.sampleKicker, 'sample-title': d.sampleTitle, 'sample-sub': d.sampleSub,
+                    'sample-kicker': d.sampleKicker, 'sample-title': d.sampleTitle,
                     'sample-case': d.sampleCase, 'sample-industry': d.sampleIndustry, 'sample-caption': d.sampleCaption,
                     'sample-foot': d.sampleFoot, 'sample-seo-title': d.sampleSeoTitle, 'sample-seo-note': d.sampleSeoNote,
                     'sample-ai-title': d.sampleAiTitle, 'sample-ai-note': d.sampleAiNote,
@@ -564,6 +564,7 @@ function getLandingHTML() {
                 });
 
                 document.getElementById('hero-title').innerHTML = d.heroTitle;
+                document.getElementById('sample-sub').innerHTML = d.sampleSub;
                 document.getElementById('proof-quote').innerHTML = d.proofQuote;
                 document.getElementById('sample-leak1').innerHTML = d.sampleLeak1;
                 document.getElementById('sample-leak2').innerHTML = d.sampleLeak2;
