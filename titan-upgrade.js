@@ -15,10 +15,24 @@ function getTitanUpgradeHTML() {
     <title>PredictaCore | Titan Report — $${TITAN_PRICE_USD}</title>
     <meta name="robots" content="noindex, nofollow">
     ${getFaviconHeadTags()}
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1734011764438170');
+    fbq('track', 'PageView');
+    fbq('track', 'ViewContent', { content_name: 'Titan Report', content_category: 'upsell' });
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { background: #050505; color: #d1d5db; font-family: 'Inter', sans-serif; }
+        body { background: #050505; color: #d1d5db; font-family: 'Inter', sans-serif; font-size: 16px; }
         .hidden-flow { display: none !important; }
     </style>
 </head>
@@ -26,7 +40,7 @@ function getTitanUpgradeHTML() {
     <header class="border-b border-zinc-800/80 py-5 px-6">
         <div class="max-w-xl mx-auto flex items-center justify-between">
             <a href="/" class="text-lg font-black text-white tracking-tighter uppercase">PREDICTA<span class="text-emerald-500">CORE</span></a>
-            <div class="flex gap-2 text-[10px] font-bold uppercase tracking-widest">
+            <div class="flex gap-2 text-xs font-bold uppercase tracking-widest">
                 <button type="button" id="lang-en" class="text-zinc-500 hover:text-white">EN</button>
                 <span class="text-zinc-700">|</span>
                 <button type="button" id="lang-es" class="text-zinc-500 hover:text-white">ES</button>
@@ -35,21 +49,21 @@ function getTitanUpgradeHTML() {
     </header>
 
     <main class="max-w-xl mx-auto px-6 py-10">
-        <p id="badge" class="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500 text-center mb-3">After your free Lite scan</p>
+        <p id="badge" class="text-xs font-bold uppercase tracking-[0.2em] text-emerald-500 text-center mb-3">After your free Lite scan</p>
         <h1 id="headline" class="text-2xl md:text-3xl font-black text-white text-center uppercase tracking-tighter leading-tight mb-4">
             Stop losing customers you never knew you had
         </h1>
-        <p id="subhead" class="text-sm text-zinc-400 text-center leading-relaxed mb-8">
+        <p id="subhead" class="text-base text-zinc-400 text-center leading-relaxed mb-8">
             Your Lite report only shows <strong class="text-white">3 critical leaks</strong>. The Titan Report finds <strong class="text-emerald-400">all 15 drop-off points</strong> that make strangers leave — plus concrete fixes to recover sales.
         </p>
 
         <div class="rounded-lg border border-zinc-800 bg-zinc-950/80 p-5 mb-6 space-y-3">
             <div>
-                <p id="lbl-page" class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1">Your page</p>
+                <p id="lbl-page" class="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-1">Your page</p>
                 <p id="target-display" class="text-sm text-white font-mono break-all">—</p>
             </div>
             <div>
-                <p id="lbl-email" class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-1">Report email</p>
+                <p id="lbl-email" class="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-1">Report email</p>
                 <p id="email-display" class="text-sm text-white font-mono break-all">—</p>
             </div>
         </div>
@@ -69,10 +83,10 @@ function getTitanUpgradeHTML() {
         </div>
 
         <p id="price-today" class="text-center text-xs text-zinc-500 mb-2">Charged today: USD $${TITAN_PRICE_USD} (Titan Report — introductory price)</p>
-        <button type="button" id="btn-pay" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-black py-4 rounded text-sm uppercase tracking-widest shadow-[0_0_24px_rgba(16,185,129,0.35)] transition-all disabled:opacity-60 disabled:cursor-wait mb-4">
+        <button type="button" id="btn-pay" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-black py-4 rounded-lg text-base uppercase tracking-widest shadow-[0_0_24px_rgba(16,185,129,0.35)] transition-all disabled:opacity-60 disabled:cursor-wait mb-4">
             Pay $${TITAN_PRICE_USD} — Get Titan Report
         </button>
-        <p id="checkout-hint" class="text-[10px] text-zinc-600 text-center mb-6">Secure Stripe checkout · your email and URL are already set</p>
+        <p id="checkout-hint" class="text-sm text-zinc-600 text-center mb-6">Secure Stripe checkout · your email and URL are already set</p>
         <p id="checkout-error" class="hidden-flow text-sm text-red-400 text-center font-medium mb-4" role="alert"></p>
 
         <p id="terms-line" class="text-[10px] text-zinc-600 text-center leading-relaxed mb-4">
@@ -94,12 +108,13 @@ function getTitanUpgradeHTML() {
         (function() {
             const params = new URLSearchParams(window.location.search);
             let currentLang = params.get('lang') === 'es' ? 'es' : 'en';
+            const adsMode = params.get('src') === 'ads';
             const email = (params.get('email') || '').trim().toLowerCase();
             const dna = (params.get('dna') || '').trim();
 
             const copy = {
                 en: {
-                    badge: 'After your free Lite scan',
+                    badge: adsMode ? 'Titan Report · USD $${TITAN_PRICE_USD}' : 'After your free Lite scan',
                     headline: 'Stop losing customers you never knew you had',
                     subhead: 'Your Lite report only shows <strong class="text-white">3 critical leaks</strong>. The Titan Report finds <strong class="text-emerald-400">all 15 drop-off points</strong> that make strangers leave — plus concrete fixes to recover sales.',
                     lblPage: 'Your page',
@@ -127,7 +142,7 @@ function getTitanUpgradeHTML() {
                     errNetwork: 'Network error. Check your connection and try again.',
                 },
                 es: {
-                    badge: 'Tras tu escaneo Lite gratis',
+                    badge: adsMode ? 'Reporte Titán · USD $${TITAN_PRICE_USD}' : 'Tras tu escaneo Lite gratis',
                     headline: 'Deja de perder clientes que ni sabías que tenías',
                     subhead: 'Tu reporte Lite solo muestra <strong class="text-white">3 fugas críticas</strong>. El Reporte Titán encuentra <strong class="text-emerald-400">las 15 fugas</strong> que hacen que los desconocidos se vayan — más correcciones concretas para recuperar ventas.',
                     lblPage: 'Tu página',
@@ -202,6 +217,9 @@ function getTitanUpgradeHTML() {
                 btn.disabled = true;
                 btn.innerText = d.btnLoading;
                 showOverlay();
+                if (typeof fbq === 'function') {
+                    fbq('track', 'InitiateCheckout', { value: ${TITAN_PRICE_USD}, currency: 'USD', content_name: 'Titan Report' });
+                }
 
                 const cancelUrl = window.location.origin + '/titan?' + new URLSearchParams({
                     email: email,

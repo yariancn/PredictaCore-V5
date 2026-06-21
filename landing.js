@@ -1,4 +1,4 @@
-// landing.js - REDISEÑO DE ÉLITE: CERO JERGA TÉCNICA, MÁXIMA AUTORIDAD Y ESTÉTICA BALANCEADA
+// landing.js — conversion-focused landing (non-repetitive, Titan-first, anonymized sample)
 
 const { getFaviconHeadTags } = require('./brand');
 
@@ -9,8 +9,8 @@ function getLandingHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PredictaCore | Auditoría forense para emprendedores</title>
-        <meta name="description" content="PredictaCore audita tu web o perfil social (solo URL) para encontrar por qué pierdes clientes y cómo arreglarlo. Escaneo Lite gratis. Reporte Titán USD $199 (precio introductorio).">
+        <title>PredictaCore | Find why your page loses customers</title>
+        <meta name="description" content="PredictaCore audits your website or social profile from the public URL only. 15 conversion leaks + tactical fixes in a PDF. Titan Report USD $199 intro. Free Lite scan available.">
         <meta name="application-name" content="PredictaCore">
         <meta property="og:site_name" content="PredictaCore">
         ${getFaviconHeadTags()}
@@ -32,279 +32,189 @@ function getLandingHTML() {
         src="https://www.facebook.com/tr?id=1734011764438170&ev=PageView&noscript=1"
         /></noscript>
         <!-- End Meta Pixel Code -->
-        
+
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
-            
-            :root {
-                --pc-emerald: #10b981;
-                --pc-dark-bg: #050505;
-            }
-
-            body { 
-                background: var(--pc-dark-bg); 
-                color: #d1d5db; 
-                font-family: 'Inter', sans-serif;
-                overflow-x: hidden;
-            }
-
-            .glass-panel { 
-                background: rgba(15, 23, 42, 0.6); 
-                border: 1px solid rgba(30, 41, 59, 0.5); 
-                backdrop-filter: blur(12px); 
-            }
-
-            .text-huge { font-size: clamp(2.5rem, 6vw, 5.5rem); line-height: 0.95; font-weight: 900; letter-spacing: -0.05em; }
-            
-            .dossier-preview {
-                background: #fff;
-                color: #0f172a;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-                transform: rotateX(10deg) rotateY(-5deg);
-                transition: all 0.5s ease;
-            }
-            .dossier-preview:hover { transform: rotateX(0deg) rotateY(0deg); }
-
-            .scan-line { width: 100%; height: 2px; background: var(--pc-emerald); position: absolute; top: 0; left: 0; animation: scan 3s infinite linear; opacity: 0.3; }
-            @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
-
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+            :root { --pc-emerald: #10b981; --pc-dark-bg: #050505; }
+            body { background: var(--pc-dark-bg); color: #d1d5db; font-family: 'Inter', sans-serif; overflow-x: hidden; font-size: 16px; line-height: 1.6; }
+            .glass-panel { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(30, 41, 59, 0.5); backdrop-filter: blur(12px); }
+            .text-huge { font-size: clamp(2rem, 5.5vw, 3.75rem); line-height: 1.05; font-weight: 900; letter-spacing: -0.04em; }
             .hidden-flow { display: none !important; }
-            .terminal-box {
-                background: rgba(0, 0, 0, 0.85);
-                border: 1px solid rgba(16, 185, 129, 0.35);
-                border-radius: 0.5rem;
-            }
-            #checkout-overlay { transition: opacity 0.25s ease; }
-            .lang-btn { cursor: pointer; transition: all 0.3s; opacity: 0.4; }
-            .lang-btn.active { opacity: 1; color: var(--pc-emerald); font-weight: bold; }
-
-            .mesh-bg {
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, transparent 50%);
-                z-index: -1;
-            }
-
-            .pc-readable { font-size: 0.875rem; line-height: 1.65; letter-spacing: 0; }
-            .pc-input {
-                font-size: 0.875rem;
-                letter-spacing: 0;
-                text-transform: none;
-            }
-            .pc-label-xs {
-                font-size: 0.6875rem;
-                letter-spacing: 0.12em;
-            }
-            .asset-option {
-                position: relative;
-                cursor: pointer;
-                border: 1px solid #3f3f46;
-                border-radius: 0.5rem;
-                padding: 0.65rem 0.5rem;
-                text-align: center;
-                font-size: 10px;
-                font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.06em;
-                color: #a1a1aa;
-                background: #0a0a0a;
-                transition: all 0.15s;
-            }
+            .terminal-box { background: rgba(0,0,0,0.88); border: 1px solid rgba(16,185,129,0.35); border-radius: 0.75rem; }
+            .scan-line { width: 100%; height: 2px; background: var(--pc-emerald); position: absolute; top: 0; left: 0; animation: scan 3s infinite linear; opacity: 0.35; }
+            @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+            .lang-btn { cursor: pointer; transition: all 0.2s; opacity: 0.45; font-size: 0.75rem; }
+            .lang-btn.active { opacity: 1; color: var(--pc-emerald); font-weight: 700; }
+            .mesh-bg { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 50% at 50% -10%, #134e4a33 0%, transparent 55%); z-index: -1; }
+            .pc-body { font-size: 1rem; line-height: 1.65; }
+            .pc-small { font-size: 0.875rem; line-height: 1.55; }
+            .pc-input { font-size: 1rem; letter-spacing: 0; text-transform: none; }
+            .asset-option { position: relative; cursor: pointer; border: 1px solid #3f3f46; border-radius: 0.5rem; padding: 0.75rem 0.5rem; text-align: center; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #a1a1aa; background: #0a0a0a; transition: all 0.15s; }
             .asset-option:hover { border-color: #52525b; color: #e4e4e7; }
-            .asset-option.selected {
-                border-color: #10b981;
-                color: #10b981;
-                background: rgba(16, 185, 129, 0.08);
-                box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.25);
-            }
+            .asset-option.selected { border-color: #10b981; color: #10b981; background: rgba(16,185,129,0.08); box-shadow: 0 0 0 1px rgba(16,185,129,0.25); }
             .asset-option input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+            .report-card { background: #fafafa; color: #18181b; border-radius: 0.5rem; box-shadow: 0 20px 40px -12px rgba(0,0,0,0.45); }
+            .score-pill { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; font-weight: 700; }
+            .faq-item { border: 1px solid #27272a; border-radius: 0.75rem; background: rgba(0,0,0,0.4); overflow: hidden; }
+            .faq-item summary { cursor: pointer; list-style: none; padding: 1rem 1.25rem; font-weight: 600; color: #fafafa; font-size: 1rem; }
+            .faq-item summary::-webkit-details-marker { display: none; }
+            .faq-item[open] summary { border-bottom: 1px solid #27272a; color: #34d399; }
+            .faq-answer { padding: 1rem 1.25rem 1.25rem; color: #a1a1aa; font-size: 0.9375rem; line-height: 1.65; }
+            #sticky-cta { transform: translateY(100%); transition: transform 0.3s ease; }
+            #sticky-cta.visible { transform: translateY(0); }
+            #checkout-overlay { transition: opacity 0.25s ease; }
         </style>
     </head>
-    <body class="antialiased">
+    <body class="antialiased pb-20 md:pb-0">
         <div class="mesh-bg"></div>
 
-        <nav class="fixed top-0 w-full z-50 p-6 flex justify-between items-center glass-panel border-b border-white/5">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
-                    <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                </div>
-                <span class="font-black tracking-tighter text-xl text-white uppercase">PREDICTA<span class="text-emerald-500">CORE</span></span>
-            </div>
-            <div class="flex items-center space-x-6">
-                <div class="flex space-x-3 text-[10px] tracking-widest border border-zinc-800 px-3 py-1 rounded-full bg-black/50">
+        <nav class="fixed top-0 w-full z-50 px-4 py-4 md:px-6 md:py-5 flex justify-between items-center glass-panel border-b border-white/5">
+            <span class="font-black tracking-tighter text-lg md:text-xl text-white uppercase">PREDICTA<span class="text-emerald-500">CORE</span></span>
+            <div class="flex items-center gap-3 md:gap-5">
+                <div class="flex gap-2 px-2.5 py-1 rounded-full border border-zinc-800 bg-black/50">
                     <span id="lang-en" class="lang-btn active">EN</span>
                     <span class="text-zinc-700">/</span>
                     <span id="lang-es" class="lang-btn">ES</span>
                 </div>
-                <a href="#terminal-section" id="nav-access" class="text-xs uppercase font-bold tracking-wide text-emerald-500 border-b border-emerald-500/30 hover:text-emerald-400 transition-colors">Free scan</a>
+                <a href="#buy-section" id="nav-titan" class="hidden sm:inline-flex bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-4 py-2 rounded transition-colors">Get Titan — $199</a>
             </div>
         </nav>
 
-        <section class="pt-28 pb-16 md:pt-36 md:pb-20 px-6">
-            <div class="max-w-6xl mx-auto w-full">
-                <h1 id="hero-title" class="text-huge text-white mb-8 md:mb-10">TRAFFIC DOES NOT GUARANTEE <br><span class="text-emerald-500">PROFITABILITY.</span></h1>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                    <div class="border-l-4 border-emerald-500 pl-6">
-                        <p id="hero-desc-left" class="text-lg text-zinc-200 leading-relaxed pc-readable">
-                            Your public page is where strangers decide yes or no. We don't need your analytics — we forensic-scan what every customer sees and show you exactly what's making them leave.
-                        </p>
-                    </div>
-                    <div class="border-l-4 border-zinc-700 pl-6 flex flex-col justify-center">
-                        <p id="hero-desc-right" class="text-base text-zinc-400 leading-relaxed pc-readable">
-                            If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 concrete fixes to recover conversions. We do a much deeper analysis than any generic AI, pinpointing exactly where your page loses clients. More deliverables than agencies charging $3k+ to review the same page.
-                        </p>
-                    </div>
+        <!-- HERO -->
+        <section class="pt-24 pb-12 md:pt-32 md:pb-16 px-4 md:px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <p id="hero-badge" class="inline-block text-xs font-bold uppercase tracking-widest text-emerald-500 bg-emerald-950/40 border border-emerald-500/25 px-3 py-1 rounded-full mb-6">Forensic page audit · no login</p>
+                <h1 id="hero-title" class="text-huge text-white mb-5">Your page is losing sales <span class="text-emerald-500">right now.</span></h1>
+                <p id="hero-sub" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-8">We scan what strangers see on your website or social profile — then deliver a PDF with <strong class="text-white">15 drop-off points</strong> and <strong class="text-white">15 tactical fixes</strong>. No analytics access. One URL. Done in under an hour.</p>
+                <div class="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-full px-5 py-2 mb-8">
+                    <span id="hero-price-label" class="text-zinc-400 text-sm">Titan Report</span>
+                    <span class="text-2xl font-black text-white">$199</span>
+                    <span id="hero-price-note" class="text-xs text-emerald-500 font-semibold">intro · one-time</span>
                 </div>
-                <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="#terminal-section" id="hero-cta" class="inline-block w-full sm:w-auto text-center bg-emerald-600 text-white font-black py-4 px-8 rounded hover:bg-emerald-500 transition-all uppercase tracking-wide text-sm">
-                        Run free scan
-                    </a>
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md mx-auto sm:max-w-none">
+                    <a href="#buy-section" id="hero-cta-titan" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_30px_rgba(16,185,129,0.25)]">Get Titan Report — $199</a>
+                    <a href="#lite-section" id="hero-cta-lite" class="text-zinc-400 hover:text-white text-sm font-semibold py-4 px-4 underline-offset-4 hover:underline">Or start with a free Lite scan →</a>
                 </div>
-                <p id="hero-tagline" class="max-w-3xl mx-auto mt-8 text-center text-xs text-emerald-500/90 uppercase tracking-wide font-semibold">
-                    We don't value your internal data. We value what your page is doing to your next customer.
-                </p>
+                <p id="hero-trust" class="mt-6 text-sm text-zinc-500">One asset per scan · web or one Instagram, Facebook, or TikTok profile</p>
             </div>
         </section>
 
-        <section id="why-section" class="py-16 border-b border-zinc-900 bg-black/40">
-            <div class="max-w-6xl mx-auto px-6">
-                <h2 id="why-title" class="text-xs text-emerald-500 font-bold tracking-wide uppercase mb-3 text-center">Why PredictaCore</h2>
-                <p id="why-sub" class="text-2xl md:text-3xl font-black text-white text-center mb-10 max-w-3xl mx-auto leading-tight">The spearhead audit for entrepreneurs who can't afford to guess.</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="p-6 border border-zinc-800 rounded-xl bg-white/[0.03]">
-                        <h3 id="why-1-t" class="text-white font-bold text-sm mb-3">Our only focus</h3>
-                        <p id="why-1-d" class="text-sm text-zinc-400 leading-relaxed pc-readable">Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We pinpoint what sends possible customers away: invisible errors, weak trust signals, and silent drop-offs.</p>
-                    </div>
-                    <div class="p-6 border border-emerald-500/20 rounded-xl bg-emerald-950/10">
-                        <h3 id="why-2-t" class="text-emerald-400 font-bold text-sm mb-3">Beat agencies on the same page</h3>
-                        <p id="why-2-d" class="text-sm text-zinc-300 leading-relaxed pc-readable">Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 tactical actions, captures, and a 21-day roadmap — for $199.</p>
-                    </div>
-                    <div class="p-6 border border-zinc-800 rounded-xl bg-white/[0.03]">
-                        <h3 id="why-3-t" class="text-white font-bold text-sm mb-3">Beat generic AI</h3>
-                        <p id="why-3-d" class="text-sm text-zinc-400 leading-relaxed pc-readable">ChatGPT guesses. We scrape, score, simulate buyer psychology by your industry, validate outputs, and deliver a structured 11-section PDF — not a paragraph you have to interpret.</p>
-                    </div>
-                </div>
-                <p id="why-foot" class="text-center text-xs text-zinc-500 mt-8 max-w-2xl mx-auto leading-relaxed pc-readable">Not for Fortune 500 data rooms. For the shop owner, clinic, creator, or local brand who needs their page to convert — today.</p>
-            </div>
-        </section>
+        <!-- SAMPLE REPORT (anonymized real audit — baby bedding e-commerce) -->
+        <section id="sample-section" class="py-14 md:py-16 px-4 md:px-6 border-y border-zinc-900 bg-black/30">
+            <div class="max-w-5xl mx-auto">
+                <p id="sample-kicker" class="text-xs font-bold uppercase tracking-widest text-emerald-500 text-center mb-2">Real report preview</p>
+                <h2 id="sample-title" class="text-2xl md:text-3xl font-black text-white text-center mb-3">This is what lands in your inbox</h2>
+                <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-xl mx-auto mb-10">Anonymized extract from a live Titan audit — custom baby bedding shop, US e-commerce.</p>
 
-        <section class="py-16 bg-[#080808] border-y border-zinc-900 overflow-hidden">
-            <div class="max-w-6xl mx-auto px-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    <div class="order-2 lg:order-1">
-                        <div class="dossier-preview p-8 md:p-12 rounded-sm aspect-[3/4] max-w-md mx-auto relative flex flex-col">
-                            <div class="absolute top-4 right-4 text-[8px] font-bold text-zinc-400 uppercase">TITAN REPORT // CONFIDENTIAL</div>
-                            
-                            <div class="flex items-center space-x-2 mb-6 border-b border-zinc-200 pb-4 mt-4">
-                                <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                </div>
-                                <span class="font-black tracking-tighter text-lg text-black uppercase">PREDICTA<span class="text-emerald-600">CORE</span></span>
-                                <span id="dos-sample" class="text-[9px] text-zinc-400 ml-auto uppercase font-bold tracking-widest bg-zinc-100 px-2 py-1 rounded">SAMPLE EXTRACT</span>
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+                    <div class="lg:col-span-2 report-card p-6 md:p-7">
+                        <div class="flex items-center gap-2 mb-5 pb-4 border-b border-zinc-200">
+                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             </div>
-
-                            <h4 id="dos-title" class="text-2xl font-black mb-4 uppercase tracking-tighter">Vital Signs</h4>
-                            
-                            <div id="dos-meat" class="flex-grow space-y-3">
-                                <div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm">
-                                    <p class="text-[9px] text-zinc-900 leading-relaxed font-medium">
-                                        <strong>[ Flaw 01 ] - Checkout Friction:</strong><br>
-                                        Express payment buttons bypass cart and reduce AOV.<br>
-                                        <span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Restrict express buttons to final screen.
-                                    </p>
-                                </div>
-                                <div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm">
-                                    <p class="text-[9px] text-zinc-900 leading-relaxed font-medium">
-                                        <strong>[ Flaw 02 ] - Authority Weakness:</strong><br>
-                                        Website disconnected from positive external reviews.<br>
-                                        <span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Inject dynamic social proof carousel.
-                                    </p>
-                                </div>
-                                <div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm">
-                                    <p class="text-[9px] text-zinc-900 leading-relaxed font-medium">
-                                        <strong>[ Flaw 03 ] - Visual Paralysis:</strong><br>
-                                        Cluttered main menu fragments user attention.<br>
-                                        <span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Consolidate navigation into "Shop By Item".
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-6 pt-4 border-t border-zinc-200">
-                                <div class="h-2 bg-zinc-200 w-full mb-2"></div>
-                                <div class="h-2 bg-emerald-500 w-3/4"></div>
+                            <div>
+                                <p id="sample-case" class="font-bold text-zinc-900 text-sm leading-tight">Custom baby bedding · e-commerce</p>
+                                <p id="sample-industry" class="text-xs text-zinc-500">Personalized milestone products · US market</p>
                             </div>
                         </div>
+                        <div class="grid grid-cols-3 gap-3 mb-5">
+                            <div class="text-center p-3 bg-zinc-100 rounded-lg">
+                                <p class="text-xs text-zinc-500 mb-1">SEO</p>
+                                <p class="score-pill text-amber-700">61</p>
+                            </div>
+                            <div class="text-center p-3 bg-zinc-100 rounded-lg">
+                                <p class="text-xs text-zinc-500 mb-1">AI vis.</p>
+                                <p class="score-pill text-emerald-700">85</p>
+                            </div>
+                            <div class="text-center p-3 bg-zinc-100 rounded-lg">
+                                <p class="text-xs text-zinc-500 mb-1">Load</p>
+                                <p class="score-pill text-zinc-800">4.8s</p>
+                            </div>
+                        </div>
+                        <p id="sample-caption" class="text-xs text-zinc-500 leading-relaxed">Scores measured from public page data — same methodology applied to your URL.</p>
                     </div>
-                    <div class="order-1 lg:order-2">
-                        <h2 id="offer-title" class="text-xs text-emerald-500 font-bold tracking-[0.3em] uppercase mb-4">What we deliver</h2>
-                        <h3 id="offer-sub" class="text-4xl font-extrabold text-white mb-6 leading-none">A Boardroom Level Blueprint.</h3>
-                        <p id="offer-desc" class="text-zinc-300 mb-6 leading-relaxed">
-                            The Titan Report is an 11-section PDF delivered by email. We detect your business type, simulate how each buyer profile reacts, and give tactical fixes — plus real SEO and AI visibility scores.
-                        </p>
-                        <ul id="offer-deliverables" class="space-y-2 font-mono text-xs text-zinc-400 mb-8 border-l border-emerald-500/30 pl-4 pc-readable">
-                            <li id="od-1">✓ Desktop + mobile capture · measured load time</li>
-                            <li id="od-2">✓ SEO forensics (title, meta, schema, sitemap, robots)</li>
-                            <li id="od-3">✓ AI discoverability (GEO) · technical proxy score 0–100</li>
-                            <li id="od-4">✓ 4 buyer profiles by industry + what sends customers away</li>
-                            <li id="od-5">✓ 15 drop-offs + 15 tactical actions · 21-day roadmap</li>
-                            <li id="od-6">✓ One asset per scan: website OR one Instagram, Facebook, or TikTok profile</li>
-                        </ul>
-                    </div>
-                </div>
 
-                <div class="max-w-4xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                    <div class="border border-zinc-700 rounded-xl p-6 bg-zinc-900/50">
-                        <h4 id="lite-box-title" class="text-emerald-500 text-xs font-bold uppercase tracking-wide mb-3">Lite — Free</h4>
-                        <ul id="lite-box-list" class="text-sm text-zinc-400 space-y-2 font-mono pc-readable">
-                            <li>· 3 critical conversion leaks</li>
-                            <li>· SEO + AI visibility snapshot</li>
-                            <li>· Buyer profiles by industry (summary)</li>
-                        </ul>
-                    </div>
-                    <div class="border border-emerald-500/40 rounded-xl p-6 bg-emerald-950/20">
-                        <h4 id="titan-box-title" class="text-emerald-400 text-xs font-bold uppercase tracking-wide mb-3">Titan — USD $199 <span class="text-zinc-500 normal-case">(intro)</span></h4>
-                        <ul id="titan-box-list" class="text-sm text-zinc-300 space-y-2 font-mono pc-readable">
-                            <li>· Full 11-section forensic PDF</li>
-                            <li>· 15 leaks + 15 tactical actions</li>
-                            <li>· SEO forensics + AI (GEO) + benchmark</li>
-                            <li>· Monthly monitoring report ($25/mo from day 30)</li>
-                        </ul>
+                    <div class="lg:col-span-3 space-y-4">
+                        <div class="report-card p-5 border-l-4 border-red-500">
+                            <p class="text-xs font-bold text-red-600 uppercase tracking-wide mb-2">Leak #04 · High severity</p>
+                            <p id="sample-leak1" class="text-sm text-zinc-800 leading-relaxed"><strong>Meta description truncated in Google.</strong> Title tag optimized for brand name but description exceeds 160 characters — search snippets cut off before personalized blanket keywords appear.</p>
+                        </div>
+                        <div class="report-card p-5 border-l-4 border-amber-500">
+                            <p class="text-xs font-bold text-amber-600 uppercase tracking-wide mb-2">Leak #09 · Medium severity</p>
+                            <p id="sample-leak2" class="text-sm text-zinc-800 leading-relaxed"><strong>No delivery timeline on made-to-order products.</strong> Personalized items show price and photos but buyers can't see production + ship window — hesitation spikes on custom orders.</p>
+                        </div>
+                        <div class="report-card p-5 border-l-4 border-emerald-600 bg-emerald-50">
+                            <p class="text-xs font-bold text-emerald-700 uppercase tracking-wide mb-2">Tactical action #09</p>
+                            <p id="sample-action" class="text-sm text-zinc-800 leading-relaxed">Add a fixed <strong>"Ships in 5–7 business days"</strong> badge above Add to Cart on all personalized product templates. A/B test with countdown for peak gifting seasons.</p>
+                        </div>
+                        <p id="sample-foot" class="text-sm text-zinc-500 text-center lg:text-left">+ 12 more leaks, 14 more actions, buyer profiles, captures & 21-day roadmap in the full PDF.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="py-16 relative border-b border-zinc-900">
-            <div class="max-w-6xl mx-auto px-6 text-center">
-                <h2 id="method-title" class="text-xs text-emerald-500 font-bold tracking-wide uppercase mb-8">The 11 forensic pillars</h2>
+        <!-- WHAT'S INCLUDED (single block, no duplicate pricing cards) -->
+        <section class="py-14 md:py-16 px-4 md:px-6">
+            <div class="max-w-4xl mx-auto">
+                <h2 id="included-title" class="text-2xl md:text-3xl font-black text-white text-center mb-8">Everything in the Titan Report</h2>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 pc-body text-zinc-300">
+                    <li id="inc-1" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> Desktop + mobile capture with measured load time</li>
+                    <li id="inc-2" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> SEO forensics: title, meta, schema, sitemap, robots</li>
+                    <li id="inc-3" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> AI discoverability score (GEO) 0–100</li>
+                    <li id="inc-4" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> 4 buyer psychology profiles for your industry</li>
+                    <li id="inc-5" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> 15 ranked drop-offs + 15 tactical actions</li>
+                    <li id="inc-6" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> Competitive benchmark + 21-day implementation roadmap</li>
+                </ul>
+                <p id="included-foot" class="text-center text-sm text-zinc-500 mt-8 max-w-lg mx-auto">Structured PDF by email — not a ChatGPT paragraph. More deliverables than agencies charging $3k+ for the same public URL review.</p>
+            </div>
+        </section>
 
-                <div class="bg-black/50 border border-zinc-800 p-8 rounded-xl text-left max-w-4xl mx-auto">
-                    <h3 id="pillars-title" class="text-emerald-500 font-bold tracking-wide uppercase mb-6 text-xs border-b border-zinc-800 pb-4">What your PDF includes</h3>
-                    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-3 gap-x-8 font-mono text-xs text-zinc-400 pc-readable">
-                        <li id="p-1"><span class="text-emerald-600 mr-2">01</span> Asset X-Ray</li>
-                        <li id="p-2"><span class="text-emerald-600 mr-2">02</span> Psychological Profiles</li>
-                        <li id="p-3"><span class="text-emerald-600 mr-2">03</span> Health Scorecard</li>
-                        <li id="p-4"><span class="text-emerald-600 mr-2">04</span> Visibility & SEO</li>
-                        <li id="p-5"><span class="text-emerald-600 mr-2">05</span> Competitive Benchmark</li>
-                        <li id="p-6"><span class="text-emerald-600 mr-2">06</span> SWOT Matrix</li>
-                        <li id="p-7"><span class="text-emerald-600 mr-2">07</span> Wishlist</li>
-                        <li id="p-8"><span class="text-emerald-600 mr-2">08</span> 15 Drop-off Points</li>
-                        <li id="p-9"><span class="text-emerald-600 mr-2">09</span> 15 Tactical Actions</li>
-                        <li id="p-10"><span class="text-emerald-600 mr-2">10</span> Scaling Tools</li>
-                        <li id="p-11"><span class="text-emerald-600 mr-2">11</span> 21-Day Roadmap</li>
-                    </ul>
+        <!-- SOCIAL PROOF -->
+        <section class="py-10 px-4 md:px-6 border-y border-zinc-900 bg-emerald-950/10">
+            <div class="max-w-2xl mx-auto text-center">
+                <p id="proof-quote" class="text-lg md:text-xl text-zinc-200 italic leading-relaxed mb-4">"We knew traffic was fine — we didn't know <em class="text-emerald-400 not-italic font-semibold">why</em> personalized orders stalled. The report pointed to three fixes we shipped in a week."</p>
+                <p id="proof-attr" class="text-sm text-zinc-500">— Owner, custom baby products shop · US e-commerce</p>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq-section" class="py-14 md:py-16 px-4 md:px-6">
+            <div class="max-w-2xl mx-auto">
+                <h2 id="faq-title" class="text-2xl font-black text-white text-center mb-8">Questions before you pay</h2>
+                <div class="space-y-3">
+                    <details class="faq-item" open>
+                        <summary id="faq-q1">Do I need to give you analytics or backend access?</summary>
+                        <p id="faq-a1" class="faq-answer">No. We only need your public URL — website or one social profile. We scan exactly what a stranger sees before they buy.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary id="faq-q2">What's the difference between Lite and Titan?</summary>
+                        <p id="faq-a2" class="faq-answer">Lite is free and shows 3 critical leaks plus a score snapshot. Titan is the full 11-section PDF with all 15 leaks, 15 tactical actions, buyer profiles, benchmark, and roadmap — USD $199 introductory price.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary id="faq-q3">How fast do I get the report?</summary>
+                        <p id="faq-a3" class="faq-answer">Most reports arrive within 60 minutes by email. Check spam and Promotions. Titan delivery starts right after payment; Lite after your free scan completes.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary id="faq-q4">What does $25/month monitoring mean?</summary>
+                        <p id="faq-a4" class="faq-answer">USD $199 is charged today for the Titan Report. Monitoring ($25/mo) starts 30 days later and renews unless you cancel via audit@predictacore.ai or the Stripe billing portal. See Terms for full details.</p>
+                    </details>
+                    <details class="faq-item">
+                        <summary id="faq-q5">Can I scan Instagram, Facebook, or TikTok instead of a website?</summary>
+                        <p id="faq-a5" class="faq-answer">Yes — pick one network and enter your @handle. One asset per scan: either your website or a single public social profile.</p>
+                    </details>
                 </div>
             </div>
         </section>
 
-        <section id="terminal-section" class="py-16 bg-emerald-950/10 border-t border-emerald-900/20">
-            <div class="max-w-2xl mx-auto px-6">
-                
-                <div id="setup-stage" class="terminal-box p-8 md:p-10 shadow-[0_0_50px_rgba(16,185,129,0.1)] border border-zinc-800 bg-black/80 relative">
-                    <h2 id="term-title" class="text-2xl font-black text-white mb-2 uppercase tracking-tighter text-center">Start your free scan</h2>
-                    <p id="term-sub" class="text-sm text-zinc-400 text-center mb-6 pc-readable">Pick where you sell. Enter only your website or @handle — we add the rest automatically.</p>
-                    <p id="asset-picker-label" class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold mb-2 pc-label-xs">Where is your page?</p>
+        <!-- BUY (Titan primary) -->
+        <section id="buy-section" class="py-14 md:py-16 px-4 md:px-6 bg-emerald-950/15 border-t border-emerald-900/30">
+            <div class="max-w-xl mx-auto">
+                <h2 id="buy-title" class="text-2xl md:text-3xl font-black text-white text-center mb-2">Get your Titan Report</h2>
+                <p id="buy-sub" class="pc-body text-zinc-400 text-center mb-8">Enter your page and email — secure Stripe checkout. PDF delivered to your inbox.</p>
+
+                <div id="setup-stage" class="terminal-box p-6 md:p-8 shadow-[0_0_40px_rgba(16,185,129,0.12)]">
+                    <p id="asset-picker-label" class="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-2">Where is your page?</p>
                     <div id="asset-type-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                         <label class="asset-option selected" data-asset="web">
                             <input type="radio" name="asset-type" value="web" checked>
@@ -324,140 +234,148 @@ function getLandingHTML() {
                         </label>
                     </div>
                     <div class="space-y-4">
-                        <input type="text" id="dna-url" placeholder="yourbusiness.com" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input" autocomplete="off">
-                        <p id="url-preview" class="text-[10px] text-zinc-600 text-center font-mono break-all"></p>
-                        <input type="email" id="user-email" placeholder="Your Email" class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input">
-                        <p id="lite-eta-before" class="text-xs text-zinc-500 leading-relaxed text-center pc-readable">Report delivery can take up to 60 minutes while our engine processes your site.</p>
+                        <input type="text" id="dna-url" placeholder="yourbusiness.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input" autocomplete="off">
+                        <p id="url-preview" class="text-xs text-zinc-600 text-center font-mono break-all"></p>
+                        <input type="email" id="user-email" placeholder="you@email.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input">
+                        <p id="buy-price-line" class="text-sm text-center text-zinc-400">Charged today: <strong class="text-white">USD $199</strong> · monitoring $25/mo from day 30</p>
                         <p id="setup-error" class="hidden-flow text-sm text-red-400 text-center font-medium" role="alert"></p>
-                        <button type="button" id="btn-start" class="w-full bg-emerald-600 text-white font-black py-4 rounded hover:bg-emerald-500 transition-all uppercase tracking-wide text-sm disabled:opacity-60 disabled:cursor-wait">
-                            Execute Free Scan
+                        <button type="button" id="btn-titan" class="w-full bg-emerald-600 text-white font-black py-4 rounded-lg hover:bg-emerald-500 transition-all uppercase tracking-wide text-base disabled:opacity-60 disabled:cursor-wait shadow-[0_0_24px_rgba(16,185,129,0.3)]">
+                            Pay $199 — Get Titan Report
                         </button>
+                        <p id="checkout-error" class="hidden-flow text-sm text-red-400 text-center" role="alert"></p>
+                        <p id="cancel-badge" class="text-xs text-zinc-500 text-center leading-relaxed">By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a></p>
+                        <p id="titan-eta-before" class="text-xs text-zinc-600 text-center">PDF may take up to 60 minutes after payment. Statement: PREDICTACORE.</p>
                     </div>
                 </div>
 
-                <div id="scanner-stage" class="hidden-flow terminal-box p-8 relative overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.2)] bg-black border border-emerald-500">
+                <div id="scanner-stage" class="hidden-flow terminal-box p-8 relative overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.2)] mt-6">
                     <div class="scan-line"></div>
-                    <div id="terminal-output" class="font-mono text-[10px] text-emerald-500 space-y-1 h-64 overflow-y-auto">
+                    <div id="terminal-output" class="font-mono text-sm text-emerald-500 space-y-1 h-48 overflow-y-auto">
                         <p id="log-init">>> INITIALIZING PREDICTACORE CORE...</p>
                     </div>
                 </div>
 
-                <div id="upsell-stage" class="hidden-flow terminal-box p-8 md:p-12 text-center relative border border-emerald-500/50 bg-black">
-                    <div class="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <div id="upsell-stage" class="hidden-flow terminal-box p-8 text-center mt-6 border border-emerald-500/50">
+                    <h2 id="up-t" class="text-xl font-black text-white mb-2">Scan complete</h2>
+                    <p class="text-zinc-400 text-sm mb-2" id="up-st">Successfully sent to <span id="sent-email" class="text-white font-bold"></span>.</p>
+                    <p id="lite-queued-msg" class="text-emerald-500 text-sm font-semibold mb-4">Your Lite report is being generated and will arrive by email.</p>
+                    <p id="lite-eta-after" class="text-amber-500/90 text-sm mb-6">Check inbox and spam — delivery up to 60 minutes.</p>
+                    <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-lg mb-6 text-left">
+                        <p id="box-text" class="text-sm text-zinc-300 leading-relaxed">Initial scan shows critical bottlenecks. The Titan Report finds all 15 leaks plus tactical fixes.</p>
                     </div>
-                    <h2 id="up-t" class="text-2xl font-black text-white mb-2 uppercase tracking-tighter">X-Ray Sealed</h2>
-                    <p class="text-zinc-400 text-xs mb-2" id="up-st">Successfully sent to <span id="sent-email" class="text-white font-bold"></span>.</p>
-                    <p id="lite-queued-msg" class="text-emerald-500/90 text-[10px] font-bold uppercase tracking-widest mb-2 leading-relaxed">Your Lite report is being generated and will arrive by email.</p>
-                    <p id="lite-eta-after" class="text-amber-500/80 text-[10px] mb-8 leading-relaxed border border-amber-500/15 rounded p-3 bg-amber-950/10">Delivery may take up to 60 minutes due to forensic processing volume. Check spam.</p>
-                    
-                    <div class="bg-zinc-900 border border-zinc-700 p-6 rounded mb-8 text-left">
-                        <p id="box-text" class="text-[11px] text-zinc-300 leading-relaxed">
-                            Initial scan shows critical bottlenecks. You are losing sales today due to purchasing obstacles. The Titan Report dissects your website and delivers the exact instructions to fix these leaks.
-                        </p>
-                    </div>
-
-                    <div class="border-t border-zinc-800 pt-8">
-                        <h4 class="text-4xl font-black text-white mb-2 tracking-tighter">$199 <span id="titan-price-note" class="text-xs text-zinc-500 font-normal">USD · introductory · one-time</span></h4>
-                        <p id="sub-price" class="text-[10px] text-emerald-500 font-bold uppercase tracking-widest mb-2">Charged today: USD $199 (Titan Report — intro price)</p>
-                        <p id="sub-price-2" class="text-xs text-zinc-400 mb-4 leading-relaxed pc-readable">USD $25/mo monitoring starts 30 days after purchase. Renews unless cancelled — cancellation: audit@predictacore.ai or billing portal after purchase (see Terms).</p>
-                        <p id="titan-eta-before" class="text-[10px] text-zinc-500 mb-4 leading-relaxed">After payment, your Titan PDF may take up to 60 minutes to arrive by email.</p>
-                        
-                        <button type="button" class="w-full bg-emerald-600 text-white font-black py-4 rounded text-xs uppercase tracking-widest shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-2 transition-opacity disabled:opacity-60 disabled:cursor-wait" id="btn-titan">
-                            Get Full Titan Report — $199
-                        </button>
-                        <p id="checkout-error" class="hidden-flow text-[10px] text-red-400 mb-2 leading-relaxed" role="alert"></p>
-                        <p id="cancel-badge" class="text-[9px] text-zinc-500 uppercase tracking-widest mb-4">By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a></p>
-                    </div>
+                    <button type="button" id="btn-titan-upsell" class="w-full bg-emerald-600 text-white font-black py-4 rounded-lg text-base uppercase tracking-wide">Get Full Titan Report — $199</button>
                 </div>
             </div>
         </section>
 
+        <!-- LITE (secondary, hidden in ads mode) -->
+        <section id="lite-section" class="py-12 px-4 md:px-6 border-t border-zinc-900">
+            <div class="max-w-xl mx-auto text-center">
+                <h2 id="lite-title" class="text-xl font-bold text-white mb-2">Not ready to pay?</h2>
+                <p id="lite-sub" class="pc-body text-zinc-400 mb-6">Run a free Lite scan — 3 critical leaks + score snapshot. Same form above; click below instead.</p>
+                <button type="button" id="btn-start" class="w-full max-w-sm mx-auto border border-zinc-600 text-zinc-200 font-bold py-3 px-6 rounded-lg hover:border-emerald-500 hover:text-emerald-400 transition-all text-base">
+                    Run free Lite scan
+                </button>
+                <p id="lite-eta-before" class="text-sm text-zinc-600 mt-4">Lite report by email once processing finishes (up to 60 min).</p>
+            </div>
+        </section>
+
         <div id="checkout-overlay" class="hidden-flow fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md px-6" aria-live="polite" aria-busy="true">
-            <div class="terminal-box w-full max-w-md p-10 text-center shadow-[0_0_60px_rgba(16,185,129,0.2)]">
+            <div class="terminal-box w-full max-w-md p-10 text-center">
                 <div class="w-11 h-11 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" role="status"></div>
-                <p id="checkout-overlay-title" class="text-white font-black uppercase tracking-[0.2em] text-xs mb-3">Secure checkout</p>
-                <p id="checkout-overlay-sub" class="text-zinc-500 text-[10px] leading-relaxed font-mono">Connecting to Stripe…</p>
+                <p id="checkout-overlay-title" class="text-white font-black uppercase tracking-widest text-sm mb-3">Secure checkout</p>
+                <p id="checkout-overlay-sub" class="text-zinc-500 text-sm leading-relaxed font-mono">Connecting to Stripe…</p>
             </div>
         </div>
 
-        <footer class="py-10 bg-black border-t border-zinc-900 text-center">
-            <div class="max-w-4xl mx-auto px-6">
-                <p id="footer-text" class="text-xs text-emerald-600 uppercase tracking-wide mb-4">Consultant or Agency? Join our Forensic Audit network.</p>
-                <p id="disclaimer-text" class="text-xs text-zinc-500 leading-relaxed mb-4 max-w-2xl mx-auto pc-readable">
-                    PredictaCore AI website audits. USD $199 introductory price charged today. Monitoring $25/mo from day 30; renews unless cancelled per <a href="/terms" class="text-emerald-600 underline">Terms</a> (audit@predictacore.ai). Card statement: PREDICTACORE. Titan Report — all sales final.
-                </p>
-                <p class="text-xs text-zinc-600 mb-4">
-                    <a href="/terms" class="text-emerald-600 hover:underline">Terms</a> · <a href="/privacy" class="text-emerald-600 hover:underline">Privacy</a>
-                </p>
-                <div class="text-xs text-zinc-600 font-mono">
-                    © 2026 PredictaCore · predictacore.ai
-                </div>
-            </div>
+        <div id="sticky-cta" class="fixed bottom-0 left-0 right-0 z-40 md:hidden p-3 glass-panel border-t border-emerald-500/20">
+            <a href="#buy-section" id="sticky-btn" class="block w-full bg-emerald-600 text-white font-black py-3.5 rounded-lg text-center text-sm uppercase tracking-wide">Get Titan — $199</a>
+        </div>
+
+        <footer class="py-10 bg-black border-t border-zinc-900 text-center px-4">
+            <p id="footer-text" class="text-sm text-emerald-600 mb-3">Consultant or agency? Join our audit partner network.</p>
+            <p id="disclaimer-text" class="text-sm text-zinc-500 leading-relaxed mb-4 max-w-xl mx-auto">PredictaCore AI audits. USD $199 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-emerald-600 underline">Terms</a> · <a href="/privacy" class="text-emerald-600 underline">Privacy</a></p>
+            <p class="text-sm text-zinc-600">© 2026 PredictaCore · predictacore.ai</p>
         </footer>
+
+        <!-- terminal-section alias for old links -->
+        <span id="terminal-section" class="hidden-flow"></span>
 
         <script>
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref') || '';
-
+            const adsMode = urlParams.get('src') === 'ads';
             let currentLang = 'en';
-            
+
+            function pcPixel(event, data) {
+                if (typeof fbq === 'function') fbq('track', event, data || {});
+            }
+
             const dictionary = {
                 en: {
-                    pageTitle: "PredictaCore | Forensic audit for entrepreneurs",
-                    navAccess: "Free scan",
-                    heroCta: "Run free scan",
-                    heroTitle: "TRAFFIC DOES NOT GUARANTEE <br><span class='text-emerald-500'>PROFITABILITY.</span>",
-                    heroDescLeft: "Your public page is where strangers decide yes or no. We don't need your analytics — we forensic-scan what every customer sees and show you exactly what's making them leave.",
-                    heroDescRight: "If your page loses visitors in silence, you're giving away sales. One URL. One PDF. We map every moment a customer hesitates, bounces, or chooses a competitor — plus 15 concrete fixes to recover conversions. We do a much deeper analysis than any generic AI, pinpointing exactly where your page loses clients. More deliverables than agencies charging $3k+ to review the same page.",
-                    heroTagline: "We don't value your internal data. We value what your page is doing to your next customer.",
-                    whyTitle: "Why PredictaCore",
-                    whySub: "The spearhead audit for entrepreneurs who can't afford to guess.",
-                    why1T: "Our only focus", why1D: "Your live website or social profile — what a real visitor sees before they buy, book, or bounce. We pinpoint what sends possible customers away: invisible errors, weak trust signals, and silent drop-offs.",
-                    why2T: "Beat agencies on the same page", why2D: "Any consultant reviewing only your public URL gets one opinion deck. You get measured SEO + AI scores, buyer profiles by industry, verified competitors when found, 15 leaks, 15 tactical actions, captures, and a 21-day roadmap — for $199.",
-                    why3T: "Beat generic AI", why3D: "ChatGPT guesses. We scrape, score, simulate buyer psychology by your industry, validate outputs, and deliver a structured 11-section PDF — not a paragraph you have to interpret.",
-                    whyFoot: "Not for Fortune 500 data rooms. For the shop owner, clinic, creator, or local brand who needs their page to convert — today.",
-                    dosSample: "SAMPLE EXTRACT",
-                    dosTitle: "Vital Signs",
-                    dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 01 ] - Checkout Friction:</strong><br>Express payment buttons bypass cart and reduce AOV.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Restrict express buttons to final screen.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 02 ] - Authority Weakness:</strong><br>Website disconnected from positive external reviews.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Inject dynamic social proof carousel.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Flaw 03 ] - Visual Paralysis:</strong><br>Cluttered main menu fragments user attention.<br><span class="text-emerald-700 font-bold block mt-1">>> [DIRECT ACTION]:</span> Consolidate navigation into "Shop By Item".</p></div>',
-                    offerTitle: "What we deliver", offerSub: "A Boardroom Level Blueprint.", offerDesc: "The Titan Report is an 11-section PDF delivered by email. We detect your business type, simulate how each buyer profile reacts, and give tactical fixes — plus real SEO and AI visibility scores.",
-                    od1: "✓ Desktop + mobile capture · measured load time",
-                    od2: "✓ SEO forensics (title, meta, schema, sitemap, robots)",
-                    od3: "✓ AI discoverability (GEO) · technical proxy score 0–100",
-                    od4: "✓ 4 buyer profiles by industry + what sends customers away",
-                    od5: "✓ 15 drop-offs + 15 tactical actions · 21-day roadmap",
-                    od6: "✓ One asset per scan: website OR one Instagram, Facebook, or TikTok profile",
-                    liteBoxTitle: "Lite — Free",
-                    liteBoxList: "<li>· 3 critical conversion leaks</li><li>· SEO + AI visibility snapshot</li><li>· Buyer profiles by industry (summary)</li>",
-                    titanBoxTitle: "Titan — USD $199 (intro)",
-                    titanBoxList: "<li>· Full 11-section forensic PDF</li><li>· 15 leaks + 15 tactical actions</li><li>· SEO forensics + AI (GEO) + benchmark</li><li>· Monthly monitoring report ($25/mo from day 30)</li>",
-                    methodTitle: "The 11 forensic pillars",
-                    pillarsTitle: "What your PDF includes",
-                    p1: "Asset X-Ray", p2: "Psychological Profiles", p3: "Health Scorecard", p4: "Visibility & SEO", p5: "Competitive Benchmark", p6: "SWOT Matrix", p7: "Wishlist", p8: "15 Drop-off Points", p9: "15 Tactical Actions", p10: "Scaling Tools", p11: "21-Day Roadmap",
-                    termTitle: "Start your free scan",
-                    termSub: "Pick where you sell. Enter only your website or @handle — we add the rest automatically.",
+                    pageTitle: "PredictaCore | Find why your page loses customers",
+                    navTitan: "Get Titan — $199",
+                    heroBadge: "Forensic page audit · no login",
+                    heroTitle: "Your page is losing sales <span class='text-emerald-500'>right now.</span>",
+                    heroSub: "We scan what strangers see on your website or social profile — then deliver a PDF with <strong class='text-white'>15 drop-off points</strong> and <strong class='text-white'>15 tactical fixes</strong>. No analytics access. One URL. Done in under an hour.",
+                    heroPriceLabel: "Titan Report",
+                    heroPriceNote: "intro · one-time",
+                    heroCtaTitan: "Get Titan Report — $199",
+                    heroCtaLite: "Or start with a free Lite scan →",
+                    heroTrust: "One asset per scan · web or one Instagram, Facebook, or TikTok profile",
+                    sampleKicker: "Real report preview",
+                    sampleTitle: "This is what lands in your inbox",
+                    sampleSub: "Anonymized extract from a live Titan audit — custom baby bedding shop, US e-commerce.",
+                    sampleCase: "Custom baby bedding · e-commerce",
+                    sampleIndustry: "Personalized milestone products · US market",
+                    sampleCaption: "Scores measured from public page data — same methodology applied to your URL.",
+                    sampleLeak1: "<strong>Meta description truncated in Google.</strong> Title tag optimized for brand name but description exceeds 160 characters — search snippets cut off before personalized blanket keywords appear.",
+                    sampleLeak2: "<strong>No delivery timeline on made-to-order products.</strong> Personalized items show price and photos but buyers can't see production + ship window — hesitation spikes on custom orders.",
+                    sampleAction: 'Add a fixed <strong>Ships in 5–7 business days</strong> badge above Add to Cart on all personalized product templates. A/B test with countdown for peak gifting seasons.',
+                    sampleFoot: "+ 12 more leaks, 14 more actions, buyer profiles, captures & 21-day roadmap in the full PDF.",
+                    includedTitle: "Everything in the Titan Report",
+                    inc1: "Desktop + mobile capture with measured load time",
+                    inc2: "SEO forensics: title, meta, schema, sitemap, robots",
+                    inc3: "AI discoverability score (GEO) 0–100",
+                    inc4: "4 buyer psychology profiles for your industry",
+                    inc5: "15 ranked drop-offs + 15 tactical actions",
+                    inc6: "Competitive benchmark + 21-day implementation roadmap",
+                    includedFoot: "Structured PDF by email — not a ChatGPT paragraph. More deliverables than agencies charging $3k+ for the same public URL review.",
+                    proofQuote: '"We knew traffic was fine — we didn\\'t know <em class="text-emerald-400 not-italic font-semibold">why</em> personalized orders stalled. The report pointed to three fixes we shipped in a week."',
+                    proofAttr: "— Owner, custom baby products shop · US e-commerce",
+                    faqTitle: "Questions before you pay",
+                    faqQ1: "Do I need to give you analytics or backend access?",
+                    faqA1: "No. We only need your public URL — website or one social profile. We scan exactly what a stranger sees before they buy.",
+                    faqQ2: "What's the difference between Lite and Titan?",
+                    faqA2: "Lite is free and shows 3 critical leaks plus a score snapshot. Titan is the full 11-section PDF with all 15 leaks, 15 tactical actions, buyer profiles, benchmark, and roadmap — USD $199 introductory price.",
+                    faqQ3: "How fast do I get the report?",
+                    faqA3: "Most reports arrive within 60 minutes by email. Check spam and Promotions. Titan delivery starts right after payment; Lite after your free scan completes.",
+                    faqQ4: "What does $25/month monitoring mean?",
+                    faqA4: "USD $199 is charged today for the Titan Report. Monitoring ($25/mo) starts 30 days later and renews unless you cancel via audit@predictacore.ai or the Stripe billing portal. See Terms for full details.",
+                    faqQ5: "Can I scan Instagram, Facebook, or TikTok instead of a website?",
+                    faqA5: "Yes — pick one network and enter your @handle. One asset per scan: either your website or a single public social profile.",
+                    buyTitle: "Get your Titan Report",
+                    buySub: "Enter your page and email — secure Stripe checkout. PDF delivered to your inbox.",
                     assetPickerLabel: "Where is your page?",
-                    assetWeb: "Website",
-                    assetInstagram: "Instagram",
-                    assetFacebook: "Facebook",
-                    assetTiktok: "TikTok",
-                    phWeb: "yourbusiness.com",
-                    phInstagram: "yourbrand",
-                    phFacebook: "pagename",
-                    phTiktok: "pamandander",
+                    assetWeb: "Website", assetInstagram: "Instagram", assetFacebook: "Facebook", assetTiktok: "TikTok",
+                    phWeb: "yourbusiness.com", phInstagram: "yourbrand", phFacebook: "pagename", phTiktok: "yourbrand",
                     urlPreviewPrefix: "We'll scan:",
-                    btnStart: "Run free scan",
+                    buyPriceLine: "Charged today: <strong class='text-white'>USD $199</strong> · monitoring $25/mo from day 30",
+                    btnTitan: "Pay $199 — Get Titan Report",
+                    btnTitanUpsell: "Get Full Titan Report — $199",
+                    cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
+                    titanEtaBefore: "PDF may take up to 60 minutes after payment. Statement: PREDICTACORE.",
+                    liteTitle: "Not ready to pay?",
+                    liteSub: "Run a free Lite scan — 3 critical leaks + score snapshot. Same form above; click below instead.",
+                    btnStart: "Run free Lite scan",
+                    liteEtaBefore: "Lite report by email once processing finishes (up to 60 min).",
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
                     upT: "Scan complete", upSt: "Successfully sent to",
-                    boxText: "Initial scan shows critical bottlenecks. You are losing sales today due to purchasing obstacles. The Titan Report dissects your website and delivers the exact instructions to fix these leaks.",
-                    subPrice: "Charged today: USD $199 (Titan Report — intro price)",
-                    subPrice2: "USD $25/mo monitoring starts 30 days after purchase. Renews unless cancelled — cancellation: audit@predictacore.ai or billing portal after purchase (see Terms).",
-                    btnTitan: "Get Full Titan Report — $199",
-                    titanPriceNote: "USD · introductory · one-time",
-                    urlHint: "Pick one: your website or a single public profile — no login required.",
-                    cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
-                    footerText: "Consultant or Agency? Join our Forensic Audit network.",
-                    disclaimerText: 'PredictaCore audits. $199 intro price today. $25/mo monitoring from day 30; renews unless cancelled per <a href="/terms" class="text-emerald-600 underline">Terms</a> (audit@predictacore.ai). Statement: PREDICTACORE.',
+                    boxText: "Initial scan shows critical bottlenecks. The Titan Report finds all 15 leaks plus tactical fixes.",
+                    liteQueued: "Your Lite report is being generated and will arrive by email.",
+                    liteEtaAfter: "Check inbox and spam — delivery up to 60 minutes.",
+                    footerText: "Consultant or agency? Join our audit partner network.",
+                    disclaimerText: 'PredictaCore AI audits. USD $199 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-emerald-600 underline">Terms</a> · <a href="/privacy" class="text-emerald-600 underline">Privacy</a>',
                     checkoutLoading: "Opening secure checkout…",
                     checkoutOverlayTitle: "Secure checkout",
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
@@ -468,84 +386,85 @@ function getLandingHTML() {
                     invalidUrl: "Enter a valid website (e.g. yourbusiness.com).",
                     useSocialPicker: "For Instagram, Facebook, or TikTok, select that network above.",
                     scanError: "Could not start the scan. Try again in a moment.",
-                    liteEtaBefore: "Your Lite report will arrive by email once processing finishes.",
-                    liteQueued: "Your Lite report is being generated and will arrive by email.",
-                    liteEtaAfter: "Check your inbox and spam folder for the PDF.",
-                    titanEtaBefore: "After payment, your Titan PDF may take up to 60 minutes to arrive by email.",
-                    successPayment: "Payment confirmed! Your Titan report is being processed by the AI and will arrive in your email shortly.",
-                    phEmail: "Your Email"
+                    phEmail: "you@email.com",
+                    stickyBtn: "Get Titan — $199"
                 },
                 es: {
-                    pageTitle: "PredictaCore | Auditoría forense para emprendedores",
-                    navAccess: "Escaneo gratis",
-                    heroCta: "Ejecutar escaneo gratuito",
-                    heroTitle: "TENER TRÁFICO NO GARANTIZA <br><span class='text-emerald-500'>RENTABILIDAD.</span>",
-                    heroDescLeft: "Tu página pública es donde un desconocido dice sí o no. No necesitamos tu analytics — escaneamos lo que ve cada cliente y te mostramos qué lo hace irse.",
-                    heroDescRight: "Si tu página pierde visitantes en silencio, estás regalando ventas. Una URL. Un PDF. Mapeamos cada punto donde un cliente duda, abandona o se va con la competencia — y te damos 15 correcciones concretas para recuperar conversiones. Hacemos un análisis mucho más profundo que cualquier IA genérica, señalando con precisión dónde tu página pierde clientes. Más entregables que agencias que cobran $3k+ por revisar la misma página.",
-                    heroTagline: "No valoramos tus datos internos. Valoramos lo que tu página le hace a tu próximo cliente.",
-                    whyTitle: "Por qué PredictaCore",
-                    whySub: "La auditoría punta de lanza para emprendedores que no pueden permitirse adivinar.",
-                    why1T: "Nuestro único foco", why1D: "Tu web o perfil social en vivo — lo que ve un visitante real antes de comprar, reservar o irse. Señalamos qué ahuyenta a tus posibles clientes: errores invisibles, señales de confianza débiles y abandonos silenciosos.",
-                    why2T: "Mejor que agencias sobre la misma página", why2D: "Un consultor que solo ve tu URL entrega un deck de opinión. Tú recibes scores SEO + IA medidos, perfiles de comprador por giro, competencia verificada cuando existe, 15 fugas, 15 acciones tácticas, capturas y roadmap 21 días — por $199.",
-                    why3T: "Mejor que IA genérica", why3D: "ChatGPT adivina. Nosotros scrapeamos, medimos, simulamos psicología de comprador según tu giro, validamos el output y entregamos un PDF de 11 secciones — no un párrafo que debes interpretar.",
-                    whyFoot: "No es para data rooms de Fortune 500. Es para la tienda, clínica, creador o marca local que necesita que su página convierta — hoy.",
-                    dosSample: "EXTRACTO DE MUESTRA",
-                    dosTitle: "Signos Vitales",
-                    dosMeat: '<div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 01 ] - Fricción de Checkout:</strong><br>Botones de pago rápido saltan el carrito y reducen el Ticket Promedio.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Restringir botones express a la pantalla final.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 02 ] - Debilidad de Autoridad:</strong><br>Sitio web desconectado de reseñas externas positivas.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Inyectar carrusel dinámico de prueba social.</p></div><div class="p-3 bg-zinc-100 rounded border-l-4 border-red-600 shadow-sm"><p class="text-[9px] text-zinc-900 leading-relaxed font-medium"><strong>[ Falla 03 ] - Parálisis Visual:</strong><br>Menú principal saturado fragmenta la atención.<br><span class="text-emerald-700 font-bold block mt-1">>> [ACCIÓN DIRECTA]:</span> Consolidar navegación en "Shop By Item".</p></div>',
-                    offerTitle: "Lo que entregamos", offerSub: "Un Mapa de Acción Definitivo.", offerDesc: "El Reporte Titán es un PDF de 11 secciones por email. Detectamos tu giro, simulamos cómo reacciona cada perfil de comprador y entregamos correcciones concretas — más scores SEO e IA reales.",
-                    od1: "✓ Captura desktop/móvil · tiempo de carga medido",
-                    od2: "✓ SEO forense (title, meta, schema, sitemap, robots)",
-                    od3: "✓ Visibilidad en IAs (GEO) · score técnico 0–100",
-                    od4: "✓ 4 perfiles de comprador por giro + qué ahuyenta clientes",
-                    od5: "✓ 15 fugas + 15 acciones tácticas · roadmap 21 días",
-                    od6: "✓ Un activo por escaneo: tu web O un perfil de Instagram, Facebook o TikTok",
-                    liteBoxTitle: "Lite — Gratis",
-                    liteBoxList: "<li>· 3 fugas críticas de conversión</li><li>· Snapshot SEO + visibilidad IA</li><li>· Perfiles de comprador por giro (resumen)</li>",
-                    titanBoxTitle: "Titán — USD $199 (intro)",
-                    titanBoxList: "<li>· PDF forense completo (11 secciones)</li><li>· 15 fugas + 15 acciones tácticas</li><li>· SEO forense + IA (GEO) + benchmark</li><li>· Reporte mensual de seguimiento ($25/mes desde día 30)</li>",
-                    methodTitle: "Los 11 pilares forenses",
-                    pillarsTitle: "Qué incluye tu PDF",
-                    p1: "Radiografía del Activo", p2: "Perfiles Psicológicos", p3: "Scorecard de Salud", p4: "Visibilidad y SEO", p5: "Benchmark Competitivo", p6: "Matriz Estratégica", p7: "Lista de Deseos", p8: "15 Puntos de Fuga", p9: "15 Acciones Tácticas", p10: "Herramientas de Escala", p11: "Hoja de Ruta a 21 Días",
-                    termTitle: "Inicia tu escaneo gratis",
-                    termSub: "Elige dónde vendes. Solo pon tu web o @usuario — nosotros armamos el enlace.",
+                    pageTitle: "PredictaCore | Descubre por qué tu página pierde clientes",
+                    navTitan: "Obtener Titán — $199",
+                    heroBadge: "Auditoría forense · sin login",
+                    heroTitle: "Tu página está perdiendo ventas <span class='text-emerald-500'>ahora mismo.</span>",
+                    heroSub: "Escaneamos lo que ven los desconocidos en tu web o perfil social — y entregamos un PDF con <strong class='text-white'>15 puntos de fuga</strong> y <strong class='text-white'>15 acciones tácticas</strong>. Sin analytics. Una URL. Listo en menos de una hora.",
+                    heroPriceLabel: "Reporte Titán",
+                    heroPriceNote: "intro · pago único",
+                    heroCtaTitan: "Obtener Reporte Titán — $199",
+                    heroCtaLite: "O empezar con escaneo Lite gratis →",
+                    heroTrust: "Un activo por escaneo · web o un perfil de Instagram, Facebook o TikTok",
+                    sampleKicker: "Vista previa real",
+                    sampleTitle: "Esto es lo que llega a tu correo",
+                    sampleSub: "Extracto anonimizado de una auditoría Titán real — tienda de ropa de cuna personalizada, e-commerce US.",
+                    sampleCase: "Ropa de cuna personalizada · e-commerce",
+                    sampleIndustry: "Productos milestone personalizados · mercado US",
+                    sampleCaption: "Scores medidos desde datos públicos — misma metodología aplicada a tu URL.",
+                    sampleLeak1: "<strong>Meta description truncada en Google.</strong> El title optimiza la marca pero la descripción supera 160 caracteres — el snippet corta antes de las keywords de mantas personalizadas.",
+                    sampleLeak2: "<strong>Sin plazo de entrega en productos hechos a pedido.</strong> Los artículos personalizados muestran precio y fotos pero el comprador no ve ventana de producción + envío — la duda sube en pedidos custom.",
+                    sampleAction: 'Añadir badge fijo <strong>Envío en 5–7 días hábiles</strong> sobre Añadir al carrito en plantillas de producto personalizado. A/B con countdown en temporadas de regalo.',
+                    sampleFoot: "+ 12 fugas más, 14 acciones más, perfiles de comprador, capturas y roadmap 21 días en el PDF completo.",
+                    includedTitle: "Todo lo que incluye el Reporte Titán",
+                    inc1: "Captura desktop + móvil con tiempo de carga medido",
+                    inc2: "SEO forense: title, meta, schema, sitemap, robots",
+                    inc3: "Score de visibilidad en IAs (GEO) 0–100",
+                    inc4: "4 perfiles de psicología de comprador por tu giro",
+                    inc5: "15 fugas rankeadas + 15 acciones tácticas",
+                    inc6: "Benchmark competitivo + roadmap de implementación 21 días",
+                    includedFoot: "PDF estructurado por email — no un párrafo de ChatGPT. Más entregables que agencias que cobran $3k+ por revisar la misma URL pública.",
+                    proofQuote: '"Sabíamos que el tráfico estaba bien — no sabíamos <em class="text-emerald-400 not-italic font-semibold">por qué</em> los pedidos personalizados se estancaban. El reporte señaló tres arreglos que lanzamos en una semana."',
+                    proofAttr: "— Dueño, tienda de productos para bebé custom · e-commerce US",
+                    faqTitle: "Preguntas antes de pagar",
+                    faqQ1: "¿Necesito dar analytics o acceso al backend?",
+                    faqA1: "No. Solo tu URL pública — web o un perfil social. Escaneamos exactamente lo que ve un desconocido antes de comprar.",
+                    faqQ2: "¿Qué diferencia hay entre Lite y Titán?",
+                    faqA2: "Lite es gratis: 3 fugas críticas y snapshot de scores. Titán es el PDF completo de 11 secciones con las 15 fugas, 15 acciones, perfiles, benchmark y roadmap — USD $199 precio introductorio.",
+                    faqQ3: "¿Qué tan rápido llega el reporte?",
+                    faqA3: "La mayoría llega en 60 minutos por email. Revisa spam y Promociones. Titán tras el pago; Lite tras completar el escaneo gratis.",
+                    faqQ4: "¿Qué significa el monitoreo de $25/mes?",
+                    faqA4: "Hoy se cobra USD $199 por el Reporte Titán. El monitoreo ($25/mes) empieza a los 30 días y renueva salvo cancelación en audit@predictacore.ai o portal Stripe. Ver Términos.",
+                    faqQ5: "¿Puedo escanear Instagram, Facebook o TikTok?",
+                    faqA5: "Sí — elige una red e ingresa tu @usuario. Un activo por escaneo: tu web o un solo perfil social público.",
+                    buyTitle: "Obtén tu Reporte Titán",
+                    buySub: "Ingresa tu página y correo — checkout seguro Stripe. PDF a tu bandeja.",
                     assetPickerLabel: "¿Dónde está tu página?",
-                    assetWeb: "Sitio web",
-                    assetInstagram: "Instagram",
-                    assetFacebook: "Facebook",
-                    assetTiktok: "TikTok",
-                    phWeb: "tunegocio.com",
-                    phInstagram: "tumarca",
-                    phFacebook: "pagina",
-                    phTiktok: "pamandander",
-                    urlPreviewPrefix: "Analizaremos:",
-                    btnStart: "Ejecutar escaneo gratis",
-                    logInit: ">> INICIALIZANDO NÚCLEO PREDICTACORE...",
-                    upT: "Escaneo listo", upSt: "Enviado con éxito a",
-                    boxText: "El escaneo inicial muestra cuellos de botella críticos. Estás perdiendo ventas hoy por obstáculos de compra. El Reporte Titán disecta tu sitio y entrega las instrucciones exactas para arreglar estas fugas.",
-                    subPrice: "Cobro hoy: USD $199 (Reporte Titán — precio introductorio)",
-                    subPrice2: "Monitoreo USD $25/mes desde el día 30. Se renueva salvo cancelación — solicitud: audit@predictacore.ai o portal en correo de activación (ver Términos).",
-                    btnTitan: "Obtener Reporte Titán completo — $199",
-                    titanPriceNote: "USD · precio introductorio · pago único",
-                    urlHint: "Elige uno: tu web o un perfil público — sin login.",
-                    cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
-                    footerText: "¿Consultor o Agencia? Únete a nuestra red de Auditoría Forense.",
-                    disclaimerText: 'Auditorías PredictaCore. $199 precio introductorio hoy. Monitoreo $25/mes desde día 30; se renueva salvo cancelación según <a href="/terms" class="text-emerald-600 underline">Términos</a> (audit@predictacore.ai). Estado de cuenta: PREDICTACORE.',
-                    checkoutLoading: "Abriendo pago seguro…",
-                    checkoutOverlayTitle: "Pago seguro",
+                    assetWeb: "Sitio web", assetInstagram: "Instagram", assetFacebook: "Facebook", assetTiktok: "TikTok",
+                    phWeb: "tunegocio.com", phInstagram: "tumarca", phFacebook: "nombrepagina", phTiktok: "tumarca",
+                    urlPreviewPrefix: "Escanearemos:",
+                    buyPriceLine: "Cobro hoy: <strong class='text-white'>USD $199</strong> · monitoreo $25/mes desde día 30",
+                    btnTitan: "Pagar $199 — Reporte Titán",
+                    btnTitanUpsell: "Reporte Titán completo — $199",
+                    cancelBadge: 'Al pagar aceptas nuestros <a href="/terms" class="text-emerald-600 underline">Términos</a> y <a href="/privacy" class="text-emerald-600 underline">Privacidad</a>',
+                    titanEtaBefore: "El PDF puede tardar hasta 60 min tras el pago. Estado de cuenta: PREDICTACORE.",
+                    liteTitle: "¿Aún no quieres pagar?",
+                    liteSub: "Escaneo Lite gratis — 3 fugas críticas + snapshot. Mismo formulario arriba; pulsa abajo.",
+                    btnStart: "Escaneo Lite gratis",
+                    liteEtaBefore: "Reporte Lite por email al terminar (hasta 60 min).",
+                    logInit: ">> INICIALIZANDO PREDICTACORE CORE...",
+                    upT: "Escaneo completo", upSt: "Enviado correctamente a",
+                    boxText: "El escaneo inicial muestra cuellos de botella críticos. El Reporte Titán encuentra las 15 fugas y acciones tácticas.",
+                    liteQueued: "Tu reporte Lite se está generando y llegará por email.",
+                    liteEtaAfter: "Revisa bandeja y spam — entrega hasta 60 min.",
+                    footerText: "¿Consultor o agencia? Únete a nuestra red de partners.",
+                    disclaimerText: 'Auditorías PredictaCore AI. USD $199 intro hoy. Monitoreo $25/mes desde día 30; cancelar en audit@predictacore.ai. <a href="/terms" class="text-emerald-600 underline">Términos</a> · <a href="/privacy" class="text-emerald-600 underline">Privacidad</a>',
+                    checkoutLoading: "Abriendo checkout seguro…",
+                    checkoutOverlayTitle: "Checkout seguro",
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
-                    checkoutError: "No se pudo iniciar el pago. Reintenta o contacta soporte.",
-                    checkoutNetwork: "Error de red. Revisa tu conexión e intenta de nuevo.",
-                    alertError: "Ingresa tu página y email.",
-                    invalidEmail: "Ingresa un email válido.",
+                    checkoutError: "No se pudo iniciar el checkout. Intenta de nuevo.",
+                    checkoutNetwork: "Error de red. Revisa tu conexión.",
+                    alertError: "Ingresa tu página y correo.",
+                    invalidEmail: "Ingresa un correo válido.",
                     invalidUrl: "Ingresa una web válida (ej. tunegocio.com).",
                     useSocialPicker: "Para Instagram, Facebook o TikTok, selecciona esa red arriba.",
-                    scanError: "No se pudo iniciar el escaneo. Intenta de nuevo en un momento.",
-                    liteEtaBefore: "Tu reporte Lite llegará por correo cuando termine el procesamiento.",
-                    liteQueued: "Tu reporte Lite se está generando y llegará por correo.",
-                    liteEtaAfter: "Revisa tu bandeja y la carpeta spam por el PDF.",
-                    titanEtaBefore: "Tras el pago, tu PDF Titán puede tardar hasta 60 minutos en llegar por correo.",
-                    successPayment: "¡Pago confirmado! Tu reporte Titán está siendo procesado por la IA y llegará a tu correo a la brevedad.",
-                    phEmail: "Tu Email"
+                    scanError: "No se pudo iniciar el escaneo. Intenta en un momento.",
+                    phEmail: "tu@correo.com",
+                    stickyBtn: "Titán — $199"
                 }
             };
 
@@ -560,71 +479,49 @@ function getLandingHTML() {
                 document.getElementById('lang-en').classList.toggle('active', lang === 'en');
                 const d = dictionary[lang];
                 if (d.pageTitle) document.title = d.pageTitle;
-                
-                document.getElementById('nav-access').innerText = d.navAccess;
-                if (d.heroCta) document.getElementById('hero-cta').innerText = d.heroCta;
+
+                const textMap = {
+                    'nav-titan': d.navTitan, 'hero-badge': d.heroBadge, 'hero-sub': d.heroSub,
+                    'hero-price-label': d.heroPriceLabel, 'hero-price-note': d.heroPriceNote,
+                    'hero-cta-titan': d.heroCtaTitan, 'hero-cta-lite': d.heroCtaLite, 'hero-trust': d.heroTrust,
+                    'sample-kicker': d.sampleKicker, 'sample-title': d.sampleTitle, 'sample-sub': d.sampleSub,
+                    'sample-case': d.sampleCase, 'sample-industry': d.sampleIndustry, 'sample-caption': d.sampleCaption,
+                    'sample-foot': d.sampleFoot, 'included-title': d.includedTitle, 'included-foot': d.includedFoot,
+                    'proof-attr': d.proofAttr, 'faq-title': d.faqTitle,
+                    'faq-q1': d.faqQ1, 'faq-a1': d.faqA1, 'faq-q2': d.faqQ2, 'faq-a2': d.faqA2,
+                    'faq-q3': d.faqQ3, 'faq-a3': d.faqA3, 'faq-q4': d.faqQ4, 'faq-a4': d.faqA4,
+                    'faq-q5': d.faqQ5, 'faq-a5': d.faqA5,
+                    'buy-title': d.buyTitle, 'buy-sub': d.buySub, 'asset-picker-label': d.assetPickerLabel,
+                    'asset-label-web': d.assetWeb, 'asset-label-instagram': d.assetInstagram,
+                    'asset-label-facebook': d.assetFacebook, 'asset-label-tiktok': d.assetTiktok,
+                    'btn-titan': d.btnTitan, 'btn-titan-upsell': d.btnTitanUpsell,
+                    'titan-eta-before': d.titanEtaBefore, 'lite-title': d.liteTitle, 'lite-sub': d.liteSub,
+                    'btn-start': d.btnStart, 'lite-eta-before': d.liteEtaBefore, 'log-init': d.logInit,
+                    'up-t': d.upT, 'box-text': d.boxText, 'lite-queued-msg': d.liteQueued,
+                    'lite-eta-after': d.liteEtaAfter, 'footer-text': d.footerText, 'checkout-overlay-title': d.checkoutOverlayTitle,
+                    'checkout-overlay-sub': d.checkoutOverlaySub, 'sticky-btn': d.stickyBtn
+                };
+                Object.keys(textMap).forEach(function(id) {
+                    const el = document.getElementById(id);
+                    if (el && textMap[id]) el.innerText = textMap[id];
+                });
+
                 document.getElementById('hero-title').innerHTML = d.heroTitle;
-                document.getElementById('hero-desc-left').innerText = d.heroDescLeft;
-                document.getElementById('hero-desc-right').innerText = d.heroDescRight;
-                if (d.heroTagline) document.getElementById('hero-tagline').innerText = d.heroTagline;
-                if (d.whyTitle) document.getElementById('why-title').innerText = d.whyTitle;
-                if (d.whySub) document.getElementById('why-sub').innerText = d.whySub;
-                if (d.why1T) document.getElementById('why-1-t').innerText = d.why1T;
-                if (d.why1D) document.getElementById('why-1-d').innerText = d.why1D;
-                if (d.why2T) document.getElementById('why-2-t').innerText = d.why2T;
-                if (d.why2D) document.getElementById('why-2-d').innerText = d.why2D;
-                if (d.why3T) document.getElementById('why-3-t').innerText = d.why3T;
-                if (d.why3D) document.getElementById('why-3-d').innerText = d.why3D;
-                if (d.whyFoot) document.getElementById('why-foot').innerText = d.whyFoot;
-                
-                document.getElementById('dos-sample').innerText = d.dosSample;
-                document.getElementById('dos-title').innerText = d.dosTitle;
-                document.getElementById('dos-meat').innerHTML = d.dosMeat;
-
-                document.getElementById('offer-title').innerText = d.offerTitle;
-                document.getElementById('offer-sub').innerText = d.offerSub;
-                document.getElementById('offer-desc').innerText = d.offerDesc;
-                for (let i = 1; i <= 6; i++) {
-                    const el = document.getElementById('od-' + i);
-                    if (el && d['od' + i]) el.innerText = d['od' + i];
-                }
-                if (d.liteBoxTitle) document.getElementById('lite-box-title').innerText = d.liteBoxTitle;
-                if (d.liteBoxList) document.getElementById('lite-box-list').innerHTML = d.liteBoxList;
-                if (d.titanBoxTitle) document.getElementById('titan-box-title').innerText = d.titanBoxTitle;
-                if (d.titanBoxList) document.getElementById('titan-box-list').innerHTML = d.titanBoxList;
-                if (d.titanPriceNote) document.getElementById('titan-price-note').innerText = d.titanPriceNote;
-
-                document.getElementById('method-title').innerText = d.methodTitle;
-                
-                document.getElementById('pillars-title').innerText = d.pillarsTitle;
-                for(let i=1; i<=11; i++) {
-                    let text = d['p'+i];
-                    let num = i < 10 ? '0'+i : i;
-                    document.getElementById('p-'+i).innerHTML = '<span class="text-emerald-600 mr-2">' + num + '</span> ' + text;
-                }
-                
-                document.getElementById('term-title').innerText = d.termTitle;
-                if (d.termSub) document.getElementById('term-sub').innerText = d.termSub;
-                document.getElementById('btn-start').innerText = d.btnStart;
-                document.getElementById('user-email').placeholder = d.phEmail;
-                updateAssetUi();
-                document.getElementById('log-init').innerText = d.logInit;
-                
-                document.getElementById('up-t').innerText = d.upT;
-                document.getElementById('up-st').innerHTML = d.upSt + ' <span id="sent-email" class="text-white font-bold">' + document.getElementById('user-email').value + '</span>.';
-                
-                document.getElementById('box-text').innerText = d.boxText;
-                document.getElementById('sub-price').innerText = d.subPrice;
-                document.getElementById('sub-price-2').innerText = d.subPrice2;
-                document.getElementById('btn-titan').innerText = d.btnTitan;
+                document.getElementById('proof-quote').innerHTML = d.proofQuote;
+                document.getElementById('sample-leak1').innerHTML = d.sampleLeak1;
+                document.getElementById('sample-leak2').innerHTML = d.sampleLeak2;
+                document.getElementById('sample-action').innerHTML = d.sampleAction;
+                document.getElementById('buy-price-line').innerHTML = d.buyPriceLine;
                 document.getElementById('cancel-badge').innerHTML = d.cancelBadge;
-                document.getElementById('lite-eta-before').innerText = d.liteEtaBefore;
-                document.getElementById('lite-queued-msg').innerText = d.liteQueued;
-                document.getElementById('lite-eta-after').innerText = d.liteEtaAfter;
-                document.getElementById('titan-eta-before').innerText = d.titanEtaBefore;
-                
-                document.getElementById('footer-text').innerText = d.footerText;
                 document.getElementById('disclaimer-text').innerHTML = d.disclaimerText;
+                for (let i = 1; i <= 6; i++) {
+                    const el = document.getElementById('inc-' + i);
+                    if (el && d['inc' + i]) el.innerHTML = '<span class="text-emerald-500 shrink-0">✓</span> ' + d['inc' + i];
+                }
+
+                document.getElementById('user-email').placeholder = d.phEmail;
+                document.getElementById('up-st').innerHTML = d.upSt + ' <span id="sent-email" class="text-white font-bold">' + (document.getElementById('user-email').value || '') + '</span>.';
+                updateAssetUi();
             }
 
             function getSelectedAssetType() {
@@ -680,40 +577,29 @@ function getLandingHTML() {
             function updateAssetUi() {
                 const d = dictionary[currentLang];
                 const assetType = getSelectedAssetType();
-                document.querySelectorAll('.asset-option').forEach((el) => {
+                document.querySelectorAll('.asset-option').forEach(function(el) {
                     const input = el.querySelector('input[name="asset-type"]');
                     el.classList.toggle('selected', input && input.checked);
                 });
-                if (d.assetPickerLabel) document.getElementById('asset-picker-label').innerText = d.assetPickerLabel;
-                if (d.assetWeb) document.getElementById('asset-label-web').innerText = d.assetWeb;
-                if (d.assetInstagram) document.getElementById('asset-label-instagram').innerText = d.assetInstagram;
-                if (d.assetFacebook) document.getElementById('asset-label-facebook').innerText = d.assetFacebook;
-                if (d.assetTiktok) document.getElementById('asset-label-tiktok').innerText = d.assetTiktok;
-                const phMap = {
-                    web: d.phWeb,
-                    instagram: d.phInstagram,
-                    facebook: d.phFacebook,
-                    tiktok: d.phTiktok,
-                };
+                const phMap = { web: d.phWeb, instagram: d.phInstagram, facebook: d.phFacebook, tiktok: d.phTiktok };
                 const input = document.getElementById('dna-url');
                 if (input) input.placeholder = phMap[assetType] || d.phWeb;
                 const raw = (input?.value || '').trim();
                 const preview = document.getElementById('url-preview');
                 if (!preview) return;
-                if (!raw) {
-                    preview.innerText = '';
-                    return;
-                }
+                if (!raw) { preview.innerText = ''; return; }
                 const payload = buildScanPayload();
-                if (payload.error) {
-                    preview.innerText = '';
-                    return;
-                }
-                preview.innerText = (d.urlPreviewPrefix || "We'll scan:") + ' ' + payload.dna;
+                preview.innerText = payload.error ? '' : ((d.urlPreviewPrefix || "We'll scan:") + ' ' + payload.dna);
             }
 
             function setSetupError(msg) {
                 const el = document.getElementById('setup-error');
+                el.innerText = msg || '';
+                el.classList.toggle('hidden-flow', !msg);
+            }
+
+            function setCheckoutError(msg) {
+                const el = document.getElementById('checkout-error');
                 el.innerText = msg || '';
                 el.classList.toggle('hidden-flow', !msg);
             }
@@ -736,100 +622,46 @@ function getLandingHTML() {
                 document.getElementById('scanner-stage')?.classList.add('hidden-flow');
                 document.getElementById('upsell-stage')?.classList.add('hidden-flow');
                 const btn = document.getElementById('btn-start');
-                if (btn) {
-                    btn.disabled = false;
-                    btn.classList.remove('opacity-60', 'cursor-wait');
-                }
+                if (btn) { btn.disabled = false; btn.classList.remove('opacity-60', 'cursor-wait'); }
             }
 
             async function iniciarEscaneo() {
                 const email = (document.getElementById('user-email')?.value || '').trim();
                 const d = dictionary[currentLang];
-                const btn = document.getElementById('btn-start');
-                const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
                 const payload = buildScanPayload();
-
-                if (payload.error) {
-                    setSetupError(payload.error);
-                    return;
-                }
-                if (!email) {
-                    setSetupError(d.alertError);
-                    return;
-                }
-                if (!emailOk) {
+                if (payload.error) { setSetupError(payload.error); return; }
+                if (!email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
                     setSetupError(d.invalidEmail);
                     return;
                 }
                 setSetupError('');
-
-                if (btn) {
-                    btn.disabled = true;
-                    btn.classList.add('opacity-60', 'cursor-wait');
-                }
+                const btn = document.getElementById('btn-start');
+                if (btn) { btn.disabled = true; btn.classList.add('opacity-60', 'cursor-wait'); }
 
                 document.getElementById('setup-stage')?.classList.add('hidden-flow');
                 document.getElementById('scanner-stage')?.classList.remove('hidden-flow');
-                document.getElementById('upsell-stage')?.classList.add('hidden-flow');
-                document.getElementById('terminal-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                updateSentEmail(email);
+                const output = document.getElementById('terminal-output');
+                output.innerHTML = '<p>' + d.logInit + '</p>';
 
-                const terminal = document.getElementById('terminal-output');
-                if (terminal) {
-                    terminal.innerHTML = '<p id="log-init">' + d.logInit + '</p>';
-                }
-
-                const logs = currentLang === 'es'
-                    ? [">> Conectando nodos...", ">> Analizando página pública...", ">> Detectando qué ahuyenta clientes...", ">> Generando reporte Lite...", ">> Enviando por correo..."]
-                    : [">> Connecting nodes...", ">> Scanning public page...", ">> Detecting what sends customers away...", ">> Building Lite report...", ">> Sending email..."];
-                if (payload.platform === 'tiktok') {
-                    logs.splice(1, 0, currentLang === 'es' ? ">> Perfil TikTok detectado..." : ">> TikTok profile detected...");
-                }
-
-                let fetchOk = false;
                 try {
                     const res = await fetch('/start-lite', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, ...payload }),
+                        body: JSON.stringify({ email, refCode, lang: currentLang, ...payload }),
                     });
-                    fetchOk = res.ok;
-                    if (!res.ok) {
-                        const data = await res.json().catch(() => ({}));
-                        throw new Error(data.error || d.scanError);
-                    }
+                    const data = await res.json().catch(function() { return {}; });
+                    if (!res.ok) throw new Error(data.error || d.scanError);
+
+                    output.innerHTML += '<p>>> LITE SCAN QUEUED</p><p>>> REPORT DELIVERY: EMAIL</p>';
+                    updateSentEmail(email);
+                    document.getElementById('scanner-stage')?.classList.add('hidden-flow');
+                    document.getElementById('upsell-stage')?.classList.remove('hidden-flow');
+                    pcPixel('Lead', { content_name: 'Lite Scan' });
                 } catch (err) {
+                    console.error(err);
                     resetScanUi();
                     setSetupError(err.message || d.scanError);
-                    return;
                 }
-
-                if (!fetchOk) return;
-
-                let i = 0;
-                const interval = setInterval(() => {
-                    if (!terminal || i >= logs.length) {
-                        clearInterval(interval);
-                        return;
-                    }
-                    const p = document.createElement('p');
-                    p.innerText = logs[i];
-                    terminal.appendChild(p);
-                    i++;
-                    if (i >= logs.length) {
-                        clearInterval(interval);
-                        setTimeout(() => {
-                            document.getElementById('scanner-stage')?.classList.add('hidden-flow');
-                            document.getElementById('upsell-stage')?.classList.remove('hidden-flow');
-                        }, 1500);
-                    }
-                }, 900);
-            }
-
-            function setCheckoutError(msg) {
-                const el = document.getElementById('checkout-error');
-                el.innerText = msg || '';
-                el.classList.toggle('hidden-flow', !msg);
             }
 
             function showCheckoutOverlay() {
@@ -846,18 +678,15 @@ function getLandingHTML() {
             }
 
             async function comprarTitan() {
-                const email = document.getElementById('user-email').value;
+                const email = (document.getElementById('user-email').value || '').trim();
                 const d = dictionary[currentLang];
                 const btn = document.getElementById('btn-titan');
                 const btnLabel = d.btnTitan;
                 const payload = buildScanPayload();
 
-                if (payload.error) {
-                    setCheckoutError(payload.error);
-                    return;
-                }
-                if (!email) {
-                    setCheckoutError(d.alertError);
+                if (payload.error) { setCheckoutError(payload.error); return; }
+                if (!email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+                    setCheckoutError(d.invalidEmail);
                     return;
                 }
 
@@ -865,6 +694,7 @@ function getLandingHTML() {
                 btn.disabled = true;
                 btn.innerText = d.checkoutLoading;
                 showCheckoutOverlay();
+                pcPixel('InitiateCheckout', { value: 199, currency: 'USD', content_name: 'Titan Report' });
 
                 try {
                     const res = await fetch('/start', {
@@ -872,7 +702,7 @@ function getLandingHTML() {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ email, refCode, lang: currentLang, ...payload }),
                     });
-                    const data = await res.json().catch(() => ({}));
+                    const data = await res.json().catch(function() { return {}; });
 
                     if (res.ok && data.status === 'checkout' && data.url) {
                         window.location.assign(data.url);
@@ -884,7 +714,7 @@ function getLandingHTML() {
                     btn.disabled = false;
                     btn.innerText = btnLabel;
                 } catch (err) {
-                    console.error('!!! Error en pasarela:', err);
+                    console.error('!!! Checkout error:', err);
                     hideCheckoutOverlay();
                     setCheckoutError(d.checkoutNetwork);
                     btn.disabled = false;
@@ -898,41 +728,57 @@ function getLandingHTML() {
                 if (dna) document.getElementById('dna-url').value = decodeURIComponent(dna);
                 if (emailParam) document.getElementById('user-email').value = decodeURIComponent(emailParam);
 
-                const langParam = urlParams.get('lang');
-                if (langParam === 'es') {
-                    setLanguage('es');
+                setLanguage(urlParams.get('lang') === 'es' ? 'es' : 'en');
+
+                if (adsMode) {
+                    document.getElementById('lite-section')?.classList.add('hidden-flow');
+                    document.getElementById('hero-cta-lite')?.classList.add('hidden-flow');
+                    pcPixel('ViewContent', { content_name: 'Titan Report', content_category: 'ads' });
+                    setTimeout(function() {
+                        document.getElementById('buy-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 500);
                 } else {
-                    setLanguage('en');
+                    pcPixel('ViewContent', { content_name: 'Landing' });
                 }
 
                 document.getElementById('btn-start')?.addEventListener('click', iniciarEscaneo);
                 document.getElementById('btn-titan')?.addEventListener('click', comprarTitan);
-                document.getElementById('lang-en')?.addEventListener('click', () => setLanguage('en'));
-                document.getElementById('lang-es')?.addEventListener('click', () => setLanguage('es'));
+                document.getElementById('btn-titan-upsell')?.addEventListener('click', comprarTitan);
+                document.getElementById('lang-en')?.addEventListener('click', function() { setLanguage('en'); });
+                document.getElementById('lang-es')?.addEventListener('click', function() { setLanguage('es'); });
 
-                document.querySelectorAll('input[name="asset-type"]').forEach((radio) => {
+                document.querySelectorAll('input[name="asset-type"]').forEach(function(radio) {
                     radio.addEventListener('change', updateAssetUi);
                 });
                 document.getElementById('dna-url')?.addEventListener('input', updateAssetUi);
 
-                document.getElementById('dna-url')?.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') iniciarEscaneo();
+                document.getElementById('dna-url')?.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') comprarTitan();
                 });
-                document.getElementById('user-email')?.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') iniciarEscaneo();
+                document.getElementById('user-email')?.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') comprarTitan();
                 });
 
-                if (urlParams.get('titan') === '1') {
+                if (urlParams.get('titan') === '1' || urlParams.get('src') === 'ads') {
                     setTimeout(function() {
-                        document.getElementById('terminal-section').scrollIntoView({ behavior: 'smooth' });
+                        document.getElementById('buy-section').scrollIntoView({ behavior: 'smooth' });
                     }, 400);
                 }
-                updateAssetUi();
+
+                var sticky = document.getElementById('sticky-cta');
+                var buySection = document.getElementById('buy-section');
+                if (sticky && buySection && 'IntersectionObserver' in window) {
+                    new IntersectionObserver(function(entries) {
+                        var inView = entries.some(function(e) { return e.isIntersecting; });
+                        sticky.classList.toggle('visible', !inView);
+                    }, { threshold: 0.1 }).observe(buySection);
+                } else if (sticky) {
+                    sticky.classList.add('visible');
+                }
             })();
         </script>
     </body>
-    </html>
-    `;
+    </html>`;
 }
 
 module.exports = { getLandingHTML };

@@ -60,8 +60,21 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
     ${getFaviconHeadTags()}
     <title>${t.title} | PredictaCore</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1734011764438170');
+    fbq('track', 'PageView');
+    </script>
     <style>
-        body { background: #050505; color: #d1d5db; font-family: Inter, sans-serif; }
+        body { background: #050505; color: #d1d5db; font-family: Inter, sans-serif; font-size: 16px; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
@@ -99,6 +112,17 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
         const statusEl = document.getElementById('fulfill-status');
         if (email) localStorage.setItem('pc_email', email.trim().toLowerCase());
 
+        const initialFulfill = ${JSON.stringify(fulfillStatus)};
+        let purchaseTracked = false;
+
+        function trackPurchaseOnce() {
+            if (purchaseTracked || typeof fbq !== 'function') return;
+            purchaseTracked = true;
+            fbq('track', 'Purchase', { value: ${TITAN_PRICE_USD}, currency: 'USD', content_name: 'Titan Report' });
+        }
+
+        if (initialFulfill === 'ok' || initialFulfill === 'dup') trackPurchaseOnce();
+
         if (sessionId && sessionId.startsWith('cs_') && !statusEl.innerText) {
             fetch('/fulfill-checkout', {
                 method: 'POST',
@@ -107,9 +131,9 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
             })
             .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
             .then(function(r) {
-                if (r.ok && r.d.started) statusEl.innerText = MSG.ok;
-                else if (r.d.duplicate) statusEl.innerText = MSG.dup;
-                else if (r.ok) statusEl.innerText = MSG.ok;
+                if (r.ok && r.d.started) { statusEl.innerText = MSG.ok; trackPurchaseOnce(); }
+                else if (r.d.duplicate) { statusEl.innerText = MSG.dup; trackPurchaseOnce(); }
+                else if (r.ok) { statusEl.innerText = MSG.ok; trackPurchaseOnce(); }
                 else statusEl.innerText = MSG.fail;
             })
             .catch(function() { statusEl.innerText = MSG.fail; });
