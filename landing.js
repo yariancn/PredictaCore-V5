@@ -61,7 +61,14 @@ function getLandingHTML() {
             .faq-item summary::-webkit-details-marker { display: none; }
             .faq-item[open] summary { border-bottom: 1px solid #27272a; color: #34d399; }
             .faq-answer { padding: 1rem 1.25rem 1.25rem; color: #a1a1aa; font-size: 0.9375rem; line-height: 1.65; }
-            #sticky-cta { transform: translateY(100%); transition: transform 0.3s ease; }
+            .sample-panel-title { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #71717a; margin-bottom: 0.75rem; }
+            .sample-row { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e4e4e7; font-size: 0.875rem; }
+            .sample-row:last-child { border-bottom: none; }
+            .sample-status-ok { color: #15803d; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+            .sample-status-warn { color: #b45309; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+            .sample-status-bad { color: #b91c1c; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+            .sample-ai-row { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items: start; padding: 0.45rem 0; border-bottom: 1px solid #e4e4e7; font-size: 0.875rem; }
+            .sample-ai-row:last-child { border-bottom: none; }
             #sticky-cta.visible { transform: translateY(0); }
             #checkout-overlay { transition: opacity 0.25s ease; }
         </style>
@@ -107,7 +114,7 @@ function getLandingHTML() {
                 <h2 id="sample-title" class="text-2xl md:text-3xl font-black text-white text-center mb-3">This is what lands in your inbox</h2>
                 <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-xl mx-auto mb-10">Anonymized extract from a live Titan audit — custom baby bedding shop, US e-commerce.</p>
 
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start mb-6">
                     <div class="lg:col-span-2 report-card p-6 md:p-7">
                         <div class="flex items-center gap-2 mb-5 pb-4 border-b border-zinc-200">
                             <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center shrink-0">
@@ -120,37 +127,63 @@ function getLandingHTML() {
                         </div>
                         <div class="grid grid-cols-3 gap-3 mb-5">
                             <div class="text-center p-3 bg-zinc-100 rounded-lg">
-                                <p class="text-xs text-zinc-500 mb-1">SEO</p>
+                                <p class="text-xs text-zinc-500 mb-1">Google SEO</p>
                                 <p class="score-pill text-amber-700">61</p>
                             </div>
                             <div class="text-center p-3 bg-zinc-100 rounded-lg">
-                                <p class="text-xs text-zinc-500 mb-1">AI vis.</p>
+                                <p class="text-xs text-zinc-500 mb-1">AI visibility</p>
                                 <p class="score-pill text-emerald-700">85</p>
                             </div>
                             <div class="text-center p-3 bg-zinc-100 rounded-lg">
                                 <p class="text-xs text-zinc-500 mb-1">Load</p>
-                                <p class="score-pill text-zinc-800">4.8s</p>
+                                <p class="score-pill text-zinc-800">4.3s</p>
                             </div>
                         </div>
-                        <p id="sample-caption" class="text-xs text-zinc-500 leading-relaxed">Scores measured from public page data — same methodology applied to your URL.</p>
+                        <p id="sample-caption" class="text-xs text-zinc-500 leading-relaxed">Real scores from a live audit — same checks we run on your page.</p>
                     </div>
 
                     <div class="lg:col-span-3 space-y-4">
                         <div class="report-card p-5 border-l-4 border-red-500">
-                            <p class="text-xs font-bold text-red-600 uppercase tracking-wide mb-2">Leak #04 · High severity</p>
-                            <p id="sample-leak1" class="text-sm text-zinc-800 leading-relaxed"><strong>Meta description truncated in Google.</strong> Title tag optimized for brand name but description exceeds 160 characters — search snippets cut off before personalized blanket keywords appear.</p>
+                            <p id="sample-leak-h1" class="text-xs font-bold text-red-600 uppercase tracking-wide mb-2">What scares buyers · #04</p>
+                            <p id="sample-leak1" class="text-sm text-zinc-800 leading-relaxed"><strong>Google cuts off your description.</strong> The text under your name in search results is too long — shoppers never see your personalized blanket keywords before the snippet ends.</p>
                         </div>
                         <div class="report-card p-5 border-l-4 border-amber-500">
-                            <p class="text-xs font-bold text-amber-600 uppercase tracking-wide mb-2">Leak #09 · Medium severity</p>
-                            <p id="sample-leak2" class="text-sm text-zinc-800 leading-relaxed"><strong>No delivery timeline on made-to-order products.</strong> Personalized items show price and photos but buyers can't see production + ship window — hesitation spikes on custom orders.</p>
+                            <p id="sample-leak-h2" class="text-xs font-bold text-amber-600 uppercase tracking-wide mb-2">What scares buyers · #09</p>
+                            <p id="sample-leak2" class="text-sm text-zinc-800 leading-relaxed"><strong>No delivery date on custom orders.</strong> Made-to-order products show photos and price, but buyers can't see when it ships — so they hesitate on personalized items.</p>
                         </div>
                         <div class="report-card p-5 border-l-4 border-emerald-600 bg-emerald-50">
-                            <p class="text-xs font-bold text-emerald-700 uppercase tracking-wide mb-2">Tactical action #09</p>
-                            <p id="sample-action" class="text-sm text-zinc-800 leading-relaxed">Add a fixed <strong>"Ships in 5–7 business days"</strong> badge above Add to Cart on all personalized product templates. A/B test with countdown for peak gifting seasons.</p>
+                            <p id="sample-fix-h" class="text-xs font-bold text-emerald-700 uppercase tracking-wide mb-2">What to fix first · #09</p>
+                            <p id="sample-action" class="text-sm text-zinc-800 leading-relaxed">Add a clear <strong>Ships in 5–7 business days</strong> badge above Add to Cart on every personalized product page.</p>
                         </div>
-                        <p id="sample-foot" class="text-sm text-zinc-500 text-center lg:text-left">+ 12 more leaks, 14 more actions, buyer profiles, captures & 21-day roadmap in the full PDF.</p>
                     </div>
                 </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="report-card p-5 md:p-6">
+                        <p id="sample-seo-title" class="sample-panel-title">How you show up on Google</p>
+                        <div id="sample-seo-rows">
+                            <div class="sample-row"><span>Page title</span><span class="sample-status-ok">OK</span></div>
+                            <div class="sample-row"><span>Main headline (H1)</span><span class="sample-status-bad">Missing</span></div>
+                            <div class="sample-row"><span>Product image labels</span><span class="sample-status-bad">6% only</span></div>
+                            <div class="sample-row"><span>Rich results (stars, price in search)</span><span class="sample-status-bad">None</span></div>
+                            <div class="sample-row"><span>Sitemap &amp; robots.txt</span><span class="sample-status-ok">Found</span></div>
+                            <div class="sample-row"><span>Page speed</span><span class="sample-status-warn">4.3 sec</span></div>
+                        </div>
+                        <p id="sample-seo-note" class="text-xs text-zinc-500 mt-4 leading-relaxed">Without a main headline and product data for Google, your store ranks weaker and looks less trustworthy in search — even when traffic arrives.</p>
+                    </div>
+                    <div class="report-card p-5 md:p-6">
+                        <p id="sample-ai-title" class="sample-panel-title">How ChatGPT &amp; other AIs see you</p>
+                        <div id="sample-ai-rows">
+                            <div class="sample-ai-row"><span>Overall AI readiness</span><span class="score-pill text-emerald-700">85/100</span></div>
+                            <div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Can cite you — with errors</span></div>
+                            <div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Can cite you — with errors</span></div>
+                            <div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Can cite you — with errors</span></div>
+                            <div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Allowed — hard to feature</span></div>
+                        </div>
+                        <p id="sample-ai-note" class="text-xs text-zinc-500 mt-4 leading-relaxed">AIs are allowed to read this shop, but with no structured product data and no clear main headline they guess — and may recommend a competitor with a clearer page instead.</p>
+                    </div>
+                </div>
+                <p id="sample-foot" class="text-sm text-zinc-500 text-center mt-8">+ buyer profiles, competitor comparison, 12 more problems, 14 more fixes &amp; 21-day plan in the full PDF.</p>
             </div>
         </section>
 
@@ -328,11 +361,20 @@ function getLandingHTML() {
                     sampleSub: "Anonymized extract from a live Titan audit — custom baby bedding shop, US e-commerce.",
                     sampleCase: "Custom baby bedding · e-commerce",
                     sampleIndustry: "Personalized milestone products · US market",
-                    sampleCaption: "Scores measured from public page data — same methodology applied to your URL.",
-                    sampleLeak1: "<strong>Meta description truncated in Google.</strong> Title tag optimized for brand name but description exceeds 160 characters — search snippets cut off before personalized blanket keywords appear.",
-                    sampleLeak2: "<strong>No delivery timeline on made-to-order products.</strong> Personalized items show price and photos but buyers can't see production + ship window — hesitation spikes on custom orders.",
-                    sampleAction: 'Add a fixed <strong>Ships in 5–7 business days</strong> badge above Add to Cart on all personalized product templates. A/B test with countdown for peak gifting seasons.',
-                    sampleFoot: "+ 12 more leaks, 14 more actions, buyer profiles, captures & 21-day roadmap in the full PDF.",
+                    sampleCaption: "Real scores from a live audit — same checks we run on your page.",
+                    sampleLeakH1: "What scares buyers · #04",
+                    sampleLeakH2: "What scares buyers · #09",
+                    sampleFixH: "What to fix first · #09",
+                    sampleLeak1: "<strong>Google cuts off your description.</strong> The text under your name in search results is too long — shoppers never see your personalized blanket keywords before the snippet ends.",
+                    sampleLeak2: "<strong>No delivery date on custom orders.</strong> Made-to-order products show photos and price, but buyers can't see when it ships — so they hesitate on personalized items.",
+                    sampleAction: "Add a clear <strong>Ships in 5–7 business days</strong> badge above Add to Cart on every personalized product page.",
+                    sampleSeoTitle: "How you show up on Google",
+                    sampleSeoRows: '<div class="sample-row"><span>Page title</span><span class="sample-status-ok">OK</span></div><div class="sample-row"><span>Main headline (H1)</span><span class="sample-status-bad">Missing</span></div><div class="sample-row"><span>Product image labels</span><span class="sample-status-bad">6% only</span></div><div class="sample-row"><span>Rich results (stars, price in search)</span><span class="sample-status-bad">None</span></div><div class="sample-row"><span>Sitemap &amp; robots.txt</span><span class="sample-status-ok">Found</span></div><div class="sample-row"><span>Page speed</span><span class="sample-status-warn">4.3 sec</span></div>',
+                    sampleSeoNote: "Without a main headline and product data for Google, your store ranks weaker and looks less trustworthy in search — even when traffic arrives.",
+                    sampleAiTitle: "How ChatGPT & other AIs see you",
+                    sampleAiRows: '<div class="sample-ai-row"><span>Overall AI readiness</span><span class="score-pill text-emerald-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Allowed — hard to feature</span></div>',
+                    sampleAiNote: "AIs are allowed to read this shop, but with no structured product data and no clear main headline they guess — and may recommend a competitor with a clearer page instead.",
+                    sampleFoot: "+ buyer profiles, competitor comparison, 12 more problems, 14 more fixes & 21-day plan in the full PDF.",
                     includedTitle: "Everything in the Titan Report",
                     inc1: "Desktop + mobile capture with measured load time",
                     inc2: "SEO forensics: title, meta, schema, sitemap, robots",
@@ -405,11 +447,20 @@ function getLandingHTML() {
                     sampleSub: "Extracto anonimizado de una auditoría Titán real — tienda de ropa de cuna personalizada, e-commerce US.",
                     sampleCase: "Ropa de cuna personalizada · e-commerce",
                     sampleIndustry: "Productos milestone personalizados · mercado US",
-                    sampleCaption: "Scores medidos desde datos públicos — misma metodología aplicada a tu URL.",
-                    sampleLeak1: "<strong>Meta description truncada en Google.</strong> El title optimiza la marca pero la descripción supera 160 caracteres — el snippet corta antes de las keywords de mantas personalizadas.",
-                    sampleLeak2: "<strong>Sin plazo de entrega en productos hechos a pedido.</strong> Los artículos personalizados muestran precio y fotos pero el comprador no ve ventana de producción + envío — la duda sube en pedidos custom.",
-                    sampleAction: 'Añadir badge fijo <strong>Envío en 5–7 días hábiles</strong> sobre Añadir al carrito en plantillas de producto personalizado. A/B con countdown en temporadas de regalo.',
-                    sampleFoot: "+ 12 fugas más, 14 acciones más, perfiles de comprador, capturas y roadmap 21 días en el PDF completo.",
+                    sampleCaption: "Puntuaciones reales de una auditoría en vivo — las mismas que aplicamos a tu página.",
+                    sampleLeakH1: "Qué ahuyenta compradores · #04",
+                    sampleLeakH2: "Qué ahuyenta compradores · #09",
+                    sampleFixH: "Qué corregir primero · #09",
+                    sampleLeak1: "<strong>Google corta tu descripción.</strong> El texto bajo tu nombre en resultados de búsqueda es demasiado largo — el comprador no ve tus keywords de mantas personalizadas antes de que el snippet termine.",
+                    sampleLeak2: "<strong>Sin fecha de entrega en pedidos custom.</strong> Los productos hechos a pedido muestran fotos y precio, pero el comprador no ve cuándo llega — y duda en artículos personalizados.",
+                    sampleAction: "Añade un badge claro de <strong>Envío en 5–7 días hábiles</strong> sobre Añadir al carrito en cada producto personalizado.",
+                    sampleSeoTitle: "Cómo te ve Google",
+                    sampleSeoRows: '<div class="sample-row"><span>Título de página</span><span class="sample-status-ok">OK</span></div><div class="sample-row"><span>Titular principal (H1)</span><span class="sample-status-bad">Ausente</span></div><div class="sample-row"><span>Texto en imágenes de producto</span><span class="sample-status-bad">Solo 6%</span></div><div class="sample-row"><span>Resultados enriquecidos (estrellas, precio)</span><span class="sample-status-bad">Ninguno</span></div><div class="sample-row"><span>Sitemap y robots.txt</span><span class="sample-status-ok">Encontrados</span></div><div class="sample-row"><span>Velocidad de carga</span><span class="sample-status-warn">4,3 seg</span></div>',
+                    sampleSeoNote: "Sin titular principal ni datos de producto para Google, tu tienda posiciona peor y se ve menos confiable en búsqueda — aunque llegue tráfico.",
+                    sampleAiTitle: "Cómo te ven ChatGPT y otras IAs",
+                    sampleAiRows: '<div class="sample-ai-row"><span>Preparación general para IAs</span><span class="score-pill text-emerald-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Permitido — difícil destacar</span></div>',
+                    sampleAiNote: "Las IAs pueden leer esta tienda, pero sin datos estructurados de producto ni titular claro adivinan — y pueden recomendar a un competidor con página más clara.",
+                    sampleFoot: "+ perfiles de comprador, comparativa con competencia, 12 problemas más, 14 correcciones y plan de 21 días en el PDF completo.",
                     includedTitle: "Todo lo que incluye el Reporte Titán",
                     inc1: "Captura desktop + móvil con tiempo de carga medido",
                     inc2: "SEO forense: title, meta, schema, sitemap, robots",
@@ -486,7 +537,9 @@ function getLandingHTML() {
                     'hero-cta-titan': d.heroCtaTitan, 'hero-cta-lite': d.heroCtaLite, 'hero-trust': d.heroTrust,
                     'sample-kicker': d.sampleKicker, 'sample-title': d.sampleTitle, 'sample-sub': d.sampleSub,
                     'sample-case': d.sampleCase, 'sample-industry': d.sampleIndustry, 'sample-caption': d.sampleCaption,
-                    'sample-foot': d.sampleFoot, 'included-title': d.includedTitle, 'included-foot': d.includedFoot,
+                    'sample-foot': d.sampleFoot, 'sample-seo-title': d.sampleSeoTitle, 'sample-seo-note': d.sampleSeoNote,
+                    'sample-ai-title': d.sampleAiTitle, 'sample-ai-note': d.sampleAiNote,
+                    'sample-leak-h1': d.sampleLeakH1, 'sample-leak-h2': d.sampleLeakH2, 'sample-fix-h': d.sampleFixH, 'included-title': d.includedTitle, 'included-foot': d.includedFoot,
                     'proof-attr': d.proofAttr, 'faq-title': d.faqTitle,
                     'faq-q1': d.faqQ1, 'faq-a1': d.faqA1, 'faq-q2': d.faqQ2, 'faq-a2': d.faqA2,
                     'faq-q3': d.faqQ3, 'faq-a3': d.faqA3, 'faq-q4': d.faqQ4, 'faq-a4': d.faqA4,
@@ -511,6 +564,8 @@ function getLandingHTML() {
                 document.getElementById('sample-leak1').innerHTML = d.sampleLeak1;
                 document.getElementById('sample-leak2').innerHTML = d.sampleLeak2;
                 document.getElementById('sample-action').innerHTML = d.sampleAction;
+                if (d.sampleSeoRows) document.getElementById('sample-seo-rows').innerHTML = d.sampleSeoRows;
+                if (d.sampleAiRows) document.getElementById('sample-ai-rows').innerHTML = d.sampleAiRows;
                 document.getElementById('buy-price-line').innerHTML = d.buyPriceLine;
                 document.getElementById('cancel-badge').innerHTML = d.cancelBadge;
                 document.getElementById('disclaimer-text').innerHTML = d.disclaimerText;
