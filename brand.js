@@ -262,6 +262,9 @@ function getPdfBrandStyles() {
 .forensic-shots figcaption { font-size: 7pt; text-transform: uppercase; color: #64748b; margin-top: 4px; text-align: center; }`;
 }
 
+/** Measured A4 page count for a full Titan web audit PDF (cover, screenshots, 11 sections, closing). */
+const TITAN_REPORT_PAGE_COUNT = 17;
+
 module.exports = {
     getFaviconHeadTags,
     getEmailBrandHeader,
@@ -281,4 +284,5 @@ module.exports = {
     getSubscriptionCancellationPlain,
     getSubscriptionCancellationEmailHtml,
     buildTitanUpgradeUrl,
+    TITAN_REPORT_PAGE_COUNT,
 };

@@ -1,6 +1,6 @@
 // landing.js — conversion-focused landing (non-repetitive, Titan-first)
 
-const { getFaviconHeadTags } = require('./brand');
+const { getFaviconHeadTags, TITAN_REPORT_PAGE_COUNT } = require('./brand');
 
 function getLandingHTML() {
     return `
@@ -113,7 +113,7 @@ function getLandingHTML() {
             <div class="max-w-5xl mx-auto">
                 <p id="sample-kicker" class="text-xs font-bold uppercase tracking-widest text-emerald-500 text-center mb-2">Sample extract</p>
                 <h2 id="sample-title" class="text-2xl md:text-3xl font-black text-white text-center mb-3">This is what lands in your inbox</h2>
-                <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-2xl mx-auto mb-10">From a Titan Report for a custom baby bedding shop (US e-commerce). The full PDF is <strong class="text-zinc-200">35+ pages</strong> with <strong class="text-zinc-200">11 key sections</strong>, the <strong class="text-zinc-200">15 main reasons</strong> people leave without buying, and <strong class="text-zinc-200">15 recommended actions</strong> to fix them.</p>
+                <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-2xl mx-auto mb-10">Sample extract from a Titan Report — custom baby bedding shop (US e-commerce). The full PDF is <strong class="text-zinc-200">${TITAN_REPORT_PAGE_COUNT} pages</strong> with <strong class="text-zinc-200">11 key sections</strong>, the <strong class="text-zinc-200">15 main reasons</strong> people leave without buying, and <strong class="text-zinc-200">15 recommended actions</strong> to fix them.</p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start mb-6">
                     <div class="lg:col-span-2 report-card p-6 md:p-7">
@@ -360,7 +360,7 @@ function getLandingHTML() {
                     heroTrust: "One asset per scan · web or one Instagram, Facebook, or TikTok profile",
                     sampleKicker: "Sample extract",
                     sampleTitle: "This is what lands in your inbox",
-                    sampleSub: "From a Titan Report for a custom baby bedding shop (US e-commerce). The full PDF is <strong class='text-zinc-200'>35+ pages</strong> with <strong class='text-zinc-200'>11 key sections</strong>, the <strong class='text-zinc-200'>15 main reasons</strong> people leave without buying, and <strong class='text-zinc-200'>15 recommended actions</strong> to fix them.",
+                    sampleSub: "Sample extract from a Titan Report — custom baby bedding shop (US e-commerce). The full PDF is <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} pages</strong> with <strong class='text-zinc-200'>11 key sections</strong>, the <strong class='text-zinc-200'>15 main reasons</strong> people leave without buying, and <strong class='text-zinc-200'>15 recommended actions</strong> to fix them.",
                     sampleCase: "Custom baby bedding · e-commerce",
                     sampleIndustry: "Personalized milestone products · US market",
                     sampleCaption: "Real scores from a live audit — same checks we run on your page.",
@@ -447,7 +447,7 @@ function getLandingHTML() {
                     heroTrust: "Un activo por escaneo · web o un perfil de Instagram, Facebook o TikTok",
                     sampleKicker: "Extracto de muestra",
                     sampleTitle: "Esto es lo que llega a tu correo",
-                    sampleSub: "De un Reporte Titán para una tienda de ropa de cuna personalizada (e-commerce US). El PDF completo tiene <strong class='text-zinc-200'>más de 35 páginas</strong>, <strong class='text-zinc-200'>11 puntos clave</strong>, las <strong class='text-zinc-200'>15 principales razones</strong> por las que la gente se va sin comprar y <strong class='text-zinc-200'>15 acciones recomendadas</strong> para corregirlas.",
+                    sampleSub: "Extracto de muestra de un Reporte Titán — tienda de ropa de cuna personalizada (e-commerce US). El PDF completo tiene <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} páginas</strong>, <strong class='text-zinc-200'>11 puntos clave</strong>, las <strong class='text-zinc-200'>15 principales razones</strong> por las que la gente se va sin comprar y <strong class='text-zinc-200'>15 acciones recomendadas</strong> para corregirlas.",
                     sampleCase: "Ropa de cuna personalizada · e-commerce",
                     sampleIndustry: "Productos milestone personalizados · mercado US",
                     sampleCaption: "Puntuaciones reales de una auditoría en vivo — las mismas que aplicamos a tu página.",
