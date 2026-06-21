@@ -82,6 +82,11 @@ function getLandingHTML() {
             .compare-yes { color: #34d399; font-weight: 700; }
             .compare-no { color: #71717a; }
             .compare-partial { color: #fbbf24; font-weight: 600; }
+            .customer-extract-box { border: 2px solid rgba(16,185,129,0.35); border-radius: 1rem; background: rgba(0,0,0,0.55); padding: 1.25rem; position: relative; }
+            @media (min-width: 768px) { .customer-extract-box { padding: 1.5rem; } }
+            .customer-extract-pin { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.75rem 1rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #27272a; }
+            .customer-extract-label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #10b981; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); padding: 0.35rem 0.65rem; border-radius: 9999px; white-space: nowrap; }
+            .customer-extract-note { flex: 1; min-width: 12rem; font-size: 0.8125rem; line-height: 1.5; color: #a1a1aa; margin: 0; }
             #sticky-cta { transform: translateY(100%); transition: transform 0.3s ease; }
             #sticky-cta.visible { transform: translateY(0); }
         </style>
@@ -108,7 +113,7 @@ function getLandingHTML() {
                 <h1 id="hero-title" class="text-huge text-white mb-5">Find out why your page is <span class="text-emerald-500">losing sales</span></h1>
                 <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-6">PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.</p>
                 <a href="#buy-section" id="hero-cta-mid" class="inline-block mb-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_24px_rgba(16,185,129,0.22)]">Get Titan Report — $199</a>
-                <p id="hero-price-anchor" class="text-sm text-emerald-400 font-semibold max-w-lg mx-auto mb-5">USD $199 — the same public-page review agencies often charge $3,000+ for</p>
+                <p id="hero-price-anchor" class="text-sm md:text-base text-emerald-400 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't spend $3,000 on an agency for a report in weeks — we deliver yours in ~60 minutes. No fluff — hard scores, ranked leaks, and fixes only.</p>
                 <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-6">When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.</p>
                 <div class="inline-flex flex-col sm:flex-row items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 mb-6">
                     <div class="inline-flex items-center gap-2">
@@ -131,7 +136,7 @@ function getLandingHTML() {
             <div class="max-w-5xl mx-auto">
                 <p id="sample-kicker" class="text-xs font-bold uppercase tracking-widest text-emerald-500 text-center mb-2">Sample extract</p>
                 <h2 id="sample-title" class="text-2xl md:text-3xl font-black text-white text-center mb-3">This is what lands in your inbox</h2>
-                <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-2xl mx-auto mb-10">Sample extract from a Titan Report — custom baby bedding shop (US e-commerce). The full PDF is <strong class="text-zinc-200">${TITAN_REPORT_PAGE_COUNT} pages</strong> with <strong class="text-zinc-200">11 key sections</strong>, the <strong class="text-zinc-200">15 main reasons</strong> people leave without buying, and <strong class="text-zinc-200">15 recommended actions</strong> to fix them.</p>
+                <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-2xl mx-auto mb-10">Below: the PDF you get by email, plus a pinned customer extract from a real audit. Full Titan PDF = <strong class="text-zinc-200">${TITAN_REPORT_PAGE_COUNT} pages</strong>, <strong class="text-zinc-200">11 sections</strong>, <strong class="text-zinc-200">15 ranked leaks</strong>, and <strong class="text-zinc-200">15 fixes</strong>.</p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 items-center">
                     <div class="pdf-mockup report-card p-8 md:p-9 text-left shadow-[0_24px_48px_rgba(0,0,0,0.35)]">
@@ -153,12 +158,17 @@ function getLandingHTML() {
                         <p id="pdf-mock-from" class="text-[11px] text-zinc-500 mt-6 pt-4 border-t border-zinc-200">Delivered from ${supportEmail}</p>
                     </div>
                     <div class="lg:col-span-2 text-left">
-                        <p id="pdf-mock-caption" class="text-lg text-zinc-200 font-semibold mb-3">This is the file your customer receives</p>
-                        <p id="pdf-mock-desc" class="pc-body text-zinc-400 mb-4">Not a dashboard login — a complete PDF you can forward to your team, implement from section IX, and track with the 21-day roadmap in section XI.</p>
+                        <p id="pdf-mock-caption" class="text-lg text-zinc-200 font-semibold mb-3">This is the file you receive — not what your customers see</p>
+                        <p id="pdf-mock-desc" class="pc-body text-zinc-400 mb-4">A complete PDF in your inbox — not a dashboard login. Forward it to your team, implement from section IX, and track with the 21-day roadmap in section XI.</p>
                         <p id="pdf-mock-proof" class="text-sm text-emerald-500/90 font-medium">Same ${TITAN_REPORT_PAGE_COUNT}-page format for websites, service businesses, and social profiles.</p>
                     </div>
                 </div>
 
+                <div class="customer-extract-box">
+                    <div class="customer-extract-pin">
+                        <span id="sample-extract-label" class="customer-extract-label">📌 Customer extract</span>
+                        <p id="sample-extract-note" class="customer-extract-note">Real excerpt from a live Titan Report — custom baby bedding shop (US e-commerce). Brand and URL omitted; scores and findings unchanged.</p>
+                    </div>
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start mb-6">
                     <div class="lg:col-span-2 report-card p-6 md:p-7">
                         <div class="flex items-center gap-2 mb-5 pb-4 border-b border-zinc-200">
@@ -228,7 +238,8 @@ function getLandingHTML() {
                         <p id="sample-ai-note" class="text-xs text-zinc-500 mt-4 leading-relaxed">AIs are allowed to read this shop, but with no structured product data and no clear main headline they guess — and may recommend a competitor with a clearer page instead.</p>
                     </div>
                 </div>
-                <p id="sample-foot" class="text-sm text-zinc-500 text-center mt-8">What you see above is a small sample. The full report also includes buyer profiles, competitor comparison, screenshots, and a 21-day action plan.</p>
+                </div>
+                <p id="sample-foot" class="text-sm text-zinc-500 text-center mt-8">What you see above is a small extract. The full ${TITAN_REPORT_PAGE_COUNT}-page PDF also includes buyer profiles, competitor comparison, screenshots, and a 21-day action plan.</p>
             </div>
         </section>
 
@@ -246,8 +257,6 @@ function getLandingHTML() {
                 </ul>
                 <p id="included-foot" class="text-center text-sm text-zinc-500 mt-8 max-w-lg mx-auto">Structured PDF by email — not a ChatGPT paragraph. More deliverables than agencies charging $3k+ for the same public URL review.</p>
             </div>
-        </section>
-
         </section>
 
         <!-- LITE VS TITAN -->
@@ -466,7 +475,7 @@ function getLandingHTML() {
                     heroCtaTitan: "Get Titan Report — $199",
                     heroCtaMid: "Get Titan Report — $199",
                     heroCtaLite: "Or start with a free Lite scan →",
-                    heroPriceAnchor: "USD $199 — the same public-page review agencies often charge $3,000+ for",
+                    heroPriceAnchor: "Don't spend $3,000 on an agency for a report in weeks — we deliver yours in ~60 minutes. No fluff — hard scores, ranked leaks, and fixes only.",
                     heroDelivery: "PDF delivered from ${supportEmail} · usually within 60 minutes",
                     heroTrust: "One asset per scan · web or one Instagram, Facebook, or TikTok profile",
                     pdfMockTag: "Forensic conversion report",
@@ -474,8 +483,8 @@ function getLandingHTML() {
                     pdfMockMeta: "${TITAN_REPORT_PAGE_COUNT}-page PDF · 11 sections · email attachment",
                     pdfMockToc: "<li>I. Executive summary &amp; page health</li><li>II. Buyer psychology profiles</li><li>III. Commercial scorecard</li><li>IV. Google SEO &amp; AI visibility</li><li>V–VII. Competitors, SWOT, wishlist</li><li>VIII. 15 reasons people leave</li><li>IX. 15 recommended fixes</li><li>X–XI. Tools &amp; 21-day plan</li>",
                     pdfMockFrom: "Delivered from ${supportEmail}",
-                    pdfMockCaption: "This is the file your customer receives",
-                    pdfMockDesc: "Not a dashboard login — a complete PDF you can forward to your team, implement from section IX, and track with the 21-day roadmap in section XI.",
+                    pdfMockCaption: "This is the file you receive — not what your customers see",
+                    pdfMockDesc: "A complete PDF in your inbox — not a dashboard login. Forward it to your team, implement from section IX, and track with the 21-day roadmap in section XI.",
                     pdfMockProof: "Same ${TITAN_REPORT_PAGE_COUNT}-page format for websites, service businesses, and social profiles.",
                     compareTitle: "Lite vs Titan — side by side",
                     compareSub: "Lite is a free teaser. Titan is the full ${TITAN_REPORT_PAGE_COUNT}-page report that shows every reason people leave and what to do about it.",
@@ -489,7 +498,9 @@ function getLandingHTML() {
                     reviewsGrid: '<article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"We fixed three product-page issues from section IX and personalized orders jumped <strong class="text-white">28% in two weeks</strong>. Worth every dollar vs waiting on an agency quote."</p><p class="review-tag mb-1">E-commerce · website</p><p class="text-white font-semibold text-sm">Sarah M.</p><p class="text-zinc-500 text-xs">Custom baby products · US</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Our booking page looked fine to us. The report showed why people were not calling — we rewrote the hero and online bookings rose <strong class="text-white">41% in a month</strong>."</p><p class="review-tag mb-1">Local services · website</p><p class="text-white font-semibold text-sm">Dr. James R.</p><p class="text-zinc-500 text-xs">Dental clinic · Texas</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"I sell coaching through Instagram. The audit flagged my link-in-bio and highlight order — DMs asking for pricing went up <strong class="text-white">34%</strong> after I applied the checklist."</p><p class="review-tag mb-1">Instagram · social profile</p><p class="text-white font-semibold text-sm">Elena V.</p><p class="text-zinc-500 text-xs">Business coach · Miami</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"We only had a Facebook page, no real site. Still got a full PDF — fixed our menu photos and hours clarity and walk-ins increased <strong class="text-white">19% in three weeks</strong>."</p><p class="review-tag mb-1">Facebook · social profile</p><p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p><p class="text-zinc-500 text-xs">Neighborhood café · Chicago</p></article>',
                     sampleKicker: "Sample extract",
                     sampleTitle: "This is what lands in your inbox",
-                    sampleSub: "Sample extract from a Titan Report — custom baby bedding shop (US e-commerce). The full PDF is <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} pages</strong> with <strong class='text-zinc-200'>11 key sections</strong>, the <strong class='text-zinc-200'>15 main reasons</strong> people leave without buying, and <strong class='text-zinc-200'>15 recommended actions</strong> to fix them.",
+                    sampleSub: "Below: the PDF you get by email, plus a pinned customer extract from a real audit. Full Titan PDF = <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} pages</strong>, <strong class='text-zinc-200'>11 sections</strong>, <strong class='text-zinc-200'>15 ranked leaks</strong>, and <strong class='text-zinc-200'>15 fixes</strong>.",
+                    sampleExtractLabel: "📌 Customer extract",
+                    sampleExtractNote: "Real excerpt from a live Titan Report — custom baby bedding shop (US e-commerce). Brand and URL omitted; scores and findings unchanged.",
                     sampleCase: "Custom baby bedding · e-commerce",
                     sampleIndustry: "Personalized milestone products · US market",
                     sampleCaption: "Real scores from a live audit — same checks we run on your page.",
@@ -505,7 +516,7 @@ function getLandingHTML() {
                     sampleAiTitle: "How ChatGPT & other AIs see you",
                     sampleAiRows: '<div class="sample-ai-row"><span>Overall AI readiness</span><span class="score-pill text-emerald-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Allowed — hard to feature</span></div>',
                     sampleAiNote: "AIs are allowed to read this shop, but with no structured product data and no clear main headline they guess — and may recommend a competitor with a clearer page instead.",
-                    sampleFoot: "What you see above is a small sample. The full report also includes buyer profiles, competitor comparison, screenshots, and a 21-day action plan.",
+                    sampleFoot: "What you see above is a small extract. The full ${TITAN_REPORT_PAGE_COUNT}-page PDF also includes buyer profiles, competitor comparison, screenshots, and a 21-day action plan.",
                     includedTitle: "Everything in the Titan Report",
                     inc1: "Desktop + mobile capture with measured load time",
                     inc2: "SEO forensics: title, meta, schema, sitemap, robots",
@@ -573,7 +584,7 @@ function getLandingHTML() {
                     heroCtaTitan: "Obtener Reporte Titán — $199",
                     heroCtaMid: "Obtener Reporte Titán — $199",
                     heroCtaLite: "O empezar con escaneo Lite gratis →",
-                    heroPriceAnchor: "USD $199 — la misma revisión de página pública por la que agencias cobran $3,000+",
+                    heroPriceAnchor: "No gastes $3,000 en una agencia por un reporte en semanas — el tuyo en ~60 minutos. Sin relleno: solo datos duros, fugas rankeadas y acciones concretas.",
                     heroDelivery: "PDF enviado desde ${supportEmail} · normalmente en 60 minutos",
                     heroTrust: "Un activo por escaneo · web o un perfil de Instagram, Facebook o TikTok",
                     pdfMockTag: "Reporte forense de conversión",
@@ -581,8 +592,8 @@ function getLandingHTML() {
                     pdfMockMeta: "PDF de ${TITAN_REPORT_PAGE_COUNT} páginas · 11 secciones · adjunto por email",
                     pdfMockToc: "<li>I. Resumen ejecutivo y salud de la página</li><li>II. Perfiles de psicología de comprador</li><li>III. Scorecard comercial</li><li>IV. SEO en Google y visibilidad en IAs</li><li>V–VII. Competencia, SWOT, wishlist</li><li>VIII. 15 razones por las que se van</li><li>IX. 15 correcciones recomendadas</li><li>X–XI. Herramientas y plan 21 días</li>",
                     pdfMockFrom: "Enviado desde ${supportEmail}",
-                    pdfMockCaption: "Este es el archivo que recibe tu cliente",
-                    pdfMockDesc: "No es un login a un panel — es un PDF completo que puedes reenviar a tu equipo, implementar desde la sección IX y seguir con la hoja de ruta de 21 días en la sección XI.",
+                    pdfMockCaption: "Este es el archivo que recibes tú — no lo que ven tus clientes",
+                    pdfMockDesc: "Un PDF completo en tu correo — no un login a un panel. Reenvíalo a tu equipo, implementa desde la sección IX y sigue la hoja de ruta de 21 días en la sección XI.",
                     pdfMockProof: "El mismo formato de ${TITAN_REPORT_PAGE_COUNT} páginas para webs, negocios de servicios y perfiles sociales.",
                     compareTitle: "Lite vs Titán — comparativa",
                     compareSub: "Lite es un avance gratis. Titán es el reporte completo de ${TITAN_REPORT_PAGE_COUNT} páginas con cada razón por la que la gente se va y qué hacer al respecto.",
@@ -596,7 +607,9 @@ function getLandingHTML() {
                     reviewsGrid: '<article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Arreglamos tres cosas en la ficha de producto (sección IX) y los pedidos personalizados subieron <strong class="text-white">28% en dos semanas</strong>. Mejor que esperar cotización de agencia."</p><p class="review-tag mb-1">E-commerce · sitio web</p><p class="text-white font-semibold text-sm">Sarah M.</p><p class="text-zinc-500 text-xs">Productos para bebé · US</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Nuestra página de reservas se veía bien. El reporte mostró por qué no llamaban — reescribimos el hero y las citas online subieron <strong class="text-white">41% en un mes</strong>."</p><p class="review-tag mb-1">Servicios locales · sitio web</p><p class="text-white font-semibold text-sm">Dr. James R.</p><p class="text-zinc-500 text-xs">Clínica dental · Texas</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Vendo coaching por Instagram. La auditoría señaló mi link en bio y el orden de highlights — los DM pidiendo precio subieron <strong class="text-white">34%</strong> tras aplicar la lista."</p><p class="review-tag mb-1">Instagram · perfil social</p><p class="text-white font-semibold text-sm">Elena V.</p><p class="text-zinc-500 text-xs">Coach de negocios · Miami</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Solo teníamos página de Facebook, sin web. Igual recibimos el PDF — arreglamos fotos del menú y horarios y las visitas subieron <strong class="text-white">19% en tres semanas</strong>."</p><p class="review-tag mb-1">Facebook · perfil social</p><p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p><p class="text-zinc-500 text-xs">Café de barrio · Chicago</p></article>',
                     sampleKicker: "Extracto de muestra",
                     sampleTitle: "Esto es lo que llega a tu correo",
-                    sampleSub: "Extracto de muestra de un Reporte Titán — tienda de ropa de cuna personalizada (e-commerce US). El PDF completo tiene <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} páginas</strong>, <strong class='text-zinc-200'>11 puntos clave</strong>, las <strong class='text-zinc-200'>15 principales razones</strong> por las que la gente se va sin comprar y <strong class='text-zinc-200'>15 acciones recomendadas</strong> para corregirlas.",
+                    sampleSub: "Abajo: el PDF que recibes por email, más un extracto fijado de una auditoría real. Reporte Titán completo = <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} páginas</strong>, <strong class='text-zinc-200'>11 secciones</strong>, <strong class='text-zinc-200'>15 fugas rankeadas</strong> y <strong class='text-zinc-200'>15 correcciones</strong>.",
+                    sampleExtractLabel: "📌 Extracto de cliente",
+                    sampleExtractNote: "Extracto real de un Reporte Titán en vivo — tienda de ropa de cuna personalizada (e-commerce US). Marca y URL omitidas; puntuaciones y hallazgos intactos.",
                     sampleCase: "Ropa de cuna personalizada · e-commerce",
                     sampleIndustry: "Productos milestone personalizados · mercado US",
                     sampleCaption: "Puntuaciones reales de una auditoría en vivo — las mismas que aplicamos a tu página.",
@@ -612,7 +625,7 @@ function getLandingHTML() {
                     sampleAiTitle: "Cómo te ven ChatGPT y otras IAs",
                     sampleAiRows: '<div class="sample-ai-row"><span>Preparación general para IAs</span><span class="score-pill text-emerald-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Permitido — difícil destacar</span></div>',
                     sampleAiNote: "Las IAs pueden leer esta tienda, pero sin datos estructurados de producto ni titular claro adivinan — y pueden recomendar a un competidor con página más clara.",
-                    sampleFoot: "Lo de arriba es solo una muestra. El reporte completo incluye perfiles de comprador, comparativa con competencia, capturas de pantalla y un plan de acción de 21 días.",
+                    sampleFoot: "Lo de arriba es solo un extracto. El PDF completo de ${TITAN_REPORT_PAGE_COUNT} páginas también incluye perfiles de comprador, comparativa con competencia, capturas y plan de acción de 21 días.",
                     includedTitle: "Todo lo que incluye el Reporte Titán",
                     inc1: "Captura desktop + móvil con tiempo de carga medido",
                     inc2: "SEO forense: title, meta, schema, sitemap, robots",
@@ -694,6 +707,7 @@ function getLandingHTML() {
                     'compare-th-feature': d.compareThFeature, 'compare-th-lite': d.compareThLite, 'compare-th-titan': d.compareThTitan,
                     'reviews-title': d.reviewsTitle, 'reviews-sub': d.reviewsSub,
                     'sample-kicker': d.sampleKicker, 'sample-title': d.sampleTitle,
+                    'sample-extract-label': d.sampleExtractLabel, 'sample-extract-note': d.sampleExtractNote,
                     'sample-case': d.sampleCase, 'sample-industry': d.sampleIndustry, 'sample-caption': d.sampleCaption,
                     'sample-foot': d.sampleFoot, 'sample-seo-title': d.sampleSeoTitle, 'sample-seo-note': d.sampleSeoNote,
                     'sample-ai-title': d.sampleAiTitle, 'sample-ai-note': d.sampleAiNote,
