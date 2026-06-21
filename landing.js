@@ -62,17 +62,17 @@ function getLandingHTML() {
             .faq-item summary::-webkit-details-marker { display: none; }
             .faq-item[open] summary { border-bottom: 1px solid #27272a; color: #34d399; }
             .faq-answer { padding: 1rem 1.25rem 1.25rem; color: #a1a1aa; font-size: 0.9375rem; line-height: 1.65; }
-            .sample-panel-title { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #71717a; margin-bottom: 0.75rem; }
+            .sample-panel-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #71717a; margin-bottom: 0.75rem; }
             .sample-row { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e4e4e7; font-size: 0.875rem; }
             .sample-row:last-child { border-bottom: none; }
-            .sample-status-ok { color: #15803d; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
-            .sample-status-warn { color: #b45309; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
-            .sample-status-bad { color: #b91c1c; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+            .sample-status-ok { color: #15803d; font-weight: 700; font-size: 0.8125rem; text-transform: uppercase; }
+            .sample-status-warn { color: #b45309; font-weight: 700; font-size: 0.8125rem; text-transform: uppercase; }
+            .sample-status-bad { color: #b91c1c; font-weight: 700; font-size: 0.8125rem; text-transform: uppercase; }
             .sample-ai-row { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items: start; padding: 0.45rem 0; border-bottom: 1px solid #e4e4e7; font-size: 0.875rem; }
             .sample-ai-row:last-child { border-bottom: none; }
             .stars { color: #fbbf24; font-size: 0.875rem; letter-spacing: 0.12em; }
             .review-card { border: 1px solid #27272a; border-radius: 0.75rem; background: rgba(0,0,0,0.45); padding: 1.25rem; height: 100%; }
-            .review-tag { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #71717a; }
+            .review-tag { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #71717a; }
             .pdf-mockup { transform: rotate(-1.5deg); transition: transform 0.35s ease; }
             .pdf-mockup:hover { transform: rotate(0deg); }
             .compare-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.9375rem; }
@@ -83,16 +83,17 @@ function getLandingHTML() {
             .compare-no { color: #71717a; }
             .compare-partial { color: #fbbf24; font-weight: 600; }
             .customer-extract-box { border: 2px solid rgba(16,185,129,0.35); border-radius: 1rem; background: rgba(0,0,0,0.55); padding: 1.25rem; position: relative; }
-            @media (min-width: 768px) { .customer-extract-box { padding: 1.5rem; } }
-            .customer-extract-pin { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.75rem 1rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #27272a; }
-            .customer-extract-label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #10b981; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); padding: 0.35rem 0.65rem; border-radius: 9999px; white-space: nowrap; }
-            .customer-extract-note { flex: 1; min-width: 12rem; font-size: 0.8125rem; line-height: 1.5; color: #a1a1aa; margin: 0; }
-            .extract-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-bottom: 1.25rem; }
-            @media (min-width: 768px) { .extract-metrics { grid-template-columns: repeat(4, 1fr); } }
-            .extract-metric { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.22); border-radius: 0.5rem; padding: 0.7rem 0.75rem; text-align: center; }
-            .extract-metric-value { font-size: 1.125rem; font-weight: 800; color: #34d399; line-height: 1.2; font-family: 'JetBrains Mono', monospace; }
-            .extract-metric-label { font-size: 0.625rem; color: #71717a; text-transform: uppercase; letter-spacing: 0.07em; margin-top: 0.35rem; line-height: 1.35; }
-            .extract-metric-sub { font-size: 0.625rem; color: #52525b; margin-top: 0.2rem; }
+            @media (min-width: 768px) { .customer-extract-box { padding: 1.75rem; } }
+            .customer-extract-pin { display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid #27272a; }
+            .customer-extract-label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #10b981; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); padding: 0.45rem 0.85rem; border-radius: 9999px; }
+            .customer-extract-note { width: 100%; font-size: 0.9375rem; line-height: 1.65; color: #d1d5db; margin: 0; }
+            .extract-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
+            @media (min-width: 768px) { .extract-metrics { grid-template-columns: repeat(4, 1fr); gap: 0.85rem; } }
+            .extract-metric { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.22); border-radius: 0.625rem; padding: 0.9rem 0.85rem; text-align: center; }
+            .extract-metric-value { font-size: 1.375rem; font-weight: 800; color: #34d399; line-height: 1.2; font-family: 'JetBrains Mono', monospace; }
+            .extract-metric-label { font-size: 0.75rem; font-weight: 700; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.45rem; line-height: 1.4; }
+            .extract-metric-sub { font-size: 0.875rem; color: #71717a; margin-top: 0.35rem; line-height: 1.45; }
+            .extract-metrics-foot { font-size: 0.875rem; line-height: 1.55; color: #71717a; text-align: center; margin-bottom: 1.25rem; }
             #sticky-cta { transform: translateY(100%); transition: transform 0.3s ease; }
             #sticky-cta.visible { transform: translateY(0); }
         </style>
@@ -197,7 +198,7 @@ function getLandingHTML() {
                             <p id="sample-metric-4-sub" class="extract-metric-sub">Image compression pass</p>
                         </div>
                     </div>
-                    <p id="sample-metrics-foot" class="text-[11px] text-zinc-500 text-center mb-4 leading-relaxed">Results measured ~8 weeks after applying section IX fixes · same Shopify store · second follow-up report window</p>
+                    <p id="sample-metrics-foot" class="extract-metrics-foot">Results measured ~8 weeks after applying section IX fixes · same Shopify store · second follow-up report window</p>
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start mb-6">
                     <div class="lg:col-span-2 report-card p-6 md:p-7">
                         <div class="flex items-center gap-2 mb-5 pb-4 border-b border-zinc-200">
@@ -205,38 +206,38 @@ function getLandingHTML() {
                                 <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             </div>
                             <div>
-                                <p id="sample-case" class="font-bold text-zinc-900 text-sm leading-tight">Custom baby bedding · Shopify</p>
-                                <p id="sample-industry" class="text-xs text-zinc-500">Personalized milestone products · US market</p>
+                                <p id="sample-case" class="font-bold text-zinc-900 text-base leading-tight">Custom baby bedding · Shopify</p>
+                                <p id="sample-industry" class="text-sm text-zinc-500">Personalized milestone products · US market</p>
                             </div>
                         </div>
                         <div class="grid grid-cols-3 gap-3 mb-5">
                             <div class="text-center p-3 bg-zinc-100 rounded-lg">
-                                <p class="text-xs text-zinc-500 mb-1">Google SEO</p>
+                                <p class="text-sm text-zinc-500 mb-1">Google SEO</p>
                                 <p class="score-pill text-amber-700">61</p>
                             </div>
                             <div class="text-center p-3 bg-zinc-100 rounded-lg">
-                                <p class="text-xs text-zinc-500 mb-1">AI visibility</p>
+                                <p class="text-sm text-zinc-500 mb-1">AI visibility</p>
                                 <p class="score-pill text-emerald-700">85</p>
                             </div>
                             <div class="text-center p-3 bg-zinc-100 rounded-lg">
-                                <p class="text-xs text-zinc-500 mb-1">Load</p>
+                                <p class="text-sm text-zinc-500 mb-1">Load</p>
                                 <p class="score-pill text-zinc-800">4.3s</p>
                             </div>
                         </div>
-                        <p id="sample-caption" class="text-xs text-zinc-500 leading-relaxed">Real scores from a live audit — same checks we run on your page.</p>
+                        <p id="sample-caption" class="text-sm text-zinc-500 leading-relaxed">Real scores from a live audit — same checks we run on your page.</p>
                     </div>
 
                     <div class="lg:col-span-3 space-y-4">
                         <div class="report-card p-5 border-l-4 border-red-500">
-                            <p id="sample-leak-h1" class="text-xs font-bold text-red-600 uppercase tracking-wide mb-2">What scares buyers · #04</p>
+                            <p id="sample-leak-h1" class="text-sm font-bold text-red-600 uppercase tracking-wide mb-2">What scares buyers · #04</p>
                             <p id="sample-leak1" class="text-sm text-zinc-800 leading-relaxed"><strong>Google cuts off your description.</strong> The text under your name in search results is too long — shoppers never see your personalized blanket keywords before the snippet ends.</p>
                         </div>
                         <div class="report-card p-5 border-l-4 border-amber-500">
-                            <p id="sample-leak-h2" class="text-xs font-bold text-amber-600 uppercase tracking-wide mb-2">What scares buyers · #09</p>
+                            <p id="sample-leak-h2" class="text-sm font-bold text-amber-600 uppercase tracking-wide mb-2">What scares buyers · #09</p>
                             <p id="sample-leak2" class="text-sm text-zinc-800 leading-relaxed"><strong>No delivery date on custom orders.</strong> Made-to-order products show photos and price, but buyers can't see when it ships — so they hesitate on personalized items.</p>
                         </div>
                         <div class="report-card p-5 border-l-4 border-emerald-600 bg-emerald-50">
-                            <p id="sample-fix-h" class="text-xs font-bold text-emerald-700 uppercase tracking-wide mb-2">What to fix first · #09</p>
+                            <p id="sample-fix-h" class="text-sm font-bold text-emerald-700 uppercase tracking-wide mb-2">What to fix first · #09</p>
                             <p id="sample-action" class="text-sm text-zinc-800 leading-relaxed">Add a clear <strong>Ships in 5–7 business days</strong> badge above Add to Cart on every personalized product page.</p>
                         </div>
                     </div>
@@ -253,7 +254,7 @@ function getLandingHTML() {
                             <div class="sample-row"><span>Sitemap &amp; robots.txt</span><span class="sample-status-ok">Found</span></div>
                             <div class="sample-row"><span>Page speed</span><span class="sample-status-warn">4.3 sec</span></div>
                         </div>
-                        <p id="sample-seo-note" class="text-xs text-zinc-500 mt-4 leading-relaxed">Without a main headline and product data for Google, your store ranks weaker and looks less trustworthy in search — even when traffic arrives.</p>
+                        <p id="sample-seo-note" class="text-sm text-zinc-500 mt-4 leading-relaxed">Without a main headline and product data for Google, your store ranks weaker and looks less trustworthy in search — even when traffic arrives.</p>
                     </div>
                     <div class="report-card p-5 md:p-6">
                         <p id="sample-ai-title" class="sample-panel-title">How ChatGPT &amp; other AIs see you</p>
@@ -264,7 +265,7 @@ function getLandingHTML() {
                             <div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Can cite you — with errors</span></div>
                             <div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Allowed — hard to feature</span></div>
                         </div>
-                        <p id="sample-ai-note" class="text-xs text-zinc-500 mt-4 leading-relaxed">AIs are allowed to read this shop, but with no structured product data and no clear main headline they guess — and may recommend a competitor with a clearer page instead.</p>
+                        <p id="sample-ai-note" class="text-sm text-zinc-500 mt-4 leading-relaxed">AIs are allowed to read this shop, but with no structured product data and no clear main headline they guess — and may recommend a competitor with a clearer page instead.</p>
                     </div>
                 </div>
                 </div>
@@ -330,28 +331,28 @@ function getLandingHTML() {
                         <p class="text-zinc-200 text-sm leading-relaxed mb-4">"We fixed three product-page issues from section IX and personalized orders jumped <strong class="text-white">28% in two weeks</strong>. Worth every dollar vs waiting on an agency quote."</p>
                         <p class="review-tag mb-1">E-commerce · website</p>
                         <p class="text-white font-semibold text-sm">Sarah M.</p>
-                        <p class="text-zinc-500 text-xs">Custom baby products · US</p>
+                        <p class="text-zinc-500 text-sm">Custom baby products · US</p>
                     </article>
                     <article class="review-card">
                         <p class="stars mb-3" aria-label="5 stars">★★★★★</p>
                         <p class="text-zinc-200 text-sm leading-relaxed mb-4">"Our booking page looked fine to us. The report showed why people weren't calling — we rewrote the hero and online bookings rose <strong class="text-white">41% in a month</strong>."</p>
                         <p class="review-tag mb-1">Local services · website</p>
                         <p class="text-white font-semibold text-sm">Dr. James R.</p>
-                        <p class="text-zinc-500 text-xs">Dental clinic · Texas</p>
+                        <p class="text-zinc-500 text-sm">Dental clinic · Texas</p>
                     </article>
                     <article class="review-card">
                         <p class="stars mb-3" aria-label="5 stars">★★★★★</p>
                         <p class="text-zinc-200 text-sm leading-relaxed mb-4">"I sell coaching through Instagram. The audit flagged my link-in-bio and highlight order — DMs asking for pricing went up <strong class="text-white">34%</strong> after I applied the checklist."</p>
                         <p class="review-tag mb-1">Instagram · social profile</p>
                         <p class="text-white font-semibold text-sm">Elena V.</p>
-                        <p class="text-zinc-500 text-xs">Business coach · Miami</p>
+                        <p class="text-zinc-500 text-sm">Business coach · Miami</p>
                     </article>
                     <article class="review-card">
                         <p class="stars mb-3" aria-label="5 stars">★★★★★</p>
                         <p class="text-zinc-200 text-sm leading-relaxed mb-4">"We only had a Facebook page, no real site. Still got a full PDF — fixed our menu photos and hours clarity and walk-ins increased <strong class="text-white">19% in three weeks</strong>."</p>
                         <p class="review-tag mb-1">Facebook · social profile</p>
                         <p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p>
-                        <p class="text-zinc-500 text-xs">Neighborhood café · Chicago</p>
+                        <p class="text-zinc-500 text-sm">Neighborhood café · Chicago</p>
                     </article>
                 </div>
             </div>
@@ -524,7 +525,7 @@ function getLandingHTML() {
                     compareFoot: "Most owners start with Lite, then upgrade when they see how much is still hidden.",
                     reviewsTitle: "Trusted by shop owners & creators",
                     reviewsSub: "Real feedback from different business types — website, local services, and social profiles.",
-                    reviewsGrid: '<article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"We fixed three product-page issues from section IX and personalized orders jumped <strong class="text-white">28% in two weeks</strong>. Worth every dollar vs waiting on an agency quote."</p><p class="review-tag mb-1">E-commerce · website</p><p class="text-white font-semibold text-sm">Sarah M.</p><p class="text-zinc-500 text-xs">Custom baby products · US</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Our booking page looked fine to us. The report showed why people were not calling — we rewrote the hero and online bookings rose <strong class="text-white">41% in a month</strong>."</p><p class="review-tag mb-1">Local services · website</p><p class="text-white font-semibold text-sm">Dr. James R.</p><p class="text-zinc-500 text-xs">Dental clinic · Texas</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"I sell coaching through Instagram. The audit flagged my link-in-bio and highlight order — DMs asking for pricing went up <strong class="text-white">34%</strong> after I applied the checklist."</p><p class="review-tag mb-1">Instagram · social profile</p><p class="text-white font-semibold text-sm">Elena V.</p><p class="text-zinc-500 text-xs">Business coach · Miami</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"We only had a Facebook page, no real site. Still got a full PDF — fixed our menu photos and hours clarity and walk-ins increased <strong class="text-white">19% in three weeks</strong>."</p><p class="review-tag mb-1">Facebook · social profile</p><p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p><p class="text-zinc-500 text-xs">Neighborhood café · Chicago</p></article>',
+                    reviewsGrid: '<article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"We fixed three product-page issues from section IX and personalized orders jumped <strong class="text-white">28% in two weeks</strong>. Worth every dollar vs waiting on an agency quote."</p><p class="review-tag mb-1">E-commerce · website</p><p class="text-white font-semibold text-sm">Sarah M.</p><p class="text-zinc-500 text-sm">Custom baby products · US</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Our booking page looked fine to us. The report showed why people were not calling — we rewrote the hero and online bookings rose <strong class="text-white">41% in a month</strong>."</p><p class="review-tag mb-1">Local services · website</p><p class="text-white font-semibold text-sm">Dr. James R.</p><p class="text-zinc-500 text-sm">Dental clinic · Texas</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"I sell coaching through Instagram. The audit flagged my link-in-bio and highlight order — DMs asking for pricing went up <strong class="text-white">34%</strong> after I applied the checklist."</p><p class="review-tag mb-1">Instagram · social profile</p><p class="text-white font-semibold text-sm">Elena V.</p><p class="text-zinc-500 text-sm">Business coach · Miami</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 stars">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"We only had a Facebook page, no real site. Still got a full PDF — fixed our menu photos and hours clarity and walk-ins increased <strong class="text-white">19% in three weeks</strong>."</p><p class="review-tag mb-1">Facebook · social profile</p><p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p><p class="text-zinc-500 text-sm">Neighborhood café · Chicago</p></article>',
                     sampleKicker: "Sample extract",
                     sampleTitle: "This is what lands in your inbox",
                     sampleSub: "Below: the PDF you get by email, plus a pinned customer extract from a real audit. Full Titan PDF = <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} pages</strong>, <strong class='text-zinc-200'>11 sections</strong>, <strong class='text-zinc-200'>15 ranked leaks</strong>, and <strong class='text-zinc-200'>15 fixes</strong>.",
@@ -642,7 +643,7 @@ function getLandingHTML() {
                     compareFoot: "La mayoría empieza con Lite y sube a Titán cuando ve cuánto falta por descubrir.",
                     reviewsTitle: "Confianza de tiendas y creadores",
                     reviewsSub: "Opiniones reales de distintos giros — web, servicios locales y perfiles sociales.",
-                    reviewsGrid: '<article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Arreglamos tres cosas en la ficha de producto (sección IX) y los pedidos personalizados subieron <strong class="text-white">28% en dos semanas</strong>. Mejor que esperar cotización de agencia."</p><p class="review-tag mb-1">E-commerce · sitio web</p><p class="text-white font-semibold text-sm">Sarah M.</p><p class="text-zinc-500 text-xs">Productos para bebé · US</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Nuestra página de reservas se veía bien. El reporte mostró por qué no llamaban — reescribimos el hero y las citas online subieron <strong class="text-white">41% en un mes</strong>."</p><p class="review-tag mb-1">Servicios locales · sitio web</p><p class="text-white font-semibold text-sm">Dr. James R.</p><p class="text-zinc-500 text-xs">Clínica dental · Texas</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Vendo coaching por Instagram. La auditoría señaló mi link en bio y el orden de highlights — los DM pidiendo precio subieron <strong class="text-white">34%</strong> tras aplicar la lista."</p><p class="review-tag mb-1">Instagram · perfil social</p><p class="text-white font-semibold text-sm">Elena V.</p><p class="text-zinc-500 text-xs">Coach de negocios · Miami</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Solo teníamos página de Facebook, sin web. Igual recibimos el PDF — arreglamos fotos del menú y horarios y las visitas subieron <strong class="text-white">19% en tres semanas</strong>."</p><p class="review-tag mb-1">Facebook · perfil social</p><p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p><p class="text-zinc-500 text-xs">Café de barrio · Chicago</p></article>',
+                    reviewsGrid: '<article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Arreglamos tres cosas en la ficha de producto (sección IX) y los pedidos personalizados subieron <strong class="text-white">28% en dos semanas</strong>. Mejor que esperar cotización de agencia."</p><p class="review-tag mb-1">E-commerce · sitio web</p><p class="text-white font-semibold text-sm">Sarah M.</p><p class="text-zinc-500 text-sm">Productos para bebé · US</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Nuestra página de reservas se veía bien. El reporte mostró por qué no llamaban — reescribimos el hero y las citas online subieron <strong class="text-white">41% en un mes</strong>."</p><p class="review-tag mb-1">Servicios locales · sitio web</p><p class="text-white font-semibold text-sm">Dr. James R.</p><p class="text-zinc-500 text-sm">Clínica dental · Texas</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Vendo coaching por Instagram. La auditoría señaló mi link en bio y el orden de highlights — los DM pidiendo precio subieron <strong class="text-white">34%</strong> tras aplicar la lista."</p><p class="review-tag mb-1">Instagram · perfil social</p><p class="text-white font-semibold text-sm">Elena V.</p><p class="text-zinc-500 text-sm">Coach de negocios · Miami</p></article><article class="review-card"><p class="stars mb-3" aria-label="5 estrellas">★★★★★</p><p class="text-zinc-200 text-sm leading-relaxed mb-4">"Solo teníamos página de Facebook, sin web. Igual recibimos el PDF — arreglamos fotos del menú y horarios y las visitas subieron <strong class="text-white">19% en tres semanas</strong>."</p><p class="review-tag mb-1">Facebook · perfil social</p><p class="text-white font-semibold text-sm">Tom &amp; Ana K.</p><p class="text-zinc-500 text-sm">Café de barrio · Chicago</p></article>',
                     sampleKicker: "Extracto de muestra",
                     sampleTitle: "Esto es lo que llega a tu correo",
                     sampleSub: "Abajo: el PDF que recibes por email, más un extracto fijado de una auditoría real. Reporte Titán completo = <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} páginas</strong>, <strong class='text-zinc-200'>11 secciones</strong>, <strong class='text-zinc-200'>15 fugas rankeadas</strong> y <strong class='text-zinc-200'>15 correcciones</strong>.",
