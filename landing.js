@@ -91,9 +91,10 @@ function getLandingHTML() {
         <!-- HERO -->
         <section class="pt-24 pb-12 md:pt-32 md:pb-16 px-4 md:px-6">
             <div class="max-w-4xl mx-auto text-center">
-                <p id="hero-badge" class="inline-block text-xs font-bold uppercase tracking-widest text-emerald-500 bg-emerald-950/40 border border-emerald-500/25 px-3 py-1 rounded-full mb-6">Page review for shop owners · no login</p>
-                <h1 id="hero-title" class="text-huge text-white mb-5">Your page is losing sales <span class="text-emerald-500">right now.</span></h1>
-                <p id="hero-sub" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-8">Share your website or social page — we review it the way a new customer would. You get a PDF by email that shows how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into sales. Just your link — no passwords or complicated setup.</p>
+                <p id="hero-badge" class="inline-block text-xs font-bold uppercase tracking-widest text-emerald-500 bg-emerald-950/40 border border-emerald-500/25 px-3 py-1 rounded-full mb-6">Independent page review · no login</p>
+                <h1 id="hero-title" class="text-huge text-white mb-5">Find out why your page is <span class="text-emerald-500">losing sales</span></h1>
+                <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-5">PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.</p>
+                <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-8">When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.</p>
                 <div class="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-full px-5 py-2 mb-8">
                     <span id="hero-price-label" class="text-zinc-400 text-sm">Titan Report</span>
                     <span class="text-2xl font-black text-white">$199</span>
@@ -348,9 +349,10 @@ function getLandingHTML() {
                 en: {
                     pageTitle: "PredictaCore | Find why your page loses customers",
                     navTitan: "Get Titan — $199",
-                    heroBadge: "Page review for shop owners · no login",
-                    heroTitle: "Your page is losing sales <span class='text-emerald-500'>right now.</span>",
-                    heroSub: "Share your website or social page — we review it the way a new customer would. You get a PDF by email that shows how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into sales. Just your link — no passwords or complicated setup.",
+                    heroBadge: "Independent page review · no login",
+                    heroTitle: "Find out why your page is <span class='text-emerald-500'>losing sales</span>",
+                    heroValue: "PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.",
+                    heroAsk: "When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.",
                     heroPriceLabel: "Titan Report",
                     heroPriceNote: "intro · one-time",
                     heroCtaTitan: "Get Titan Report — $199",
@@ -434,9 +436,10 @@ function getLandingHTML() {
                 es: {
                     pageTitle: "PredictaCore | Descubre por qué tu página pierde clientes",
                     navTitan: "Obtener Titán — $199",
-                    heroBadge: "Revisión de tu página · sin login",
-                    heroTitle: "Tu página está perdiendo ventas <span class='text-emerald-500'>ahora mismo.</span>",
-                    heroSub: "Comparte tu web o tu página de Instagram, Facebook o TikTok — la revisamos como la vería un cliente nuevo. Te enviamos un PDF por correo con: cómo se ve tu página, qué tan fácil es encontrarte en Google, cómo te comparas con la competencia, qué hace que la gente se vaya sin comprar, qué corregir primero y un plan sencillo de 21 días para vender más. Solo tu enlace — sin contraseñas ni configuraciones complicadas.",
+                    heroBadge: "Revisión independiente de tu página · sin login",
+                    heroTitle: "Descubre por qué tu página <span class='text-emerald-500'>pierde ventas</span>",
+                    heroValue: "PredictaCore revisa tu web o perfil social público como lo haría un visitante por primera vez — y te envía un PDF claro por correo. Verás cómo se ve tu página, qué tan fácil es encontrarte en Google, cómo te comparas con la competencia, qué hace que la gente se vaya sin comprar, qué corregir primero y un plan sencillo de 21 días para convertir más visitas en clientes.",
+                    heroAsk: "Cuando quieras, comparte tu enlace abajo — tu web o un perfil de Instagram, Facebook o TikTok. Sin contraseñas ni configuraciones complicadas.",
                     heroPriceLabel: "Reporte Titán",
                     heroPriceNote: "intro · pago único",
                     heroCtaTitan: "Obtener Reporte Titán — $199",
@@ -532,7 +535,8 @@ function getLandingHTML() {
                 if (d.pageTitle) document.title = d.pageTitle;
 
                 const textMap = {
-                    'nav-titan': d.navTitan, 'hero-badge': d.heroBadge, 'hero-sub': d.heroSub,
+                    'nav-titan': d.navTitan, 'hero-badge': d.heroBadge,
+                    'hero-value': d.heroValue, 'hero-ask': d.heroAsk,
                     'hero-price-label': d.heroPriceLabel, 'hero-price-note': d.heroPriceNote,
                     'hero-cta-titan': d.heroCtaTitan, 'hero-cta-lite': d.heroCtaLite, 'hero-trust': d.heroTrust,
                     'sample-kicker': d.sampleKicker, 'sample-title': d.sampleTitle, 'sample-sub': d.sampleSub,
