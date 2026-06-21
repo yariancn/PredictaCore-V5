@@ -87,6 +87,12 @@ function getLandingHTML() {
             .customer-extract-pin { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.75rem 1rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #27272a; }
             .customer-extract-label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #10b981; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); padding: 0.35rem 0.65rem; border-radius: 9999px; white-space: nowrap; }
             .customer-extract-note { flex: 1; min-width: 12rem; font-size: 0.8125rem; line-height: 1.5; color: #a1a1aa; margin: 0; }
+            .extract-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-bottom: 1.25rem; }
+            @media (min-width: 768px) { .extract-metrics { grid-template-columns: repeat(4, 1fr); } }
+            .extract-metric { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.22); border-radius: 0.5rem; padding: 0.7rem 0.75rem; text-align: center; }
+            .extract-metric-value { font-size: 1.125rem; font-weight: 800; color: #34d399; line-height: 1.2; font-family: 'JetBrains Mono', monospace; }
+            .extract-metric-label { font-size: 0.625rem; color: #71717a; text-transform: uppercase; letter-spacing: 0.07em; margin-top: 0.35rem; line-height: 1.35; }
+            .extract-metric-sub { font-size: 0.625rem; color: #52525b; margin-top: 0.2rem; }
             #sticky-cta { transform: translateY(100%); transition: transform 0.3s ease; }
             #sticky-cta.visible { transform: translateY(0); }
         </style>
@@ -113,7 +119,7 @@ function getLandingHTML() {
                 <h1 id="hero-title" class="text-huge text-white mb-5">Find out why your page is <span class="text-emerald-500">losing sales</span></h1>
                 <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-6">PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.</p>
                 <a href="#buy-section" id="hero-cta-mid" class="inline-block mb-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_24px_rgba(16,185,129,0.22)]">Get Titan Report — $199</a>
-                <p id="hero-price-anchor" class="text-sm md:text-base text-emerald-400 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't spend $3,000 on an agency for a report in weeks — we deliver yours in ~60 minutes. No fluff — hard scores, ranked leaks, and fixes only.</p>
+                <p id="hero-price-anchor" class="text-sm md:text-base text-emerald-400 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't spend $3,000 on an agency for a report in weeks to deliver — we deliver yours in ~60 minutes. No fluff — hard scores, ranked leaks, and fixes only.</p>
                 <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-6">When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.</p>
                 <div class="inline-flex flex-col sm:flex-row items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 mb-6">
                     <div class="inline-flex items-center gap-2">
@@ -167,8 +173,31 @@ function getLandingHTML() {
                 <div class="customer-extract-box">
                     <div class="customer-extract-pin">
                         <span id="sample-extract-label" class="customer-extract-label">📌 Customer extract</span>
-                        <p id="sample-extract-note" class="customer-extract-note">Real excerpt from a live Titan Report — custom baby bedding shop (US e-commerce). Brand and URL omitted; scores and findings unchanged.</p>
+                        <p id="sample-extract-note" class="customer-extract-note">Don't spend $3,000 on an agency for a report in weeks.<br><span class="text-zinc-300">Custom baby bedding Shopify store (US e-commerce). Scores and findings are real.</span></p>
                     </div>
+                    <div id="sample-extract-metrics" class="extract-metrics">
+                        <div class="extract-metric">
+                            <p class="extract-metric-value">+19%</p>
+                            <p id="sample-metric-1-label" class="extract-metric-label">Add-to-cart · personalized SKUs</p>
+                            <p id="sample-metric-1-sub" class="extract-metric-sub">After shipping-date badge (fix #09)</p>
+                        </div>
+                        <div class="extract-metric">
+                            <p class="extract-metric-value">61 → 76</p>
+                            <p id="sample-metric-2-label" class="extract-metric-label">Google SEO score</p>
+                            <p id="sample-metric-2-sub" class="extract-metric-sub">H1 + meta trim · 5 weeks</p>
+                        </div>
+                        <div class="extract-metric">
+                            <p class="extract-metric-value">−13%</p>
+                            <p id="sample-metric-3-label" class="extract-metric-label">Bounce rate · product pages</p>
+                            <p id="sample-metric-3-sub" class="extract-metric-sub">Snippet + headline fixes</p>
+                        </div>
+                        <div class="extract-metric">
+                            <p class="extract-metric-value">4.3s → 2.8s</p>
+                            <p id="sample-metric-4-label" class="extract-metric-label">Mobile load time</p>
+                            <p id="sample-metric-4-sub" class="extract-metric-sub">Image compression pass</p>
+                        </div>
+                    </div>
+                    <p id="sample-metrics-foot" class="text-[11px] text-zinc-500 text-center mb-4 leading-relaxed">Measured ~6 weeks after applying section IX fixes · same Shopify store as extract above</p>
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start mb-6">
                     <div class="lg:col-span-2 report-card p-6 md:p-7">
                         <div class="flex items-center gap-2 mb-5 pb-4 border-b border-zinc-200">
@@ -176,7 +205,7 @@ function getLandingHTML() {
                                 <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             </div>
                             <div>
-                                <p id="sample-case" class="font-bold text-zinc-900 text-sm leading-tight">Custom baby bedding · e-commerce</p>
+                                <p id="sample-case" class="font-bold text-zinc-900 text-sm leading-tight">Custom baby bedding · Shopify</p>
                                 <p id="sample-industry" class="text-xs text-zinc-500">Personalized milestone products · US market</p>
                             </div>
                         </div>
@@ -475,7 +504,7 @@ function getLandingHTML() {
                     heroCtaTitan: "Get Titan Report — $199",
                     heroCtaMid: "Get Titan Report — $199",
                     heroCtaLite: "Or start with a free Lite scan →",
-                    heroPriceAnchor: "Don't spend $3,000 on an agency for a report in weeks — we deliver yours in ~60 minutes. No fluff — hard scores, ranked leaks, and fixes only.",
+                    heroPriceAnchor: "Don't spend $3,000 on an agency for a report in weeks to deliver — we deliver yours in ~60 minutes. No fluff — hard scores, ranked leaks, and fixes only.",
                     heroDelivery: "PDF delivered from ${supportEmail} · usually within 60 minutes",
                     heroTrust: "One asset per scan · web or one Instagram, Facebook, or TikTok profile",
                     pdfMockTag: "Forensic conversion report",
@@ -500,8 +529,17 @@ function getLandingHTML() {
                     sampleTitle: "This is what lands in your inbox",
                     sampleSub: "Below: the PDF you get by email, plus a pinned customer extract from a real audit. Full Titan PDF = <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} pages</strong>, <strong class='text-zinc-200'>11 sections</strong>, <strong class='text-zinc-200'>15 ranked leaks</strong>, and <strong class='text-zinc-200'>15 fixes</strong>.",
                     sampleExtractLabel: "📌 Customer extract",
-                    sampleExtractNote: "Real excerpt from a live Titan Report — custom baby bedding shop (US e-commerce). Brand and URL omitted; scores and findings unchanged.",
-                    sampleCase: "Custom baby bedding · e-commerce",
+                    sampleExtractNote: "Don't spend $3,000 on an agency for a report in weeks.<br><span class='text-zinc-300'>Custom baby bedding Shopify store (US e-commerce). Scores and findings are real.</span>",
+                    sampleMetric1Label: "Add-to-cart · personalized SKUs",
+                    sampleMetric1Sub: "After shipping-date badge (fix #09)",
+                    sampleMetric2Label: "Google SEO score",
+                    sampleMetric2Sub: "H1 + meta trim · 5 weeks",
+                    sampleMetric3Label: "Bounce rate · product pages",
+                    sampleMetric3Sub: "Snippet + headline fixes",
+                    sampleMetric4Label: "Mobile load time",
+                    sampleMetric4Sub: "Image compression pass",
+                    sampleMetricsFoot: "Measured ~6 weeks after applying section IX fixes · same Shopify store as extract above",
+                    sampleCase: "Custom baby bedding · Shopify",
                     sampleIndustry: "Personalized milestone products · US market",
                     sampleCaption: "Real scores from a live audit — same checks we run on your page.",
                     sampleLeakH1: "What scares buyers · #04",
@@ -584,7 +622,7 @@ function getLandingHTML() {
                     heroCtaTitan: "Obtener Reporte Titán — $199",
                     heroCtaMid: "Obtener Reporte Titán — $199",
                     heroCtaLite: "O empezar con escaneo Lite gratis →",
-                    heroPriceAnchor: "No gastes $3,000 en una agencia por un reporte en semanas — el tuyo en ~60 minutos. Sin relleno: solo datos duros, fugas rankeadas y acciones concretas.",
+                    heroPriceAnchor: "No gastes $3,000 en una agencia por un reporte que tarda semanas en entregarse — el tuyo en ~60 minutos. Sin relleno: solo datos duros, fugas rankeadas y acciones concretas.",
                     heroDelivery: "PDF enviado desde ${supportEmail} · normalmente en 60 minutos",
                     heroTrust: "Un activo por escaneo · web o un perfil de Instagram, Facebook o TikTok",
                     pdfMockTag: "Reporte forense de conversión",
@@ -609,8 +647,17 @@ function getLandingHTML() {
                     sampleTitle: "Esto es lo que llega a tu correo",
                     sampleSub: "Abajo: el PDF que recibes por email, más un extracto fijado de una auditoría real. Reporte Titán completo = <strong class='text-zinc-200'>${TITAN_REPORT_PAGE_COUNT} páginas</strong>, <strong class='text-zinc-200'>11 secciones</strong>, <strong class='text-zinc-200'>15 fugas rankeadas</strong> y <strong class='text-zinc-200'>15 correcciones</strong>.",
                     sampleExtractLabel: "📌 Extracto de cliente",
-                    sampleExtractNote: "Extracto real de un Reporte Titán en vivo — tienda de ropa de cuna personalizada (e-commerce US). Marca y URL omitidas; puntuaciones y hallazgos intactos.",
-                    sampleCase: "Ropa de cuna personalizada · e-commerce",
+                    sampleExtractNote: "No gastes $3,000 en una agencia por un reporte en semanas.<br><span class='text-zinc-300'>Tienda Shopify de ropa de cuna personalizada (e-commerce US). Puntuaciones y hallazgos reales.</span>",
+                    sampleMetric1Label: "Add-to-cart · SKUs personalizados",
+                    sampleMetric1Sub: "Tras badge de fecha de envío (fix #09)",
+                    sampleMetric2Label: "Score SEO Google",
+                    sampleMetric2Sub: "H1 + meta recortada · 5 semanas",
+                    sampleMetric3Label: "Rebote · fichas de producto",
+                    sampleMetric3Sub: "Snippet + titular corregidos",
+                    sampleMetric4Label: "Carga móvil",
+                    sampleMetric4Sub: "Compresión de imágenes",
+                    sampleMetricsFoot: "Medido ~6 semanas tras aplicar fixes de la sección IX · misma tienda Shopify del extracto",
+                    sampleCase: "Ropa de cuna personalizada · Shopify",
                     sampleIndustry: "Productos milestone personalizados · mercado US",
                     sampleCaption: "Puntuaciones reales de una auditoría en vivo — las mismas que aplicamos a tu página.",
                     sampleLeakH1: "Qué ahuyenta compradores · #04",
@@ -707,7 +754,12 @@ function getLandingHTML() {
                     'compare-th-feature': d.compareThFeature, 'compare-th-lite': d.compareThLite, 'compare-th-titan': d.compareThTitan,
                     'reviews-title': d.reviewsTitle, 'reviews-sub': d.reviewsSub,
                     'sample-kicker': d.sampleKicker, 'sample-title': d.sampleTitle,
-                    'sample-extract-label': d.sampleExtractLabel, 'sample-extract-note': d.sampleExtractNote,
+                    'sample-extract-label': d.sampleExtractLabel,
+                    'sample-metrics-foot': d.sampleMetricsFoot,
+                    'sample-metric-1-label': d.sampleMetric1Label, 'sample-metric-1-sub': d.sampleMetric1Sub,
+                    'sample-metric-2-label': d.sampleMetric2Label, 'sample-metric-2-sub': d.sampleMetric2Sub,
+                    'sample-metric-3-label': d.sampleMetric3Label, 'sample-metric-3-sub': d.sampleMetric3Sub,
+                    'sample-metric-4-label': d.sampleMetric4Label, 'sample-metric-4-sub': d.sampleMetric4Sub,
                     'sample-case': d.sampleCase, 'sample-industry': d.sampleIndustry, 'sample-caption': d.sampleCaption,
                     'sample-foot': d.sampleFoot, 'sample-seo-title': d.sampleSeoTitle, 'sample-seo-note': d.sampleSeoNote,
                     'sample-ai-title': d.sampleAiTitle, 'sample-ai-note': d.sampleAiNote,
@@ -734,6 +786,7 @@ function getLandingHTML() {
 
                 document.getElementById('hero-title').innerHTML = d.heroTitle;
                 document.getElementById('sample-sub').innerHTML = d.sampleSub;
+                document.getElementById('sample-extract-note').innerHTML = d.sampleExtractNote;
                 document.getElementById('compare-sub').innerHTML = d.compareSub;
                 if (d.pdfMockToc) document.getElementById('pdf-mock-toc').innerHTML = d.pdfMockToc;
                 if (d.compareBody) document.getElementById('compare-body').innerHTML = d.compareBody;
