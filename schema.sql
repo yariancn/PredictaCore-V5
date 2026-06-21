@@ -140,6 +140,28 @@ CREATE TABLE IF NOT EXISTS jobs_auditoria (
 
 CREATE INDEX IF NOT EXISTS idx_jobs_estado ON jobs_auditoria(estado);
 
+-- ─── Lite → Titan upsell follow-ups (day 1 + weekly) ───────────────────────
+CREATE TABLE IF NOT EXISTS lite_upsell_followups (
+    id                  SERIAL PRIMARY KEY,
+    email               VARCHAR(255) NOT NULL,
+    url_sitio           TEXT NOT NULL,
+    lang                VARCHAR(5) NOT NULL DEFAULT 'en',
+    job_id              VARCHAR(100),
+    leaks_json          JSONB NOT NULL DEFAULT '[]',
+    metrics_json        JSONB NOT NULL DEFAULT '{}',
+    titan_acquired      BOOLEAN NOT NULL DEFAULT FALSE,
+    cancelled           BOOLEAN NOT NULL DEFAULT FALSE,
+    lite_sent_at        TIMESTAMPTZ,
+    day1_sent_at        TIMESTAMPTZ,
+    last_weekly_sent_at TIMESTAMPTZ,
+    next_weekly_at      TIMESTAMPTZ,
+    creado_en           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (email, url_sitio)
+);
+
+CREATE INDEX IF NOT EXISTS idx_lite_upsell_pending ON lite_upsell_followups (titan_acquired, cancelled, lite_sent_at);
+CREATE INDEX IF NOT EXISTS idx_lite_upsell_weekly ON lite_upsell_followups (next_weekly_at) WHERE NOT titan_acquired AND NOT cancelled;
+
 COMMIT;
 
 -- ─── Verificación post-migración ───────────────────────────────────────────

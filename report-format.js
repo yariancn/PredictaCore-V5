@@ -367,19 +367,25 @@ function buildReportDeliveryEmailHtml(lang, { title, intro, portalUrl }) {
   <p style="font-size:11px;color:#71717a;text-align:center;margin-top:20px;">PredictaCore · predictacore.ai</p>`;
 }
 
-function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetUrl } = {}) {
+function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetUrl, leaks, metrics, variant } = {}) {
     const es = locale.code.startsWith('es');
     if (modo === 'LITE') {
         const lang = es ? 'es' : 'en';
-        const url = titanUrl || '';
+        const { getLiteReportEmailCopy } = require('./lite-upsell');
+        const mail = getLiteReportEmailCopy({
+            lang,
+            titanUrl: titanUrl || '',
+            targetUrl,
+            leaks: leaks || [],
+            metrics: metrics || {},
+            variant: variant || 'initial',
+        });
         return {
-            subject: es
-                ? 'PredictaCore — Encontramos fugas en tu página (desbloquea las 15 restantes)'
-                : 'PredictaCore — We found leaks on your page (unlock the other 12)',
-            preheader: getLiteEmailPreheader(lang),
+            subject: mail.subject,
+            preheader: mail.preheader,
             filename: buildReportFilename('LITE', targetUrl),
-            text: buildLiteUpsellEmailText(lang, { titanUrl: url, targetUrl }),
-            html: buildLiteUpsellEmailHtml(lang, { titanUrl: url, targetUrl }),
+            text: mail.text,
+            html: mail.html,
         };
     }
     if (modo === 'DELTA') {

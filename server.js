@@ -67,6 +67,21 @@ const {
 } = require('./report-format');
 const { stageUsesVision } = require('./forensics');
 const { validateSection, stripFinancialClaims, SKIP_MONEY_CHECK } = require('./validator');
+const {
+    extractLiteLeaksForUpsell,
+    buildUpsellTitanUrl,
+    getLiteReportEmailCopy,
+    getSamplePreviewLeaks,
+} = require('./lite-upsell');
+const {
+    registerLiteFollowup,
+    markTitanAcquiredForEmail,
+    emailHasTitanPurchase,
+    getDueDay1Followups,
+    getDueWeeklyFollowups,
+    markDay1Sent,
+    markWeeklySent,
+} = require('./db/lite-upsell');
 
 const {
     BRAND,
@@ -387,6 +402,8 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
             refCode,
             subscriptionStatus,
         });
+
+        await markTitanAcquiredForEmail(email);
 
         try {
             await sendTitanActivationEmail(email, lang, customerId);
@@ -1079,7 +1096,7 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
             return res.status(400).json({ error: 'Valid email required' });
         }
 
-        const allowed = ['activation', 'titan', 'delta', 'lite', 'all'];
+        const allowed = ['activation', 'titan', 'delta', 'lite', 'lite-day1', 'lite-weekly', 'lite-followups', 'all'];
         const kind = String(type || 'all').toLowerCase();
         if (!allowed.includes(kind)) {
             return res.status(400).json({ error: `type must be one of: ${allowed.join(', ')}` });
@@ -1103,7 +1120,12 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
         } catch (_) { /* optional */ }
 
         const targetUrl = normalizeUrl(dna) || 'https://example.com';
-        const types = kind === 'all' ? ['activation', 'titan', 'delta', 'lite'] : [kind];
+        const sampleLeaks = getSamplePreviewLeaks(langCode);
+        const sampleMetrics = { seoScore: 61, aiScore: 85, loadTimeSec: 4.3 };
+        let types;
+        if (kind === 'all') types = ['activation', 'titan', 'delta', 'lite'];
+        else if (kind === 'lite-followups') types = ['lite', 'lite-day1', 'lite-weekly'];
+        else types = [kind];
         const sent = [];
 
         for (const t of types) {
@@ -1124,15 +1146,31 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
                     text: `${mail.text}\n\n${previewNote}`,
                     html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html, mail.preheader) : null,
                 };
-            } else if (t === 'lite') {
-                const titanUrl = buildTitanUpgradeUrl({ email: normalizedEmail, dna: targetUrl, lang: langCode });
-                const mail = getReportEmailCopy('LITE', reportLocale, { titanUrl, targetUrl });
+            } else if (t === 'lite' || t === 'lite-day1' || t === 'lite-weekly') {
+                const variant = t === 'lite-day1' ? 'day1' : t === 'lite-weekly' ? 'weekly' : 'initial';
+                const campaign = t === 'lite' ? 'lite-preview' : t.replace('lite-', 'lite-');
+                const titanUrl = buildUpsellTitanUrl({
+                    email: normalizedEmail,
+                    dna: targetUrl,
+                    lang: langCode,
+                    campaign,
+                });
+                const mail = getLiteReportEmailCopy({
+                    lang: langCode,
+                    titanUrl,
+                    targetUrl,
+                    leaks: sampleLeaks,
+                    metrics: sampleMetrics,
+                    variant,
+                });
                 payload = {
                     subject: mail.subject,
                     text: `${mail.text}\n\n${previewNote}`,
-                    html: mail.html ? wrapPredictaCoreEmail(langCode, mail.html, mail.preheader) : null,
+                    html: wrapPredictaCoreEmail(langCode, mail.html, mail.preheader),
                 };
             }
+
+            if (!payload) continue;
 
             const { error } = await resend.emails.send({
                 from: getResendFrom(),
@@ -1180,6 +1218,56 @@ app.post('/start-lite', async (req, res) => {
     } catch (err) {
         console.error('!!! /start-lite:', err?.message || err);
         res.status(400).json({ error: err.message || 'Could not start scan' });
+    }
+});
+
+app.get('/lite-status', async (req, res) => {
+    try {
+        const jobId = String(req.query.job_id || '').trim();
+        const email = String(req.query.email || '').trim().toLowerCase();
+        if (!jobId || !email) {
+            return res.status(400).json({ error: 'job_id and email required' });
+        }
+
+        let job = await getJobProgress(jobId);
+        if (!job && jobsMemoria[jobId]) {
+            const mem = jobsMemoria[jobId];
+            job = {
+                email: mem.email,
+                modo: mem.modo || 'LITE',
+                estado: mem.status === 'completed' ? 'completed' : 'running',
+                progress: mem.progress || {},
+                meta: {
+                    dossier: mem.dossier,
+                    reportLocale: mem.reportLocale,
+                    captures: mem.captures,
+                },
+            };
+        }
+
+        if (!job || job.email?.toLowerCase() !== email || job.modo !== 'LITE') {
+            return res.status(404).json({ error: 'Job not found' });
+        }
+
+        const dossier = job.meta?.dossier || '';
+        const reportLocale = job.meta?.reportLocale || getLocaleFromDossier(dossier);
+        const hasLeaks = job.estado === 'completed' || job.progress?.FUGAS_LITE;
+        const leaks = hasLeaks
+            ? extractLiteLeaksForUpsell(job.progress, dossier, reportLocale)
+            : [];
+
+        res.json({
+            status: job.estado,
+            leaks,
+            metrics: {
+                seoScore: job.meta?.captures?.seoScore ?? null,
+                aiScore: job.meta?.captures?.aiScore ?? null,
+                loadTimeSec: job.meta?.captures?.loadTimeSec ?? null,
+            },
+        });
+    } catch (err) {
+        console.error('!!! /lite-status:', err?.message || err);
+        res.status(500).json({ error: 'Could not load job status' });
     }
 });
 
@@ -1440,6 +1528,37 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
 
         await enviarReportePorCorreo(jobId, jobsMemoria[jobId].email, targetUrl, modo);
 
+        if (modo === 'LITE') {
+            const reportLocale = jobsMemoria[jobId].reportLocale || getLocaleFromDossier(jobsMemoria[jobId].dossier);
+            const langCode = reportLocale.code.startsWith('es') ? 'es' : 'en';
+            const leaks = extractLiteLeaksForUpsell(
+                jobsMemoria[jobId].progress,
+                jobsMemoria[jobId].dossier,
+                reportLocale,
+            );
+            const cap = jobsMemoria[jobId].captures || {};
+            await saveReporte({
+                email: jobsMemoria[jobId].email,
+                urlSitio: targetUrl,
+                tipo: 'lite',
+                jobId,
+                secciones: jobsMemoria[jobId].progress,
+                dossier: jobsMemoria[jobId].dossier,
+            });
+            await registerLiteFollowup({
+                email: jobsMemoria[jobId].email,
+                urlSitio: targetUrl,
+                lang: langCode,
+                jobId,
+                leaks,
+                metrics: {
+                    seoScore: cap.seoScore,
+                    aiScore: cap.aiScore,
+                    loadTimeSec: cap.loadTimeSec,
+                },
+            });
+        }
+
         if (modo === 'TITAN') {
             await saveReporte({
                 email: jobsMemoria[jobId].email,
@@ -1509,8 +1628,26 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
 
         if (modo === 'LITE') {
             htmlBase = getHTMLLite();
-            liteTitanUrl = buildTitanUpgradeUrl({ email: emailDestino, dna: targetUrl, lang: langCode });
-            const mail = getReportEmailCopy('LITE', reportLocale, { titanUrl: liteTitanUrl, targetUrl });
+            const progress = jobsMemoria[jobId]?.progress || jobDb?.progress || {};
+            const leaks = extractLiteLeaksForUpsell(progress, dossier, reportLocale);
+            const metrics = {
+                seoScore: captures.seoScore,
+                aiScore: captures.aiScore,
+                loadTimeSec: captures.loadTimeSec,
+            };
+            liteTitanUrl = buildUpsellTitanUrl({
+                email: emailDestino,
+                dna: targetUrl,
+                lang: langCode,
+                campaign: 'lite-pdf',
+            });
+            const mail = getReportEmailCopy('LITE', reportLocale, {
+                titanUrl: liteTitanUrl,
+                targetUrl,
+                leaks,
+                metrics,
+                variant: 'initial',
+            });
             subject = mail.subject;
             filename = mail.filename;
             textBody = mail.text;
@@ -1648,9 +1785,10 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             if (titanUpgradeUrl) {
                 const cta = document.createElement('div');
                 cta.className = 'lite-titan-cta';
+                const ctaBtn = htmlLang === 'es' ? 'Obtener Reporte Titán completo' : 'Get Full Titan Report';
                 cta.innerHTML = '<h3>' + (ui.liteCtaTitle || 'Titan') + '</h3>'
                     + '<p>' + (ui.liteCtaBody || '') + '</p>'
-                    + '<p><strong>' + titanUpgradeUrl + '</strong></p>';
+                    + '<p style="margin-top:14px;text-align:center;"><a href="' + titanUpgradeUrl + '" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">' + ctaBtn + '</a></p>';
                 reporte.appendChild(cta);
             }
         }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);
@@ -1682,9 +1820,98 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
     }
 }
 
+async function processLiteUpsellFollowups() {
+    if (!process.env.RESEND_API_KEY) return;
+
+    const day1Rows = await getDueDay1Followups(30);
+    for (const row of day1Rows) {
+        try {
+            if (await emailHasTitanPurchase(row.email)) {
+                await markTitanAcquiredForEmail(row.email);
+                continue;
+            }
+            const titanUrl = buildUpsellTitanUrl({
+                email: row.email,
+                dna: row.url_sitio,
+                lang: row.lang,
+                campaign: 'lite-day1',
+            });
+            const mail = getLiteReportEmailCopy({
+                lang: row.lang,
+                titanUrl,
+                targetUrl: row.url_sitio,
+                leaks: row.leaks_json || [],
+                metrics: row.metrics_json || {},
+                variant: 'day1',
+            });
+            const { error } = await resend.emails.send({
+                from: getResendFrom(),
+                to: row.email,
+                subject: mail.subject,
+                text: mail.text,
+                html: wrapPredictaCoreEmail(row.lang, mail.html, mail.preheader),
+            });
+            if (error) throw new Error(error.message);
+            await markDay1Sent(row.id);
+            console.log(`>>> [LITE UPSELL] Day-1 follow-up sent to ${row.email}`);
+        } catch (err) {
+            console.error(`!!! [LITE UPSELL] Day-1 failed for ${row.email}:`, err.message);
+        }
+    }
+
+    const weeklyRows = await getDueWeeklyFollowups(30);
+    for (const row of weeklyRows) {
+        try {
+            if (await emailHasTitanPurchase(row.email)) {
+                await markTitanAcquiredForEmail(row.email);
+                continue;
+            }
+            const daysSinceLite = row.lite_sent_at
+                ? (Date.now() - new Date(row.lite_sent_at).getTime()) / 86400000
+                : 7;
+            const titanUrl = buildUpsellTitanUrl({
+                email: row.email,
+                dna: row.url_sitio,
+                lang: row.lang,
+                campaign: 'lite-weekly',
+            });
+            const mail = getLiteReportEmailCopy({
+                lang: row.lang,
+                titanUrl,
+                targetUrl: row.url_sitio,
+                leaks: row.leaks_json || [],
+                metrics: row.metrics_json || {},
+                variant: 'weekly',
+                daysSinceLite,
+            });
+            const { error } = await resend.emails.send({
+                from: getResendFrom(),
+                to: row.email,
+                subject: mail.subject,
+                text: mail.text,
+                html: wrapPredictaCoreEmail(row.lang, mail.html, mail.preheader),
+            });
+            if (error) throw new Error(error.message);
+            await markWeeklySent(row.id);
+            console.log(`>>> [LITE UPSELL] Weekly follow-up sent to ${row.email} (~${Math.round(daysSinceLite)}d since Lite)`);
+        } catch (err) {
+            console.error(`!!! [LITE UPSELL] Weekly failed for ${row.email}:`, err.message);
+        }
+    }
+}
+
 async function startServer() {
     await initDatabase();
     await markStaleRunningJobs(75);
+
+    processLiteUpsellFollowups().catch((err) => {
+        console.error('!!! [LITE UPSELL] Initial run failed:', err.message);
+    });
+    setInterval(() => {
+        processLiteUpsellFollowups().catch((err) => {
+            console.error('!!! [LITE UPSELL] Scheduled run failed:', err.message);
+        });
+    }, 30 * 60 * 1000);
 
     app.listen(port, '0.0.0.0', () => {
         console.log(`MOTOR UNIFICADO ONLINE - FASE 2 - Puerto ${port}`);

@@ -236,6 +236,7 @@ async function healthCheck() {
         const expected = [
             'webhook_eventos', 'afiliados', 'invitaciones', 'clientes',
             'ventas_comisiones', 'comisiones_recurrentes', 'reportes', 'jobs_auditoria',
+            'lite_upsell_followups',
         ];
         const missing = expected.filter((t) => !names.includes(t));
 

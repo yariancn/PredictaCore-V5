@@ -134,13 +134,14 @@ async function saveReporte({ email, urlSitio, tipo, jobId, secciones, dossier })
     const cliente = await getClienteByEmail(email);
     if (cliente) {
         clienteId = cliente.id;
-    } else if (tipo === 'titan' || tipo === 'delta') {
+    } else if (tipo === 'titan' || tipo === 'delta' || tipo === 'lite') {
         clienteId = await upsertCliente({
             email,
             urlSitio,
             stripeCustomerId: null,
             stripeSubscriptionId: null,
             refCode: null,
+            subscriptionStatus: tipo === 'lite' ? 'lite' : 'inactive',
         });
     }
 

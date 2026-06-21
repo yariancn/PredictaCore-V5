@@ -94,6 +94,9 @@ function getLandingHTML() {
             .extract-metric-label { font-size: 0.75rem; font-weight: 700; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.45rem; line-height: 1.4; }
             .extract-metric-sub { font-size: 0.875rem; color: #71717a; margin-top: 0.35rem; line-height: 1.45; }
             .extract-metrics-foot { font-size: 0.875rem; line-height: 1.55; color: #71717a; text-align: center; margin-bottom: 1.25rem; }
+            .upsell-leak-item { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.75rem; background: rgba(239,68,68,0.08); border-left: 3px solid #ef4444; border-radius: 0.375rem; }
+            .upsell-leak-num { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; color: #fca5a5; flex-shrink: 0; margin-top: 0.1rem; }
+            .upsell-leak-item p { font-size: 0.875rem; line-height: 1.5; color: #e4e4e7; margin: 0; text-align: left; }
             #sticky-cta { transform: translateY(100%); transition: transform 0.3s ease; }
             #sticky-cta.visible { transform: translateY(0); }
         </style>
@@ -440,9 +443,12 @@ function getLandingHTML() {
                     <h2 id="up-t" class="text-xl font-black text-white mb-2">Scan complete</h2>
                     <p class="text-zinc-400 text-sm mb-2" id="up-st">Successfully sent to <span id="sent-email" class="text-white font-bold"></span>.</p>
                     <p id="lite-queued-msg" class="text-emerald-500 text-sm font-semibold mb-4">Your Lite report is being generated and will arrive by email.</p>
-                    <p id="lite-eta-after" class="text-amber-500/90 text-sm mb-6">Check inbox and spam — delivery up to 60 minutes.</p>
+                    <p id="lite-eta-after" class="text-amber-500/90 text-sm mb-4">Check inbox and spam — delivery up to 60 minutes.</p>
+                    <p id="upsell-leaks-title" class="text-xs font-bold uppercase tracking-widest text-red-400 mb-3 text-left">Issues found in your Lite scan</p>
+                    <p id="upsell-leaks-wait" class="text-zinc-500 text-sm mb-4 text-left">Pulling your 3 critical leaks from the scan…</p>
+                    <div id="upsell-leaks" class="space-y-3 mb-4"></div>
                     <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-lg mb-6 text-left">
-                        <p id="box-text" class="text-sm text-zinc-300 leading-relaxed">Initial scan shows critical bottlenecks. The Titan Report finds all 15 leaks plus tactical fixes.</p>
+                        <p id="box-text" class="text-sm text-zinc-300 leading-relaxed">These leaks are still live on your page — every day unfixed you lose visitors who were ready to buy. Titan ranks all 15 and gives you step-by-step fixes.</p>
                     </div>
                     <button type="button" id="btn-titan-upsell" class="w-full bg-emerald-600 text-white font-black py-4 rounded-lg text-base uppercase tracking-wide">Get Full Titan Report — $199</button>
                 </div>
@@ -593,7 +599,10 @@ function getLandingHTML() {
                     liteEtaBefore: "Lite report by email once processing finishes (up to 60 min).",
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
                     upT: "Scan complete", upSt: "Successfully sent to",
-                    boxText: "Initial scan shows critical bottlenecks. The Titan Report finds all 15 leaks plus tactical fixes.",
+                    boxText: "These leaks are still live on your page — every day unfixed you lose visitors who were ready to buy. Titan ranks all 15 and gives you step-by-step fixes.",
+                    upsellLeaksTitle: "Issues found in your Lite scan",
+                    upsellLeaksWait: "Pulling your 3 critical leaks from the scan…",
+                    liteReadyMsg: "Lite PDF on its way to your inbox — these leaks are still costing you sales right now.",
                     liteQueued: "Your Lite report is being generated and will arrive by email.",
                     liteEtaAfter: "Check inbox and spam — delivery up to 60 minutes.",
                     footerText: "Consultant or agency? Join our audit partner network.",
@@ -711,7 +720,10 @@ function getLandingHTML() {
                     liteEtaBefore: "Reporte Lite por email al terminar (hasta 60 min).",
                     logInit: ">> INICIALIZANDO PREDICTACORE CORE...",
                     upT: "Escaneo completo", upSt: "Enviado correctamente a",
-                    boxText: "El escaneo inicial muestra cuellos de botella críticos. El Reporte Titán encuentra las 15 fugas y acciones tácticas.",
+                    boxText: "Estas fugas siguen activas en tu página — cada día sin corregir pierdes visitas listas para comprar. Titán rankea las 15 y te da correcciones paso a paso.",
+                    upsellLeaksTitle: "Fallas detectadas en tu escaneo Lite",
+                    upsellLeaksWait: "Extrayendo tus 3 fugas críticas del escaneo…",
+                    liteReadyMsg: "El PDF Lite va a tu correo — estas fugas ya te están costando ventas.",
                     liteQueued: "Tu reporte Lite se está generando y llegará por email.",
                     liteEtaAfter: "Revisa bandeja y spam — entrega hasta 60 min.",
                     footerText: "¿Consultor o agencia? Únete a nuestra red de partners.",
@@ -777,6 +789,7 @@ function getLandingHTML() {
                     'titan-eta-before': d.titanEtaBefore, 'lite-title': d.liteTitle, 'lite-sub': d.liteSub,
                     'btn-start': d.btnStart, 'lite-eta-before': d.liteEtaBefore, 'log-init': d.logInit,
                     'up-t': d.upT, 'box-text': d.boxText, 'lite-queued-msg': d.liteQueued,
+                    'upsell-leaks-title': d.upsellLeaksTitle, 'upsell-leaks-wait': d.upsellLeaksWait,
                     'lite-eta-after': d.liteEtaAfter, 'footer-text': d.footerText, 'checkout-overlay-title': d.checkoutOverlayTitle,
                     'checkout-overlay-sub': d.checkoutOverlaySub, 'sticky-btn': d.stickyBtn
                 };
@@ -903,7 +916,66 @@ function getLandingHTML() {
                 if (el) el.textContent = email;
             }
 
+            let litePollTimer = null;
+
+            function escapeHtmlLite(s) {
+                return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+
+            function renderUpsellLeaks(leaks) {
+                const list = document.getElementById('upsell-leaks');
+                const waitEl = document.getElementById('upsell-leaks-wait');
+                if (!list) return;
+                if (!leaks || !leaks.length) return;
+                list.innerHTML = leaks.map(function(leak) {
+                    return '<div class="upsell-leak-item"><span class="upsell-leak-num">#' + leak.index + '</span><p>' + escapeHtmlLite(leak.text) + '</p></div>';
+                }).join('');
+                if (waitEl) waitEl.classList.add('hidden-flow');
+            }
+
+            function pollLiteJob(jobId, email) {
+                const d = dictionary[currentLang];
+                let attempts = 0;
+                if (litePollTimer) clearInterval(litePollTimer);
+                const waitEl = document.getElementById('upsell-leaks-wait');
+                if (waitEl) waitEl.classList.remove('hidden-flow');
+                litePollTimer = setInterval(async function() {
+                    attempts += 1;
+                    try {
+                        const res = await fetch('/lite-status?job_id=' + encodeURIComponent(jobId) + '&email=' + encodeURIComponent(email));
+                        const data = await res.json().catch(function() { return {}; });
+                        if (data.leaks && data.leaks.length) {
+                            renderUpsellLeaks(data.leaks);
+                        }
+                        if (data.status === 'completed') {
+                            if (data.leaks && data.leaks.length) {
+                                document.getElementById('lite-queued-msg').innerText = d.liteReadyMsg;
+                            }
+                            clearInterval(litePollTimer);
+                            litePollTimer = null;
+                        } else if (data.status === 'failed') {
+                            if (waitEl) waitEl.innerText = d.scanError;
+                            clearInterval(litePollTimer);
+                            litePollTimer = null;
+                        }
+                    } catch (_) { /* retry */ }
+                    if (attempts >= 120) {
+                        if (waitEl) waitEl.innerText = d.liteQueued;
+                        clearInterval(litePollTimer);
+                        litePollTimer = null;
+                    }
+                }, 5000);
+            }
+
             function resetScanUi() {
+                if (litePollTimer) { clearInterval(litePollTimer); litePollTimer = null; }
+                const leaksList = document.getElementById('upsell-leaks');
+                if (leaksList) leaksList.innerHTML = '';
+                const waitEl = document.getElementById('upsell-leaks-wait');
+                if (waitEl) {
+                    waitEl.classList.remove('hidden-flow');
+                    waitEl.innerText = dictionary[currentLang].upsellLeaksWait;
+                }
                 document.getElementById('setup-stage')?.classList.remove('hidden-flow');
                 document.getElementById('scanner-stage')?.classList.add('hidden-flow');
                 document.getElementById('upsell-stage')?.classList.add('hidden-flow');
@@ -942,6 +1014,7 @@ function getLandingHTML() {
                     updateSentEmail(email);
                     document.getElementById('scanner-stage')?.classList.add('hidden-flow');
                     document.getElementById('upsell-stage')?.classList.remove('hidden-flow');
+                    if (data.job_id) pollLiteJob(data.job_id, email);
                     pcPixel('Lead', { content_name: 'Lite Scan' });
                 } catch (err) {
                     console.error(err);
