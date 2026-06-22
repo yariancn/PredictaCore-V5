@@ -98,7 +98,8 @@ function buildTitanUpgradeUrl({ email, dna, lang = 'en' }) {
 
 function getFaviconHeadTags() {
     const v = FAVICON_VERSION;
-    return `<link rel="icon" href="/favicon.ico?v=${v}" sizes="any">
+    return `<meta name="google-site-verification" content="75Pn3QkXMe5V_nu3sP7auSPJG0KBpdmh9siOlFkcp5c" />
+    <link rel="icon" href="/favicon.ico?v=${v}" sizes="any">
     <link rel="icon" type="image/png" href="/static/favicon-32.png?v=${v}" sizes="32x32">
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=${v}">
     <link rel="apple-touch-icon" href="/static/apple-touch-icon.png?v=${v}">`;
