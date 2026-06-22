@@ -219,12 +219,30 @@ function titanCheckoutLineItems(lineItems) {
     return items.length ? [items[0]] : buildCheckoutLineItems().slice(0, 1);
 }
 
-async function createMonitoringSubscription(stripe, { customerId, metadata }) {
+async function getCheckoutPaymentMethodId(stripe, session) {
+    const piRef = session.payment_intent;
+    const piId = typeof piRef === 'string' ? piRef : piRef?.id;
+    if (!piId) return null;
+    const pi = typeof piRef === 'object' && piRef?.payment_method
+        ? piRef
+        : await stripe.paymentIntents.retrieve(piId);
+    const pm = pi.payment_method;
+    return typeof pm === 'string' ? pm : pm?.id || null;
+}
+
+async function ensureCustomerDefaultPaymentMethod(stripe, customerId, paymentMethodId) {
+    if (!customerId || !paymentMethodId) return;
+    await stripe.customers.update(customerId, {
+        invoice_settings: { default_payment_method: paymentMethodId },
+    });
+}
+
+async function createMonitoringSubscription(stripe, { customerId, metadata, defaultPaymentMethodId }) {
     const subPriceId = PRICE_SUB();
     if (!subPriceId) {
         throw new Error('STRIPE_PRICE_SUBSCRIPTION not configured');
     }
-    return stripe.subscriptions.create({
+    const params = {
         customer: customerId,
         items: [{ price: subPriceId }],
         trial_period_days: 30,
@@ -232,7 +250,11 @@ async function createMonitoringSubscription(stripe, { customerId, metadata }) {
             ...metadata,
             service: 'predictacore_monitoring',
         },
-    });
+    };
+    if (defaultPaymentMethodId) {
+        params.default_payment_method = defaultPaymentMethodId;
+    }
+    return stripe.subscriptions.create(params);
 }
 
 function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang, cancelUrl }) {
@@ -247,6 +269,9 @@ function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang
         line_items: titanCheckoutLineItems(lineItems),
         locale,
         custom_text: getCheckoutCustomText(meta.lang),
+        payment_intent_data: {
+            setup_future_usage: 'off_session',
+        },
         success_url: `${host}/exito?session_id={CHECKOUT_SESSION_ID}&email=${encodeURIComponent(meta.email || email)}&lang=${meta.lang}`,
         cancel_url: cancelUrl || `${host}/`,
         metadata: meta,
@@ -296,10 +321,20 @@ function summarizeCheckoutSession(session) {
 }
 
 async function expandCheckoutSession(stripe, session) {
-    if (session.line_items?.data?.length) return session;
-    return stripe.checkout.sessions.retrieve(session.id, {
-        expand: ['line_items.data.price', 'subscription'],
-    });
+    const expand = [];
+    if (!session.line_items?.data?.length) {
+        expand.push('line_items.data.price', 'subscription');
+    }
+    if (!session.payment_intent || typeof session.payment_intent === 'string') {
+        expand.push('payment_intent');
+    }
+    if (!expand.length) return session;
+    return stripe.checkout.sessions.retrieve(session.id, { expand });
+}
+
+function isMonitoringInvoiceAmount(invoice) {
+    const paid = invoice.amount_paid ?? 0;
+    return paid === MONITORING_PRICE_CENTS;
 }
 
 function isPredictacoreInvoice(invoice, subscriptionMeta) {
@@ -334,6 +369,9 @@ module.exports = {
     checkoutMetadata,
     buildCheckoutSessionParams,
     createMonitoringSubscription,
+    getCheckoutPaymentMethodId,
+    ensureCustomerDefaultPaymentMethod,
+    isMonitoringInvoiceAmount,
     isPredictacoreCheckoutSession,
     isPredictacoreInvoice,
     expandCheckoutSession,

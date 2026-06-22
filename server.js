@@ -53,6 +53,7 @@ const {
     listClientesConTitan,
     registrarComisionRecurrente,
     saveReporte,
+    updateClienteSubscriptionStatus,
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
@@ -91,6 +92,10 @@ const {
     MONITORING_PRICE_USD,
     buildCheckoutSessionParams,
     createMonitoringSubscription,
+    getCheckoutPaymentMethodId,
+    ensureCustomerDefaultPaymentMethod,
+    isMonitoringInvoiceAmount,
+    metadataIsPredictacore,
     checkoutMetadata,
     normalizeStripeSecretKey,
     stripeKeyDiagnostics,
@@ -370,18 +375,23 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
                 refCode,
                 lang,
             });
+            const paymentMethodId = await getCheckoutPaymentMethodId(stripe, session);
+            if (paymentMethodId) {
+                await ensureCustomerDefaultPaymentMethod(stripe, customerId, paymentMethodId);
+            }
             const sub = await createMonitoringSubscription(stripe, {
                 customerId,
                 metadata: meta,
+                defaultPaymentMethodId: paymentMethodId,
             });
             subscriptionId = sub.id;
-            console.log(`>>> [${source}] Suscripción monitoreo creada post-pago: ${subscriptionId}`);
+            console.log(`>>> [${source}] Suscripción monitoreo creada post-pago: ${subscriptionId} (trial 30d, PM ${paymentMethodId ? 'ok' : 'missing'})`);
         } catch (subCreateErr) {
             console.error('!!! No se pudo crear suscripción de monitoreo:', subCreateErr.message);
         }
     }
 
-    let subscriptionStatus = 'active';
+    let subscriptionStatus = 'inactive';
     if (subscriptionId) {
         try {
             const sub = await stripe.subscriptions.retrieve(subscriptionId);
@@ -446,7 +456,7 @@ app.get('/webhook-stripe', (req, res) => {
         ok: true,
         endpoint: 'Stripe webhook (POST only)',
         message: 'This URL is for Stripe servers. Opening it in a browser uses GET and does not test delivery. Configure it in Stripe Dashboard → Webhooks.',
-        events: ['checkout.session.completed', 'invoice.paid'],
+        events: ['checkout.session.completed', 'invoice.paid', 'customer.subscription.updated'],
     });
 });
 
@@ -474,6 +484,10 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
         if (event.type === 'invoice.paid') {
             await handleInvoicePaid(event.data.object);
         }
+
+        if (event.type === 'customer.subscription.updated') {
+            await handleSubscriptionUpdated(event.data.object);
+        }
     } catch (err) {
         console.error('!!! Error procesando webhook:', err);
         return res.status(500).json({ error: 'Error interno procesando webhook' });
@@ -482,8 +496,34 @@ app.post('/webhook-stripe', express.raw({ type: 'application/json' }), async (re
     res.json({ received: true });
 });
 
+function isPredictacoreMonitoringSubscription(subscription) {
+    if (!subscription?.metadata) return false;
+    return subscription.metadata.service === 'predictacore_monitoring'
+        || metadataIsPredictacore(subscription.metadata);
+}
+
+async function handleSubscriptionUpdated(subscription) {
+    if (!isPredictacoreMonitoringSubscription(subscription)) {
+        console.log(`>>> [WEBHOOK] subscription.updated ignorado — no es monitoreo ${BRAND}`);
+        return;
+    }
+    const email = subscription.metadata?.email;
+    if (!email) return;
+    await updateClienteSubscriptionStatus({
+        email,
+        subscriptionId: subscription.id,
+        status: subscription.status,
+    });
+    console.log(`>>> [WEBHOOK] Suscripción ${subscription.id} → ${subscription.status} (${email})`);
+}
+
 async function handleInvoicePaid(invoice) {
-    if (invoice.amount_paid !== 2500) return;
+    if (!isMonitoringInvoiceAmount(invoice)) {
+        if ((invoice.amount_paid || 0) > 0) {
+            console.log(`>>> [WEBHOOK] invoice.paid $${(invoice.amount_paid || 0) / 100} — no es cobro monitoreo $${MONITORING_PRICE_USD}`);
+        }
+        return;
+    }
 
     let fullInvoice = invoice;
     if (!invoice.lines?.data?.length) {
@@ -513,7 +553,14 @@ async function handleInvoicePaid(invoice) {
     }
     if (!email) return;
 
-    console.log(`>>> [COBRO MENSUAL $25] ${email}. Iniciando reporte de seguimiento...`);
+    const deltaClaim = `invoice_delta:${invoice.id}`;
+    const shouldRunDelta = await claimWebhookEvent(deltaClaim, 'invoice.delta_fulfillment');
+    if (!shouldRunDelta) {
+        console.log(`>>> [WEBHOOK] DELTA ya encolado para invoice ${invoice.id}`);
+        return;
+    }
+
+    console.log(`>>> [COBRO MENSUAL $${MONITORING_PRICE_USD}] ${email}. Iniciando reporte de seguimiento DELTA...`);
 
     const cliente = await getClienteByEmail(email);
     if (cliente?.ref_code_usado) {
@@ -521,7 +568,12 @@ async function handleInvoicePaid(invoice) {
     }
 
     const urlSitio = cliente?.url_sitio || email;
-    iniciarAuditoria(urlSitio, email, 'DELTA');
+    try {
+        await iniciarAuditoria(urlSitio, email, 'DELTA');
+    } catch (err) {
+        await releaseWebhookClaim(deltaClaim);
+        throw err;
+    }
 }
 
 async function registrarVentaComisiones(session, email, refCode) {
@@ -1345,6 +1397,9 @@ async function iniciarAuditoria(dna, email, modo) {
         const titan = await getLatestTitanReport(cliente?.id);
         jobsMemoria[jobId].initialSummary = extractInitialSummary(titan?.secciones_json);
         jobsMemoria[jobId].prevDossier = titan?.dossier_scrape || '';
+        if (!jobsMemoria[jobId].prevDossier) {
+            console.warn(`>>> [DELTA] Sin baseline Titán para ${normalizedEmail} — el diff será limitado`);
+        }
     }
 
     await createJob(jobId, normalizedEmail, targetUrl, modo);

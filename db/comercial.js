@@ -68,6 +68,21 @@ async function getLatestTitanReport(clienteId) {
     return result.rows[0] || null;
 }
 
+async function updateClienteSubscriptionStatus({ email, subscriptionId, status }) {
+    const pool = getPool();
+    if (!pool || !email) return null;
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const result = await pool.query(
+        `UPDATE clientes
+         SET subscription_status = $1,
+             stripe_subscription_id = COALESCE($2, stripe_subscription_id)
+         WHERE LOWER(email) = $3
+         RETURNING id`,
+        [status || 'unknown', subscriptionId || null, normalizedEmail]
+    );
+    return result.rows[0]?.id || null;
+}
+
 /** Clientes con al menos un reporte Titán guardado (para pruebas de seguimiento) */
 async function listClientesConTitan(limit = 50) {
     const pool = getPool();
@@ -178,4 +193,5 @@ module.exports = {
     listClientesConTitan,
     registrarComisionRecurrente,
     saveReporte,
+    updateClienteSubscriptionStatus,
 };
