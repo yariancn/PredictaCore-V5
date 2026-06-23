@@ -810,6 +810,20 @@ app.get('/', (req, res) => {
         const qs = new URLSearchParams(req.query);
         return res.redirect(302, `/exito?${qs.toString()}`);
     }
+    const q = req.query;
+    if (
+        q.utm_source === 'facebook' &&
+        q.utm_medium === 'paid' &&
+        typeof q.utm_campaign === 'string' &&
+        /predictacore/i.test(q.utm_campaign)
+    ) {
+        const qs = new URLSearchParams();
+        for (const [key, value] of Object.entries(q)) {
+            if (value != null && String(value).length > 0) qs.set(key, String(value));
+        }
+        const suffix = qs.toString();
+        return res.redirect(302, suffix ? `/ads/lite?${suffix}` : '/ads/lite');
+    }
     res.send(getLandingHTML());
 });
 app.get('/titan', (req, res) => {
