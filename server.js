@@ -998,6 +998,98 @@ app.get('/playground/db', requirePlayground, async (req, res) => {
     }
 });
 
+app.get('/playground/funnel-stats', requirePlayground, async (req, res) => {
+    const pool = getPool();
+    if (!pool) return res.status(503).json({ error: 'BD no disponible' });
+
+    const days = Math.min(90, Math.max(1, Number(req.query.days) || 30));
+
+    try {
+        const [
+            liteStarted,
+            liteCompleted,
+            liteFailed,
+            titanJobsStarted,
+            titanJobsCompleted,
+            titanReports,
+            titanSales,
+            recentLiteJobs,
+            recentTitanSales,
+        ] = await Promise.all([
+            pool.query(
+                `SELECT COUNT(*)::int AS n FROM jobs_auditoria
+                 WHERE modo = 'LITE' AND creado_en >= NOW() - ($1::int || ' days')::interval`,
+                [days],
+            ),
+            pool.query(
+                `SELECT COUNT(*)::int AS n FROM jobs_auditoria
+                 WHERE modo = 'LITE' AND estado = 'completed'
+                   AND creado_en >= NOW() - ($1::int || ' days')::interval`,
+                [days],
+            ),
+            pool.query(
+                `SELECT COUNT(*)::int AS n FROM jobs_auditoria
+                 WHERE modo = 'LITE' AND estado = 'failed'
+                   AND creado_en >= NOW() - ($1::int || ' days')::interval`,
+                [days],
+            ),
+            pool.query(
+                `SELECT COUNT(*)::int AS n FROM jobs_auditoria
+                 WHERE modo = 'TITAN' AND creado_en >= NOW() - ($1::int || ' days')::interval`,
+                [days],
+            ),
+            pool.query(
+                `SELECT COUNT(*)::int AS n FROM jobs_auditoria
+                 WHERE modo = 'TITAN' AND estado = 'completed'
+                   AND creado_en >= NOW() - ($1::int || ' days')::interval`,
+                [days],
+            ),
+            pool.query(
+                `SELECT COUNT(*)::int AS n FROM reportes
+                 WHERE tipo = 'titan' AND creado_en >= NOW() - ($1::int || ' days')::interval`,
+                [days],
+            ),
+            pool.query(
+                `SELECT COUNT(*)::int AS n FROM ventas_comisiones
+                 WHERE creado_en >= NOW() - ($1::int || ' days')::interval`,
+                [days],
+            ),
+            pool.query(
+                `SELECT email, url_sitio, estado, creado_en
+                 FROM jobs_auditoria
+                 WHERE modo = 'LITE'
+                 ORDER BY creado_en DESC
+                 LIMIT 8`,
+            ),
+            pool.query(
+                `SELECT cliente_email, monto_total, creado_en
+                 FROM ventas_comisiones
+                 ORDER BY creado_en DESC
+                 LIMIT 8`,
+            ),
+        ]);
+
+        res.json({
+            days,
+            lite: {
+                started: liteStarted.rows[0].n,
+                completed: liteCompleted.rows[0].n,
+                failed: liteFailed.rows[0].n,
+            },
+            titan: {
+                jobs_started: titanJobsStarted.rows[0].n,
+                jobs_completed: titanJobsCompleted.rows[0].n,
+                reports_delivered: titanReports.rows[0].n,
+                paid_sales: titanSales.rows[0].n,
+            },
+            recent_lite_jobs: recentLiteJobs.rows,
+            recent_titan_sales: recentTitanSales.rows,
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.post('/portal-cliente', async (req, res) => {
     try {
         const { email } = req.body;

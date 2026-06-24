@@ -114,8 +114,19 @@ function getPlaygroundHTML() {
         <pre id="out-email-preview" class="mt-3 text-violet-300">—</pre>
     </section>
 
+    <section class="mb-8 border border-emerald-500/30 bg-emerald-950/10 p-4 rounded">
+        <h2 class="text-emerald-500 text-[10px] uppercase tracking-widest mb-3">05 — Funnel stats (Lite → Titán)</h2>
+        <p class="text-zinc-500 text-[10px] mb-2">Visitas /ads/lite se registran en predictacore-ads. Escaneos y ventas vienen de Postgres V5.</p>
+        <div class="flex flex-wrap gap-2 mb-2">
+            <button onclick="runFunnelStats(7)" class="bg-zinc-800 border border-zinc-600 text-white px-3 py-2 rounded text-[10px] font-bold uppercase">7 días</button>
+            <button onclick="runFunnelStats(30)" class="bg-emerald-600 text-black px-3 py-2 rounded text-[10px] font-bold uppercase">30 días</button>
+            <button onclick="runFunnelStats(90)" class="bg-zinc-800 border border-zinc-600 text-white px-3 py-2 rounded text-[10px] font-bold uppercase">90 días</button>
+        </div>
+        <pre id="out-funnel-stats" class="mt-3 text-emerald-400">—</pre>
+    </section>
+
     <section>
-        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">05 — DB Snapshot</h2>
+        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">06 — DB Snapshot</h2>
         <button onclick="runDb()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">GET /playground/db</button>
         <pre id="out-db" class="mt-3 text-zinc-400">—</pre>
     </section>
@@ -258,6 +269,11 @@ function getPlaygroundHTML() {
         async function runDb() {
             const r = await api('/playground/db');
             document.getElementById('out-db').textContent = JSON.stringify(r.data, null, 2);
+        }
+
+        async function runFunnelStats(days) {
+            const r = await api('/playground/funnel-stats?days=' + days);
+            document.getElementById('out-funnel-stats').textContent = JSON.stringify(r.data, null, 2);
         }
     </script>
 </body>
