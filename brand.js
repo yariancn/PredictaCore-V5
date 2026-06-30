@@ -88,11 +88,15 @@ function getSubscriptionCancellationEmailHtml(lang = 'en', monitoringUsd = 25, t
 }
 
 /** Deep link to Titan upsell page — email + URL prefilled, one-click checkout */
-function buildTitanUpgradeUrl({ email, dna, lang = 'en' }) {
+function buildTitanUpgradeUrl({ email, dna, lang = 'en', refCode, jobId, from, src } = {}) {
     const params = new URLSearchParams();
     if (email) params.set('email', String(email).trim().toLowerCase());
     if (dna) params.set('dna', String(dna).trim());
     if (lang === 'es') params.set('lang', 'es');
+    if (refCode) params.set('ref', String(refCode).trim());
+    if (jobId) params.set('job_id', String(jobId).trim());
+    if (from) params.set('from', String(from).trim());
+    if (src) params.set('src', String(src).trim());
     return `${publicSiteUrl()}/titan?${params.toString()}`;
 }
 

@@ -459,10 +459,10 @@ function getLandingHTML() {
         <section id="lite-section" class="py-12 px-4 md:px-6 border-t border-zinc-900">
             <div class="max-w-xl mx-auto text-center">
                 <h2 id="lite-title" class="text-xl font-bold text-white mb-2">Not ready to pay?</h2>
-                <p id="lite-sub" class="pc-body text-zinc-400 mb-6">Run a free Lite scan — 3 critical leaks + score snapshot. Same form above; click below instead.</p>
-                <button type="button" id="btn-start" class="w-full max-w-sm mx-auto border border-zinc-600 text-zinc-200 font-bold py-3 px-6 rounded-lg hover:border-emerald-500 hover:text-emerald-400 transition-all text-base">
+                <p id="lite-sub" class="pc-body text-zinc-400 mb-6">Run a free Lite scan — 3 critical leaks + score snapshot. Best experience on our dedicated landing.</p>
+                <a href="https://predictacore.ai/ads/lite" id="btn-start" class="inline-flex w-full max-w-sm mx-auto items-center justify-center border border-zinc-600 text-zinc-200 font-bold py-3 px-6 rounded-lg hover:border-violet-500 hover:text-violet-400 transition-all text-base">
                     Run free Lite scan
-                </button>
+                </a>
                 <p id="lite-eta-before" class="text-sm text-zinc-600 mt-4">Lite report by email once processing finishes (up to 60 min).</p>
             </div>
         </section>
@@ -1036,6 +1036,25 @@ function getLandingHTML() {
                 document.body.style.overflow = '';
             }
 
+            function irATitanUpsell() {
+                const email = (document.getElementById('user-email').value || '').trim();
+                const d = dictionary[currentLang];
+                const payload = buildScanPayload();
+                if (payload.error) { setSetupError(payload.error); return; }
+                if (!email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) {
+                    setSetupError(d.invalidEmail);
+                    return;
+                }
+                const params = new URLSearchParams({
+                    email: email,
+                    dna: payload.dna,
+                    lang: currentLang,
+                    from: 'home-upsell',
+                });
+                if (refCode) params.set('ref', refCode);
+                window.location.href = '/titan?' + params.toString();
+            }
+
             async function comprarTitan() {
                 const email = (document.getElementById('user-email').value || '').trim();
                 const d = dictionary[currentLang];
@@ -1101,9 +1120,11 @@ function getLandingHTML() {
                     pcPixel('ViewContent', { content_name: 'Landing' });
                 }
 
-                document.getElementById('btn-start')?.addEventListener('click', iniciarEscaneo);
+                document.getElementById('btn-start')?.addEventListener('click', function(e) {
+                    if (e.currentTarget && e.currentTarget.tagName === 'BUTTON') iniciarEscaneo();
+                });
                 document.getElementById('btn-titan')?.addEventListener('click', comprarTitan);
-                document.getElementById('btn-titan-upsell')?.addEventListener('click', comprarTitan);
+                document.getElementById('btn-titan-upsell')?.addEventListener('click', irATitanUpsell);
                 document.getElementById('lang-en')?.addEventListener('click', function() { setLanguage('en'); });
                 document.getElementById('lang-es')?.addEventListener('click', function() { setLanguage('es'); });
 

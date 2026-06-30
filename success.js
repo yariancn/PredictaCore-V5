@@ -1,5 +1,6 @@
 const { getFaviconHeadTags, getSupportEmail } = require('./brand');
 const { TITAN_PRICE_USD, MONITORING_PRICE_USD } = require('./stripe-predictacore');
+const { TITAN_SECTIONS } = require('./titan-shared-content');
 
 function statusMessage(t, fulfillStatus) {
     if (fulfillStatus === 'ok') return t.processingOk;
@@ -14,12 +15,18 @@ function statusMessage(t, fulfillStatus) {
 
 function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
     const support = getSupportEmail();
+    const sectionsHtml = TITAN_SECTIONS.map((section, index) => {
+        const num = String(index + 1).padStart(2, '0');
+        return `<li class="flex gap-2 text-left text-[11px] text-zinc-500 leading-relaxed"><span class="font-mono text-violet-500/80 shrink-0">${num}</span><span>${section}</span></li>`;
+    }).join('');
+
     const t = lang === 'es' ? {
         title: 'Pago confirmado',
         headline: 'PAGO RECIBIDO',
         body: `Tu pago de USD $${TITAN_PRICE_USD} fue procesado correctamente. El motor forense PredictaCore ya está en cola.`,
         email: 'Recibirás un correo de confirmación y, después, el Reporte Titán completo en PDF.',
         eta: 'Por la cantidad de datos que analizamos, el correo puede tardar hasta 60 minutos. Revisa spam y la carpeta Promociones.',
+        pdfTitle: 'Qué incluye tu PDF Titán (11 secciones)',
         sub: `Monitoreo $${MONITORING_PRICE_USD}/mes activo. Primer cobro el día 30. Estado de cuenta: PREDICTACORE.`,
         portalNote: `Información de cancelación del monitoreo recurrente: ${getSupportEmail()} o portal de facturación en su correo de confirmación de pago. Ver Términos.`,
         processing: 'Confirmando pago y encolando análisis…',
@@ -30,6 +37,7 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
         processingNotPredictacore: 'Esta sesión de Stripe no corresponde a PredictaCore (Price IDs o metadata incorrectos en Railway). Revisa STRIPE_PRICE_TITAN y STRIPE_PRICE_SUBSCRIPTION.',
         processingMissing: `El pago en Stripe parece OK, pero no llegó el ID de sesión (session_id) en la URL. Revisa tu correo en unos minutos; si no llega nada, escríbenos a ${support}.`,
         home: 'Volver al inicio',
+        lite: 'Escaneo Lite gratis',
         terms: 'Términos',
         privacy: 'Privacidad',
     } : {
@@ -38,6 +46,7 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
         body: `Your USD $${TITAN_PRICE_USD} payment was processed successfully. The PredictaCore forensic engine is now queued.`,
         email: 'You will receive a confirmation email, then your full Titan Report PDF.',
         eta: 'Because of the volume of data we process, delivery can take up to 60 minutes. Check spam and Promotions.',
+        pdfTitle: 'What your Titan PDF includes (11 sections)',
         sub: `Monitoring $${MONITORING_PRICE_USD}/mo active. First charge on day 30. Statement: PREDICTACORE.`,
         portalNote: `Recurring monitoring cancellation: ${getSupportEmail()} or billing portal in your payment confirmation email. See Terms.`,
         processing: 'Confirming payment and queuing your audit…',
@@ -48,6 +57,7 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
         processingNotPredictacore: 'This Stripe session is not PredictaCore (wrong Price IDs or metadata in Railway). Check STRIPE_PRICE_TITAN and STRIPE_PRICE_SUBSCRIPTION.',
         processingMissing: `Stripe payment looks OK, but the session_id was missing from the return URL. Check your inbox shortly; if nothing arrives, email ${support}.`,
         home: 'Back to home',
+        lite: 'Free Lite scan',
         terms: 'Terms',
         privacy: 'Privacy',
     };
@@ -60,16 +70,12 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
     ${getFaviconHeadTags()}
     <title>${t.title} | PredictaCore</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Meta Pixel Code -->
     <script>
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1734011764438170');
     fbq('track', 'PageView');
     </script>
@@ -78,22 +84,27 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-lg w-full border border-emerald-500/30 bg-black/80 p-10 rounded-lg text-center">
-        <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="max-w-lg w-full border border-violet-500/30 bg-black/80 p-8 md:p-10 rounded-lg text-center">
+        <div class="w-16 h-16 bg-violet-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
         </div>
         <h1 class="text-2xl font-black text-white mb-4 tracking-tighter">${t.headline}</h1>
         <p class="text-zinc-300 text-sm mb-4 leading-relaxed">${t.body}</p>
-        <p class="text-emerald-400 text-xs font-semibold mb-3 leading-relaxed">${t.email}</p>
+        <p class="text-violet-300 text-xs font-semibold mb-3 leading-relaxed">${t.email}</p>
         <p class="text-amber-500/90 text-[11px] mb-4 leading-relaxed border border-amber-500/20 bg-amber-950/20 rounded p-3">${t.eta}</p>
+        <div class="text-left border border-zinc-800 rounded-lg p-4 mb-4 bg-zinc-950/50">
+            <p class="text-xs font-bold text-white mb-3 text-center">${t.pdfTitle}</p>
+            <ol class="space-y-2 m-0 p-0 list-none">${sectionsHtml}</ol>
+        </div>
         <p id="fulfill-status" class="text-[10px] text-zinc-400 mb-4 leading-relaxed font-mono">${statusMessage(t, fulfillStatus)}</p>
         <p class="text-zinc-500 text-[10px] mb-4 leading-relaxed">${t.sub}</p>
-        <p class="text-zinc-600 text-[9px] mb-8 leading-relaxed">${t.portalNote}</p>
-        <a href="/" class="inline-block w-full bg-emerald-600 text-white py-3 rounded text-xs uppercase tracking-widest hover:bg-emerald-500 transition-colors">${t.home}</a>
+        <p class="text-zinc-600 text-[9px] mb-6 leading-relaxed">${t.portalNote}</p>
+        <a href="/" class="inline-block w-full bg-violet-600 text-white py-3 rounded text-xs uppercase tracking-widest hover:bg-violet-500 transition-colors mb-2">${t.home}</a>
+        <a href="https://predictacore.ai/ads/lite" class="inline-block w-full border border-zinc-700 text-zinc-300 py-3 rounded text-xs uppercase tracking-widest hover:border-violet-500 hover:text-violet-300 transition-colors">${t.lite}</a>
         <p class="text-[9px] text-zinc-600 pt-6">
-            <a href="/terms" class="text-emerald-600 hover:underline">${t.terms}</a> · <a href="/privacy" class="text-emerald-600 hover:underline">${t.privacy}</a>
+            <a href="/terms" class="text-violet-400 hover:underline">${t.terms}</a> · <a href="/privacy" class="text-violet-400 hover:underline">${t.privacy}</a>
         </p>
     </div>
     <script>
@@ -115,10 +126,31 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
         const initialFulfill = ${JSON.stringify(fulfillStatus)};
         let purchaseTracked = false;
 
+        function trackAdsFunnel(eventType, extra) {
+            var payload = {
+                clientSlug: 'predictacore',
+                eventType: eventType,
+                pagePath: '/exito',
+                metadata: extra || {}
+            };
+            try {
+                var sid = localStorage.getItem('pc_funnel_session:predictacore');
+                if (sid) payload.sessionId = sid;
+            } catch (e) {}
+            fetch('/ads/api/funnel/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                keepalive: true,
+                body: JSON.stringify(payload)
+            }).catch(function() {});
+        }
+
         function trackPurchaseOnce() {
             if (purchaseTracked || typeof fbq !== 'function') return;
             purchaseTracked = true;
             fbq('track', 'Purchase', { value: ${TITAN_PRICE_USD}, currency: 'USD', content_name: 'Titan Report' });
+            trackAdsFunnel('purchase', { product: 'titan', value: ${TITAN_PRICE_USD} });
+            trackAdsFunnel('upsell_accepted', { product: 'titan' });
         }
 
         if (initialFulfill === 'ok' || initialFulfill === 'dup') trackPurchaseOnce();

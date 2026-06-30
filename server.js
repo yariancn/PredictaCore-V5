@@ -82,6 +82,7 @@ const {
     getDueWeeklyFollowups,
     markDay1Sent,
     markWeeklySent,
+    getLiteUpsellContext,
 } = require('./db/lite-upsell');
 
 const {
@@ -825,6 +826,23 @@ app.get('/', (req, res) => {
         return res.redirect(302, suffix ? `/ads/lite?${suffix}` : '/ads/lite');
     }
     res.send(getLandingHTML());
+});
+app.get('/titan-context', async (req, res) => {
+    const email = String(req.query.email || '').trim().toLowerCase();
+    const dna = String(req.query.dna || '').trim();
+    if (!email) {
+        return res.status(400).json({ error: 'email required' });
+    }
+    try {
+        const ctx = await getLiteUpsellContext(email, dna);
+        if (!ctx) {
+            return res.json({ leaks: [], metrics: {}, lang: 'en', titanAcquired: false });
+        }
+        return res.json(ctx);
+    } catch (err) {
+        console.error('!!! /titan-context:', err?.message || err);
+        return res.status(500).json({ error: 'Could not load Lite context' });
+    }
 });
 app.get('/titan', (req, res) => {
     res.set('Cache-Control', 'no-store');

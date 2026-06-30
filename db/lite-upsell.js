@@ -117,6 +117,37 @@ async function markWeeklySent(id) {
     );
 }
 
+async function getLiteUpsellContext(email, urlSitio) {
+    const pool = getPool();
+    if (!pool || !email) return null;
+
+    const normalized = String(email).trim().toLowerCase();
+    const url = String(urlSitio || '').trim();
+
+    const result = await pool.query(
+        `SELECT leaks_json, metrics_json, lang, job_id, lite_sent_at, titan_acquired, url_sitio
+         FROM lite_upsell_followups
+         WHERE lower(email) = $1
+           AND ($2::text = '' OR url_sitio = $2)
+         ORDER BY lite_sent_at DESC NULLS LAST
+         LIMIT 1`,
+        [normalized, url]
+    );
+
+    const row = result.rows[0];
+    if (!row) return null;
+
+    return {
+        leaks: Array.isArray(row.leaks_json) ? row.leaks_json : [],
+        metrics: row.metrics_json && typeof row.metrics_json === 'object' ? row.metrics_json : {},
+        lang: row.lang === 'es' ? 'es' : 'en',
+        jobId: row.job_id || null,
+        targetUrl: row.url_sitio || url,
+        liteSentAt: row.lite_sent_at,
+        titanAcquired: Boolean(row.titan_acquired),
+    };
+}
+
 module.exports = {
     emailHasTitanPurchase,
     registerLiteFollowup,
@@ -125,4 +156,5 @@ module.exports = {
     getDueWeeklyFollowups,
     markDay1Sent,
     markWeeklySent,
+    getLiteUpsellContext,
 };

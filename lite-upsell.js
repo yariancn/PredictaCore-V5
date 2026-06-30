@@ -82,11 +82,8 @@ function extractLiteLeaksForUpsell(progress, dossier, locale) {
     ];
 }
 
-function buildUpsellTitanUrl({ email, dna, lang, campaign }) {
-    const base = buildTitanUpgradeUrl({ email, dna, lang });
-    const u = new URL(base);
-    if (campaign) u.searchParams.set('from', campaign);
-    return u.toString();
+function buildUpsellTitanUrl({ email, dna, lang, campaign, refCode }) {
+    return buildTitanUpgradeUrl({ email, dna, lang, refCode, from: campaign });
 }
 
 function formatMetricsLine(metrics, lang) {
