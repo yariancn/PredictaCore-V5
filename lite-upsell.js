@@ -111,8 +111,8 @@ function leaksHtmlBlock(leaks, lang) {
     </li>`;
     }).join('');
     const foot = es
-        ? '<p style="font-size:13px;color:#a1a1aa;margin:12px 0 0 0;line-height:1.5;">El Lite solo mostró 3. El Reporte Titán rankea las <strong style="color:#34d399;">15 fugas</strong> y da <strong style="color:#34d399;">15 acciones</strong> paso a paso — sin relleno.</p>'
-        : '<p style="font-size:13px;color:#a1a1aa;margin:12px 0 0 0;line-height:1.5;">Lite showed 3 only. The Titan Report ranks all <strong style="color:#34d399;">15 leaks</strong> with <strong style="color:#34d399;">15 step-by-step fixes</strong> — no fluff.</p>';
+        ? '<p style="font-size:13px;color:#a1a1aa;margin:12px 0 0 0;line-height:1.55;">El Lite solo nombra 3 fallas. El <strong style="color:#34d399;">Reporte Titán</strong> muestra las <strong style="color:#34d399;">15 principales</strong> y una <strong style="color:#34d399;">recomendación concreta para resolver cada una</strong>.</p>'
+        : '<p style="font-size:13px;color:#a1a1aa;margin:12px 0 0 0;line-height:1.55;">Lite names 3 flaws only. The <strong style="color:#34d399;">Titan Report</strong> shows all <strong style="color:#34d399;">15 main failures</strong> plus a <strong style="color:#34d399;">specific recommendation to fix each one</strong>.</p>';
     return `<p style="font-size:14px;font-weight:700;color:#fff;margin:0 0 12px 0;">${title}</p><ul style="margin:0;padding:0;">${items}</ul>${foot}`;
 }
 
@@ -123,8 +123,8 @@ function leaksTextBlock(leaks, lang) {
         : 'Issues found in your Lite scan (still active — you are still losing sales):';
     const lines = (leaks || []).slice(0, 3).map((l) => `${l.index}. ${l.text}`);
     const foot = es
-        ? 'Lite = 3 fugas. Titán = 15 fugas rankeadas + 15 acciones + PDF completo.'
-        : 'Lite = 3 leaks. Titan = 15 ranked leaks + 15 actions + full PDF.';
+        ? 'Lite = 3 fallas (sin cómo arreglarlas). Titán = 15 fallas + 15 recomendaciones para resolverlas + PDF completo.'
+        : 'Lite = 3 flaws (no fix playbook). Titan = 15 flaws + 15 fix recommendations + full PDF.';
     return [head, ...lines, '', foot].join('\n');
 }
 
@@ -166,13 +166,13 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
             : 'PredictaCore — We found leaks on your page (12 more hidden in Titan)';
         headline = es ? 'Encontramos fugas — te faltan 12 más' : 'We found leaks — 12 more are still hidden';
         intro = es
-            ? `Adjunto va tu PDF Lite de <strong style="color:#fff;">${targetUrl || 'tu página'}</strong>. Abre el adjunto primero — luego usa el botón de abajo para desbloquear el Reporte Titán completo.`
-            : `Your Lite PDF for <strong style="color:#fff;">${targetUrl || 'your page'}</strong> is attached. Open the PDF first — then use the button below to unlock the full Titan Report.`;
+            ? `Adjunto va tu PDF Lite de <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> — solo 3 fallas básicas, sin plan de corrección. Para ver las <strong style="color:#10b981;">15 principales</strong> y <strong style="color:#10b981;">cómo resolver cada una</strong>, corre el Reporte Titán con el botón de abajo.`
+            : `Your Lite PDF for <strong style="color:#fff;">${targetUrl || 'your page'}</strong> is attached — 3 basic flaws only, no fix playbook. To see all <strong style="color:#10b981;">15 main failures</strong> and <strong style="color:#10b981;">how to fix each one</strong>, run the Titan Report with the button below.`;
     }
 
     const whyTitan = es
-        ? '<p style="font-size:14px;line-height:1.65;margin:16px 0;color:#d1d5db;">Sin Titán solo ves 3 puntos. Con Titán obtienes las <strong>15 fugas rankeadas</strong>, <strong>15 acciones tácticas</strong>, capturas desktop/móvil, comparativa con competencia y hoja de ruta de 21 días — entregado en ~60 minutos.</p>'
-        : '<p style="font-size:14px;line-height:1.65;margin:16px 0;color:#d1d5db;">Without Titan you only see 3 issues. With Titan you get <strong>15 ranked leaks</strong>, <strong>15 tactical actions</strong>, desktop/mobile captures, competitor benchmark, and a 21-day roadmap — delivered in ~60 minutes.</p>';
+        ? '<div style="margin:18px 0;padding:16px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.35);border-radius:8px;"><p style="margin:0 0 8px 0;font-size:15px;font-weight:900;color:#fff;text-align:center;">Corre el Reporte Titán</p><p style="margin:0;font-size:13px;line-height:1.6;color:#d1d5db;text-align:center;">15 fallas principales detectadas en tu página + <strong>15 recomendaciones</strong> para resolver cada una (copy, CTA, confianza, velocidad). PDF de 17 páginas en ~60 min.</p></div>'
+        : '<div style="margin:18px 0;padding:16px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.35);border-radius:8px;"><p style="margin:0 0 8px 0;font-size:15px;font-weight:900;color:#fff;text-align:center;">Run the Titan Report</p><p style="margin:0;font-size:13px;line-height:1.6;color:#d1d5db;text-align:center;">15 main flaws on your page + <strong>15 recommendations</strong> to fix each one (copy, CTA, trust, speed). 17-page PDF in ~60 min.</p></div>';
 
     const pdfBanner = variant === 'initial'
         ? (es

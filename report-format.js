@@ -226,8 +226,8 @@ function getPdfUiStrings(locale) {
             mobile: 'Móvil',
             assetDefault: 'Análisis del activo',
             liteTitle: 'Reporte Lite',
-            liteCtaTitle: 'Desbloquea las 15 fugas que ahuyentan clientes',
-            liteCtaBody: `El Lite solo muestra 3. Reporte Titán completo (USD $${TITAN_PRICE_USD}) — tu correo y URL listos, un clic para pagar:`,
+            liteCtaTitle: 'Corre el Reporte Titán — 15 fallas + 15 recomendaciones',
+            liteCtaBody: `Este Lite solo muestra 3 fallas básicas. Titán detecta las 15 principales y te dice cómo resolver cada una. USD $${TITAN_PRICE_USD} — un clic:`,
             brandTagline: 'Inteligencia de Negocios',
         };
     }
@@ -239,8 +239,8 @@ function getPdfUiStrings(locale) {
         mobile: 'Mobile',
         assetDefault: 'Asset analysis',
         liteTitle: 'Lite Intelligence Report',
-        liteCtaTitle: 'Unlock all 15 leaks driving customers away',
-        liteCtaBody: `Lite shows 3 only. Full Titan Report (USD $${TITAN_PRICE_USD}) — email and URL ready, one click to pay:`,
+        liteCtaTitle: 'Run Titan Report — 15 flaws + 15 fix recommendations',
+        liteCtaBody: `This Lite shows 3 basic flaws only. Titan finds all 15 main failures and tells you how to fix each one. USD $${TITAN_PRICE_USD} — one click:`,
         brandTagline: 'Business Intelligence',
     };
 }
@@ -278,14 +278,14 @@ function getDeltaReportIntro(lang) {
 
 function getLiteReportIntro(lang) {
     return lang === 'es'
-        ? 'Adjunto va tu auditoría Lite: 3 fugas críticas y un snapshot SEO + IA. Es solo la punta del iceberg — la mayoría de las páginas pierden clientes en más de 15 puntos que el Lite no muestra.'
-        : 'Attached is your Lite audit: 3 critical leaks and an SEO + AI snapshot. That is only the tip — most pages lose customers at 15+ drop-off points the Lite does not show.';
+        ? 'Adjunto va tu auditoría Lite: 3 fallas básicas (sin plan de corrección). Para las 15 principales y cómo resolver cada una, corre el Reporte Titán — el enlace va en este mismo correo.'
+        : 'Attached is your Lite audit: 3 basic flaws (no fix playbook). For all 15 main failures and how to fix each, run the Titan Report — link is in this same email.';
 }
 
 function getLiteEmailPreheader(lang) {
     return lang === 'es'
-        ? 'PDF Lite adjunto — 3 fugas detectadas. Desbloquea las 15 restantes con el Reporte Titán.'
-        : 'Lite PDF attached — 3 leaks found. Unlock the other 12 with the Titan Report.';
+        ? 'PDF Lite adjunto — 3 fallas. Titán: 15 fallas + 15 recomendaciones para resolverlas.'
+        : 'Lite PDF attached — 3 flaws. Titan: 15 flaws + 15 fix recommendations.';
 }
 
 function buildLiteUpsellEmailHtml(lang, { titanUrl, targetUrl }) {

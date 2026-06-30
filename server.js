@@ -1109,6 +1109,95 @@ app.post('/portal-cliente', async (req, res) => {
     }
 });
 
+app.get('/playground/funnel-stats', requirePlayground, async (req, res) => {
+    const pool = getPool();
+    if (!pool) return res.status(503).json({ error: 'BD no disponible' });
+
+    const days = Math.min(365, Math.max(1, parseInt(req.query.days, 10) || 30));
+    const since = new Date();
+    since.setDate(since.getDate() - days);
+
+    try {
+        const [
+            liteStats,
+            titanStats,
+            recentLite,
+            recentTitan,
+            reportsDelivered,
+            paidSales,
+        ] = await Promise.all([
+            pool.query(
+                `SELECT estado, COUNT(*)::int AS n
+                 FROM jobs_auditoria
+                 WHERE modo = 'LITE' AND creado_en >= $1
+                 GROUP BY estado`,
+                [since],
+            ),
+            pool.query(
+                `SELECT estado, COUNT(*)::int AS n
+                 FROM jobs_auditoria
+                 WHERE modo = 'TITAN' AND creado_en >= $1
+                 GROUP BY estado`,
+                [since],
+            ),
+            pool.query(
+                `SELECT email, url_sitio, estado, creado_en
+                 FROM jobs_auditoria
+                 WHERE modo = 'LITE' AND creado_en >= $1
+                 ORDER BY creado_en DESC
+                 LIMIT 10`,
+                [since],
+            ),
+            pool.query(
+                `SELECT cliente_email, monto_total, creado_en
+                 FROM ventas_comisiones
+                 WHERE creado_en >= $1
+                 ORDER BY creado_en DESC
+                 LIMIT 10`,
+                [since],
+            ),
+            pool.query(
+                `SELECT COUNT(*)::int AS n
+                 FROM reportes
+                 WHERE tipo = 'titan' AND enviado = TRUE AND creado_en >= $1`,
+                [since],
+            ),
+            pool.query(
+                `SELECT COUNT(*)::int AS n
+                 FROM ventas_comisiones
+                 WHERE creado_en >= $1`,
+                [since],
+            ),
+        ]);
+
+        const liteByEstado = Object.fromEntries(liteStats.rows.map((row) => [row.estado, row.n]));
+        const titanByEstado = Object.fromEntries(titanStats.rows.map((row) => [row.estado, row.n]));
+        const liteStarted =
+            (liteByEstado.running ?? 0) + (liteByEstado.completed ?? 0) + (liteByEstado.failed ?? 0);
+        const titanStarted =
+            (titanByEstado.running ?? 0) + (titanByEstado.completed ?? 0) + (titanByEstado.failed ?? 0);
+
+        res.json({
+            days,
+            lite: {
+                started: liteStarted,
+                completed: liteByEstado.completed ?? 0,
+                failed: liteByEstado.failed ?? 0,
+            },
+            titan: {
+                jobs_started: titanStarted,
+                jobs_completed: titanByEstado.completed ?? 0,
+                reports_delivered: reportsDelivered.rows[0]?.n ?? 0,
+                paid_sales: paidSales.rows[0]?.n ?? 0,
+            },
+            recent_lite_jobs: recentLite.rows,
+            recent_titan_sales: recentTitan.rows,
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get('/playground/job-status', requirePlayground, async (req, res) => {
     const email = req.query.email;
     if (!email) return res.status(400).json({ error: 'email query param required' });
