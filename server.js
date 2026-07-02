@@ -84,6 +84,7 @@ const {
     markWeeklySent,
     getLiteUpsellContext,
 } = require('./db/lite-upsell');
+const { notifyLiteScanCompleted, notifyTitanPurchase } = require('./ads-funnel-bridge');
 
 const {
     BRAND,
@@ -416,6 +417,12 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
 
         await markTitanAcquiredForEmail(email);
 
+        notifyTitanPurchase({
+            email,
+            urlSitio: dna,
+            stripeSessionId: session.id,
+        }).catch(() => {});
+
         try {
             await sendTitanActivationEmail(email, lang, customerId);
         } catch (mailErr) {
@@ -635,6 +642,8 @@ if (ADS_ORIGIN) {
         createProxyMiddleware({
             target: ADS_ORIGIN,
             changeOrigin: true,
+            proxyTimeout: 120000,
+            timeout: 120000,
             pathFilter: (pathname) => pathname === '/ads' || pathname.startsWith('/ads/'),
             on: {
                 proxyReq(proxyReq) {
@@ -1825,6 +1834,12 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
                     loadTimeSec: cap.loadTimeSec,
                 },
             });
+            notifyLiteScanCompleted({
+                email: jobsMemoria[jobId].email,
+                urlSitio: targetUrl,
+                jobId,
+                refCode: jobsMemoria[jobId].refCode,
+            }).catch(() => {});
         }
 
         if (modo === 'TITAN') {
