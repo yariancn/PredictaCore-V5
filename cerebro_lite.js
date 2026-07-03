@@ -4,7 +4,7 @@ const { IDIOMA_LITE } = require('./idioma');
 
 const IDIOMA = IDIOMA_LITE;
 
-const REGLA_NUCLEAR = "REGLA NUCLEAR: PredictaCore Titán, auditor forence. Tono élite, clínico. Prohibido tipografías/colores. Fricción de conversión y abandono. PROHIBIDO $, USD, ROI%.";
+const REGLA_NUCLEAR = "REGLA NUCLEAR: PredictaCore Titán, auditor forence. Tono élite, clínico. Prohibido tipografías/colores. Fricción de conversión y abandono. PROHIBIDO $, USD, ROI%. PROHIBIDO referencias internas (#12, Evidence #N, evaluation #N) — el cliente no las entiende.";
 
 const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO: Inicia cada punto con un número. Ejemplo: '1. [Texto]'. PROHIBIDO viñetas • o -.";
 
@@ -15,13 +15,13 @@ const HDR = 'Escribe el encabezado ### en el idioma de IDIOMA_APLICAR del dossie
 const PROMPTS_LITE = {
   INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### I. RADIOGRAFÍA FORENSE INICIAL | EN: ### I. INITIAL FORENSIC X-RAY\nMini resumen ejecutivo (tabla): Carga (TIEMPO_CARGA_SEG), SEO (SEO_TECNICO_SCORE), IA (AI_DISCOVERABILITY_SCORE), Veredicto 1 línea.\n2 párrafos: fricción detectada + qué vende el negocio. Dossier: ${d}`,
 
-  SCORECARD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### II. SIGNOS VITALES DE CONVERSIÓN | EN: ### II. CONVERSION VITAL SIGNS\nTabla Markdown (1-10) con 5 filas: Fricción Checkout/CTA, Claridad de Oferta, Arquitectura de Confianza, SEO Técnico (dato real), Visibilidad en IAs. 1 línea de impacto cualitativo por fila (sin $). Dossier: ${d}`,
+  SCORECARD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### II. SIGNOS VITALES DE CONVERSIÓN | EN: ### II. CONVERSION VITAL SIGNS\nTabla Markdown (1-10) con 5 filas: Fricción Checkout/CTA, Claridad de Oferta, Arquitectura de Confianza, SEO Técnico (dato real), Visibilidad en IAs. 1 línea de impacto cualitativo por fila (sin $). PROHIBIDO citar #id o "evidence" interno. Dossier: ${d}`,
 
-  SEO_IA_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### III. SNAPSHOT SEO + IA | EN: ### III. SEO + AI SNAPSHOT\nTabla compacta | Señal | Valor | Riesgo | con mínimo 6 filas de SEO_FORENSICS/AI_VISIBILITY. Keywords de KEYWORDS_INFERIDAS (inferidas, sin volumen).\n1 párrafo: evaluación técnica proxy — ¿robots/schema/llms permitirían citación por IAs? NO afirmar prueba en ChatGPT en vivo. Dossier: ${d}`,
+  SEO_IA_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### III. SNAPSHOT SEO + IA | EN: ### III. SEO + AI SNAPSHOT\nTabla compacta con encabezados exactos:\nES: | Qué revisamos | Hallazgo | Prioridad |\nEN: | What we checked | What we found | Priority |\nMínimo 6 filas de SEO_FORENSICS/AI_VISIBILITY (H1, Schema, ALT, SEO score, load time, AI score). En "What we found" escribe lenguaje claro (ej. "No H1 heading found"), NO jerga tipo "0 Blocks". Keywords de KEYWORDS_INFERIDAS (máx 5, una por línea).\n1 párrafo: evaluación técnica proxy — robots/schema/llms. NO afirmar prueba en ChatGPT en vivo. Dossier: ${d}`,
 
-  WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### IV. LA BRECHA DEL POTENCIAL | EN: ### IV. THE POTENTIAL GAP\n1 párrafo breve + punto numerado 1. **La pieza faltante / Missing piece:** mejora estratégica más valiosa. Dossier: ${d}`,
+  WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### IV. LA LISTA DE DESEOS DEL CLIENTE | EN: ### IV. THE CUSTOMER'S WISH LIST\n5–7 deseos en voz del comprador (1. **Wish:** "I wish…" / **Deseo:** "Ojalá…"). PROHIBIDO: fixes técnicos (H1, Schema, alt, robots) y PROHIBIDO citar #id o Evidence. SÍ: preview personalización, envío, materiales, garantía, contacto humano, claridad de oferta. Dossier: ${d}`,
 
-  FUGAS_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### V. LAS 3 HEMORRAGIAS CRÍTICAS | EN: ### V. 3 CRITICAL LEAKS\nExactamente 3 puntos numerados 1. 2. 3. de FALLAS_PRIORITARIAS (SIMULATION_RESULTS), alineados al GIRO_DETECTADO. Formato: 1. **[P1 — HEMORRAGIA CRÍTICA]** …, 2. **[P2 — FUGA GRAVE]** …, 3. **[P3 — FUGA MODERADA]** … (traduce etiquetas al idioma del activo). ${FORMATO_LISTAS}. Cita #id. Impacto cualitativo. Dossier: ${d}`,
+  FUGAS_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### V. LAS 3 HEMORRAGIAS CRÍTICAS | EN: ### V. 3 CRITICAL LEAKS\nExactamente 3 puntos numerados de FALLAS_PRIORITARIAS. Formato: 1. **[P1 — CRITICAL]** …, 2. **[P2 — HIGH]** …, 3. **[P3 — MEDIUM]** … ${FORMATO_LISTAS}. Impacto en ventas en lenguaje claro. PROHIBIDO citar #id, evaluation o Evidence. Dossier: ${d}`,
 
   UPSELL: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### VI. ACTIVA PROTECCIÓN TITÁN | EN: ### VI. ACTIVATE TITAN PROTECTION\nPárrafo persuasivo: estas 3 fugas son solo el inicio.\nLista exacta (traducida al idioma del activo): ${PILARES_11}\nMenciona Reporte Titán (USD $199, precio introductorio): 15 fugas + 15 acciones tácticas + SEO forense completo + roadmap 21 días.\nCierra sobre fricción de conversión detectada. Dossier: ${d}`,
 };

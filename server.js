@@ -65,6 +65,7 @@ const {
     getReportEmailCopy,
     getVisionPromptLabels,
     postProcessSection,
+    LITE_SECTION_ORDER,
 } = require('./report-format');
 const { stageUsesVision } = require('./forensics');
 const { validateSection, stripFinancialClaims, SKIP_MONEY_CHECK } = require('./validator');
@@ -1983,7 +1984,10 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const deltaKeys = modo === 'DELTA'
             ? DELTA_SECTION_ORDER.filter((k) => job.progress?.[k])
             : null;
-        const pdfKeys = deltaKeys || Object.keys(job.progress || {});
+        const liteKeys = modo === 'LITE'
+            ? LITE_SECTION_ORDER.filter((k) => job.progress?.[k])
+            : null;
+        const pdfKeys = deltaKeys || liteKeys || Object.keys(job.progress || {});
         for (const key of pdfKeys) {
             const value = job.progress[key];
             if (!value || key === '__meta__' || key === 'SCORECARD_IS_HTML') continue;

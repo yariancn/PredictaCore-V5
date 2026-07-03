@@ -423,10 +423,81 @@ function getReportEmailCopy(modo, locale, { titanUrl, portalUrl, social, targetU
 const NUMBERED_SECTIONS = {
     FUGAS: 15,
     ACCIONES: 15,
-    WISHLIST: 10,
+    WISHLIST: 7,
     FUGAS_LITE: 3,
     OMNI: 9,
 };
+
+const LITE_SECTION_HEADERS = {
+    INTRO: {
+        es: '### I. RADIOGRAFÍA FORENSE INICIAL',
+        en: '### I. INITIAL FORENSIC X-RAY',
+    },
+    SCORECARD: {
+        es: '### II. SIGNOS VITALES DE CONVERSIÓN',
+        en: '### II. CONVERSION VITAL SIGNS',
+    },
+    SEO_IA_LITE: {
+        es: '### III. SNAPSHOT SEO + IA',
+        en: '### III. SEO + AI SNAPSHOT',
+    },
+    WISHLIST: {
+        es: '### IV. LA LISTA DE DESEOS DEL CLIENTE',
+        en: '### IV. THE CUSTOMER\'S WISH LIST',
+    },
+    FUGAS_LITE: {
+        es: '### V. LAS 3 HEMORRAGIAS CRÍTICAS',
+        en: '### V. 3 CRITICAL LEAKS',
+    },
+    UPSELL: {
+        es: '### VI. ACTIVA PROTECCIÓN TITÁN',
+        en: '### VI. ACTIVATE TITAN PROTECTION',
+    },
+};
+
+const LITE_SECTION_ORDER = ['INTRO', 'SCORECARD', 'SEO_IA_LITE', 'WISHLIST', 'FUGAS_LITE', 'UPSELL'];
+
+/** Remove internal simulator IDs from client-facing Lite PDF copy */
+function stripInternalEvidenceRefs(text) {
+    return String(text || '')
+        .replace(/\s*\(Evidence:\s*#[\d,\s#]+\)/gi, '')
+        .replace(/\s*\(Evidencia:\s*#[\d,\s#]+\)/gi, '')
+        .replace(/\s*\(evidence:\s*evaluation\s*#\d+\)/gi, '')
+        .replace(/\s*\(evidencia:\s*evaluación\s*#\d+\)/gi, '')
+        .replace(/\s*\(#\d+(?:,\s*#\d+)*\)/g, '')
+        .replace(/\s+#\d+(?:,\s*#\d+)*\s*(?=[.);]|$)/g, '')
+        .replace(/\s{2,}/g, ' ')
+        .replace(/ \./g, '.')
+        .trim();
+}
+
+function normalizeLiteSeoTable(text, locale) {
+    const es = locale?.code?.startsWith('es');
+    let out = text;
+    out = out.replace(
+        /\|\s*(?:Señal|Signal|SIGNAL)\s*\|\s*(?:Valor|Value|VALUE)\s*\|\s*(?:Riesgo|Risk|RISK)\s*\|/gi,
+        es ? '| Qué revisamos | Hallazgo | Prioridad |' : '| What we checked | What we found | Priority |',
+    );
+    out = out.replace(/\b0\s+Blocks\b/gi, es ? 'No encontrado' : 'Not found');
+    out = out.replace(/\b0\s+Found\b/gi, es ? 'No encontrado' : 'Not found');
+    return out;
+}
+
+function forceLiteSectionHeader(etapaId, text, locale) {
+    const headers = LITE_SECTION_HEADERS[etapaId];
+    if (!headers) return text;
+    const es = locale?.code?.startsWith('es');
+    const canonical = es ? headers.es : headers.en;
+    const body = String(text || '').replace(/^###[^\n]+\n?/, '').trim();
+    return `${canonical}\n\n${body}`;
+}
+
+function sanitizeLiteSection(etapaId, text, locale) {
+    let out = stripInternalEvidenceRefs(text);
+    out = normalizeLiteSeoTable(out, locale);
+    out = forceLiteSectionHeader(etapaId, out, locale);
+    return out;
+}
 
 function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
     let out = stripPlaceholderLeaks(text || '');
@@ -461,11 +532,16 @@ function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
 
     if (target) {
         const mode = SECTION_EXTRACT_MODE[etapaId] || 'auto';
-        out = normalizeNumberedList(out, { minItems: Math.min(target, 3), targetItems: target, mode });
+        const wishTarget = etapaId === 'WISHLIST' && opts.modo === 'LITE' ? 5 : target;
+        out = normalizeNumberedList(out, { minItems: Math.min(wishTarget, 3), targetItems: wishTarget, mode });
         const after = countNumberedItems(out.replace(/^###[^\n]+\n?/, ''));
-        if (after < target - 1) {
-            out = normalizeNumberedList(out, { minItems: 2, targetItems: target, mode: 'auto' });
+        if (after < wishTarget - 1) {
+            out = normalizeNumberedList(out, { minItems: 2, targetItems: wishTarget, mode: 'auto' });
         }
+    }
+
+    if (opts.modo === 'LITE') {
+        out = sanitizeLiteSection(etapaId, out, locale);
     }
     return out;
 }
@@ -482,5 +558,8 @@ module.exports = {
     buildReportFilename,
     postProcessSection,
     NUMBERED_SECTIONS,
+    LITE_SECTION_ORDER,
     PLACEHOLDER_RE,
+    stripInternalEvidenceRefs,
+    sanitizeLiteSection,
 };

@@ -140,6 +140,9 @@ function buildFugasFromDossier(dossier, locale, { target = 15, header } = {}) {
     const items = unique.map((f) => {
         const label = f.band;
         const rule = localizeRule(f.rule, locale);
+        if (target <= 3) {
+            return `**${label}:** ${rule} — ${f.evidence}`;
+        }
         const evId = f.id < 9000 ? `#${f.id}` : null;
         const suffix = evId ? ` (evidence: ${evLabel} ${evId})` : ` (evidence: ${f.evidence})`;
         return `**${label}:** ${rule} — ${f.evidence}${suffix}`;
