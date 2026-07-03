@@ -159,12 +159,14 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
             : `Your Lite scan of <strong style="color:#fff;">${targetUrl || 'your page'}</strong> was not opinion — it was hard data${metricsLine ? ` (${metricsLine})` : ''}. Those failures are <strong style="color:#ef4444;">still present</strong> until you fix them. Titan gives you the full map: 15 leaks, 15 actions, benchmark, and a 21-day plan.`;
     } else {
         subject = es
-            ? 'PredictaCore — Encontramos fugas en tu página (12 más ocultas en Titán)'
-            : 'PredictaCore — We found leaks on your page (12 more hidden in Titan)';
-        headline = es ? 'Encontramos fugas — te faltan 12 más' : 'We found leaks — 12 more are still hidden';
+            ? `Tu reporte Lite — 3 fugas en ${targetUrl || 'tu página'}`
+            : `Your Lite report — 3 leaks on ${targetUrl || 'your page'}`;
+        headline = es
+            ? 'Tu reporte Lite está adjunto'
+            : 'Your Lite report is attached';
         intro = es
-            ? `Adjunto va tu PDF Lite de <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> — solo 3 fallas básicas, sin plan de corrección. Para ver las <strong style="color:#10b981;">15 principales</strong> y <strong style="color:#10b981;">cómo resolver cada una</strong>, corre el Reporte Titán con el botón de abajo.`
-            : `Your Lite PDF for <strong style="color:#fff;">${targetUrl || 'your page'}</strong> is attached — 3 basic flaws only, no fix playbook. To see all <strong style="color:#10b981;">15 main failures</strong> and <strong style="color:#10b981;">how to fix each one</strong>, run the Titan Report with the button below.`;
+            ? `Analizamos <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> desde afuera (sin acceso a tu backend). En el PDF verás <strong style="color:#10b981;">3 fugas críticas</strong> que hoy hacen perder visitantes. Léelo primero — si quieres el mapa completo con <strong>15 fugas + 15 correcciones paso a paso</strong>, el Reporte Titán está a un clic abajo.`
+            : `We analyzed <strong style="color:#fff;">${targetUrl || 'your page'}</strong> from the outside (no backend access). The PDF shows <strong style="color:#10b981;">3 critical leaks</strong> costing you visitors today. Read it first — if you want the full map with <strong>15 flaws + 15 step-by-step fixes</strong>, the Titan Report is one click below.`;
     }
 
     const whyTitan = es
@@ -206,7 +208,7 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
         ? (es ? 'Tus fugas del Lite siguen activas — desbloquea las 15 con Titán' : 'Your Lite leaks are still active — unlock all 15 with Titan')
         : variant === 'weekly'
             ? (es ? 'Sigues perdiendo ventas — el plan completo está a un clic' : 'You are still losing sales — full plan one click away')
-            : (es ? 'PDF Lite adjunto + 3 fugas detectadas' : 'Lite PDF attached + 3 leaks found');
+            : (es ? 'PDF Lite adjunto — 3 fugas en tu página' : 'Lite PDF attached — 3 leaks on your page');
 
     return { subject, preheader, html, text, ctaLabel };
 }

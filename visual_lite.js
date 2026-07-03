@@ -46,6 +46,7 @@ function getHTMLLite() {
             <div class="cover-title" id="pdf-cover-title">Lite Intelligence Report</div>
             <div class="cover-accent"></div>
             <div id="pdf-metrics"></div>
+            <div id="pdf-social-proof"></div>
             <div style="font-size: 10.5pt; color: #64748b; font-weight: 600;" id="pdf-domain">Asset Analysis</div>
         </div>
         <div id="evidence-area"></div>

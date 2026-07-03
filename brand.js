@@ -218,6 +218,14 @@ function getPdfHeaderDisclaimerHtml(lang = 'en') {
     return `<p class="pc-header-disclaimer">${text}</p>`;
 }
 
+function getPdfLiteSocialProofHtml(lang) {
+    const es = lang === 'es';
+    const text = es
+        ? 'Reportes forenses entregados a fundadores Shopify y tiendas ecommerce'
+        : 'Forensic reports delivered to Shopify & ecommerce founders';
+    return `<p class="pc-lite-social-proof">${text}</p>`;
+}
+
 function getPdfCoverMetricsHtml({ loadTimeSec, seoScore, aiScore, assetType, lang = 'es' }) {
     const load = loadTimeSec != null ? `${loadTimeSec}s` : '—';
     const seo = seoScore != null ? `${seoScore}/100` : '—';
@@ -248,7 +256,7 @@ function getPdfBrandStyles() {
 .pc-wordmark { font-size: 1.65rem; font-weight: 900; letter-spacing: -0.04em; text-transform: uppercase; color: #0f172a; line-height: 1.05; }
 .pc-accent { color: #10b981; }
 .pc-tagline { font-size: 7.5pt; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: #64748b; margin-top: 4px; }
-.pc-metrics { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 8px 0; page-break-inside: avoid; }
+.pc-lite-social-proof { font-size: 8.5pt; color: #64748b; font-weight: 600; margin: 4px 0 12px 0; letter-spacing: 0.04em; }
 .pc-metric { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; min-width: 100px; background: #f8fafc; }
 .pc-metric-k { display: block; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.12em; color: #64748b; font-weight: 700; }
 .pc-metric-v { display: block; font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 2px; }
@@ -277,6 +285,7 @@ module.exports = {
     wrapPredictaCoreEmail,
     getPdfCoverBrandHtml,
     getPdfCoverMetricsHtml,
+    getPdfLiteSocialProofHtml,
     getPdfClosingHtml,
     getPdfHeaderDisclaimerHtml,
     getPdfBrandStyles,

@@ -430,32 +430,20 @@ const NUMBERED_SECTIONS = {
 
 const LITE_SECTION_HEADERS = {
     INTRO: {
-        es: '### I. RADIOGRAFÍA FORENSE INICIAL',
-        en: '### I. INITIAL FORENSIC X-RAY',
-    },
-    SCORECARD: {
-        es: '### II. SIGNOS VITALES DE CONVERSIÓN',
-        en: '### II. CONVERSION VITAL SIGNS',
-    },
-    SEO_IA_LITE: {
-        es: '### III. SNAPSHOT SEO + IA',
-        en: '### III. SEO + AI SNAPSHOT',
-    },
-    WISHLIST: {
-        es: '### IV. LA LISTA DE DESEOS DEL CLIENTE',
-        en: '### IV. THE CUSTOMER\'S WISH LIST',
+        es: '### I. RESUMEN EJECUTIVO',
+        en: '### I. EXECUTIVE SUMMARY',
     },
     FUGAS_LITE: {
-        es: '### V. LAS 3 HEMORRAGIAS CRÍTICAS',
-        en: '### V. 3 CRITICAL LEAKS',
+        es: '### II. LAS 3 FUGAS CRÍTICAS',
+        en: '### II. 3 CRITICAL LEAKS',
     },
     UPSELL: {
-        es: '### VI. ACTIVA PROTECCIÓN TITÁN',
-        en: '### VI. ACTIVATE TITAN PROTECTION',
+        es: '### III. SIGUIENTE PASO — REPORTE TITÁN',
+        en: '### III. NEXT STEP — TITAN REPORT',
     },
 };
 
-const LITE_SECTION_ORDER = ['INTRO', 'SCORECARD', 'SEO_IA_LITE', 'WISHLIST', 'FUGAS_LITE', 'UPSELL'];
+const LITE_SECTION_ORDER = ['INTRO', 'FUGAS_LITE', 'UPSELL'];
 
 /** Remove internal simulator IDs from client-facing Lite PDF copy */
 function stripInternalEvidenceRefs(text) {

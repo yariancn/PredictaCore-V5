@@ -1,29 +1,25 @@
-// cerebro_lite.js - TEASER FORENSE CON SEO/IA REAL
+// cerebro_lite.js - Lite PDF: short sales-focused teaser (cover + 3 leaks + Titan CTA)
 
 const { IDIOMA_LITE } = require('./idioma');
 
 const IDIOMA = IDIOMA_LITE;
 
-const REGLA_NUCLEAR = "REGLA NUCLEAR: PredictaCore Titán, auditor forence. Tono élite, clínico. Prohibido tipografías/colores. Fricción de conversión y abandono. PROHIBIDO $, USD, ROI%. PROHIBIDO referencias internas (#12, Evidence #N, evaluation #N) — el cliente no las entiende.";
+const REGLA_NUCLEAR =
+  'REGLA NUCLEAR: PredictaCore, auditor forense. Tono claro para dueño de negocio (no jerga de laboratorio). PROHIBIDO $, USD, ROI%. PROHIBIDO referencias internas (#12, Evidence #N, evaluation #N). PROHIBIDO tablas largas — las métricas ya están en la portada del PDF.';
 
-const FORMATO_LISTAS = "INSTRUCCIÓN DE FORMATO: Inicia cada punto con un número. Ejemplo: '1. [Texto]'. PROHIBIDO viñetas • o -.";
+const FORMATO_LISTAS =
+  "INSTRUCCIÓN DE FORMATO: Inicia cada punto con un número. Ejemplo: '1. [Texto]'. PROHIBIDO viñetas • o -.";
 
-const PILARES_11 = "11 Pilares PredictaCore (Titán): Radiografía del Activo, Perfiles Psicológicos, Scorecard de Salud, Visibilidad y SEO, Benchmark Competitivo, Matriz Estratégica, Lista de Deseos, 15 Puntos de Fuga, 15 Acciones Tácticas, Herramientas de Escala, Hoja de Ruta 21 Días.";
+const HDR =
+  'Escribe el encabezado ### en el idioma de IDIOMA_APLICAR del dossier (inglés si la página es inglesa, español latinoamericano si es española).';
 
-const HDR = 'Escribe el encabezado ### en el idioma de IDIOMA_APLICAR del dossier (inglés si la página es inglesa, español latinoamericano si es española).';
-
+/** Only 3 LLM sections — ~4 PDF pages with cover screenshots + Titan CTA block */
 const PROMPTS_LITE = {
-  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### I. RADIOGRAFÍA FORENSE INICIAL | EN: ### I. INITIAL FORENSIC X-RAY\nMini resumen ejecutivo (tabla): Carga (TIEMPO_CARGA_SEG), SEO (SEO_TECNICO_SCORE), IA (AI_DISCOVERABILITY_SCORE), Veredicto 1 línea.\n2 párrafos: fricción detectada + qué vende el negocio. Dossier: ${d}`,
+  INTRO: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### I. RESUMEN EJECUTIVO | EN: ### I. EXECUTIVE SUMMARY\nMáximo 2 párrafos cortos (no tabla): (1) qué vende el negocio y a quién, (2) la fricción #1 que hace perder visitantes hoy. 1 frase de veredicto. Cita datos del dossier en lenguaje humano (ej. "sin titular principal", no "H1_COUNT: 0"). Dossier: ${d}`,
 
-  SCORECARD: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### II. SIGNOS VITALES DE CONVERSIÓN | EN: ### II. CONVERSION VITAL SIGNS\nTabla Markdown (1-10) con 5 filas: Fricción Checkout/CTA, Claridad de Oferta, Arquitectura de Confianza, SEO Técnico (dato real), Visibilidad en IAs. 1 línea de impacto cualitativo por fila (sin $). PROHIBIDO citar #id o "evidence" interno. Dossier: ${d}`,
+  FUGAS_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### II. LAS 3 FUGAS CRÍTICAS | EN: ### II. 3 CRITICAL LEAKS\nExactamente 3 puntos numerados de FALLAS_PRIORITARIAS. Formato: 1. **[Critical]** título corto — 2-3 frases: qué pasa, por qué el comprador se va, impacto en ventas. 2. **[High]** … 3. **[Medium]** … ${FORMATO_LISTAS}. PROHIBIDO citar #id, Evidence, HEMORRHAGE, FORENSIC. Dossier: ${d}`,
 
-  SEO_IA_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### III. SNAPSHOT SEO + IA | EN: ### III. SEO + AI SNAPSHOT\nTabla compacta con encabezados exactos:\nES: | Qué revisamos | Hallazgo | Prioridad |\nEN: | What we checked | What we found | Priority |\nMínimo 6 filas de SEO_FORENSICS/AI_VISIBILITY (H1, Schema, ALT, SEO score, load time, AI score). En "What we found" escribe lenguaje claro (ej. "No H1 heading found"), NO jerga tipo "0 Blocks". Keywords de KEYWORDS_INFERIDAS (máx 5, una por línea).\n1 párrafo: evaluación técnica proxy — robots/schema/llms. NO afirmar prueba en ChatGPT en vivo. Dossier: ${d}`,
-
-  WISHLIST: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### IV. LA LISTA DE DESEOS DEL CLIENTE | EN: ### IV. THE CUSTOMER'S WISH LIST\n5–7 deseos en voz del comprador (1. **Wish:** "I wish…" / **Deseo:** "Ojalá…"). PROHIBIDO: fixes técnicos (H1, Schema, alt, robots) y PROHIBIDO citar #id o Evidence. SÍ: preview personalización, envío, materiales, garantía, contacto humano, claridad de oferta. Dossier: ${d}`,
-
-  FUGAS_LITE: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### V. LAS 3 HEMORRAGIAS CRÍTICAS | EN: ### V. 3 CRITICAL LEAKS\nExactamente 3 puntos numerados de FALLAS_PRIORITARIAS. Formato: 1. **[P1 — CRITICAL]** …, 2. **[P2 — HIGH]** …, 3. **[P3 — MEDIUM]** … ${FORMATO_LISTAS}. Impacto en ventas en lenguaje claro. PROHIBIDO citar #id, evaluation o Evidence. Dossier: ${d}`,
-
-  UPSELL: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### VI. ACTIVA PROTECCIÓN TITÁN | EN: ### VI. ACTIVATE TITAN PROTECTION\nPárrafo persuasivo: estas 3 fugas son solo el inicio.\nLista exacta (traducida al idioma del activo): ${PILARES_11}\nMenciona Reporte Titán (USD $199, precio introductorio): 15 fugas + 15 acciones tácticas + SEO forense completo + roadmap 21 días.\nCierra sobre fricción de conversión detectada. Dossier: ${d}`,
+  UPSELL: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\n${HDR} Ejemplo ES: ### III. SIGUIENTE PASO — REPORTE TITÁN | EN: ### III. NEXT STEP — TITAN REPORT\n2 párrafos persuasivos (sin lista de 11 pilares): estas 3 fugas son la punta del iceberg; Titán entrega las 15 principales + 15 recomendaciones concretas para resolver cada una + benchmark + plan 21 días. Cierra invitando a desbloquear el mapa completo. PROHIBIDO precios en esta sección. Dossier: ${d}`,
 };
 
-module.exports = { PROMPTS_LITE, IDIOMA, REGLA_NUCLEAR, PILARES_11 };
+module.exports = { PROMPTS_LITE, IDIOMA, REGLA_NUCLEAR };
