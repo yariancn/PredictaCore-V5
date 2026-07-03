@@ -226,6 +226,72 @@ function getPdfLiteSocialProofHtml(lang) {
     return `<p class="pc-lite-social-proof">${text}</p>`;
 }
 
+/**
+ * Cover value block for Lite PDF — honest positioning, no invented claims.
+ * Fills page 1 so the report does not open on empty metrics alone.
+ */
+function getPdfLiteCoverValueHtml(lang) {
+    const es = lang === 'es' || String(lang).startsWith('es');
+    if (es) {
+        return `<div class="pc-lite-cover-value">
+  <p class="pc-lite-cover-kicker">Qué es este reporte</p>
+  <p class="pc-lite-cover-lead">PredictaCore analiza tu página pública como la ve un visitante nuevo: HTML real, velocidad de carga, señales SEO, visibilidad ante IA y fricción de confianza que hace abandonar antes de comprar.</p>
+  <p class="pc-lite-cover-sub">No es un chequeo genérico de PageSpeed ni un párrafo de ChatGPT. Es un diagnóstico de conversión desde afuera — sin acceso a tu backend, analytics ni panel de administración.</p>
+  <div class="pc-lite-cover-grid">
+    <div class="pc-lite-cover-col">
+      <p class="pc-lite-cover-col-title">Cómo analizamos</p>
+      <ul>
+        <li>Capturas desktop y móvil de tu URL en vivo</li>
+        <li>Tiempo de carga medido en la visita real</li>
+        <li>SEO técnico: H1, meta, Schema, alt, sitemap, robots</li>
+        <li>Señales de citabilidad para buscadores e IA</li>
+        <li>Fricción de confianza y claridad de oferta</li>
+      </ul>
+    </div>
+    <div class="pc-lite-cover-col">
+      <p class="pc-lite-cover-col-title">Qué incluye este Lite</p>
+      <ul>
+        <li>Resumen ejecutivo de tu negocio y fricción #1</li>
+        <li>Tabla SEO + visibilidad IA con hallazgos medibles</li>
+        <li>3 fugas críticas rankeadas por impacto</li>
+        <li>Evidencia concreta por cada fuga (métricas reales)</li>
+        <li>Invitación al mapa completo Titán (15 fugas + 15 fixes)</li>
+      </ul>
+    </div>
+  </div>
+  <p class="pc-lite-cover-note"><strong>Alcance honesto:</strong> solo datos públicos de tu página. Lite muestra 3 de 15 fugas prioritarias — el problema, no el plan completo de corrección. Titán entrega el mapa completo con recomendaciones paso a paso.</p>
+</div>`;
+    }
+    return `<div class="pc-lite-cover-value">
+  <p class="pc-lite-cover-kicker">What this report is</p>
+  <p class="pc-lite-cover-lead">PredictaCore analyzes your public page the way a first-time visitor experiences it: live HTML, load speed, SEO signals, AI discoverability, and trust friction that makes people leave before they buy.</p>
+  <p class="pc-lite-cover-sub">This is not a generic PageSpeed check or a ChatGPT paragraph. It is an outside-in conversion diagnosis — no backend access, no admin login, no private analytics.</p>
+  <div class="pc-lite-cover-grid">
+    <div class="pc-lite-cover-col">
+      <p class="pc-lite-cover-col-title">How we analyze</p>
+      <ul>
+        <li>Live desktop and mobile screenshots of your URL</li>
+        <li>Load time measured on the real visit</li>
+        <li>Technical SEO: H1, meta, Schema, alt text, sitemap, robots</li>
+        <li>Citability signals for search engines and AI</li>
+        <li>Trust friction and offer clarity gaps</li>
+      </ul>
+    </div>
+    <div class="pc-lite-cover-col">
+      <p class="pc-lite-cover-col-title">What this Lite includes</p>
+      <ul>
+        <li>Executive summary of your business and #1 friction</li>
+        <li>SEO + AI visibility table with measurable findings</li>
+        <li>3 critical leaks ranked by impact</li>
+        <li>Concrete evidence for each leak (real metrics)</li>
+        <li>Invite to the full Titan map (15 leaks + 15 fixes)</li>
+      </ul>
+    </div>
+  </div>
+  <p class="pc-lite-cover-note"><strong>Honest scope:</strong> public page data only. Lite shows 3 of 15 priority leaks — the problem, not the full fix playbook. Titan delivers the complete map with step-by-step recommendations.</p>
+</div>`;
+}
+
 function getPdfCoverMetricsHtml({ loadTimeSec, seoScore, aiScore, assetType, lang = 'es' }) {
     const load = loadTimeSec != null ? `${loadTimeSec}s` : '—';
     const seo = seoScore != null ? `${seoScore}/100` : '—';
@@ -257,6 +323,17 @@ function getPdfBrandStyles() {
 .pc-accent { color: #10b981; }
 .pc-tagline { font-size: 7.5pt; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: #64748b; margin-top: 4px; }
 .pc-lite-social-proof { font-size: 8.5pt; color: #64748b; font-weight: 600; margin: 4px 0 12px 0; letter-spacing: 0.04em; }
+.pc-lite-cover-value { margin: 14px 0 8px 0; page-break-inside: avoid; }
+.pc-lite-cover-kicker { font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.16em; color: #10b981; margin: 0 0 8px 0; }
+.pc-lite-cover-lead { font-size: 10.5pt; font-weight: 700; color: #0f172a; line-height: 1.45; margin: 0 0 8px 0; }
+.pc-lite-cover-sub { font-size: 9pt; color: #475569; line-height: 1.45; margin: 0 0 14px 0; }
+.pc-lite-cover-grid { display: flex; gap: 14px; margin: 0 0 12px 0; }
+.pc-lite-cover-col { flex: 1; min-width: 0; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; padding: 12px 14px; }
+.pc-lite-cover-col-title { font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #0f172a; margin: 0 0 8px 0; }
+.pc-lite-cover-col ul { margin: 0; padding-left: 1rem; }
+.pc-lite-cover-col li { font-size: 8.5pt; color: #334155; line-height: 1.4; margin-bottom: 5px; }
+.pc-lite-cover-note { font-size: 8pt; color: #475569; line-height: 1.45; margin: 0; padding: 10px 12px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; }
+.pc-lite-cover-note strong { color: #065f46; }
 .pc-metric { border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; min-width: 100px; background: #f8fafc; }
 .pc-metric-k { display: block; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.12em; color: #64748b; font-weight: 700; }
 .pc-metric-v { display: block; font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 2px; }
@@ -286,6 +363,7 @@ module.exports = {
     getPdfCoverBrandHtml,
     getPdfCoverMetricsHtml,
     getPdfLiteSocialProofHtml,
+    getPdfLiteCoverValueHtml,
     getPdfClosingHtml,
     getPdfHeaderDisclaimerHtml,
     getPdfBrandStyles,

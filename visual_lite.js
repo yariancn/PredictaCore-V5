@@ -59,6 +59,7 @@ function getHTMLLite() {
             <div id="pdf-metrics"></div>
             <div id="pdf-social-proof"></div>
             <div style="font-size: 10.5pt; color: #64748b; font-weight: 600;" id="pdf-domain">Asset Analysis</div>
+            <div id="pdf-cover-value"></div>
         </div>
         <div id="evidence-area"></div>
         <div id="reporte"></div>

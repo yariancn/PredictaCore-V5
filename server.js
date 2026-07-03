@@ -57,7 +57,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
-const { buildTitanUpgradeUrl, wrapPredictaCoreEmail, getPdfCoverMetricsHtml, getPdfLiteSocialProofHtml, getResendFrom, getSalesNotifyEmail, getPdfClosingHtml, getPdfHeaderDisclaimerHtml, getSubscriptionCancellationPlain } = require('./brand');
+const { buildTitanUpgradeUrl, wrapPredictaCoreEmail, getPdfCoverMetricsHtml, getPdfLiteSocialProofHtml, getPdfLiteCoverValueHtml, getResendFrom, getSalesNotifyEmail, getPdfClosingHtml, getPdfHeaderDisclaimerHtml, getSubscriptionCancellationPlain } = require('./brand');
 const {
     getLocaleFromDossier,
     getLanguageLockInstruction,
@@ -2012,6 +2012,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             lang: langCode,
         });
         const socialProofHtml = modo === 'LITE' ? getPdfLiteSocialProofHtml(langCode) : '';
+        const coverValueHtml = modo === 'LITE' ? getPdfLiteCoverValueHtml(langCode) : '';
         const pageInsightsHtml = modo === 'LITE' ? buildLitePageInsightsHtml(dossier, reportLocale, captures) : '';
 
         const liteProgress = { ...(job.progress || {}) };
@@ -2045,7 +2046,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const closingHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfClosingHtml(langCode, modo) : '';
         const headerDisclaimerHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfHeaderDisclaimerHtml(langCode) : '';
 
-        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, socialProofBlock, insightsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang, closingBlock, headerDisclaimerBlock) => {
+        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, socialProofBlock, coverValueBlock, insightsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang, closingBlock, headerDisclaimerBlock) => {
             if (htmlLang) document.documentElement.lang = htmlLang;
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
@@ -2072,6 +2073,9 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
 
             const socialEl = document.getElementById('pdf-social-proof');
             if (socialEl && socialProofBlock) socialEl.innerHTML = socialProofBlock;
+
+            const coverValueEl = document.getElementById('pdf-cover-value');
+            if (coverValueEl && coverValueBlock) coverValueEl.innerHTML = coverValueBlock;
 
             const evidenceTargets = [
                 document.getElementById('pdf-evidence-page'),
@@ -2141,7 +2145,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                 cta.innerHTML = '<p style="margin-top:14px;text-align:center;"><a href="' + titanUpgradeUrl + '" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">' + ctaBtn + '</a></p>';
                 reporte.appendChild(cta);
             }
-        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, socialProofHtml, pageInsightsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);
+        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, socialProofHtml, coverValueHtml, pageInsightsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, timeout: 120000 });
         await browser.close();
