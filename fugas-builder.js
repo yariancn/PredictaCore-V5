@@ -141,7 +141,12 @@ function buildFugasFromDossier(dossier, locale, { target = 15, header } = {}) {
         const label = f.band;
         const rule = localizeRule(f.rule, locale);
         if (target <= 3) {
-            return `**${label}:** ${rule} — ${f.evidence}`;
+            const ev = es ? 'Evidencia' : 'Evidence';
+            const why = es ? 'Por qué cuesta ventas' : 'Why it costs sales';
+            const whyText = es
+                ? 'Los visitantes nuevos pierden confianza o claridad antes de comprar.'
+                : 'New visitors lose clarity or trust before they buy.';
+            return `**${label}:** ${rule}\n**${ev}:** ${f.evidence}\n**${why}:** ${whyText}`;
         }
         const evId = f.id < 9000 ? `#${f.id}` : null;
         const suffix = evId ? ` (evidence: ${evLabel} ${evId})` : ` (evidence: ${f.evidence})`;

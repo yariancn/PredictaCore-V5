@@ -219,7 +219,8 @@ function getVisionPromptLabels(locale) {
 function getPdfUiStrings(locale) {
     if (locale.code.startsWith('es')) {
         return {
-            coverTag: 'Reporte forense de conversión',
+            coverTag: 'Reporte de análisis de conversión',
+            liteInsightsTitle: 'Lo que saltó a la vista de inmediato',
             coverTitle: 'Inteligencia Titán',
             evidenceTitle: 'Capturas de tu página',
             desktop: 'Escritorio',
@@ -232,7 +233,8 @@ function getPdfUiStrings(locale) {
         };
     }
     return {
-        coverTag: 'Forensic conversion report',
+        coverTag: 'Conversion analysis report',
+        liteInsightsTitle: 'What stood out immediately',
         coverTitle: 'Titan Intelligence',
         evidenceTitle: 'Page screenshots',
         desktop: 'Desktop',
@@ -433,17 +435,159 @@ const LITE_SECTION_HEADERS = {
         es: '### I. RESUMEN EJECUTIVO',
         en: '### I. EXECUTIVE SUMMARY',
     },
+    SEO_IA_LITE: {
+        es: '### II. SEO E IA — RESUMEN',
+        en: '### II. SEO & AI SNAPSHOT',
+    },
     FUGAS_LITE: {
-        es: '### II. LAS 3 FUGAS CRÍTICAS',
-        en: '### II. 3 CRITICAL LEAKS',
+        es: '### III. LAS 3 FUGAS CRÍTICAS',
+        en: '### III. 3 CRITICAL LEAKS',
     },
     UPSELL: {
-        es: '### III. SIGUIENTE PASO — REPORTE TITÁN',
-        en: '### III. NEXT STEP — TITAN REPORT',
+        es: '### IV. SIGUIENTE PASO — REPORTE TITÁN',
+        en: '### IV. NEXT STEP — TITAN REPORT',
     },
 };
 
-const LITE_SECTION_ORDER = ['INTRO', 'FUGAS_LITE', 'UPSELL'];
+const LITE_SECTION_ORDER = ['INTRO', 'SEO_IA_LITE', 'FUGAS_LITE', 'UPSELL'];
+
+function pickDossierValue(dossier, re, fallback = '') {
+    const m = String(dossier || '').match(re);
+    return m ? String(m[1]).trim() : fallback;
+}
+
+function litePriorityLabel(level, es) {
+    const map = {
+        critical: es ? 'Crítica' : 'Critical',
+        high: es ? 'Alta' : 'High',
+        medium: es ? 'Media' : 'Medium',
+        low: es ? 'Baja' : 'Low',
+    };
+    return map[level] || map.medium;
+}
+
+/** Deterministic SEO + AI block — no LLM, always uses real scrape metrics */
+function buildLiteSeoAiSnapshot(dossier, locale, captures = {}) {
+    const es = locale?.code?.startsWith('es');
+    const hdr = es ? LITE_SECTION_HEADERS.SEO_IA_LITE.es : LITE_SECTION_HEADERS.SEO_IA_LITE.en;
+
+    const loadSec = captures.loadTimeSec ?? pickDossierValue(dossier, /TIEMPO_CARGA_SEG:\s*([\d.]+)/);
+    const seoScore = captures.seoScore ?? pickDossierValue(dossier, /SEO_TECNICO_SCORE:\s*(\d+)/);
+    const aiScore = captures.aiScore ?? pickDossierValue(dossier, /AI_DISCOVERABILITY_SCORE:\s*(\d+)/);
+    const h1Count = pickDossierValue(dossier, /H1_COUNT:\s*(\d+)/, '0');
+    const jsonLd = pickDossierValue(dossier, /JSON_LD:\s*(\d+)/, '0');
+    const altPct = pickDossierValue(dossier, /IMAGENES_ALT_COVERAGE:\s*(\d+)/, '0');
+    const sitemap = pickDossierValue(dossier, /SITEMAP_XML:\s*(\S+)/, '');
+    const robots = pickDossierValue(dossier, /ROBOTS_TXT:\s*(\S+)/, '');
+    const llms = pickDossierValue(dossier, /LLMS_TXT:\s*(\S+)/, '');
+
+    const h1Finding = Number(h1Count) === 0
+        ? (es ? 'No encontrado' : 'Not found')
+        : (es ? 'Presente' : 'Found');
+    const schemaFinding = Number(jsonLd) === 0
+        ? (es ? 'Sin Schema.org' : 'No Schema.org')
+        : `${jsonLd} ${es ? 'bloque(s)' : 'block(s)'}`;
+    const altFinding = `${altPct}%`;
+    const loadFinding = loadSec ? `${loadSec}s` : '—';
+    const seoFinding = seoScore ? `${seoScore}/100` : '—';
+    const aiFinding = aiScore ? `${aiScore}/100` : '—';
+
+    const rows = [
+        [es ? 'Titular principal (H1)' : 'Primary headline (H1)', h1Finding, Number(h1Count) === 0 ? 'critical' : 'low'],
+        [es ? 'Datos estructurados (Schema)' : 'Structured data (Schema)', schemaFinding, Number(jsonLd) === 0 ? 'high' : 'low'],
+        [es ? 'Texto alternativo en imágenes' : 'Image alt text coverage', altFinding, Number(altPct) < 50 ? 'high' : 'medium'],
+        [es ? 'Tiempo de carga medido' : 'Measured load time', loadFinding, Number(loadSec) > 4 ? 'high' : 'medium'],
+        [es ? 'Puntaje SEO técnico' : 'Technical SEO score', seoFinding, Number(seoScore) < 70 ? 'medium' : 'low'],
+        [es ? 'Visibilidad ante IA' : 'AI discoverability score', aiFinding, 'low'],
+    ];
+
+    const th1 = es ? 'Qué revisamos' : 'What we checked';
+    const th2 = es ? 'Hallazgo' : 'What we found';
+    const th3 = es ? 'Prioridad' : 'Priority';
+
+    let table = `| ${th1} | ${th2} | ${th3} |\n| --- | --- | --- |\n`;
+    for (const [label, value, pri] of rows) {
+        table += `| ${label} | ${value} | ${litePriorityLabel(pri, es)} |\n`;
+    }
+
+    const seoTakeaway = Number(seoScore) < 70
+        ? (es
+            ? `El SEO técnico está en **${seoScore}/100** — faltan piezas básicas (H1, Schema, alt en imágenes) que limitan cómo Google entiende y posiciona tu tienda.`
+            : `Technical SEO is **${seoScore}/100** — basic building blocks (H1, Schema, image alt text) are missing, so Google has a harder time understanding and ranking your store.`)
+        : (es
+            ? `El SEO técnico está en **${seoScore}/100** — la base es aceptable, pero aún hay fugas de confianza y claridad que frenan la conversión.`
+            : `Technical SEO is **${seoScore}/100** — the foundation is acceptable, but trust and clarity gaps still slow conversion.`);
+
+    const aiTakeaway = Number(jsonLd) === 0
+        ? (es
+            ? `La visibilidad IA mide **${aiScore}/100**, pero sin Schema.org los motores de IA no pueden mostrar productos, precios ni reseñas con contexto — pierdes descubrimiento y credibilidad.`
+            : `AI visibility scores **${aiScore}/100**, but without Schema.org, AI engines cannot surface products, prices, or reviews with context — you lose discoverability and credibility.`)
+        : (es
+            ? `Visibilidad IA **${aiScore}/100** — robots.txt${robots ? ` (${robots})` : ''} y llms.txt${llms ? ` (${llms})` : ''} influyen en si ChatGPT y buscadores pueden citar tu tienda con precisión.`
+            : `AI visibility is **${aiScore}/100** — robots.txt${robots ? ` (${robots})` : ''} and llms.txt${llms ? ` (${llms})` : ''} affect whether ChatGPT and search engines can cite your store accurately.`);
+
+  const titanTease = es
+        ? '_Titán desglosa cada señal con recomendaciones paso a paso y benchmark vs tu categoría._'
+        : '_Titan breaks down each signal with step-by-step fixes and a category benchmark._';
+
+    return `${hdr}\n\n${table}\n${seoTakeaway}\n\n${aiTakeaway}\n\n${titanTease}`;
+}
+
+/** HTML bullets injected under page screenshots on Lite PDF page 2 */
+function buildLitePageInsightsHtml(dossier, locale, captures = {}) {
+    const es = locale?.code?.startsWith('es');
+    const ui = getPdfUiStrings(locale);
+    const title = ui.liteInsightsTitle || (es ? 'Lo que saltó a la vista' : 'What stood out immediately');
+
+    const loadSec = captures.loadTimeSec ?? pickDossierValue(dossier, /TIEMPO_CARGA_SEG:\s*([\d.]+)/);
+    const seoScore = captures.seoScore ?? pickDossierValue(dossier, /SEO_TECNICO_SCORE:\s*(\d+)/);
+    const aiScore = captures.aiScore ?? pickDossierValue(dossier, /AI_DISCOVERABILITY_SCORE:\s*(\d+)/);
+    const h1Count = Number(pickDossierValue(dossier, /H1_COUNT:\s*(\d+)/, '0'));
+    const jsonLd = Number(pickDossierValue(dossier, /JSON_LD:\s*(\d+)/, '0'));
+    const altPct = pickDossierValue(dossier, /IMAGENES_ALT_COVERAGE:\s*(\d+)/, '0');
+
+    const bullets = [];
+    if (h1Count === 0) {
+        bullets.push(es
+            ? '<strong>Sin H1 principal</strong> — un visitante nuevo no sabe en 3 segundos qué vendes.'
+            : '<strong>No primary H1</strong> — a new visitor cannot tell what you sell within 3 seconds.');
+    }
+    if (jsonLd === 0) {
+        bullets.push(es
+            ? '<strong>Sin Schema.org</strong> — Google e IA no pueden mostrar productos con contexto (precio, reseñas).'
+            : '<strong>No Schema.org</strong> — Google and AI cannot show products with context (price, reviews).');
+    }
+    if (loadSec && Number(loadSec) > 4) {
+        bullets.push(es
+            ? `<strong>Carga ${loadSec}s</strong> — por encima del umbral de 4s; alto riesgo de abandono en móvil.`
+            : `<strong>Load ${loadSec}s</strong> — above the 4s threshold; high mobile bounce risk.`);
+    }
+    if (Number(altPct) < 50) {
+        bullets.push(es
+            ? `<strong>Alt en imágenes ${altPct}%</strong> — casi invisible en búsqueda de imágenes y peor accesibilidad.`
+            : `<strong>Image alt coverage ${altPct}%</strong> — weak image search visibility and accessibility.`);
+    }
+    if (seoScore) {
+        bullets.push(es
+            ? `<strong>SEO técnico ${seoScore}/100</strong> — hay brechas estructurales antes de escalar ads.`
+            : `<strong>Technical SEO ${seoScore}/100</strong> — structural gaps exist before scaling ads.`);
+    }
+    if (aiScore) {
+        bullets.push(es
+            ? `<strong>Visibilidad IA ${aiScore}/100</strong> — buena señal técnica, pero sin Schema el contexto de producto se pierde.`
+            : `<strong>AI visibility ${aiScore}/100</strong> — solid technical signal, but without Schema product context is lost.`);
+    }
+
+    const top = bullets.slice(0, 4);
+    if (!top.length) {
+        top.push(es
+            ? 'Revisamos HTML público, velocidad y señales de confianza — ver fugas detalladas abajo.'
+            : 'We reviewed public HTML, speed, and trust signals — see detailed leaks below.');
+    }
+
+    const lis = top.map((b) => `<li>${b}</li>`).join('');
+    return `<div class="pc-lite-insights"><p class="pc-lite-insights-title">${title}</p><ul>${lis}</ul></div>`;
+}
 
 /** Remove internal simulator IDs from client-facing Lite PDF copy */
 function stripInternalEvidenceRefs(text) {
@@ -476,7 +620,7 @@ function forceLiteSectionHeader(etapaId, text, locale) {
     if (!headers) return text;
     const es = locale?.code?.startsWith('es');
     const canonical = es ? headers.es : headers.en;
-    const body = String(text || '').replace(/^###[^\n]+\n?/, '').trim();
+    const body = String(text || '').replace(/^###[^\n]+\n+/, '').trim();
     return `${canonical}\n\n${body}`;
 }
 
@@ -538,6 +682,10 @@ function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
         }
     }
 
+    if (opts.modo === 'LITE' && etapaId === 'SEO_IA_LITE') {
+        return out;
+    }
+
     if (opts.modo === 'LITE') {
         out = sanitizeLiteSection(etapaId, out, locale);
         if (etapaId === 'INTRO') {
@@ -556,8 +704,8 @@ function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
             const bodyOnly = out.replace(/^###[^\n]+\n?/, '').trim();
             if (bodyOnly.length < 60) {
                 const fallback = es
-                    ? 'Estas 3 fugas son la punta del iceberg. El Reporte Titán muestra las 15 principales y cómo resolver cada una, con plan de 21 días.'
-                    : 'These 3 leaks are the tip of the iceberg. The Titan Report shows all 15 main flaws and how to fix each one, plus a 21-day plan.';
+                    ? 'Estas 3 fugas son solo la punta del iceberg — quedan **12 más ocultas**. Titán entrega las **15 principales**, **15 recomendaciones paso a paso**, benchmark vs tu categoría y plan de 21 días.'
+                    : 'These 3 leaks are only the tip — **12 more are still hidden**. Titan delivers all **15 main flaws**, **15 step-by-step fix recommendations**, a category benchmark, and a 21-day plan.';
                 const hdr = es ? LITE_SECTION_HEADERS.UPSELL.es : LITE_SECTION_HEADERS.UPSELL.en;
                 out = `${hdr}\n\n${fallback}`;
             }
@@ -579,6 +727,8 @@ module.exports = {
     postProcessSection,
     NUMBERED_SECTIONS,
     LITE_SECTION_ORDER,
+    buildLiteSeoAiSnapshot,
+    buildLitePageInsightsHtml,
     PLACEHOLDER_RE,
     stripInternalEvidenceRefs,
     sanitizeLiteSection,

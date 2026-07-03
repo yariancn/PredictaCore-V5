@@ -38,6 +38,17 @@ function getHTMLLite() {
             }
             .lite-titan-cta h3 { color: #065f46; font-size: 11pt; margin: 0 0 8px 0; text-transform: uppercase; border: none; }
             .lite-titan-cta p { font-size: 9.5pt; color: #047857; margin: 0; line-height: 1.5; word-break: break-all; }
+            .pc-lite-insights {
+                margin-top: 16px; padding: 14px 16px; border: 1px solid #cbd5e1; border-radius: 8px;
+                background: #f8fafc; page-break-inside: avoid;
+            }
+            .pc-lite-insights-title {
+                font-size: 9pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;
+                color: #0f172a; margin: 0 0 10px 0;
+            }
+            .pc-lite-insights ul { margin: 0; padding-left: 1.1rem; }
+            .pc-lite-insights li { font-size: 9pt; line-height: 1.45; color: #334155; margin-bottom: 6px; }
+            .pc-lite-insights strong { color: #0f172a; }
         </style>
     </head>
     <body>

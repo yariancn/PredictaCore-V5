@@ -65,6 +65,8 @@ const {
     getReportEmailCopy,
     getVisionPromptLabels,
     postProcessSection,
+    buildLiteSeoAiSnapshot,
+    buildLitePageInsightsHtml,
     LITE_SECTION_ORDER,
 } = require('./report-format');
 const { stageUsesVision } = require('./forensics');
@@ -1979,6 +1981,12 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             lang: langCode,
         });
         const socialProofHtml = modo === 'LITE' ? getPdfLiteSocialProofHtml(langCode) : '';
+        const pageInsightsHtml = modo === 'LITE' ? buildLitePageInsightsHtml(dossier, reportLocale, captures) : '';
+
+        const liteProgress = { ...(job.progress || {}) };
+        if (modo === 'LITE') {
+            liteProgress.SEO_IA_LITE = buildLiteSeoAiSnapshot(dossier, reportLocale, captures);
+        }
 
         const progressForPdf = {};
         const progressHtml = {};
@@ -1986,11 +1994,11 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             ? DELTA_SECTION_ORDER.filter((k) => job.progress?.[k])
             : null;
         const liteKeys = modo === 'LITE'
-            ? LITE_SECTION_ORDER.filter((k) => job.progress?.[k])
+            ? LITE_SECTION_ORDER.filter((k) => liteProgress[k])
             : null;
-        const pdfKeys = deltaKeys || liteKeys || Object.keys(job.progress || {});
+        const pdfKeys = deltaKeys || liteKeys || Object.keys(liteProgress || {});
         for (const key of pdfKeys) {
-            const value = job.progress[key];
+            const value = liteProgress[key];
             if (!value || key === '__meta__' || key === 'SCORECARD_IS_HTML') continue;
             if (modo === 'DELTA' && key === 'SCORECARD' && job.progress.SCORECARD_IS_HTML) {
                 progressHtml[key] = value;
@@ -2006,7 +2014,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const closingHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfClosingHtml(langCode, modo) : '';
         const headerDisclaimerHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfHeaderDisclaimerHtml(langCode) : '';
 
-        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, socialProofBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang, closingBlock, headerDisclaimerBlock) => {
+        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, socialProofBlock, insightsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang, closingBlock, headerDisclaimerBlock) => {
             if (htmlLang) document.documentElement.lang = htmlLang;
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
@@ -2046,7 +2054,20 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                     + '<figure><img src="data:image/jpeg;base64,' + desktopB64 + '" alt="Desktop"/><figcaption>' + (ui.desktop || 'Desktop') + '</figcaption></figure>'
                     + (mobileB64 ? '<figure><img src="data:image/jpeg;base64,' + mobileB64 + '" alt="Mobile"/><figcaption>' + (ui.mobile || 'Mobile') + '</figcaption></figure>' : '')
                     + '</div>';
-                evidenceTargets.forEach((el) => el.appendChild(block.cloneNode(true)));
+                evidenceTargets.forEach((el) => {
+                    el.appendChild(block.cloneNode(true));
+                    if (insightsBlock) {
+                        const insights = document.createElement('div');
+                        insights.innerHTML = insightsBlock;
+                        el.appendChild(insights);
+                    }
+                });
+            } else if (insightsBlock && evidenceTargets.length) {
+                evidenceTargets.forEach((el) => {
+                    const insights = document.createElement('div');
+                    insights.innerHTML = insightsBlock;
+                    el.appendChild(insights);
+                });
             }
 
             for (const key in sectionsHtml) {
@@ -2089,7 +2110,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                 cta.innerHTML = '<p style="margin-top:14px;text-align:center;"><a href="' + titanUpgradeUrl + '" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">' + ctaBtn + '</a></p>';
                 reporte.appendChild(cta);
             }
-        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, socialProofHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);
+        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, socialProofHtml, pageInsightsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, timeout: 120000 });
         await browser.close();
