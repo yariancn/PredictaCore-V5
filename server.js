@@ -1475,7 +1475,7 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
 });
 
 app.post('/start-lite', async (req, res) => {
-    const { dna, email, assetType, platform, handle } = req.body || {};
+    const { dna, email, assetType, platform, handle, refCode } = req.body || {};
     const normalizedEmail = String(email || '').trim().toLowerCase();
 
     const resolved = resolveAuditTarget({ assetType, dna, platform, handle });
@@ -1490,7 +1490,9 @@ app.post('/start-lite', async (req, res) => {
     }
     try {
         console.log(`>>> [LITE / ${resolved.assetType}] ${normalizedEmail} — ${resolved.url}`);
-        const started = await iniciarAuditoria(resolved.url, normalizedEmail, 'LITE');
+        const started = await iniciarAuditoria(resolved.url, normalizedEmail, 'LITE', {
+            refCode: refCode ? String(refCode).trim() : '',
+        });
         res.json({ status: 'started', job_id: started.jobId, target: resolved.url });
     } catch (err) {
         console.error('!!! /start-lite:', err?.message || err);
@@ -1596,7 +1598,7 @@ app.post('/start', async (req, res) => {
     }
 });
 
-async function iniciarAuditoria(dna, email, modo) {
+async function iniciarAuditoria(dna, email, modo, opts = {}) {
     const targetUrl = normalizeUrl(dna);
     if (!targetUrl) {
         throw new Error('Invalid or missing URL');
@@ -1615,6 +1617,7 @@ async function iniciarAuditoria(dna, email, modo) {
         modo,
         dossier: null,
         initialSummary: null,
+        refCode: opts.refCode ? String(opts.refCode).trim() : '',
     };
 
     if (modo === 'DELTA') {

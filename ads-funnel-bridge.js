@@ -4,9 +4,14 @@
  */
 
 const ADS_FUNNEL_PATH = '/ads/api/funnel/events';
+const TEST_REF = 'internal_test';
 
 function adsOrigin() {
     return (process.env.ADS_ORIGIN || 'https://predictacore-ads-production.up.railway.app').replace(/\/$/, '');
+}
+
+function isTestRef(refCode) {
+    return String(refCode || '').trim().toLowerCase() === TEST_REF;
 }
 
 /**
@@ -23,19 +28,22 @@ function adsOrigin() {
  */
 async function notifyAdsFunnelEvent(input) {
     const url = `${adsOrigin()}${ADS_FUNNEL_PATH}`;
+    const test = isTestRef(input.refCode) || input.metadata?.is_test === true;
     const body = {
         clientSlug: 'predictacore',
         eventType: input.eventType,
-        utmSource: input.utmSource || 'facebook',
-        utmMedium: input.utmMedium || 'paid',
+        // Never invent paid attribution for internal QA scans
+        utmSource: test ? 'internal' : (input.utmSource || undefined),
+        utmMedium: test ? 'test' : (input.utmMedium || undefined),
         utmCampaign: input.utmCampaign || input.refCode || undefined,
-        refCode: input.refCode || undefined,
+        refCode: test ? TEST_REF : (input.refCode || undefined),
         pagePath: '/ads/lite',
         metadata: {
             source: 'titan-v5',
             email: input.email || undefined,
             job_id: input.jobId || undefined,
             url: input.urlSitio || undefined,
+            ...(test ? { is_test: true } : {}),
             ...(input.metadata || {}),
         },
     };
