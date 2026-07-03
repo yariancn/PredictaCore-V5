@@ -221,8 +221,8 @@ function getPdfHeaderDisclaimerHtml(lang = 'en') {
 function getPdfLiteSocialProofHtml(lang) {
     const es = lang === 'es';
     const text = es
-        ? 'Reportes forenses entregados a fundadores Shopify y tiendas ecommerce'
-        : 'Forensic reports delivered to Shopify & ecommerce founders';
+        ? 'Reportes de análisis profundo entregados a fundadores Shopify y tiendas ecommerce'
+        : 'Deep analysis reports delivered to Shopify & ecommerce founders';
     return `<p class="pc-lite-social-proof">${text}</p>`;
 }
 

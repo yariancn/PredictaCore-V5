@@ -2073,13 +2073,20 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             const closingEl = document.getElementById('pdf-closing');
             if (closingEl && closingBlock) closingEl.innerHTML = closingBlock;
 
-            if (titanUpgradeUrl) {
+            if (titanUpgradeUrl && !sectionsHtml.UPSELL) {
                 const cta = document.createElement('div');
                 cta.className = 'lite-titan-cta';
                 const ctaBtn = htmlLang === 'es' ? 'Obtener Reporte Titán completo' : 'Get Full Titan Report';
                 cta.innerHTML = '<h3>' + (ui.liteCtaTitle || 'Titan') + '</h3>'
                     + '<p>' + (ui.liteCtaBody || '') + '</p>'
                     + '<p style="margin-top:14px;text-align:center;"><a href="' + titanUpgradeUrl + '" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">' + ctaBtn + '</a></p>';
+                reporte.appendChild(cta);
+            } else if (titanUpgradeUrl && sectionsHtml.UPSELL) {
+                const cta = document.createElement('div');
+                cta.className = 'lite-titan-cta';
+                cta.style.marginTop = '12px';
+                const ctaBtn = htmlLang === 'es' ? 'Obtener Reporte Titán completo' : 'Get Full Titan Report';
+                cta.innerHTML = '<p style="margin-top:14px;text-align:center;"><a href="' + titanUpgradeUrl + '" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">' + ctaBtn + '</a></p>';
                 reporte.appendChild(cta);
             }
         }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, socialProofHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);

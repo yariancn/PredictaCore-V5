@@ -221,26 +221,26 @@ function getPdfUiStrings(locale) {
         return {
             coverTag: 'Reporte forense de conversión',
             coverTitle: 'Inteligencia Titán',
-            evidenceTitle: 'Evidencia visual forense',
+            evidenceTitle: 'Capturas de tu página',
             desktop: 'Escritorio',
             mobile: 'Móvil',
             assetDefault: 'Análisis del activo',
             liteTitle: 'Reporte Lite',
-            liteCtaTitle: 'Corre el Reporte Titán — 15 fallas + 15 recomendaciones',
-            liteCtaBody: `Este Lite solo muestra 3 fallas básicas. Titán detecta las 15 principales y te dice cómo resolver cada una. USD $${TITAN_PRICE_USD} — un clic:`,
+            liteCtaTitle: '¿Quieres el mapa completo?',
+            liteCtaBody: `Titán incluye las 15 fugas principales + 15 recomendaciones paso a paso. USD $${TITAN_PRICE_USD}:`,
             brandTagline: 'Inteligencia de Negocios',
         };
     }
     return {
         coverTag: 'Forensic conversion report',
         coverTitle: 'Titan Intelligence',
-        evidenceTitle: 'Forensic visual evidence',
+        evidenceTitle: 'Page screenshots',
         desktop: 'Desktop',
         mobile: 'Mobile',
         assetDefault: 'Asset analysis',
         liteTitle: 'Lite Intelligence Report',
-        liteCtaTitle: 'Run Titan Report — 15 flaws + 15 fix recommendations',
-        liteCtaBody: `This Lite shows 3 basic flaws only. Titan finds all 15 main failures and tells you how to fix each one. USD $${TITAN_PRICE_USD} — one click:`,
+        liteCtaTitle: 'Want the full map?',
+        liteCtaBody: `Titan includes all 15 main leaks + 15 step-by-step fix recommendations. USD $${TITAN_PRICE_USD}:`,
         brandTagline: 'Business Intelligence',
     };
 }
@@ -515,6 +515,9 @@ function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
         if (after < targetCount - 1) {
             out = normalizeNumberedList(cleaned, { minItems: 2, targetItems: targetCount, mode: 'auto' });
         }
+        if (opts.modo === 'LITE' && etapaId === 'FUGAS_LITE') {
+            out = sanitizeLiteSection(etapaId, out, locale);
+        }
         return out;
     }
 
@@ -530,6 +533,17 @@ function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
 
     if (opts.modo === 'LITE') {
         out = sanitizeLiteSection(etapaId, out, locale);
+        if (etapaId === 'INTRO') {
+            const es = locale?.code?.startsWith('es');
+            const bodyOnly = out.replace(/^###[^\n]+\n?/, '').trim();
+            if (bodyOnly.length < 80) {
+                const fallback = es
+                    ? 'Revisamos tu página pública como la vería un visitante nuevo. En las siguientes secciones verás las 3 fugas que más probablemente te están costando ventas hoy.'
+                    : 'We reviewed your public page the way a first-time visitor would see it. The next sections show the 3 leaks most likely costing you sales today.';
+                const hdr = es ? LITE_SECTION_HEADERS.INTRO.es : LITE_SECTION_HEADERS.INTRO.en;
+                out = `${hdr}\n\n${fallback}`;
+            }
+        }
     }
     return out;
 }
