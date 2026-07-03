@@ -35,10 +35,10 @@ function getPlaygroundHTML() {
         <input id="pg-email" placeholder="Email de prueba" class="bg-black border border-zinc-700 p-3 rounded text-white w-full">
     </div>
 
-    <section class="mb-8">
-        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">02 — Lite Scan (sin pago)</h2>
-        <p class="text-zinc-500 text-[10px] mb-2">Teaser PDF — 5 secciones. ~5 min.</p>
-        <button onclick="runLite()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /start-lite</button>
+    <section class="mb-8 border border-zinc-600 bg-zinc-900/40 p-4 rounded">
+        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">02 — Lite Scan (interno, sin métricas ads)</h2>
+        <p class="text-zinc-400 text-[10px] mb-2">Mismo motor que producción. PDF por email. <strong class="text-amber-400">No escribe en el embudo de ads</strong> ni manda follow-ups de venta.</p>
+        <button onclick="runLite()" class="bg-zinc-100 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/lite</button>
         <pre id="out-lite" class="mt-3 text-zinc-400">—</pre>
     </section>
 
@@ -151,7 +151,11 @@ function getPlaygroundHTML() {
         async function runLite() {
             const dna = document.getElementById('pg-url').value;
             const email = document.getElementById('pg-email').value;
-            const r = await api('/start-lite', { method: 'POST', body: JSON.stringify({ dna, email }) });
+            if (!dna || !email) {
+                document.getElementById('out-lite').textContent = 'URL y email requeridos';
+                return;
+            }
+            const r = await api('/playground/lite', { method: 'POST', body: JSON.stringify({ dna, email }) });
             document.getElementById('out-lite').textContent = JSON.stringify(r.data, null, 2);
         }
 

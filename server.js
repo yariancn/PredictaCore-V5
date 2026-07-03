@@ -1239,6 +1239,28 @@ app.get('/playground/job-status', requirePlayground, async (req, res) => {
     }
 });
 
+app.post('/playground/lite', requirePlayground, async (req, res) => {
+    const { dna, email } = req.body;
+    if (!dna || !email) {
+        return res.status(400).json({ error: 'URL y email requeridos' });
+    }
+
+    console.log(`>>> [PLAYGROUND] Lite interno (sin métricas ads) para ${email} — ${dna}`);
+    try {
+        const started = await iniciarAuditoria(dna, email, 'LITE', { refCode: 'internal_test' });
+        res.json({
+            status: 'started',
+            job_id: started.jobId,
+            mode: 'LITE',
+            target: started.targetUrl,
+            internal: true,
+            message: 'Lite de prueba iniciado. PDF por email en ~5-15 min. No afecta métricas de ads.',
+        });
+    } catch (err) {
+        res.status(400).json({ error: err.message || 'No se pudo iniciar Lite' });
+    }
+});
+
 app.post('/playground/titan', requirePlayground, async (req, res) => {
     const { dna, email } = req.body;
     if (!dna || !email) {
@@ -1247,12 +1269,13 @@ app.post('/playground/titan', requirePlayground, async (req, res) => {
 
     console.log(`>>> [PLAYGROUND] Titán sin cobro para ${email} — ${dna}`);
     try {
-        const started = await iniciarAuditoria(dna, email, 'TITAN');
+        const started = await iniciarAuditoria(dna, email, 'TITAN', { refCode: 'internal_test' });
         res.json({
             status: 'started',
             job_id: started.jobId,
             mode: 'TITAN',
             target: started.targetUrl,
+            internal: true,
             message: 'Auditoría Titán completa iniciada. El PDF llegará por email en ~10-25 min.',
         });
     } catch (err) {
@@ -1828,24 +1851,29 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
                 secciones: jobsMemoria[jobId].progress,
                 dossier: jobsMemoria[jobId].dossier,
             });
-            await registerLiteFollowup({
-                email: jobsMemoria[jobId].email,
-                urlSitio: targetUrl,
-                lang: langCode,
-                jobId,
-                leaks,
-                metrics: {
-                    seoScore: cap.seoScore,
-                    aiScore: cap.aiScore,
-                    loadTimeSec: cap.loadTimeSec,
-                },
-            });
-            notifyLiteScanCompleted({
-                email: jobsMemoria[jobId].email,
-                urlSitio: targetUrl,
-                jobId,
-                refCode: jobsMemoria[jobId].refCode,
-            }).catch(() => {});
+            const isInternalQa = String(jobsMemoria[jobId].refCode || '').toLowerCase() === 'internal_test';
+            if (!isInternalQa) {
+                await registerLiteFollowup({
+                    email: jobsMemoria[jobId].email,
+                    urlSitio: targetUrl,
+                    lang: langCode,
+                    jobId,
+                    leaks,
+                    metrics: {
+                        seoScore: cap.seoScore,
+                        aiScore: cap.aiScore,
+                        loadTimeSec: cap.loadTimeSec,
+                    },
+                });
+                notifyLiteScanCompleted({
+                    email: jobsMemoria[jobId].email,
+                    urlSitio: targetUrl,
+                    jobId,
+                    refCode: jobsMemoria[jobId].refCode,
+                }).catch(() => {});
+            } else {
+                console.log(`>>> [PLAYGROUND] Lite ${jobId} — sin follow-up ni métricas ads`);
+            }
         }
 
         if (modo === 'TITAN') {
