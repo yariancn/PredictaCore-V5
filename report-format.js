@@ -454,7 +454,7 @@ function stripInternalEvidenceRefs(text) {
         .replace(/\s*\(evidencia:\s*evaluación\s*#\d+\)/gi, '')
         .replace(/\s*\(#\d+(?:,\s*#\d+)*\)/g, '')
         .replace(/\s+#\d+(?:,\s*#\d+)*\s*(?=[.);]|$)/g, '')
-        .replace(/\s{2,}/g, ' ')
+        .replace(/[ \t]{2,}/g, ' ')
         .replace(/ \./g, '.')
         .trim();
 }
@@ -511,9 +511,16 @@ function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
         }
         const cleaned = stripPlaceholderLeaks(out);
         out = normalizeNumberedList(cleaned, { minItems: Math.min(targetCount, 3), targetItems: targetCount, mode: 'fugas' });
-        const after = countNumberedItems(out.replace(/^###[^\n]+\n?/, ''));
+        let after = countNumberedItems(out.replace(/^###[^\n]+\n?/, ''));
         if (after < targetCount - 1) {
             out = normalizeNumberedList(cleaned, { minItems: 2, targetItems: targetCount, mode: 'auto' });
+            after = countNumberedItems(out.replace(/^###[^\n]+\n?/, ''));
+        }
+        if (after < targetCount && dossier.includes('SIMULATION_RESULTS')) {
+            const hdr = locale?.code?.startsWith('es')
+                ? LITE_SECTION_HEADERS.FUGAS_LITE.es
+                : LITE_SECTION_HEADERS.FUGAS_LITE.en;
+            out = buildFugasFromDossier(dossier, locale, { target: targetCount, header: hdr });
         }
         if (opts.modo === 'LITE' && etapaId === 'FUGAS_LITE') {
             out = sanitizeLiteSection(etapaId, out, locale);
@@ -541,6 +548,17 @@ function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
                     ? 'Revisamos tu página pública como la vería un visitante nuevo. En las siguientes secciones verás las 3 fugas que más probablemente te están costando ventas hoy.'
                     : 'We reviewed your public page the way a first-time visitor would see it. The next sections show the 3 leaks most likely costing you sales today.';
                 const hdr = es ? LITE_SECTION_HEADERS.INTRO.es : LITE_SECTION_HEADERS.INTRO.en;
+                out = `${hdr}\n\n${fallback}`;
+            }
+        }
+        if (etapaId === 'UPSELL') {
+            const es = locale?.code?.startsWith('es');
+            const bodyOnly = out.replace(/^###[^\n]+\n?/, '').trim();
+            if (bodyOnly.length < 60) {
+                const fallback = es
+                    ? 'Estas 3 fugas son la punta del iceberg. El Reporte Titán muestra las 15 principales y cómo resolver cada una, con plan de 21 días.'
+                    : 'These 3 leaks are the tip of the iceberg. The Titan Report shows all 15 main flaws and how to fix each one, plus a 21-day plan.';
+                const hdr = es ? LITE_SECTION_HEADERS.UPSELL.es : LITE_SECTION_HEADERS.UPSELL.en;
                 out = `${hdr}\n\n${fallback}`;
             }
         }
