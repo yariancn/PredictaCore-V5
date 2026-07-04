@@ -67,6 +67,9 @@ const {
     postProcessSection,
     buildLiteSeoAiSnapshot,
     buildLitePageInsightsHtml,
+    buildLiteTitanSalesSection,
+    buildLiteIcebergTeaserHtml,
+    buildLiteTitanCtaHtml,
     LITE_SECTION_ORDER,
 } = require('./report-format');
 const { stageUsesVision } = require('./forensics');
@@ -2014,10 +2017,16 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const socialProofHtml = modo === 'LITE' ? getPdfLiteSocialProofHtml(langCode) : '';
         const coverValueHtml = modo === 'LITE' ? getPdfLiteCoverValueHtml(langCode) : '';
         const pageInsightsHtml = modo === 'LITE' ? buildLitePageInsightsHtml(dossier, reportLocale, captures) : '';
+        const icebergHtml = modo === 'LITE' ? buildLiteIcebergTeaserHtml(reportLocale) : '';
+        const titanCtaHtml = modo === 'LITE' && liteTitanUrl
+            ? buildLiteTitanCtaHtml(reportLocale, liteTitanUrl)
+            : '';
 
         const liteProgress = { ...(job.progress || {}) };
         if (modo === 'LITE') {
             liteProgress.SEO_IA_LITE = buildLiteSeoAiSnapshot(dossier, reportLocale, captures);
+            // Deterministic sales section — always sells Titan (do not rely on LLM)
+            liteProgress.UPSELL = buildLiteTitanSalesSection(reportLocale);
         }
 
         const progressForPdf = {};
@@ -2046,7 +2055,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const closingHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfClosingHtml(langCode, modo) : '';
         const headerDisclaimerHtml = (modo === 'TITAN' || modo === 'DELTA') ? getPdfHeaderDisclaimerHtml(langCode) : '';
 
-        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, socialProofBlock, coverValueBlock, insightsBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang, closingBlock, headerDisclaimerBlock) => {
+        await page.evaluate((sectionsHtml, dominio, titanUpgradeUrl, metricsBlock, socialProofBlock, coverValueBlock, insightsBlock, icebergBlock, titanCtaBlock, desktopB64, mobileB64, ui, dateLocale, htmlLang, closingBlock, headerDisclaimerBlock) => {
             if (htmlLang) document.documentElement.lang = htmlLang;
             const reporte = document.getElementById('reporte');
             const dEl = document.getElementById('pdf-domain');
@@ -2105,11 +2114,21 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                 });
             }
 
-            for (const key in sectionsHtml) {
+            const sectionOrder = ['INTRO', 'SEO_IA_LITE', 'FUGAS_LITE', 'UPSELL'];
+            const keys = sectionOrder.filter(function(k) { return sectionsHtml[k]; })
+                .concat(Object.keys(sectionsHtml).filter(function(k) { return sectionOrder.indexOf(k) < 0; }));
+
+            for (let i = 0; i < keys.length; i++) {
+                const key = keys[i];
                 const div = document.createElement('div');
                 div.className = 'report-section markdown-content';
                 div.innerHTML = sectionsHtml[key];
                 reporte.appendChild(div);
+                if (key === 'FUGAS_LITE' && icebergBlock) {
+                    const ice = document.createElement('div');
+                    ice.innerHTML = icebergBlock;
+                    reporte.appendChild(ice);
+                }
             }
 
             document.querySelectorAll('.report-section.markdown-content').forEach(function(section) {
@@ -2129,7 +2148,11 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
             const closingEl = document.getElementById('pdf-closing');
             if (closingEl && closingBlock) closingEl.innerHTML = closingBlock;
 
-            if (titanUpgradeUrl && !sectionsHtml.UPSELL) {
+            if (titanCtaBlock) {
+                const cta = document.createElement('div');
+                cta.innerHTML = titanCtaBlock;
+                reporte.appendChild(cta);
+            } else if (titanUpgradeUrl) {
                 const cta = document.createElement('div');
                 cta.className = 'lite-titan-cta';
                 const ctaBtn = htmlLang === 'es' ? 'Obtener Reporte Titán completo' : 'Get Full Titan Report';
@@ -2137,15 +2160,8 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                     + '<p>' + (ui.liteCtaBody || '') + '</p>'
                     + '<p style="margin-top:14px;text-align:center;"><a href="' + titanUpgradeUrl + '" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">' + ctaBtn + '</a></p>';
                 reporte.appendChild(cta);
-            } else if (titanUpgradeUrl && sectionsHtml.UPSELL) {
-                const cta = document.createElement('div');
-                cta.className = 'lite-titan-cta';
-                cta.style.marginTop = '12px';
-                const ctaBtn = htmlLang === 'es' ? 'Obtener Reporte Titán completo' : 'Get Full Titan Report';
-                cta.innerHTML = '<p style="margin-top:14px;text-align:center;"><a href="' + titanUpgradeUrl + '" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">' + ctaBtn + '</a></p>';
-                reporte.appendChild(cta);
             }
-        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, socialProofHtml, coverValueHtml, pageInsightsHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);
+        }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, socialProofHtml, coverValueHtml, pageInsightsHtml, icebergHtml, titanCtaHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);
 
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true, timeout: 120000 });
         await browser.close();

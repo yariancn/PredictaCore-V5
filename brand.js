@@ -251,15 +251,15 @@ function getPdfLiteCoverValueHtml(lang) {
     <div class="pc-lite-cover-col">
       <p class="pc-lite-cover-col-title">Qué incluye este Lite</p>
       <ul>
-        <li>Resumen ejecutivo de tu negocio y fricción #1</li>
-        <li>Tabla SEO + visibilidad IA con hallazgos medibles</li>
-        <li>3 fugas críticas rankeadas por impacto</li>
-        <li>Evidencia concreta por cada fuga (métricas reales)</li>
-        <li>Invitación al mapa completo Titán (15 fugas + 15 fixes)</li>
+        <li>Resumen ejecutivo y fricción #1</li>
+        <li>Tabla SEO + visibilidad IA medible</li>
+        <li><strong>3 de 15</strong> fugas prioritarias (12 bloqueadas)</li>
+        <li>Evidencia concreta por cada fuga</li>
+        <li>Puerta al Titán: acciones + herramientas</li>
       </ul>
     </div>
   </div>
-  <p class="pc-lite-cover-note"><strong>Alcance honesto:</strong> solo datos públicos de tu página. Lite muestra 3 de 15 fugas prioritarias — el problema, no el plan completo de corrección. Titán entrega el mapa completo con recomendaciones paso a paso.</p>
+  <p class="pc-lite-cover-note"><strong>Alcance honesto:</strong> solo datos públicos. Lite abre <strong>3 de 15</strong> fugas prioritarias. Identificamos <strong>12 más</strong> (algunas críticas) — bloqueadas aquí a propósito. Titán entrega el mapa completo, acciones para resolver cada falla y herramientas para implementarlas.</p>
 </div>`;
     }
     return `<div class="pc-lite-cover-value">
@@ -280,15 +280,15 @@ function getPdfLiteCoverValueHtml(lang) {
     <div class="pc-lite-cover-col">
       <p class="pc-lite-cover-col-title">What this Lite includes</p>
       <ul>
-        <li>Executive summary of your business and #1 friction</li>
-        <li>SEO + AI visibility table with measurable findings</li>
-        <li>3 critical leaks ranked by impact</li>
-        <li>Concrete evidence for each leak (real metrics)</li>
-        <li>Invite to the full Titan map (15 leaks + 15 fixes)</li>
+        <li>Executive summary and #1 friction</li>
+        <li>Measurable SEO + AI visibility table</li>
+        <li><strong>3 of 15</strong> priority flaws (12 locked)</li>
+        <li>Concrete evidence for each leak</li>
+        <li>Door to Titan: fix actions + tools</li>
       </ul>
     </div>
   </div>
-  <p class="pc-lite-cover-note"><strong>Honest scope:</strong> public page data only. Lite shows 3 of 15 priority leaks — the problem, not the full fix playbook. Titan delivers the complete map with step-by-step recommendations.</p>
+  <p class="pc-lite-cover-note"><strong>Honest scope:</strong> public data only. Lite opens <strong>3 of 15</strong> priority flaws. We identified <strong>12 more</strong> (some critical) — locked here on purpose. Titan delivers the full map, actions to fix each flaw, and tools to implement them.</p>
 </div>`;
 }
 

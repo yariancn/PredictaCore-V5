@@ -49,6 +49,30 @@ function getHTMLLite() {
             .pc-lite-insights ul { margin: 0; padding-left: 1.1rem; }
             .pc-lite-insights li { font-size: 9pt; line-height: 1.45; color: #334155; margin-bottom: 6px; }
             .pc-lite-insights strong { color: #0f172a; }
+            .pc-lite-insights-teaser {
+                margin: 12px 0 0 0; padding: 10px 12px; font-size: 8.5pt; line-height: 1.45;
+                color: #065f46; background: #ecfdf5; border: 1px solid #6ee7b7; border-radius: 6px;
+            }
+            .pc-lite-iceberg {
+                margin: 16px 0 20px 0; padding: 16px 18px; border: 2px solid #f59e0b;
+                border-radius: 8px; background: #fffbeb; page-break-inside: avoid;
+            }
+            .pc-lite-iceberg-kicker {
+                font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.14em;
+                color: #b45309; margin: 0 0 6px 0;
+            }
+            .pc-lite-iceberg-title {
+                font-size: 12pt; font-weight: 800; color: #0f172a; margin: 0 0 8px 0; line-height: 1.25;
+            }
+            .pc-lite-iceberg-body { font-size: 9.5pt; color: #334155; line-height: 1.45; margin: 0 0 10px 0; }
+            .pc-lite-iceberg ul { margin: 0 0 10px 0; padding-left: 1.1rem; }
+            .pc-lite-iceberg li { font-size: 9pt; color: #1e293b; line-height: 1.4; margin-bottom: 5px; }
+            .pc-lite-iceberg-foot {
+                font-size: 9pt; font-weight: 700; color: #92400e; margin: 0; padding-top: 8px;
+                border-top: 1px solid #fcd34d;
+            }
+            .lite-titan-cta-list { margin: 10px 0 0 0; padding-left: 1.1rem; }
+            .lite-titan-cta-list li { font-size: 9.5pt; color: #065f46; margin-bottom: 4px; font-weight: 600; }
         </style>
     </head>
     <body>

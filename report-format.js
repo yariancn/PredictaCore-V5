@@ -227,8 +227,8 @@ function getPdfUiStrings(locale) {
             mobile: 'Móvil',
             assetDefault: 'Análisis del activo',
             liteTitle: 'Reporte Lite',
-            liteCtaTitle: '¿Quieres el mapa completo?',
-            liteCtaBody: `Titán incluye las 15 fugas principales + 15 recomendaciones paso a paso. USD $${TITAN_PRICE_USD}:`,
+            liteCtaTitle: 'Desbloquea las 12 fugas restantes + cómo resolverlas',
+            liteCtaBody: `Identificamos 15 fugas prioritarias. Este Lite solo muestra 3. Titán entrega las 12 restantes (algunas críticas), 15 acciones concretas, herramientas recomendadas y plan de 21 días. USD $${TITAN_PRICE_USD}:`,
             brandTagline: 'Inteligencia de Negocios',
         };
     }
@@ -241,8 +241,8 @@ function getPdfUiStrings(locale) {
         mobile: 'Mobile',
         assetDefault: 'Asset analysis',
         liteTitle: 'Lite Intelligence Report',
-        liteCtaTitle: 'Want the full map?',
-        liteCtaBody: `Titan includes all 15 main leaks + 15 step-by-step fix recommendations. USD $${TITAN_PRICE_USD}:`,
+        liteCtaTitle: 'Unlock the other 12 flaws + how to fix them',
+        liteCtaBody: `We identified 15 priority flaws. This Lite shows only 3. Titan unlocks the other 12 (some critical), 15 concrete fix actions, recommended tools, and a 21-day plan. USD $${TITAN_PRICE_USD}:`,
         brandTagline: 'Business Intelligence',
     };
 }
@@ -527,8 +527,8 @@ function buildLiteSeoAiSnapshot(dossier, locale, captures = {}) {
             : `AI visibility is **${aiScore}/100** — robots.txt${robots ? ` (${robots})` : ''} and llms.txt${llms ? ` (${llms})` : ''} affect whether ChatGPT and search engines can cite your store accurately.`);
 
   const titanTease = es
-        ? '_Titán desglosa cada señal con recomendaciones paso a paso y benchmark vs tu categoría._'
-        : '_Titan breaks down each signal with step-by-step fixes and a category benchmark._';
+        ? '**En Titán:** desglose de cada señal + acción concreta para corregirla + herramientas recomendadas + benchmark vs tu categoría. Este Lite solo muestra el diagnóstico parcial.'
+        : '**In Titan:** breakdown of each signal + a concrete fix action + recommended tools + category benchmark. This Lite only shows a partial diagnosis.';
 
     return `${hdr}\n\n${table}\n${seoTakeaway}\n\n${aiTakeaway}\n\n${titanTease}`;
 }
@@ -586,7 +586,109 @@ function buildLitePageInsightsHtml(dossier, locale, captures = {}) {
     }
 
     const lis = top.map((b) => `<li>${b}</li>`).join('');
-    return `<div class="pc-lite-insights"><p class="pc-lite-insights-title">${title}</p><ul>${lis}</ul></div>`;
+    const teaser = es
+        ? '<p class="pc-lite-insights-teaser"><strong>Importante:</strong> estas señales son solo la superficie. En el análisis prioritario completo identificamos <strong>15 fugas</strong> — este Lite abre <strong>3</strong>. Quedan <strong>12 bloqueadas</strong> (algunas críticas), con acciones y herramientas en el Reporte Titán.</p>'
+        : '<p class="pc-lite-insights-teaser"><strong>Important:</strong> these signals are only the surface. In the full priority analysis we identified <strong>15 flaws</strong> — this Lite opens <strong>3</strong>. <strong>12 remain locked</strong> (some critical), with fix actions and tools in the Titan Report.</p>';
+    return `<div class="pc-lite-insights"><p class="pc-lite-insights-title">${title}</p><ul>${lis}</ul>${teaser}</div>`;
+}
+
+/**
+ * Deterministic Titan sales section — always on-message (curiosity gap + incomplete value).
+ * Does not invent ROI; states product truth: 3 of 15 shown, 12 locked, Titan = flaws + fixes + tools.
+ */
+function buildLiteTitanSalesSection(locale) {
+    const es = locale?.code?.startsWith('es');
+    const hdr = es ? LITE_SECTION_HEADERS.UPSELL.es : LITE_SECTION_HEADERS.UPSELL.en;
+
+    if (es) {
+        return `${hdr}
+
+Este Lite te mostró **solo 3 de 15 fugas prioritarias**. En el mapa completo identificamos **12 fallas adicionales** — **algunas críticas** — que aún no ves aquí: fricción en checkout, prueba social, móvil, confianza, CTAs y más puntos donde el comprador se va sin que lo notes.
+
+**Lite te dice qué está roto. Titán te dice cómo arreglarlo.**
+
+| | Lite (este PDF) | Titán |
+| --- | --- | --- |
+| Fugas prioritarias | 3 visibles | **15 completas** (las 3 de aquí + **12 más**) |
+| Severidad de las ocultas | No revelada | Incluye **críticas y altas** bloqueadas aquí |
+| Cómo resolver cada falla | No incluido | **15 acciones concretas**, una por falla |
+| Herramientas recomendadas | No incluido | Stack y herramientas para implementar |
+| Benchmark vs categoría | No incluido | Incluido |
+| Plan de implementación | No incluido | Roadmap **21 días** |
+
+Sin Titán, sabes que hay fugas — pero **no tienes el mapa de las otras 12**, ni el orden de prioridad, ni el paso a paso, ni las herramientas. Cada día que esas fallas siguen activas, sigues perdiendo visitantes que ya pagaste por atraer.
+
+**Desbloquea el Reporte Titán** para ver las 12 fallas restantes, cómo resolver cada una, y con qué herramientas hacerlo.`;
+    }
+
+    return `${hdr}
+
+This Lite showed you **only 3 of 15 priority flaws**. In the full priority map we identified **12 additional failures** — **some critical** — still hidden here: checkout friction, social proof gaps, mobile issues, trust signals, weak CTAs, and other places buyers leave without you noticing.
+
+**Lite tells you what is broken. Titan tells you how to fix it.**
+
+| | Lite (this PDF) | Titan |
+| --- | --- | --- |
+| Priority flaws | 3 visible | **All 15** (these 3 + **12 more**) |
+| Severity of hidden flaws | Not revealed | Includes **critical and high** issues locked here |
+| How to fix each flaw | Not included | **15 concrete actions**, one per flaw |
+| Recommended tools | Not included | Tools and stack to implement fixes |
+| Category benchmark | Not included | Included |
+| Implementation plan | Not included | **21-day** roadmap |
+
+Without Titan, you know leaks exist — but you **do not have the map of the other 12**, the priority order, the step-by-step fixes, or the tools. Every day those flaws stay live, you keep losing visitors you already paid to attract.
+
+**Unlock the Titan Report** to see the remaining 12 flaws, how to fix each one, and which tools to use.`;
+}
+
+/** HTML banner after the 3 leaks — sales cliffhanger */
+function buildLiteIcebergTeaserHtml(locale) {
+    const es = locale?.code?.startsWith('es');
+    if (es) {
+        return `<div class="pc-lite-iceberg">
+  <p class="pc-lite-iceberg-kicker">Mapa incompleto a propósito</p>
+  <p class="pc-lite-iceberg-title">Identificamos 12 fallas más — algunas críticas</p>
+  <p class="pc-lite-iceberg-body">Este Lite abre solo <strong>3 de 15</strong> fugas prioritarias. Las otras <strong>12 permanecen bloqueadas</strong> en el Reporte Titán, junto con:</p>
+  <ul>
+    <li><strong>Más información</strong> sobre cada falla (contexto y severidad)</li>
+    <li><strong>15 acciones</strong> concretas para resolverlas una por una</li>
+    <li><strong>Herramientas recomendadas</strong> para implementar los cambios</li>
+    <li><strong>Benchmark</strong> vs tu categoría y plan de <strong>21 días</strong></li>
+  </ul>
+  <p class="pc-lite-iceberg-foot">Lite = diagnóstico parcial. Titán = mapa completo + cómo arreglarlo.</p>
+</div>`;
+    }
+    return `<div class="pc-lite-iceberg">
+  <p class="pc-lite-iceberg-kicker">Incomplete on purpose</p>
+  <p class="pc-lite-iceberg-title">We identified 12 more flaws — some critical</p>
+  <p class="pc-lite-iceberg-body">This Lite opens only <strong>3 of 15</strong> priority flaws. The other <strong>12 stay locked</strong> in the Titan Report, along with:</p>
+  <ul>
+    <li><strong>More detail</strong> on each flaw (context and severity)</li>
+    <li><strong>15 concrete actions</strong> to fix them one by one</li>
+    <li><strong>Recommended tools</strong> to implement the changes</li>
+    <li><strong>Category benchmark</strong> and a <strong>21-day</strong> plan</li>
+  </ul>
+  <p class="pc-lite-iceberg-foot">Lite = partial diagnosis. Titan = full map + how to fix it.</p>
+</div>`;
+}
+
+/** Rich CTA block under Titan sales section */
+function buildLiteTitanCtaHtml(locale, titanUpgradeUrl) {
+    if (!titanUpgradeUrl) return '';
+    const es = locale?.code?.startsWith('es') || locale === 'es';
+    const ui = getPdfUiStrings(typeof locale === 'string' ? { code: locale } : locale);
+    const btn = es ? 'Obtener Reporte Titán — 15 fallas + 15 acciones' : 'Get Titan Report — 15 flaws + 15 actions';
+    return `<div class="lite-titan-cta">
+  <h3>${ui.liteCtaTitle}</h3>
+  <p>${ui.liteCtaBody}</p>
+  <ul class="lite-titan-cta-list">
+    <li>${es ? '12 fallas adicionales (algunas críticas)' : '12 additional flaws (some critical)'}</li>
+    <li>${es ? '15 recomendaciones paso a paso' : '15 step-by-step fix recommendations'}</li>
+    <li>${es ? 'Herramientas para implementar' : 'Tools to implement the fixes'}</li>
+    <li>${es ? 'Benchmark + plan 21 días' : 'Benchmark + 21-day plan'}</li>
+  </ul>
+  <p style="margin-top:14px;text-align:center;"><a href="${titanUpgradeUrl}" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">${btn}</a></p>
+</div>`;
 }
 
 /** Remove internal simulator IDs from client-facing Lite PDF copy */
@@ -668,6 +770,13 @@ function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
         }
         if (opts.modo === 'LITE' && etapaId === 'FUGAS_LITE') {
             out = sanitizeLiteSection(etapaId, out, locale);
+            const es = locale?.code?.startsWith('es');
+            const lockLine = es
+                ? '\n\n**Estas son 3 de 15 fugas prioritarias — quedan 12 bloqueadas (algunas críticas). Cómo resolverlas está en el Reporte Titán.**'
+                : '\n\n**These are 3 of 15 priority flaws — 12 remain locked (some critical). How to fix them is in the Titan Report.**';
+            if (!/12\s+(más|more|remain|quedan|bloquead)/i.test(out)) {
+                out = `${out.trim()}${lockLine}`;
+            }
         }
         return out;
     }
@@ -693,8 +802,8 @@ function postProcessSection(etapaId, text, locale, dossier = '', opts = {}) {
             const bodyOnly = out.replace(/^###[^\n]+\n?/, '').trim();
             if (bodyOnly.length < 80) {
                 const fallback = es
-                    ? 'Revisamos tu página pública como la vería un visitante nuevo. En las siguientes secciones verás las 3 fugas que más probablemente te están costando ventas hoy.'
-                    : 'We reviewed your public page the way a first-time visitor would see it. The next sections show the 3 leaks most likely costing you sales today.';
+                    ? 'Revisamos tu página pública como la vería un visitante nuevo. Abajo verás 3 fugas prioritarias — son solo la punta del iceberg: identificamos 12 más (algunas críticas) bloqueadas en el Reporte Titán, junto con acciones y herramientas para resolverlas.'
+                    : 'We reviewed your public page the way a first-time visitor would see it. Below are 3 priority flaws — only the tip of the iceberg: we identified 12 more (some critical) locked in the Titan Report, with actions and tools to fix them.';
                 const hdr = es ? LITE_SECTION_HEADERS.INTRO.es : LITE_SECTION_HEADERS.INTRO.en;
                 out = `${hdr}\n\n${fallback}`;
             }
@@ -729,6 +838,9 @@ module.exports = {
     LITE_SECTION_ORDER,
     buildLiteSeoAiSnapshot,
     buildLitePageInsightsHtml,
+    buildLiteTitanSalesSection,
+    buildLiteIcebergTeaserHtml,
+    buildLiteTitanCtaHtml,
     PLACEHOLDER_RE,
     stripInternalEvidenceRefs,
     sanitizeLiteSection,
