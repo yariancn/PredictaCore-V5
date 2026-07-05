@@ -61,6 +61,9 @@ async function captureAndScrape(url, opts = {}) {
             await new Promise(r => setTimeout(r, 4000)); 
             await page.evaluate(() => window.scrollBy(0, 800));
             await new Promise(r => setTimeout(r, 1500));
+        } else if (opts.fastPreview) {
+            await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+            await new Promise(r => setTimeout(r, 2500));
         } else {
             await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
         }

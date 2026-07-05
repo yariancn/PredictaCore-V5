@@ -16,6 +16,12 @@ const RULE_EN = {
     'Botón de compra en producto': 'Product purchase button not detected',
 };
 
+const EVIDENCE_EN = {
+    'Sin garantías/credenciales visibles': 'No guarantees or trust credentials visible on page',
+    'Términos de confianza en texto': 'Trust terms present in copy',
+    'NO_DETECTADO': 'Not detected from public page scan',
+};
+
 function parseSimulationFindings(dossier) {
     const block = (dossier || '').match(/=== SIMULATION_RESULTS[\s\S]*?=== FIN SIMULATION_RESULTS ===/);
     if (!block) return [];
@@ -80,6 +86,18 @@ function assignPriorityBands(findings, locale) {
 function localizeRule(rule, locale) {
     if (locale?.code?.startsWith('es')) return rule;
     return RULE_EN[rule] || rule;
+}
+
+function localizeEvidence(evidence, locale) {
+    const raw = String(evidence || '').trim();
+    if (!raw || locale?.code?.startsWith('es')) return raw;
+    if (EVIDENCE_EN[raw]) return EVIDENCE_EN[raw];
+    if (/^Sin /i.test(raw)) {
+        return raw
+            .replace(/^Sin garantías\/credenciales visibles$/i, EVIDENCE_EN['Sin garantías/credenciales visibles'])
+            .replace(/^Sin /i, 'Missing ');
+    }
+    return raw;
 }
 
 function extraForensicLeaks(dossier, locale, existingIds) {
@@ -176,4 +194,7 @@ module.exports = {
     buildFugasFromDossier,
     stripPlaceholderLeaks,
     hasPlaceholderLeaks,
+    localizeRule,
+    localizeEvidence,
+    severityRank,
 };

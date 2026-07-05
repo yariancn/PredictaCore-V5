@@ -1,7 +1,7 @@
 /**
  * Instant Lite preview — scrape + deterministic score (no LLM). PLG entry point.
  */
-const { parseSimulationFindings } = require('./fugas-builder');
+const { parseSimulationFindings, localizeRule, localizeEvidence } = require('./fugas-builder');
 
 const previewJobs = new Map();
 const PREVIEW_TTL_MS = 45 * 60 * 1000;
@@ -48,13 +48,14 @@ function buildTopLeak(findings, locale) {
     const es = locale?.code?.startsWith('es');
     if (findings?.length) {
         const f = findings[0];
-        const rule = f.rule;
+        const rule = localizeRule(f.rule, locale);
+        const evidence = localizeEvidence(f.evidence, locale);
         return {
             index: 1,
             title: rule,
             impact: es
-                ? `Por qué cuesta ventas: ${f.evidence}`
-                : `Why it costs sales: ${f.evidence}`,
+                ? `Por qué cuesta ventas: ${evidence}`
+                : `Why it costs sales: ${evidence}`,
             severity: f.severity || 'ALTA',
         };
     }
@@ -96,8 +97,8 @@ function buildPreviewPayload(capture, dossierTexto) {
         target: capture.targetUrl || null,
         locale: locale.code || 'en',
         upsellLine: es
-            ? `Viste 1 de ${Math.max(15, findings.length || 15)} fugas. Las ${lockedCount} restantes + cómo arreglarlas están en Titan ($199).`
-            : `You saw 1 of ${Math.max(15, findings.length || 15)} flaws. The other ${lockedCount} + how to fix each are in Titan ($199).`,
+            ? `Viste la fuga #1. Las otras 2 + el desglose completo llegan gratis a tu email.`
+            : `You saw leak #1. The other 2 + full breakdown arrive free in your email.`,
     };
 }
 
