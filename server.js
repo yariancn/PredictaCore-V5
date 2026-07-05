@@ -25,6 +25,13 @@ const { getTitanInternalHTML } = require('./titan-internal');
 const { getPlaygroundHTML } = require('./playground');
 const { getTerminosHTML, getPrivacidadHTML } = require('./legal');
 const { captureAndScrape } = require('./motor');
+const {
+    createPreviewJob,
+    getPreviewJob,
+    setPreviewReady,
+    setPreviewFailed,
+    consumePreviewCapture,
+} = require('./lite-preview');
 const { FIREWALL_IA } = require('./firewall');
 const { GoogleAuth } = require('google-auth-library');
 const puppeteer = require('puppeteer');
@@ -1500,12 +1507,51 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
     }
 });
 
+app.post('/lite-preview', async (req, res) => {
+    const { dna, assetType, platform, handle } = req.body || {};
+    const resolved = resolveAuditTarget({ assetType, dna, platform, handle });
+    if (!resolved.ok) {
+        return res.status(400).json({ error: resolved.error });
+    }
+    const previewId = createPreviewJob(resolved.url);
+    res.json({ preview_id: previewId, status: 'running', target: resolved.url });
+
+    captureAndScrape(resolved.url, { modo: 'LITE', fastPreview: true })
+        .then((capture) => {
+            if (!capture?.isUrl || !capture.texto || capture.texto.startsWith('ERROR_MOTOR')) {
+                setPreviewFailed(previewId, capture?.texto || 'Could not analyze this page.');
+                return;
+            }
+            setPreviewReady(previewId, capture, capture.texto);
+            console.log(`>>> [LITE PREVIEW] Ready ${previewId} — ${resolved.url}`);
+        })
+        .catch((err) => {
+            console.error('!!! /lite-preview:', err?.message || err);
+            setPreviewFailed(previewId, err?.message || 'Preview failed');
+        });
+});
+
+app.get('/lite-preview-status', (req, res) => {
+    const previewId = String(req.query.preview_id || req.query.id || '').trim();
+    const job = getPreviewJob(previewId);
+    if (!job) {
+        return res.status(404).json({ error: 'Preview not found or expired' });
+    }
+    if (job.status === 'running') {
+        return res.json({ status: 'running', preview_id: previewId, target: job.url });
+    }
+    if (job.status === 'failed') {
+        return res.status(400).json({ status: 'failed', error: job.error || 'Preview failed' });
+    }
+    return res.json({ preview_id: previewId, ...job.payload });
+});
+
 app.post('/start-lite', async (req, res) => {
-    const { dna, email, assetType, platform, handle, refCode } = req.body || {};
+    const { dna, email, assetType, platform, handle, refCode, previewId } = req.body || {};
     const normalizedEmail = String(email || '').trim().toLowerCase();
 
     const resolved = resolveAuditTarget({ assetType, dna, platform, handle });
-    if (!resolved.ok) {
+    if (!resolved.ok && !previewId) {
         return res.status(400).json({ error: resolved.error });
     }
     if (!normalizedEmail) {
@@ -1515,11 +1561,31 @@ app.post('/start-lite', async (req, res) => {
         return res.status(400).json({ error: 'Invalid email address' });
     }
     try {
-        console.log(`>>> [LITE / ${resolved.assetType}] ${normalizedEmail} — ${resolved.url}`);
-        const started = await iniciarAuditoria(resolved.url, normalizedEmail, 'LITE', {
+        const preloaded = previewId ? consumePreviewCapture(previewId) : null;
+        const targetUrl = preloaded?.targetUrl || resolved.url;
+        if (!targetUrl) {
+            return res.status(400).json({ error: 'URL required' });
+        }
+        console.log(`>>> [LITE / ${resolved.assetType || 'web'}] ${normalizedEmail} — ${targetUrl}${preloaded ? ' (from preview)' : ''}`);
+        const started = await iniciarAuditoria(targetUrl, normalizedEmail, 'LITE', {
             refCode: refCode ? String(refCode).trim() : '',
+            auditOpts: preloaded
+                ? {
+                      preloadedCapture: {
+                          texto: preloaded.texto,
+                          reportLocale: preloaded.reportLocale,
+                          desktopBase64: preloaded.desktopBase64,
+                          mobileBase64: preloaded.mobileBase64,
+                          loadTimeSec: preloaded.loadTimeSec,
+                          seoScore: preloaded.seoScore,
+                          aiScore: preloaded.aiScore,
+                          assetType: preloaded.assetType,
+                          isUrl: true,
+                      },
+                  }
+                : {},
         });
-        res.json({ status: 'started', job_id: started.jobId, target: resolved.url });
+        res.json({ status: 'started', job_id: started.jobId, target: started.targetUrl });
     } catch (err) {
         console.error('!!! /start-lite:', err?.message || err);
         res.status(400).json({ error: err.message || 'Could not start scan' });
@@ -1659,7 +1725,7 @@ async function iniciarAuditoria(dna, email, modo, opts = {}) {
     await createJob(jobId, normalizedEmail, targetUrl, modo);
 
     console.log(`>>> [SISTEMA] Iniciando Reporte ${modo} para: ${targetUrl} (job ${jobId})`);
-    ejecutarAuditoriaFondo(targetUrl, jobId, modo).catch(async (e) => {
+    ejecutarAuditoriaFondo(targetUrl, jobId, modo, opts.auditOpts || {}).catch(async (e) => {
         console.error('!!! ERROR:', e);
         await failJob(jobId, e.message);
     });
@@ -1667,9 +1733,11 @@ async function iniciarAuditoria(dna, email, modo, opts = {}) {
     return { jobId, targetUrl, email: normalizedEmail };
 }
 
-async function ejecutarAuditoriaFondo(targetUrl, jobId, modo) {
+async function ejecutarAuditoriaFondo(targetUrl, jobId, modo, auditOpts = {}) {
     try {
-        const datosTarget = await captureAndScrape(targetUrl, { modo });
+        const datosTarget =
+            auditOpts.preloadedCapture ??
+            (await captureAndScrape(targetUrl, { modo, fastPreview: auditOpts.fastPreview }));
         let dossierTexto = datosTarget.texto;
         jobsMemoria[jobId].reportLocale = datosTarget.reportLocale || getLocaleFromDossier(dossierTexto);
         if (modo === 'DELTA' && jobsMemoria[jobId].prevDossier) {

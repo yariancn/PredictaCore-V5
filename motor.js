@@ -95,7 +95,7 @@ async function captureAndScrape(url, opts = {}) {
 
         // 2. SONDA DE SEGUNDO PLANO (Capturar pasarelas como Shop Pay en la página de producto)
         let botonesProducto = "NO_DETECTADO";
-        if (!isSocialMedia) {
+        if (!isSocialMedia && !opts.fastPreview) {
             try {
                 // Buscar el primer enlace de un producto real
                 const productUrl = await page.evaluate(() => {
@@ -158,7 +158,7 @@ async function captureAndScrape(url, opts = {}) {
                 platform: forensics.platform,
             });
             simulationBlock = formatSimulationBlock(sim, 'social');
-            if (!isDelta) {
+            if (!isDelta && !opts.fastPreview) {
                 const bench = await findCompetitors(url, forensics.onPage, true, {
                     giro,
                     clientTitle: dataForense.titulo,
@@ -194,7 +194,7 @@ async function captureAndScrape(url, opts = {}) {
                 hasContact,
             });
             simulationBlock = formatSimulationBlock(sim, 'website');
-            if (!isDelta) {
+            if (!isDelta && !opts.fastPreview) {
                 keywordsBlock = formatKeywordsBlock(forensics.onPage, locale, url, dataForense.titulo);
                 const bench = await findCompetitors(url, forensics.onPage, false, {
                     giro,
