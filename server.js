@@ -24,6 +24,12 @@ const { getSuccessHTML } = require('./success');
 const { getTitanInternalHTML } = require('./titan-internal');
 const { getPlaygroundHTML } = require('./playground');
 const { getTerminosHTML, getPrivacidadHTML } = require('./legal');
+const { getProductIntelHTML } = require('./product-intel-page');
+const {
+    createProductIntelJob,
+    getProductIntelJob,
+    runProductIntelJob,
+} = require('./product-intel');
 const { captureAndScrape } = require('./motor');
 const {
     createPreviewJob,
@@ -870,6 +876,56 @@ app.get('/titan', (req, res) => {
     res.set('Cache-Control', 'no-store');
     res.send(getTitanUpgradeHTML());
 });
+
+app.get('/product-intel', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.send(getProductIntelHTML());
+});
+
+app.post('/api/product-intel', async (req, res) => {
+    const rawUrl = String(req.body?.url || req.body?.dna || '').trim();
+    if (!rawUrl) {
+        return res.status(400).json({ error: 'url required' });
+    }
+    const targetUrl = normalizeUrl(rawUrl);
+    if (!targetUrl) {
+        return res.status(400).json({ error: 'Invalid URL' });
+    }
+    const options = {
+        lang: req.body?.lang === 'en' ? 'en' : req.body?.lang === 'es' ? 'es' : undefined,
+        candidateUrl: String(req.body?.candidateUrl || req.body?.productUrl || '').trim() || undefined,
+        notes: String(req.body?.notes || req.body?.candidateNotes || '').trim().slice(0, 800) || undefined,
+        image: req.body?.image || undefined,
+    };
+    try {
+        const jobId = createProductIntelJob(targetUrl, options);
+        setImmediate(() => {
+            runProductIntelJob(jobId, targetUrl, options).catch((err) => {
+                console.error('!!! product-intel job:', err?.message || err);
+            });
+        });
+        return res.status(202).json({ jobId, status: 'running', url: targetUrl, free: true });
+    } catch (err) {
+        console.error('!!! /api/product-intel:', err?.message || err);
+        return res.status(500).json({ error: err?.message || 'Could not start analysis' });
+    }
+});
+
+app.get('/api/product-intel/:jobId', (req, res) => {
+    const job = getProductIntelJob(req.params.jobId);
+    if (!job) {
+        return res.status(404).json({ error: 'Job not found' });
+    }
+    return res.json({
+        jobId: job.id,
+        status: job.status,
+        progress: job.progress,
+        url: job.url,
+        error: job.error,
+        result: job.status === 'ready' ? job.result : null,
+    });
+});
+
 app.get('/terms', (req, res) => res.send(getTerminosHTML()));
 app.get('/privacy', (req, res) => res.send(getPrivacidadHTML()));
 app.get('/terminos', (req, res) => res.redirect(301, '/terms'));

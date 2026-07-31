@@ -46,4 +46,10 @@ const PROMPTS = {
   OMNI: (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### XI. HOJA DE RUTA EJECUTIVA (21 DÍAS — ASISTIDA POR IA)\n3 fases × 3 pasos numerados (9 puntos total: 1. a 9.) basados en fugas y acciones anteriores. Fase 1: victorias rápidas SEO/IA. ${FORMATO_LISTAS} Dossier: ${d}`,
 };
 
-module.exports = { PROMPTS, IDIOMA, REGLA_NUCLEAR, REGLA_TONO, PILARES_11 };
+/**
+ * Titan Plus (opt-in) — NOT part of PROMPTS so Object.keys(PROMPTS) Titan jobs stay at 11 sections.
+ * Wire only when PRODUCT_INTEL_JSON is in the dossier.
+ */
+const PROMPT_PRODUCT_INTEL = (d) => `${IDIOMA}\n${REGLA_NUCLEAR}\nEscribe este encabezado traducido: ### XII. INTELIGENCIA DE PRODUCTO (TITAN PLUS)\nUsa PRODUCT_INTEL_JSON del dossier si existe. Entrega 3 subsecciones:\n#### A — Oportunidades en el nicho (5–8 productos rankeados con score, precio sweet spot, demanda/oferta, unidades Base estimadas)\n#### B — Precios vs competencia y costos (tabla: producto, precio recomendado, benchmarks, COGS, margen, posicionamiento)\n#### C — Expansión adyacente (líneas fuera del core saturado con ticket y probabilidad relativa)\nREGLAS: Basarte en el catálogo real. PROHIBIDO inventar ventas históricas del cliente. Estimados de mercado solo como Base/escenario. ${FORMATO_LISTAS} Dossier: ${d}`;
+
+module.exports = { PROMPTS, PROMPT_PRODUCT_INTEL, IDIOMA, REGLA_NUCLEAR, REGLA_TONO, PILARES_11 };
