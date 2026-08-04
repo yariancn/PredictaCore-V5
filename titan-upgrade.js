@@ -6,6 +6,7 @@ const {
     TITAN_FLAW_FIX_EXAMPLES,
     COMPARE_ROWS,
     TITAN_SECTIONS,
+    TITAN_BONUS,
     getTitanPageCopy,
 } = require('./titan-shared-content');
 
@@ -147,9 +148,15 @@ function getTitanUpgradeHTML() {
 
         <div class="pc-wrap mb-6">
             <details class="pc-details pc-card mb-4">
-                <summary id="sections-summary">Inside the Titan PDF (11 sections)</summary>
+                <summary id="sections-summary">Inside the Titan PDF (11 sections + product opportunities bonus)</summary>
                 <ol id="sections-list" class="mt-4 space-y-2 text-sm text-zinc-500 m-0 pl-0 list-none"></ol>
             </details>
+            <div id="bonus-card" class="rounded-xl border border-emerald-500/35 bg-emerald-950/20 p-5 mb-4">
+                <p id="bonus-badge" class="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400/90"></p>
+                <h3 id="bonus-title" class="mt-2 text-lg font-black text-white"></h3>
+                <p id="bonus-body" class="mt-2 text-sm text-zinc-400 leading-relaxed"></p>
+                <ul id="bonus-contains" class="mt-3 space-y-1.5 text-sm text-zinc-300 m-0 pl-0 list-none"></ul>
+            </div>
         </div>
 
         <div class="pc-wrap mb-6">
@@ -197,6 +204,7 @@ function getTitanUpgradeHTML() {
             const EXAMPLES = ${JSON.stringify(TITAN_FLAW_FIX_EXAMPLES)};
             const COMPARE = ${JSON.stringify(COMPARE_ROWS)};
             const SECTIONS = ${JSON.stringify(TITAN_SECTIONS)};
+            const BONUS = ${JSON.stringify(TITAN_BONUS)};
 
             const params = new URLSearchParams(window.location.search);
             let currentLang = params.get('lang') === 'es' ? 'es' : 'en';
@@ -283,6 +291,14 @@ function getTitanUpgradeHTML() {
 
                 document.getElementById('sections-list').innerHTML = SECTIONS.map(function(s, i) {
                     return '<li class="pc-break flex gap-3"><span class="font-mono text-xs font-bold text-violet-500/80">' + String(i + 1).padStart(2, '0') + '</span><span>' + s + '</span></li>';
+                }).join('');
+
+                document.getElementById('bonus-badge').innerText = currentLang === 'es' ? BONUS.badgeEs : BONUS.badgeEn;
+                document.getElementById('bonus-title').innerText = currentLang === 'es' ? BONUS.titleEs : BONUS.titleEn;
+                document.getElementById('bonus-body').innerText = currentLang === 'es' ? BONUS.bodyEs : BONUS.bodyEn;
+                const contains = currentLang === 'es' ? BONUS.containsEs : BONUS.containsEn;
+                document.getElementById('bonus-contains').innerHTML = contains.map(function(item) {
+                    return '<li class="pc-break flex gap-2"><span class="text-emerald-400 shrink-0">✓</span><span>' + item + '</span></li>';
                 }).join('');
 
                 document.getElementById('faq-list').innerHTML = d.faq.map(function(item) {

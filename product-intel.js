@@ -655,7 +655,8 @@ async function runProductIntelJob(jobId, rawUrl, options = {}) {
 }
 
 /**
- * Optional helper if Titan Plus is wired later — not used by this free module.
+ * Full Product Intel markdown for Titan PDF — same analysis engine as /product-intel.
+ * Announced as free Bonus (XII) on paid Titan reports.
  */
 function formatProductIntelForTitan(analysis, lang = 'en') {
     if (!analysis) return '';
@@ -663,34 +664,110 @@ function formatProductIntelForTitan(analysis, lang = 'en') {
     const r1 = analysis.report1_nicheOpportunities || {};
     const r2 = analysis.report2_pricingCompetitionCosts || {};
     const r3 = analysis.report3_adjacentExpansion || {};
-    const header = es
-        ? '### INTELIGENCIA DE PRODUCTO'
-        : '### PRODUCT INTELLIGENCE';
+    const meta = analysis.meta || {};
     const lines = [];
-    lines.push(header);
+
+    lines.push(
+        es
+            ? '### XII. BONUS — OPORTUNIDADES DE NUEVOS PRODUCTOS (incluido sin costo)'
+            : '### XII. BONUS — NEW PRODUCT OPPORTUNITIES (included at no extra cost)'
+    );
     lines.push('');
-    lines.push(`**${es ? 'Nicho detectado' : 'Detected niche'}:** ${analysis.meta?.detectedNiche || '—'}`);
-    if (analysis.meta?.whatWeNeedSummary) {
-        lines.push('');
-        lines.push(analysis.meta.whatWeNeedSummary);
+    lines.push(
+        es
+            ? '**Qué es este bonus:** el mismo análisis de inteligencia de producto que corre en PredictaCore Product Intel — rankea oportunidades de catálogo que podrían vender mejor que el core actual, con precios/costos y expansión adyacente. No es parte de las 11 secciones de fugas; es un adicional gratuito al Titán.'
+            : '**What this bonus is:** the same Product Intel analysis PredictaCore runs for catalog opportunity scoring — ranked product ideas that may outperform your current core, plus pricing/cost and adjacent expansion. Not one of the 11 leak sections; a free add-on with Titan.'
+    );
+    lines.push('');
+    lines.push(`**${es ? 'Nicho detectado' : 'Detected niche'}:** ${meta.detectedNiche || '—'}`);
+    if (meta.currentCatalogSummary) {
+        lines.push(`**${es ? 'Catálogo' : 'Catalog'}:** ${meta.currentCatalogSummary}`);
     }
-    lines.push('');
-    lines.push(`#### ${r1.title || (es ? 'Oportunidades' : 'Opportunities')}`);
-    lines.push(r1.verdict || '');
-    (r1.opportunities || []).slice(0, 6).forEach((o) => {
+    if (meta.manufacturingMethods?.length) {
         lines.push(
-            `${o.rank || ''}. **${o.product}** — score ${o.score}/100 · ${o.action || ''} · ${o.priceSweetSpot || ''} — ${o.why || ''}`
+            `**${es ? 'Métodos de fabricación detectados' : 'Detected manufacturing methods'}:** ${meta.manufacturingMethods.join(', ')}`
         );
-    });
+    }
+    if (meta.whatWeNeedSummary) {
+        lines.push('');
+        lines.push(`**${es ? 'Qué necesita la tienda (producto)' : 'What the store needs (product)'}:** ${meta.whatWeNeedSummary}`);
+    }
+    if (r1.whyCurrentAdsMayFail) {
+        lines.push('');
+        lines.push(
+            `**${es ? 'Por qué el catálogo actual puede no convertir' : 'Why the current catalog may underperform'}:** ${r1.whyCurrentAdsMayFail}`
+        );
+    }
+
     lines.push('');
-    lines.push(`#### ${r2.title || (es ? 'Precios y costos' : 'Pricing & costs')}`);
-    lines.push(r2.verdict || '');
+    lines.push(`#### A — ${r1.title || (es ? 'Oportunidades en el nicho' : 'Niche opportunities')}`);
+    if (r1.verdict) lines.push(r1.verdict);
     lines.push('');
-    lines.push(`#### ${r3.title || (es ? 'Expansión adyacente' : 'Adjacent expansion')}`);
-    lines.push(r3.verdict || '');
-    (r3.lines || []).slice(0, 5).forEach((l) => {
-        lines.push(`${l.rank || ''}. **${l.line}** — ${l.ticket || ''} — ${l.why || ''}`);
+    const opps = Array.isArray(r1.opportunities) ? r1.opportunities : [];
+    opps.slice(0, 8).forEach((o, i) => {
+        const n = o.rank || i + 1;
+        lines.push(
+            `${n}. **${o.product || '—'}** — score ${o.score ?? '—'}/100 · ${o.action || ''} · ${es ? 'precio' : 'price'} ${o.priceSweetSpot || '—'}`
+        );
+        if (o.why) lines.push(`   ${o.why}`);
+        if (o.utility) lines.push(`   ${es ? 'Utilidad' : 'Utility'}: ${o.utility}`);
+        if (o.demandSignal || o.supplySignal) {
+            lines.push(
+                `   ${es ? 'Demanda' : 'Demand'}: ${o.demandSignal || '—'} · ${es ? 'Oferta' : 'Supply'}: ${o.supplySignal || '—'}`
+            );
+        }
+        if (o.estMonthlyUnitsBase != null || o.estMonthlyRevenueBaseUsd != null) {
+            lines.push(
+                `   ${es ? 'Estimado Base' : 'Base estimate'}: ${o.estMonthlyUnitsBase ?? '—'} ${es ? 'uds/mes' : 'units/mo'} · $${o.estMonthlyRevenueBaseUsd ?? '—'}`
+            );
+        }
     });
+
+    lines.push('');
+    lines.push(`#### B — ${r2.title || (es ? 'Precios, competencia y costos' : 'Pricing, competition & costs')}`);
+    if (r2.verdict) lines.push(r2.verdict);
+    lines.push('');
+    const rows = Array.isArray(r2.rows) ? r2.rows : Array.isArray(r2.products) ? r2.products : [];
+    if (rows.length) {
+        lines.push(
+            es
+                ? '| Producto | Precio recomendado | Benchmarks | COGS est. | Margen | Posicionamiento |'
+                : '| Product | Recommended price | Benchmarks | Est. COGS | Margin | Positioning |'
+        );
+        lines.push('| --- | --- | --- | --- | --- | --- |');
+        rows.slice(0, 8).forEach((row) => {
+            const name = row.product || row.name || '—';
+            const price = row.recommendedPrice || row.price || '—';
+            const bench = row.benchmarks || row.competitorPrices || '—';
+            const cogs = row.cogs || row.estimatedCogs || '—';
+            const margin = row.margin || row.marginPct || '—';
+            const pos = row.positioning || row.note || '—';
+            lines.push(
+                `| ${String(name).replace(/\|/g, '/')} | ${String(price).replace(/\|/g, '/')} | ${String(bench).replace(/\|/g, '/')} | ${String(cogs).replace(/\|/g, '/')} | ${String(margin).replace(/\|/g, '/')} | ${String(pos).replace(/\|/g, '/')} |`
+            );
+        });
+    }
+
+    lines.push('');
+    lines.push(`#### C — ${r3.title || (es ? 'Expansión adyacente' : 'Adjacent expansion')}`);
+    if (r3.verdict) lines.push(r3.verdict);
+    lines.push('');
+    const adj = Array.isArray(r3.lines) ? r3.lines : [];
+    adj.slice(0, 6).forEach((l, i) => {
+        const n = l.rank || i + 1;
+        lines.push(
+            `${n}. **${l.line || '—'}** — ${l.ticket || ''} · score ${l.score ?? '—'} · ${l.difficulty || ''}`
+        );
+        if (l.why) lines.push(`   ${l.why}`);
+        if (l.manufacturingLink) {
+            lines.push(`   ${es ? 'Vínculo de fabricación' : 'Manufacturing link'}: ${l.manufacturingLink}`);
+        }
+    });
+    if (Array.isArray(r3.avoid) && r3.avoid.length) {
+        lines.push('');
+        lines.push(`**${es ? 'Evitar' : 'Avoid'}:** ${r3.avoid.join('; ')}`);
+    }
+
     if (analysis.candidateAnalysis) {
         const c = analysis.candidateAnalysis;
         lines.push('');
@@ -698,7 +775,21 @@ function formatProductIntelForTitan(analysis, lang = 'en') {
         lines.push(
             `**${c.productName || ''}** — ${c.successProbabilityPct ?? '—'}% · ${c.goNoGo || ''} — ${c.verdict || ''}`
         );
+        if (c.recommendedPrice) {
+            lines.push(`${es ? 'Precio sugerido' : 'Suggested price'}: ${c.recommendedPrice}`);
+        }
+        if (Array.isArray(c.nextSteps) && c.nextSteps.length) {
+            c.nextSteps.slice(0, 4).forEach((s, i) => lines.push(`${i + 1}. ${s}`));
+        }
     }
+
+    lines.push('');
+    lines.push(
+        es
+            ? '_Estimados de mercado en escenario Base — no son garantías ni ventas históricas del cliente. Misma metodología que Product Intel._'
+            : '_Market estimates are Base-case scenarios — not guarantees or the client’s historical sales. Same methodology as Product Intel._'
+    );
+
     return lines.join('\n');
 }
 

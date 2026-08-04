@@ -14,7 +14,12 @@ const COMPARE_ROWS = [
     { feature: 'Competitor comparison', lite: '—', titan: 'Included' },
     { feature: 'Buyer psychology profiles', lite: 'Brief read', titan: '4 profiles by industry' },
     { feature: '21-day action plan', lite: '—', titan: 'Included' },
-    { feature: 'Report format', lite: 'Short email report', titan: '17-page PDF · 11 sections' },
+    {
+        feature: 'Bonus: new product opportunities',
+        lite: '—',
+        titan: 'Included free — niche SKUs, pricing/costs, adjacent lines',
+    },
+    { feature: 'Report format', lite: 'Short email report', titan: 'PDF · 11 sections + Product Opportunities bonus' },
 ];
 
 const TITAN_SECTIONS = [
@@ -29,7 +34,30 @@ const TITAN_SECTIONS = [
     'Trust, credibility & CTA friction audit',
     'Desktop + mobile screenshots in the PDF',
     '21-day implementation roadmap',
+    'BONUS · New product opportunities (niche SKUs, pricing/costs, adjacent lines)',
 ];
+
+/** Free add-on announced with Titan — same Product Intel quality as /product-intel. */
+const TITAN_BONUS = {
+    badgeEs: 'Bonus gratis con Titán',
+    badgeEn: 'Free bonus with Titan',
+    titleEs: 'Oportunidades de nuevos productos',
+    titleEn: 'New product opportunities',
+    bodyEs:
+        'Además de las 11 secciones forenses, el PDF incluye sin costo el análisis Product Intel: SKUs del nicho rankeados vs tu catálogo actual, precios/costos/márgenes, y líneas adyacentes por método de fabricación — la misma calidad que predictacore.ai/product-intel.',
+    bodyEn:
+        'On top of the 11 forensic sections, the PDF includes at no extra cost the Product Intel analysis: niche SKUs ranked against your current catalog, pricing/costs/margins, and adjacent lines by manufacturing method — the same quality as predictacore.ai/product-intel.',
+    containsEs: [
+        'A — Oportunidades en el nicho (5–8 productos con score y precio sweet spot)',
+        'B — Precios vs competencia y costos estimados',
+        'C — Expansión adyacente (qué fabricar después sin salir de tu método)',
+    ],
+    containsEn: [
+        'A — Niche opportunities (5–8 products with score + price sweet spot)',
+        'B — Pricing vs competition and estimated costs',
+        'C — Adjacent expansion (what to make next without leaving your method)',
+    ],
+};
 
 function getTitanPageCopy(lang, priceUsd, monitoringUsd) {
     const es = lang === 'es';
@@ -39,8 +67,8 @@ function getTitanPageCopy(lang, priceUsd, monitoringUsd) {
             badgeEmail: 'Desde tu correo Lite — 12 fugas más por descubrir',
             headlineDefault: '15 fallas principales. 15 correcciones. Un reporte.',
             headlineLeaks: 'Tus 3 fugas del Lite siguen activas — faltan 12 más',
-            subheadDefault: 'El Lite solo nombra 3 problemas. El Reporte Titán detecta las 15 fugas de conversión más graves en tu página y te da una recomendación concreta para resolver cada una.',
-            subheadLeaks: 'Tu Lite ya mostró fugas reales en tu página. Titán entrega el mapa completo: las 15 fallas rankeadas + cómo arreglar cada una — no teoría, pasos accionables.',
+            subheadDefault: 'El Lite solo nombra 3 problemas. El Reporte Titán detecta las 15 fugas de conversión más graves en tu página y te da una recomendación concreta para resolver cada una — más el bonus gratis de oportunidades de nuevos productos.',
+            subheadLeaks: 'Tu Lite ya mostró fugas reales en tu página. Titán entrega el mapa completo: las 15 fallas rankeadas + cómo arreglar cada una — y el bonus gratis de oportunidades de producto si otros SKUs podrían vender mejor que tu catálogo actual.',
             lblPage: 'Tu página',
             lblEmail: 'Correo del reporte',
             leaksTitle: 'Fallas detectadas en tu Lite — siguen activas:',
@@ -49,7 +77,7 @@ function getTitanPageCopy(lang, priceUsd, monitoringUsd) {
             fixesTitle: '15 recomendaciones para resolverlas',
             examplesTitle: 'Ejemplo de falla → recomendación',
             compareTitle: 'Lite vs Titán',
-            compareSub: 'Lite = teaser gratis · Titán = fallas + cómo arreglar cada una',
+            compareSub: 'Lite = teaser gratis · Titán = fallas + correcciones + bonus de productos',
             monitoringTitle: 'Qué incluye el monitoreo (USD $' + monitoringUsd + '/mes desde día 30)',
             monitoringBody: 'Reporte mensual de seguimiento con métricas actualizadas. Puedes cancelar por correo o portal Stripe al menos 5 días hábiles antes del cobro. El Reporte Titán (USD $' + priceUsd + ') es venta final hoy.',
             priceAnchor: 'No pagues $3,000 ni esperes semanas por una agencia — reporte forense en ~60 min por USD $' + priceUsd + '.',
@@ -70,9 +98,10 @@ function getTitanPageCopy(lang, priceUsd, monitoringUsd) {
             colLite: 'Lite · Gratis',
             colTitan: 'Titán · $' + priceUsd,
             colFeature: 'Qué recibes',
-            sectionsSummary: 'Qué incluye el PDF Titán (11 secciones)',
+            sectionsSummary: 'Qué incluye el PDF Titán (11 secciones + bonus de producto)',
             faq: [
-                { q: '¿Por qué pagar si ya tengo el Lite?', a: 'Lite nombra 3 fugas sin playbook de corrección. Titán muestra las 15 principales y una recomendación específica para cada una, más benchmark y plan de 21 días.' },
+                { q: '¿Por qué pagar si ya tengo el Lite?', a: 'Lite nombra 3 fugas sin playbook de corrección. Titán muestra las 15 principales y una recomendación específica para cada una, más benchmark, plan de 21 días y el bonus gratis de oportunidades de nuevos productos.' },
+                { q: '¿Qué es el bonus de productos?', a: 'Sin costo extra: el mismo análisis Product Intel — SKUs del nicho rankeados, precios/costos y expansión adyacente — por si tu catálogo actual no es el que mejor convierte.' },
                 { q: '¿Qué es el cargo de $' + monitoringUsd + '/mes?', a: 'Monitoreo mensual opcional que empieza el día 30. Puedes cancelarlo antes del primer cobro recurrente. El reporte Titán de hoy (USD $' + priceUsd + ') es un pago único.' },
                 { q: '¿Cuándo llega el PDF?', a: 'Normalmente en ~60 minutos a tu correo. Revisa spam y Promociones.' },
                 { q: '¿Necesito acceso a mi backend?', a: 'No. Auditamos tu página pública como la vería un extraño — la misma URL que tus anuncios envían.' },
@@ -83,8 +112,8 @@ function getTitanPageCopy(lang, priceUsd, monitoringUsd) {
             badgeEmail: 'From your Lite email — 12 more leaks to uncover',
             headlineDefault: '15 main flaws. 15 fixes. One report.',
             headlineLeaks: 'Your 3 Lite leaks are still live — 12 more hidden',
-            subheadDefault: 'Lite names 3 problems only. The Titan Report finds all 15 ranked conversion failures on your page and gives you a clear recommendation to fix each one.',
-            subheadLeaks: 'Your Lite already flagged real issues on your page. Titan delivers the full map: all 15 flaws ranked + how to fix each — not theory, actionable steps.',
+            subheadDefault: 'Lite names 3 problems only. The Titan Report finds all 15 ranked conversion failures on your page and gives you a clear recommendation to fix each one — plus a free New Product Opportunities bonus.',
+            subheadLeaks: 'Your Lite already flagged real issues on your page. Titan delivers the full map: all 15 flaws ranked + how to fix each — and a free Product Opportunities bonus if better SKUs could outperform your current catalog.',
             lblPage: 'Your page',
             lblEmail: 'Report email',
             leaksTitle: 'Issues from your Lite scan — still active:',
@@ -93,7 +122,7 @@ function getTitanPageCopy(lang, priceUsd, monitoringUsd) {
             fixesTitle: '15 fix recommendations',
             examplesTitle: 'Example flaw → recommendation',
             compareTitle: 'Lite vs Titan',
-            compareSub: 'Lite = free teaser · Titan = flaws + how to fix each',
+            compareSub: 'Lite = free teaser · Titan = flaws + fixes + product opportunities bonus',
             monitoringTitle: 'What monitoring includes (USD $' + monitoringUsd + '/mo from day 30)',
             monitoringBody: 'Monthly follow-up report with updated metrics. Cancel via email or Stripe portal at least 5 business days before renewal. Today\'s Titan Report (USD $' + priceUsd + ') is a one-time charge.',
             priceAnchor: 'Don\'t pay $3,000 and wait weeks for an agency — forensic report in ~60 min for USD $' + priceUsd + '.',
@@ -114,9 +143,10 @@ function getTitanPageCopy(lang, priceUsd, monitoringUsd) {
             colLite: 'Lite · Free',
             colTitan: 'Titan · $' + priceUsd,
             colFeature: 'What you get',
-            sectionsSummary: 'Inside the Titan PDF (11 sections)',
+            sectionsSummary: 'Inside the Titan PDF (11 sections + product opportunities bonus)',
             faq: [
-                { q: 'Why pay if I already have Lite?', a: 'Lite names 3 flaws with no fix playbook. Titan shows all 15 main failures plus a specific recommendation for each, plus competitor benchmark and a 21-day plan.' },
+                { q: 'Why pay if I already have Lite?', a: 'Lite names 3 flaws with no fix playbook. Titan shows all 15 main failures plus a specific recommendation for each, plus competitor benchmark, a 21-day plan, and a free New Product Opportunities bonus.' },
+                { q: 'What is the product opportunities bonus?', a: 'At no extra cost: the same Product Intel analysis — ranked niche SKUs, pricing/costs, and adjacent expansion — in case better products could outperform your current catalog.' },
                 { q: 'What is the $' + monitoringUsd + '/mo charge?', a: 'Optional monthly monitoring starting day 30. You can cancel before the first recurring charge. Today\'s Titan Report (USD $' + priceUsd + ') is a one-time payment.' },
                 { q: 'When does the PDF arrive?', a: 'Usually within ~60 minutes by email. Check spam and Promotions.' },
                 { q: 'Do I need backend access?', a: 'No. We audit your public page like a stranger would — the same URL your ads send traffic to.' },
@@ -128,5 +158,6 @@ module.exports = {
     TITAN_FLAW_FIX_EXAMPLES,
     COMPARE_ROWS,
     TITAN_SECTIONS,
+    TITAN_BONUS,
     getTitanPageCopy,
 };

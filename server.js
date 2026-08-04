@@ -29,6 +29,8 @@ const {
     createProductIntelJob,
     getProductIntelJob,
     runProductIntelJob,
+    analyzeStoreCatalog,
+    formatProductIntelForTitan,
 } = require('./product-intel');
 const { captureAndScrape } = require('./motor');
 const {
@@ -1959,6 +1961,42 @@ async function ejecutarAuditoriaFondo(targetUrl, jobId, modo, auditOpts = {}) {
             await new Promise((r) => setTimeout(r, 2000));
         }
 
+        // Titan Bonus XII — same Product Intel engine as /product-intel (catalog opportunities).
+        // Soft-fail: never block the core 11-section PDF if catalog scrape fails.
+        if (modo === 'TITAN' && !isSocialMediaUrl(targetUrl)) {
+            try {
+                console.log(`>>> [PRODUCT_INTEL] Running Titan bonus for ${jobId}`);
+                const piLang = (jobsMemoria[jobId].reportLocale?.code || 'en').startsWith('es') ? 'es' : 'en';
+                const piAnalysis = await analyzeStoreCatalog(targetUrl, { lang: piLang });
+                const bonusMd = formatProductIntelForTitan(piAnalysis, piLang);
+                if (bonusMd) {
+                    jobsMemoria[jobId].progress.PRODUCT_INTEL = bonusMd;
+                    const jsonSlice = JSON.stringify(piAnalysis).slice(0, 100000);
+                    dossierTexto += `\n\nPRODUCT_INTEL_JSON:\n${jsonSlice}\n`;
+                    jobsMemoria[jobId].dossier = dossierTexto;
+                    await persistJobMeta(jobId, jobsMemoria[jobId].progress, {
+                        dossier: dossierTexto,
+                        reportLocale: jobsMemoria[jobId].reportLocale,
+                        captures: jobsMemoria[jobId].captures,
+                        targetUrl,
+                    });
+                    console.log(`>>> [PRODUCT_INTEL] Bonus section attached (${bonusMd.length} chars)`);
+                }
+            } catch (piErr) {
+                console.warn(`>>> [PRODUCT_INTEL] Bonus skipped: ${piErr?.message || piErr}`);
+                const es = (jobsMemoria[jobId].reportLocale?.code || '').startsWith('es');
+                jobsMemoria[jobId].progress.PRODUCT_INTEL = es
+                    ? '### XII. BONUS — OPORTUNIDADES DE NUEVOS PRODUCTOS\n\nNo se pudo leer un catálogo de productos suficiente en esta URL (tienda no-Shopify, catálogo privado o sin listados públicos). Las 11 secciones principales del Titán no se ven afectadas. Puedes reintentar Product Intel en predictacore.ai/product-intel con la URL de colección o /products.json.'
+                    : '### XII. BONUS — NEW PRODUCT OPPORTUNITIES\n\nWe could not read a sufficient public product catalog from this URL (non-Shopify store, private catalog, or no public listings). The core 11 Titan sections are unaffected. You can retry Product Intel at predictacore.ai/product-intel with a collection URL or /products.json.';
+                await persistJobMeta(jobId, jobsMemoria[jobId].progress, {
+                    dossier: jobsMemoria[jobId].dossier,
+                    reportLocale: jobsMemoria[jobId].reportLocale,
+                    captures: jobsMemoria[jobId].captures,
+                    targetUrl,
+                }).catch(() => {});
+            }
+        }
+
         await enviarReportePorCorreo(jobId, jobsMemoria[jobId].email, targetUrl, modo);
 
         if (modo === 'LITE') {
@@ -2161,7 +2199,23 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
         const liteKeys = modo === 'LITE'
             ? LITE_SECTION_ORDER.filter((k) => liteProgress[k])
             : null;
-        const pdfKeys = deltaKeys || liteKeys || Object.keys(liteProgress || {});
+        const titanKeys = modo === 'TITAN'
+            ? [
+                'INTRO',
+                'GEMELOS',
+                'SCORECARD',
+                'VISIBILIDAD',
+                'BENCHMARK',
+                'SWOT',
+                'WISHLIST',
+                'FUGAS',
+                'ACCIONES',
+                'HERRAMIENTAS',
+                'OMNI',
+                'PRODUCT_INTEL',
+            ].filter((k) => liteProgress[k])
+            : null;
+        const pdfKeys = deltaKeys || liteKeys || titanKeys || Object.keys(liteProgress || {});
         for (const key of pdfKeys) {
             const value = liteProgress[key];
             if (!value || key === '__meta__' || key === 'SCORECARD_IS_HTML') continue;
