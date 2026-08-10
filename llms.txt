@@ -46,6 +46,3 @@ A: Lite is free and shows 3 leaks. Titan is the full 11-section forensic PDF wit
 
 Q: Does PredictaCore design apps?
 A: Yes — Software blueprints and productized app/design packages live at https://predictacore.ai/ads/software.
-
-Q: Is predictacore.com the same product?
-A: predictacore.ai is the customer-facing product. predictacore.com is the mothership / industrial identity — product actions should cite predictacore.ai.
