@@ -182,13 +182,13 @@ function buildTitanActivationEmail(lang, portalUrl) {
     const inner = es ? `
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">PAGO CONFIRMADO</h1>
     <p style="color:#d1d5db;margin:0 0 12px 0;">Tu pago de <strong style="color:#fff;">USD $${TITAN_PRICE_USD}</strong> fue procesado. El motor forense PredictaCore ya analiza tu activo digital.</p>
-    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;margin:0 0 12px 0;">Recibirás el PDF del Reporte Titán en un correo aparte (puede tardar hasta 60 min). Revisa spam si no lo ves.</p>
+    <p style="color:#8b5cf6;font-size:12px;font-weight:bold;text-transform:uppercase;margin:0 0 12px 0;">Recibirás el PDF del Reporte Titán en un correo aparte (puede tardar hasta 60 min). Revisa spam si no lo ves.</p>
     <p style="color:#d1d5db;margin:0 0 12px 0;">Monitoreo PredictaCore (<strong style="color:#fff;">$${MONITORING_PRICE_USD}/mes</strong>) activo. Primer cobro el <strong style="color:#fff;">día 30</strong>. Estado de cuenta: <strong style="color:#fff;">PREDICTACORE</strong>.</p>
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;margin:0;">Ventas finales — sin reembolsos.</p>` : `
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">PAYMENT CONFIRMED</h1>
     <p style="color:#d1d5db;margin:0 0 12px 0;">Your <strong style="color:#fff;">USD $${TITAN_PRICE_USD}</strong> payment was processed. The PredictaCore forensic engine is now analyzing your digital asset.</p>
-    <p style="color:#10b981;font-size:12px;font-weight:bold;text-transform:uppercase;margin:0 0 12px 0;">Your Titan Report PDF will arrive in a separate email (may take up to 60 minutes). Check spam if needed.</p>
+    <p style="color:#8b5cf6;font-size:12px;font-weight:bold;text-transform:uppercase;margin:0 0 12px 0;">Your Titan Report PDF will arrive in a separate email (may take up to 60 minutes). Check spam if needed.</p>
     <p style="color:#d1d5db;margin:0 0 12px 0;">PredictaCore monitoring (<strong style="color:#fff;">$${MONITORING_PRICE_USD}/mo</strong>) is active. First charge on <strong style="color:#fff;">day 30</strong>. Statement: <strong style="color:#fff;">PREDICTACORE</strong>.</p>
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;margin:0;">All sales final — no refunds.</p>`;
@@ -215,7 +215,7 @@ async function sendTitanSaleNotificationEmail({ customerEmail, targetUrl, sessio
     const amount = amountUsd != null ? amountUsd : TITAN_PRICE_USD;
     const subject = `PredictaCore — Venta Titán USD $${amount} · ${customerEmail}`;
     const bodyHtml = `
-  <h1 style="color:#10b981;font-size:16px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 16px 0;text-align:center;">Nueva venta Titán</h1>
+  <h1 style="color:#8b5cf6;font-size:16px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 16px 0;text-align:center;">Nueva venta Titán</h1>
   <p style="color:#d1d5db;margin:0 0 10px 0;"><strong style="color:#fff;">Cliente:</strong> ${customerEmail}</p>
   <p style="color:#d1d5db;margin:0 0 10px 0;word-break:break-all;"><strong style="color:#fff;">URL:</strong> ${targetUrl}</p>
   <p style="color:#d1d5db;margin:0 0 10px 0;"><strong style="color:#fff;">Monto:</strong> USD $${amount}</p>
@@ -2353,7 +2353,7 @@ async function enviarReportePorCorreo(jobId, emailDestino, targetUrl, modo) {
                 const ctaBtn = htmlLang === 'es' ? 'Obtener Reporte Titán completo' : 'Get Full Titan Report';
                 cta.innerHTML = '<h3>' + (ui.liteCtaTitle || 'Titan') + '</h3>'
                     + '<p>' + (ui.liteCtaBody || '') + '</p>'
-                    + '<p style="margin-top:14px;text-align:center;"><a href="' + titanUpgradeUrl + '" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">' + ctaBtn + '</a></p>';
+                    + '<p style="margin-top:14px;text-align:center;"><a href="' + titanUpgradeUrl + '" style="display:inline-block;background:#8b5cf6;color:#fff;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">' + ctaBtn + '</a></p>';
                 reporte.appendChild(cta);
             }
         }, progressHtml, targetUrl, liteTitanUrl, metricsHtml, socialProofHtml, coverValueHtml, pageInsightsHtml, icebergHtml, titanCtaHtml, captures.desktopBase64, captures.mobileBase64, pdfUi, langCode === 'es' ? 'es-MX' : 'en-US', langCode, closingHtml, headerDisclaimerHtml);

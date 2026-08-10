@@ -11,7 +11,7 @@ function getTitanInternalHTML() {
     <title>Titan Lab | PredictaCore</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --pc-emerald: #10b981; --pc-dark-bg: #050505; }
+        :root { --pc-violet: #8b5cf6; --pc-dark-bg: #050505; }
         body { background: var(--pc-dark-bg); color: #d1d5db; font-family: Inter, sans-serif; overflow-x: hidden; }
         .mesh-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -24,28 +24,28 @@ function getTitanInternalHTML() {
             border-radius: 0.5rem;
         }
         .hidden-flow { display: none !important; }
-        .scan-line { width: 100%; height: 2px; background: var(--pc-emerald); position: absolute; top: 0; left: 0; animation: scan 3s infinite linear; opacity: 0.3; }
+        .scan-line { width: 100%; height: 2px; background: var(--pc-violet); position: absolute; top: 0; left: 0; animation: scan 3s infinite linear; opacity: 0.3; }
         @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
         .asset-pill { cursor: pointer; transition: all 0.2s; opacity: 0.45; border: 1px solid #3f3f46; }
-        .asset-pill.active { opacity: 1; border-color: var(--pc-emerald); color: var(--pc-emerald); background: rgba(16,185,129,0.08); }
+        .asset-pill.active { opacity: 1; border-color: var(--pc-violet); color: var(--pc-violet); background: rgba(139,92,246,0.08); }
         .platform-pill { cursor: pointer; transition: all 0.2s; border: 1px solid #3f3f46; opacity: 0.5; }
-        .platform-pill.active { opacity: 1; border-color: var(--pc-emerald); color: #fff; background: rgba(16,185,129,0.12); }
+        .platform-pill.active { opacity: 1; border-color: var(--pc-violet); color: #fff; background: rgba(139,92,246,0.12); }
     </style>
 </head>
 <body class="antialiased min-h-screen">
     <div class="mesh-bg"></div>
 
     <header class="py-8 text-center border-b border-zinc-900/80">
-        <p class="text-[10px] text-emerald-600 uppercase tracking-[0.3em] font-mono mb-2">Internal lab // No billing</p>
-        <h1 class="text-2xl font-black text-white tracking-tighter">PREDICTA<span class="text-emerald-500">CORE</span> TITAN</h1>
+        <p class="text-[10px] text-violet-500 uppercase tracking-[0.3em] font-mono mb-2">Internal lab // No billing</p>
+        <h1 class="text-2xl font-black text-white tracking-tighter">PREDICTA<span class="text-violet-400">CORE</span> TITAN</h1>
         <p class="text-zinc-500 text-[11px] mt-2">Website or social profile — one full forensic report per run</p>
     </header>
 
     <section class="py-16 px-6">
         <div class="max-w-2xl mx-auto">
 
-            <div id="setup-stage" class="terminal-box p-8 md:p-12 shadow-[0_0_50px_rgba(16,185,129,0.1)] border border-zinc-800 bg-black/80 relative">
-                <div class="absolute top-4 right-4 text-[10px] text-emerald-500 font-mono animate-pulse">// LAB NODE</div>
+            <div id="setup-stage" class="terminal-box p-8 md:p-12 shadow-[0_0_50px_rgba(139,92,246,0.1)] border border-zinc-800 bg-black/80 relative">
+                <div class="absolute top-4 right-4 text-[10px] text-violet-400 font-mono animate-pulse">// LAB NODE</div>
                 <h2 class="text-xl font-black text-white mt-4 mb-6 uppercase tracking-tighter text-center">Run Titan Report</h2>
 
                 <p class="text-[9px] text-zinc-500 uppercase tracking-widest mb-2 text-center">Asset type</p>
@@ -56,7 +56,7 @@ function getTitanInternalHTML() {
 
                 <div id="panel-web" class="space-y-4 mb-4">
                     <input type="text" id="dna-url" placeholder="yourbusiness.com"
-                        class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 font-mono text-xs uppercase tracking-widest">
+                        class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-violet-500 font-mono text-xs uppercase tracking-widest">
                 </div>
 
                 <div id="panel-social" class="hidden-flow space-y-4 mb-4">
@@ -67,41 +67,41 @@ function getTitanInternalHTML() {
                         <button type="button" class="platform-pill py-2 rounded text-[9px] font-bold uppercase" data-platform="tiktok" onclick="setPlatform('tiktok')">TikTok</button>
                     </div>
                     <input type="text" id="social-handle" placeholder="@brand"
-                        class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 font-mono text-xs tracking-widest">
+                        class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-violet-500 font-mono text-xs tracking-widest">
                     <p id="social-hint" class="text-[9px] text-zinc-600 text-center">Public profile URL or username</p>
                 </div>
 
                 <div class="space-y-4">
                     <input type="email" id="user-email" placeholder="Delivery email"
-                        class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 font-mono text-xs tracking-widest">
+                        class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-violet-500 font-mono text-xs tracking-widest">
                     <input type="password" id="access-key" placeholder="Access key"
-                        class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-emerald-500 font-mono text-xs tracking-widest">
+                        class="w-full bg-black border border-zinc-700 rounded p-4 text-white focus:outline-none focus:border-violet-500 font-mono text-xs tracking-widest">
                 </div>
 
                 <p id="form-error" class="hidden-flow text-[10px] text-red-400 mt-4 text-center" role="alert"></p>
 
                 <button id="btn-run" onclick="runTitan()"
-                    class="w-full mt-6 bg-emerald-600 text-white font-black py-4 rounded hover:bg-emerald-500 transition-all uppercase tracking-[0.2em] text-xs">
+                    class="w-full mt-6 bg-violet-600 text-white font-black py-4 rounded hover:bg-violet-500 transition-all uppercase tracking-[0.2em] text-xs">
                     Execute Titan Audit
                 </button>
             </div>
 
-            <div id="scanner-stage" class="hidden-flow terminal-box p-8 relative overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.2)] bg-black border border-emerald-500 mt-0">
+            <div id="scanner-stage" class="hidden-flow terminal-box p-8 relative overflow-hidden shadow-[0_0_50px_rgba(139,92,246,0.2)] bg-black border border-violet-500 mt-0">
                 <div class="scan-line"></div>
                 <p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-4 text-center font-mono" id="scan-label">Forensic engine</p>
-                <div id="terminal-output" class="font-mono text-[10px] text-emerald-500 space-y-1 h-64 overflow-y-auto">
+                <div id="terminal-output" class="font-mono text-[10px] text-violet-400 space-y-1 h-64 overflow-y-auto">
                     <p id="log-init">&gt;&gt; INITIALIZING PREDICTACORE CORE...</p>
                 </div>
             </div>
 
-            <div id="done-stage" class="hidden-flow terminal-box p-8 md:p-12 text-center relative border border-emerald-500/50 bg-black mt-0">
-                <div class="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <div id="done-stage" class="hidden-flow terminal-box p-8 md:p-12 text-center relative border border-violet-500/50 bg-black mt-0">
+                <div class="w-12 h-12 bg-violet-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 </div>
                 <h2 class="text-2xl font-black text-white mb-2 uppercase tracking-tighter">Titan Queued</h2>
                 <p class="text-zinc-400 text-xs mb-2">Full report shipping to <span id="sent-email" class="text-white font-bold"></span></p>
-                <p id="done-detail" class="text-emerald-500 text-[10px] font-bold uppercase tracking-widest mb-6">11-section forensic PDF in ~10–20 min</p>
-                <button onclick="resetLab()" class="text-zinc-500 text-[10px] uppercase tracking-widest hover:text-emerald-500">Run another audit</button>
+                <p id="done-detail" class="text-violet-400 text-[10px] font-bold uppercase tracking-widest mb-6">11-section forensic PDF in ~10–20 min</p>
+                <button onclick="resetLab()" class="text-zinc-500 text-[10px] uppercase tracking-widest hover:text-violet-400">Run another audit</button>
             </div>
 
         </div>

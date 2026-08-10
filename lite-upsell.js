@@ -144,8 +144,8 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
             ? 'Ayer recibiste el Lite. Las fugas no se arreglan solas.'
             : 'You got your Lite yesterday. These leaks do not fix themselves.';
         intro = es
-            ? `Cada día que <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> sigue igual, visitantes entran, ven la fricción y se van sin comprar. Tu Lite ya identificó problemas reales — el Reporte Titán muestra las <strong style="color:#10b981;">15 fugas completas</strong> y qué hacer en cada una.`
-            : `Every day <strong style="color:#fff;">${targetUrl || 'your page'}</strong> stays unchanged, visitors hit friction and leave without buying. Your Lite already flagged real issues — the Titan Report shows all <strong style="color:#10b981;">15 leaks</strong> and exactly what to do about each one.`;
+            ? `Cada día que <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> sigue igual, visitantes entran, ven la fricción y se van sin comprar. Tu Lite ya identificó problemas reales — el Reporte Titán muestra las <strong style="color:#8b5cf6;">15 fugas completas</strong> y qué hacer en cada una.`
+            : `Every day <strong style="color:#fff;">${targetUrl || 'your page'}</strong> stays unchanged, visitors hit friction and leave without buying. Your Lite already flagged real issues — the Titan Report shows all <strong style="color:#8b5cf6;">15 leaks</strong> and exactly what to do about each one.`;
     } else if (variant === 'weekly') {
         const weeks = Math.max(1, Math.round((daysSinceLite || 7) / 7));
         subject = es
@@ -165,8 +165,8 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
             ? 'Tu Lite está adjunto — y es solo la punta del iceberg'
             : 'Your Lite is attached — and it is only the tip of the iceberg';
         intro = es
-            ? `Analizamos <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> desde afuera. El PDF muestra <strong style="color:#10b981;">3 fugas</strong> con evidencia. En el mapa prioritario completo identificamos <strong style="color:#fbbf24;">12 fallas más</strong> (algunas críticas) que <strong>no están en este Lite</strong>. Titán las desbloquea con <strong>acciones para resolver cada una</strong> y <strong>herramientas</strong> para implementarlas.`
-            : `We analyzed <strong style="color:#fff;">${targetUrl || 'your page'}</strong> from the outside. The PDF shows <strong style="color:#10b981;">3 flaws</strong> with evidence. In the full priority map we identified <strong style="color:#fbbf24;">12 more failures</strong> (some critical) that are <strong>not in this Lite</strong>. Titan unlocks them with <strong>actions to fix each one</strong> and <strong>tools</strong> to implement them.`;
+            ? `Analizamos <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> desde afuera. El PDF muestra <strong style="color:#8b5cf6;">3 fugas</strong> con evidencia. En el mapa prioritario completo identificamos <strong style="color:#fbbf24;">12 fallas más</strong> (algunas críticas) que <strong>no están en este Lite</strong>. Titán las desbloquea con <strong>acciones para resolver cada una</strong> y <strong>herramientas</strong> para implementarlas.`
+            : `We analyzed <strong style="color:#fff;">${targetUrl || 'your page'}</strong> from the outside. The PDF shows <strong style="color:#8b5cf6;">3 flaws</strong> with evidence. In the full priority map we identified <strong style="color:#fbbf24;">12 more failures</strong> (some critical) that are <strong>not in this Lite</strong>. Titan unlocks them with <strong>actions to fix each one</strong> and <strong>tools</strong> to implement them.`;
     }
 
     const whyTitan = es
@@ -175,8 +175,8 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
 
     const pdfBanner = variant === 'initial'
         ? (es
-            ? '<p style="margin:0 0 18px 0;padding:12px 14px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.35);border-radius:6px;font-size:14px;line-height:1.5;color:#d1d5db;text-align:center;"><strong style="color:#10b981;">PDF Lite adjunto</strong> — ábrelo primero. Las fugas abajo siguen activas en tu página.</p>'
-            : '<p style="margin:0 0 18px 0;padding:12px 14px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.35);border-radius:6px;font-size:14px;line-height:1.5;color:#d1d5db;text-align:center;"><strong style="color:#10b981;">Lite PDF attached</strong> — open it first. The leaks below are still live on your page.</p>')
+            ? '<p style="margin:0 0 18px 0;padding:12px 14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.35);border-radius:6px;font-size:14px;line-height:1.5;color:#d1d5db;text-align:center;"><strong style="color:#8b5cf6;">PDF Lite adjunto</strong> — ábrelo primero. Las fugas abajo siguen activas en tu página.</p>'
+            : '<p style="margin:0 0 18px 0;padding:12px 14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.35);border-radius:6px;font-size:14px;line-height:1.5;color:#d1d5db;text-align:center;"><strong style="color:#8b5cf6;">Lite PDF attached</strong> — open it first. The leaks below are still live on your page.</p>')
         : '';
 
     const html = `${pdfBanner}
@@ -187,7 +187,7 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
     ${leaksHtmlBlock(leaks, lang)}
   </div>
   ${whyTitan}
-  <p style="margin:28px 0;text-align:center;"><a href="${titanUrl}" style="background:#10b981;color:#000;padding:14px 28px;text-decoration:none;font-weight:900;border-radius:6px;display:inline-block;font-size:14px;text-transform:uppercase;letter-spacing:0.04em;">${ctaLabel}</a></p>
+  <p style="margin:28px 0;text-align:center;"><a href="${titanUrl}" style="background:#8b5cf6;color:#fff;padding:14px 28px;text-decoration:none;font-weight:900;border-radius:6px;display:inline-block;font-size:14px;text-transform:uppercase;letter-spacing:0.04em;">${ctaLabel}</a></p>
   <p style="font-size:13px;color:#71717a;text-align:center;margin:0 0 8px 0;">${es ? 'Tu correo y URL ya están listos — un clic para pagar.' : 'Your email and URL are pre-filled — one click to pay.'}</p>
   ${cancelHtml}
   <p style="font-size:11px;color:#71717a;text-align:center;margin-top:16px;">PredictaCore · predictacore.ai</p>`;

@@ -18,31 +18,31 @@ function getProductIntelHTML() {
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
-        :root { --pc-emerald: #10b981; --pc-dark: #050505; }
+        :root { --pc-violet: #8b5cf6; --pc-dark: #050505; }
         body { background: var(--pc-dark); color: #d1d5db; font-family: Inter, ui-sans-serif, system-ui, sans-serif; margin: 0; font-size: 16px; line-height: 1.6; }
-        .mesh { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 50% at 50% -10%, #134e4a33 0%, transparent 55%); z-index: -1; pointer-events: none; }
+        .mesh { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 50% at 50% -10%, #4c1d9533 0%, transparent 55%); z-index: -1; pointer-events: none; }
         .pc-input {
             width: 100%; box-sizing: border-box; border-radius: 0.5rem; border: 1px solid #3f3f46;
             background: #0a0a0a; color: #fafafa; padding: 0.875rem 1rem; font-size: 1rem;
             font-family: 'JetBrains Mono', ui-monospace, monospace;
         }
-        .pc-input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); }
+        .pc-input:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 2px rgba(139,92,246,0.2); }
         textarea.pc-input { font-family: Inter, ui-sans-serif, system-ui, sans-serif; min-height: 4.5rem; resize: vertical; }
         .pc-btn {
             display: inline-flex; align-items: center; justify-content: center; width: 100%;
-            border-radius: 0.5rem; background: #10b981; color: #04110c; font-weight: 900;
+            border-radius: 0.5rem; background: #8b5cf6; color: #04110c; font-weight: 900;
             text-transform: uppercase; letter-spacing: 0.06em; padding: 1rem 1.5rem; border: none;
-            cursor: pointer; font-size: 0.875rem; box-shadow: 0 0 24px rgba(16,185,129,0.25);
+            cursor: pointer; font-size: 0.875rem; box-shadow: 0 0 24px rgba(139,92,246,0.25);
         }
-        .pc-btn:hover { background: #34d399; }
+        .pc-btn:hover { background: #a78bfa; }
         .pc-btn:disabled { opacity: 0.55; cursor: wait; }
         .pc-card { border-radius: 0.75rem; border: 1px solid #27272a; background: rgba(0,0,0,0.45); padding: 1.25rem; }
-        .pc-badge { display: inline-flex; border-radius: 9999px; border: 1px solid rgba(16,185,129,0.35); background: rgba(6,78,59,0.25); padding: 0.25rem 0.75rem; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #6ee7b7; }
-        .score { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #34d399; }
+        .pc-badge { display: inline-flex; border-radius: 9999px; border: 1px solid rgba(139,92,246,0.35); background: rgba(6,78,59,0.25); padding: 0.25rem 0.75rem; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #6ee7b7; }
+        .score { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #a78bfa; }
         .opp-row { border-bottom: 1px solid #27272a; padding: 1rem 0; }
         .opp-row:last-child { border-bottom: none; }
         .tab { cursor: pointer; padding: 0.625rem 1rem; border-radius: 0.5rem; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #71717a; border: 1px solid transparent; }
-        .tab.active { color: #6ee7b7; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); }
+        .tab.active { color: #6ee7b7; border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.08); }
         .panel { display: none; }
         .panel.active { display: block; }
         .muted { color: #71717a; }
@@ -50,16 +50,16 @@ function getProductIntelHTML() {
         table.pi { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
         table.pi th, table.pi td { padding: 0.75rem 0.5rem; border-bottom: 1px solid #27272a; text-align: left; vertical-align: top; }
         table.pi th { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: #71717a; }
-        .spin { display: inline-block; width: 1rem; height: 1rem; border: 2px solid #27272a; border-top-color: #10b981; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .spin { display: inline-block; width: 1rem; height: 1rem; border: 2px solid #27272a; border-top-color: #8b5cf6; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .drop {
             border: 1px dashed #3f3f46; border-radius: 0.5rem; padding: 1rem; text-align: center;
             color: #71717a; font-size: 0.875rem; cursor: pointer; background: #0a0a0a;
         }
-        .drop:hover, .drop.drag { border-color: #10b981; color: #a1a1aa; }
+        .drop:hover, .drop.drag { border-color: #8b5cf6; color: #a1a1aa; }
         .drop img { max-height: 120px; margin: 0.5rem auto 0; border-radius: 0.375rem; display: block; }
-        .go-go { color: #34d399; } .go-pilot { color: #fbbf24; } .go-nogo { color: #f87171; }
-        .need-box { border-left: 3px solid #10b981; padding-left: 1rem; }
+        .go-go { color: #a78bfa; } .go-pilot { color: #fbbf24; } .go-nogo { color: #f87171; }
+        .need-box { border-left: 3px solid #8b5cf6; padding-left: 1rem; }
     </style>
 </head>
 <body class="min-h-screen antialiased">
@@ -67,12 +67,12 @@ function getProductIntelHTML() {
 
     <header class="sticky top-0 z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-md">
         <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-            <a href="/" class="text-lg font-black text-white tracking-tighter uppercase">PREDICTA<span class="text-emerald-400">CORE</span></a>
+            <a href="/" class="text-lg font-black text-white tracking-tighter uppercase">PREDICTA<span class="text-violet-300">CORE</span></a>
             <div class="flex items-center gap-4 text-xs font-bold uppercase tracking-widest">
-                <span class="text-emerald-500/80 hidden sm:inline" id="free-label">Gratis · Beta</span>
+                <span class="text-violet-400/80 hidden sm:inline" id="free-label">Gratis · Beta</span>
                 <button type="button" id="lang-en" class="text-zinc-500 hover:text-white">EN</button>
                 <span class="text-zinc-700">|</span>
-                <button type="button" id="lang-es" class="text-emerald-400">ES</button>
+                <button type="button" id="lang-es" class="text-violet-300">ES</button>
             </div>
         </div>
     </header>
@@ -135,7 +135,7 @@ function getProductIntelHTML() {
                 <p class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-1" id="lbl-niche">Nicho detectado</p>
                 <p id="niche" class="text-xl font-bold text-white"></p>
                 <p id="catalog-meta" class="text-sm text-zinc-500 mt-2"></p>
-                <p id="capabilities" class="text-sm text-emerald-300/90 mt-2"></p>
+                <p id="capabilities" class="text-sm text-violet-300/90 mt-2"></p>
                 <p id="mfg" class="text-sm text-zinc-400 mt-1"></p>
                 <div class="need-box mt-4">
                     <p class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-1" id="lbl-need">Qué necesita esta tienda</p>
@@ -143,7 +143,7 @@ function getProductIntelHTML() {
                 </div>
             </div>
 
-            <div id="cand-result" class="hidden-flow pc-card mb-6 border-emerald-900/40">
+            <div id="cand-result" class="hidden-flow pc-card mb-6 border-violet-900/40">
                 <p class="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-1" id="lbl-cand-res">Producto candidato · probabilidad de éxito</p>
                 <div class="flex flex-wrap items-baseline justify-between gap-2 mt-1">
                     <p id="cand-name" class="text-lg font-bold text-white"></p>
@@ -152,7 +152,7 @@ function getProductIntelHTML() {
                 <p id="cand-gono" class="text-sm font-bold mt-1"></p>
                 <p id="cand-verdict" class="text-sm text-zinc-400 mt-2"></p>
                 <p id="cand-signals" class="text-xs text-zinc-500 mt-3"></p>
-                <p id="cand-fit" class="text-sm text-emerald-300/90 mt-2"></p>
+                <p id="cand-fit" class="text-sm text-violet-300/90 mt-2"></p>
                 <p id="cand-price" class="text-sm text-zinc-300 mt-2"></p>
                 <ul id="cand-risks" class="text-sm text-zinc-500 list-disc pl-5 mt-3 space-y-1"></ul>
                 <ul id="cand-next" class="text-sm text-zinc-400 list-disc pl-5 mt-2 space-y-1"></ul>
@@ -190,7 +190,7 @@ function getProductIntelHTML() {
                     </table>
                 </div>
                 <p id="r2-prod" class="text-sm text-zinc-400 mt-4"></p>
-                <p id="r2-invest" class="text-sm text-emerald-300/90 mt-2"></p>
+                <p id="r2-invest" class="text-sm text-violet-300/90 mt-2"></p>
             </section>
 
             <section id="panel-r3" class="panel pc-card mb-6">
@@ -347,8 +347,8 @@ function getProductIntelHTML() {
             $('th-pos').textContent = t.thPos;
             $('r3-avoid-label').textContent = t.avoid;
             $('footer-note').textContent = t.footer;
-            $('lang-es').classList.toggle('text-emerald-400', lang === 'es');
-            $('lang-en').classList.toggle('text-emerald-400', lang === 'en');
+            $('lang-es').classList.toggle('text-violet-300', lang === 'es');
+            $('lang-en').classList.toggle('text-violet-300', lang === 'en');
             $('lang-es').classList.toggle('text-zinc-500', lang !== 'es');
             $('lang-en').classList.toggle('text-zinc-500', lang !== 'en');
         }
@@ -525,7 +525,7 @@ function getProductIntelHTML() {
                         esc(o.rank) + '. ' + esc(o.product) +
                         '</p>' +
                         '<span class="score">' + esc(o.score) + '/100 · ' + esc(o.action || '') + '</span></div>' +
-                        '<p class="text-sm text-emerald-300/90 mt-1">' +
+                        '<p class="text-sm text-violet-300/90 mt-1">' +
                         esc(o.priceSweetSpot || '') +
                         (o.priceRange ? ' <span class="text-zinc-500">(' + esc(o.priceRange) + ')</span>' : '') +
                         '</p>' +
@@ -573,7 +573,7 @@ function getProductIntelHTML() {
                         '<div class="flex flex-wrap items-baseline justify-between gap-2">' +
                         '<p class="font-bold text-white">' + esc(l.rank) + '. ' + esc(l.line) + '</p>' +
                         '<span class="score">' + esc(l.score) + '/100</span></div>' +
-                        '<p class="text-sm text-emerald-300/90 mt-1">' +
+                        '<p class="text-sm text-violet-300/90 mt-1">' +
                         esc(l.ticket || '') + ' · $' + esc(l.estMonthlyRevenueBaseUsd ?? '—') + '/mo Base' +
                         (l.difficulty ? ' · ' + t.difficulty + ': ' + esc(l.difficulty) : '') +
                         '</p>' +

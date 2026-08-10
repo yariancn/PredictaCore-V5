@@ -47,9 +47,9 @@ function getTitanUpgradeHTML() {
         .pc-badge { display: inline-flex; border-radius: 9999px; border: 1px solid rgba(139,92,246,0.35); background: rgba(76,29,149,0.25); padding: 0.25rem 0.75rem; font-size: 10px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #c4b5fd; }
         .pc-card { border-radius: 0.75rem; border: 1px solid #3f3f46; background: rgba(0,0,0,0.45); padding: 1rem 1.125rem; }
         .pc-stat { border-radius: 0.75rem; padding: 1.25rem; border: 2px solid rgba(139,92,246,0.35); background: rgba(0,0,0,0.5); text-align: center; }
-        .pc-stat.fix { border-color: rgba(16,185,129,0.35); }
+        .pc-stat.fix { border-color: rgba(139,92,246,0.35); }
         .pc-stat-num { font-size: 3rem; font-weight: 900; color: var(--pc-purple); line-height: 1; }
-        .pc-stat.fix .pc-stat-num { color: #34d399; }
+        .pc-stat.fix .pc-stat-num { color: #a78bfa; }
         .pc-btn { display: inline-flex; width: 100%; align-items: center; justify-content: center; border-radius: 0.5rem; background: var(--pc-purple); color: #fff; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; padding: 1rem 1.5rem; border: none; cursor: pointer; font-size: 0.875rem; box-shadow: 0 0 24px rgba(139,92,246,0.28); transition: background 0.15s; }
         .pc-btn:hover { background: #7c3aed; }
         .pc-btn:disabled { opacity: 0.6; cursor: wait; }
@@ -151,8 +151,8 @@ function getTitanUpgradeHTML() {
                 <summary id="sections-summary">Inside the Titan PDF (11 sections + product opportunities bonus)</summary>
                 <ol id="sections-list" class="mt-4 space-y-2 text-sm text-zinc-500 m-0 pl-0 list-none"></ol>
             </details>
-            <div id="bonus-card" class="rounded-xl border border-emerald-500/35 bg-emerald-950/20 p-5 mb-4">
-                <p id="bonus-badge" class="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-400/90"></p>
+            <div id="bonus-card" class="rounded-xl border border-violet-500/35 bg-violet-950/20 p-5 mb-4">
+                <p id="bonus-badge" class="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-300/90"></p>
                 <h3 id="bonus-title" class="mt-2 text-lg font-black text-white"></h3>
                 <p id="bonus-body" class="mt-2 text-sm text-zinc-400 leading-relaxed"></p>
                 <ul id="bonus-contains" class="mt-3 space-y-1.5 text-sm text-zinc-300 m-0 pl-0 list-none"></ul>
@@ -282,7 +282,7 @@ function getTitanUpgradeHTML() {
                 document.getElementById('lang-es').classList.toggle('text-zinc-500', currentLang !== 'es');
 
                 document.getElementById('examples-list').innerHTML = EXAMPLES.map(function(row) {
-                    return '<div class="pc-card"><p class="text-[10px] font-bold uppercase tracking-wider text-rose-400/90">Flaw</p><p class="pc-break mt-1 text-sm text-zinc-200">' + row.flaw + '</p><p class="mt-3 text-[10px] font-bold uppercase tracking-wider text-emerald-400/90">Recommendation</p><p class="pc-break mt-1 text-sm text-zinc-300">' + row.fix + '</p></div>';
+                    return '<div class="pc-card"><p class="text-[10px] font-bold uppercase tracking-wider text-rose-400/90">Flaw</p><p class="pc-break mt-1 text-sm text-zinc-200">' + row.flaw + '</p><p class="mt-3 text-[10px] font-bold uppercase tracking-wider text-violet-300/90">Recommendation</p><p class="pc-break mt-1 text-sm text-zinc-300">' + row.fix + '</p></div>';
                 }).join('');
 
                 document.getElementById('compare-body').innerHTML = COMPARE.map(function(row) {
@@ -298,7 +298,7 @@ function getTitanUpgradeHTML() {
                 document.getElementById('bonus-body').innerText = currentLang === 'es' ? BONUS.bodyEs : BONUS.bodyEn;
                 const contains = currentLang === 'es' ? BONUS.containsEs : BONUS.containsEn;
                 document.getElementById('bonus-contains').innerHTML = contains.map(function(item) {
-                    return '<li class="pc-break flex gap-2"><span class="text-emerald-400 shrink-0">✓</span><span>' + item + '</span></li>';
+                    return '<li class="pc-break flex gap-2"><span class="text-violet-300 shrink-0">✓</span><span>' + item + '</span></li>';
                 }).join('');
 
                 document.getElementById('faq-list').innerHTML = d.faq.map(function(item) {

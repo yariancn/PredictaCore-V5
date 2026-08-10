@@ -37,30 +37,30 @@ function getLandingHTML() {
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
-            :root { --pc-emerald: #10b981; --pc-dark-bg: #050505; }
+            :root { --pc-violet: #8b5cf6; --pc-dark-bg: #050505; }
             body { background: var(--pc-dark-bg); color: #d1d5db; font-family: 'Inter', sans-serif; overflow-x: hidden; font-size: 16px; line-height: 1.6; }
             .glass-panel { background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(30, 41, 59, 0.5); backdrop-filter: blur(12px); }
             .text-huge { font-size: clamp(2rem, 5.5vw, 3.75rem); line-height: 1.05; font-weight: 900; letter-spacing: -0.04em; }
             .hidden-flow { display: none !important; }
-            .terminal-box { background: rgba(0,0,0,0.88); border: 1px solid rgba(16,185,129,0.35); border-radius: 0.75rem; }
-            .scan-line { width: 100%; height: 2px; background: var(--pc-emerald); position: absolute; top: 0; left: 0; animation: scan 3s infinite linear; opacity: 0.35; }
+            .terminal-box { background: rgba(0,0,0,0.88); border: 1px solid rgba(139,92,246,0.35); border-radius: 0.75rem; }
+            .scan-line { width: 100%; height: 2px; background: var(--pc-violet); position: absolute; top: 0; left: 0; animation: scan 3s infinite linear; opacity: 0.35; }
             @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
             .lang-btn { cursor: pointer; transition: all 0.2s; opacity: 0.45; font-size: 0.75rem; }
-            .lang-btn.active { opacity: 1; color: var(--pc-emerald); font-weight: 700; }
-            .mesh-bg { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 50% at 50% -10%, #134e4a33 0%, transparent 55%); z-index: -1; }
+            .lang-btn.active { opacity: 1; color: var(--pc-violet); font-weight: 700; }
+            .mesh-bg { position: fixed; inset: 0; background: radial-gradient(ellipse 80% 50% at 50% -10%, #4c1d9533 0%, transparent 55%); z-index: -1; }
             .pc-body { font-size: 1rem; line-height: 1.65; }
             .pc-small { font-size: 0.875rem; line-height: 1.55; }
             .pc-input { font-size: 1rem; letter-spacing: 0; text-transform: none; }
             .asset-option { position: relative; cursor: pointer; border: 1px solid #3f3f46; border-radius: 0.5rem; padding: 0.75rem 0.5rem; text-align: center; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #a1a1aa; background: #0a0a0a; transition: all 0.15s; }
             .asset-option:hover { border-color: #52525b; color: #e4e4e7; }
-            .asset-option.selected { border-color: #10b981; color: #10b981; background: rgba(16,185,129,0.08); box-shadow: 0 0 0 1px rgba(16,185,129,0.25); }
+            .asset-option.selected { border-color: #8b5cf6; color: #8b5cf6; background: rgba(139,92,246,0.08); box-shadow: 0 0 0 1px rgba(139,92,246,0.25); }
             .asset-option input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
             .report-card { background: #fafafa; color: #18181b; border-radius: 0.5rem; box-shadow: 0 20px 40px -12px rgba(0,0,0,0.45); }
             .score-pill { font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; font-weight: 700; }
             .faq-item { border: 1px solid #27272a; border-radius: 0.75rem; background: rgba(0,0,0,0.4); overflow: hidden; }
             .faq-item summary { cursor: pointer; list-style: none; padding: 1rem 1.25rem; font-weight: 600; color: #fafafa; font-size: 1rem; }
             .faq-item summary::-webkit-details-marker { display: none; }
-            .faq-item[open] summary { border-bottom: 1px solid #27272a; color: #34d399; }
+            .faq-item[open] summary { border-bottom: 1px solid #27272a; color: #a78bfa; }
             .faq-answer { padding: 1rem 1.25rem 1.25rem; color: #a1a1aa; font-size: 0.9375rem; line-height: 1.65; }
             .sample-panel-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #71717a; margin-bottom: 0.75rem; }
             .sample-row { display: flex; justify-content: space-between; gap: 0.75rem; padding: 0.5rem 0; border-bottom: 1px solid #e4e4e7; font-size: 0.875rem; }
@@ -78,19 +78,19 @@ function getLandingHTML() {
             .compare-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.9375rem; }
             .compare-table th, .compare-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #27272a; text-align: left; vertical-align: top; }
             .compare-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: #71717a; background: rgba(0,0,0,0.35); }
-            .compare-table .col-titan { background: rgba(16,185,129,0.06); color: #ecfdf5; }
-            .compare-yes { color: #34d399; font-weight: 700; }
+            .compare-table .col-titan { background: rgba(139,92,246,0.06); color: #ecfdf5; }
+            .compare-yes { color: #a78bfa; font-weight: 700; }
             .compare-no { color: #71717a; }
             .compare-partial { color: #fbbf24; font-weight: 600; }
-            .customer-extract-box { border: 2px solid rgba(16,185,129,0.35); border-radius: 1rem; background: rgba(0,0,0,0.55); padding: 1.25rem; position: relative; }
+            .customer-extract-box { border: 2px solid rgba(139,92,246,0.35); border-radius: 1rem; background: rgba(0,0,0,0.55); padding: 1.25rem; position: relative; }
             @media (min-width: 768px) { .customer-extract-box { padding: 1.75rem; } }
             .customer-extract-pin { display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid #27272a; }
-            .customer-extract-label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #10b981; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); padding: 0.45rem 0.85rem; border-radius: 9999px; }
+            .customer-extract-label { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #8b5cf6; background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.35); padding: 0.45rem 0.85rem; border-radius: 9999px; }
             .customer-extract-note { width: 100%; font-size: 0.9375rem; line-height: 1.65; color: #d1d5db; margin: 0; }
             .extract-metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem; }
             @media (min-width: 768px) { .extract-metrics { grid-template-columns: repeat(4, 1fr); gap: 0.85rem; } }
-            .extract-metric { background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.22); border-radius: 0.625rem; padding: 0.9rem 0.85rem; text-align: center; }
-            .extract-metric-value { font-size: 1.375rem; font-weight: 800; color: #34d399; line-height: 1.2; font-family: 'JetBrains Mono', monospace; }
+            .extract-metric { background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.22); border-radius: 0.625rem; padding: 0.9rem 0.85rem; text-align: center; }
+            .extract-metric-value { font-size: 1.375rem; font-weight: 800; color: #a78bfa; line-height: 1.2; font-family: 'JetBrains Mono', monospace; }
             .extract-metric-label { font-size: 0.75rem; font-weight: 700; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.45rem; line-height: 1.4; }
             .extract-metric-sub { font-size: 0.875rem; color: #71717a; margin-top: 0.35rem; line-height: 1.45; }
             .extract-metrics-foot { font-size: 0.875rem; line-height: 1.55; color: #71717a; text-align: center; margin-bottom: 1.25rem; }
@@ -181,35 +181,35 @@ function getLandingHTML() {
         <div class="mesh-bg"></div>
 
         <nav class="fixed top-0 w-full z-50 px-4 py-4 md:px-6 md:py-5 flex justify-between items-center glass-panel border-b border-white/5">
-            <span class="font-black tracking-tighter text-lg md:text-xl text-white uppercase">PREDICTA<span class="text-emerald-500">CORE</span></span>
+            <span class="font-black tracking-tighter text-lg md:text-xl text-white uppercase">PREDICTA<span class="text-violet-400">CORE</span></span>
             <div class="flex items-center gap-3 md:gap-5">
                 <div class="flex gap-2 px-2.5 py-1 rounded-full border border-zinc-800 bg-black/50">
                     <span id="lang-en" class="lang-btn active">EN</span>
                     <span class="text-zinc-700">/</span>
                     <span id="lang-es" class="lang-btn">ES</span>
                 </div>
-                <a href="#buy-section" id="nav-titan" class="hidden sm:inline-flex bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-4 py-2 rounded transition-colors">Get Titan — $199</a>
+                <a href="#buy-section" id="nav-titan" class="hidden sm:inline-flex bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm px-4 py-2 rounded transition-colors">Get Titan — $199</a>
             </div>
         </nav>
 
         <!-- HERO -->
         <section class="pt-24 pb-12 md:pt-32 md:pb-16 px-4 md:px-6">
             <div class="max-w-4xl mx-auto text-center">
-                <p id="hero-badge" class="inline-block text-xs font-bold uppercase tracking-widest text-emerald-500 bg-emerald-950/40 border border-emerald-500/25 px-3 py-1 rounded-full mb-6">Independent page review · no login</p>
-                <h1 id="hero-title" class="text-huge text-white mb-5">Find out why your page is <span class="text-emerald-500">losing sales</span></h1>
+                <p id="hero-badge" class="inline-block text-xs font-bold uppercase tracking-widest text-violet-400 bg-violet-950/40 border border-violet-500/25 px-3 py-1 rounded-full mb-6">Independent page review · no login</p>
+                <h1 id="hero-title" class="text-huge text-white mb-5">Find out why your page is <span class="text-violet-400">losing sales</span></h1>
                 <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-6">PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.</p>
-                <a href="#buy-section" id="hero-cta-mid" class="inline-block mb-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_24px_rgba(16,185,129,0.22)]">Get Titan Report — $199</a>
-                <p id="hero-price-anchor" class="text-sm md:text-base text-emerald-400 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. No fluff: hard scores, ranked leaks, and fixes only.</p>
+                <a href="#buy-section" id="hero-cta-mid" class="inline-block mb-4 bg-violet-600 hover:bg-violet-500 text-white font-black py-3.5 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_24px_rgba(139,92,246,0.22)]">Get Titan Report — $199</a>
+                <p id="hero-price-anchor" class="text-sm md:text-base text-violet-300 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. No fluff: hard scores, ranked leaks, and fixes only.</p>
                 <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-6">When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.</p>
                 <div class="inline-flex flex-col sm:flex-row items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 mb-6">
                     <div class="inline-flex items-center gap-2">
                         <span id="hero-price-label" class="text-zinc-400 text-sm">Titan Report</span>
                         <span class="text-2xl font-black text-white">$199</span>
-                        <span id="hero-price-note" class="text-xs text-emerald-500 font-semibold">intro · one-time</span>
+                        <span id="hero-price-note" class="text-xs text-violet-400 font-semibold">intro · one-time</span>
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md mx-auto sm:max-w-none">
-                    <a href="#buy-section" id="hero-cta-titan" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_30px_rgba(16,185,129,0.25)]">Get Titan Report — $199</a>
+                    <a href="#buy-section" id="hero-cta-titan" class="bg-violet-600 hover:bg-violet-500 text-white font-black py-4 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_30px_rgba(139,92,246,0.25)]">Get Titan Report — $199</a>
                     <a href="#lite-section" id="hero-cta-lite" class="text-zinc-400 hover:text-white text-sm font-semibold py-4 px-4 underline-offset-4 hover:underline">Or start with a free Lite scan →</a>
                 </div>
                 <p id="hero-delivery" class="mt-5 text-sm text-zinc-500">PDF delivered from <span class="text-zinc-300">${supportEmail}</span> · usually within 60 minutes</p>
@@ -220,15 +220,15 @@ function getLandingHTML() {
         <!-- SAMPLE REPORT -->
         <section id="sample-section" class="py-14 md:py-16 px-4 md:px-6 border-y border-zinc-900 bg-black/30">
             <div class="max-w-5xl mx-auto">
-                <p id="sample-kicker" class="text-xs font-bold uppercase tracking-widest text-emerald-500 text-center mb-2">Sample extract</p>
+                <p id="sample-kicker" class="text-xs font-bold uppercase tracking-widest text-violet-400 text-center mb-2">Sample extract</p>
                 <h2 id="sample-title" class="text-2xl md:text-3xl font-black text-white text-center mb-3">This is what lands in your inbox</h2>
                 <p id="sample-sub" class="pc-body text-zinc-400 text-center max-w-2xl mx-auto mb-10">Below: the PDF you get by email, plus a pinned customer extract from a real audit. Full Titan PDF = <strong class="text-zinc-200">${TITAN_REPORT_PAGE_COUNT} pages</strong>, <strong class="text-zinc-200">11 sections</strong>, <strong class="text-zinc-200">15 ranked leaks</strong>, and <strong class="text-zinc-200">15 fixes</strong>.</p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10 items-center">
                     <div class="pdf-mockup report-card p-8 md:p-9 text-left shadow-[0_24px_48px_rgba(0,0,0,0.35)]">
-                        <p id="pdf-mock-tag" class="text-[10px] font-bold tracking-[0.22em] uppercase text-emerald-700">Forensic conversion report</p>
-                        <div class="w-14 h-1.5 bg-emerald-500 my-4"></div>
-                        <p class="font-black text-xl text-zinc-900 uppercase tracking-tighter leading-none">PREDICTA<span class="text-emerald-600">CORE</span></p>
+                        <p id="pdf-mock-tag" class="text-[10px] font-bold tracking-[0.22em] uppercase text-violet-700">Forensic conversion report</p>
+                        <div class="w-14 h-1.5 bg-violet-500 my-4"></div>
+                        <p class="font-black text-xl text-zinc-900 uppercase tracking-tighter leading-none">PREDICTA<span class="text-violet-500">CORE</span></p>
                         <p id="pdf-mock-title" class="text-lg font-black text-zinc-800 uppercase mt-2 tracking-tight">Titan Intelligence</p>
                         <p id="pdf-mock-meta" class="text-sm text-zinc-600 mt-4 leading-relaxed">${TITAN_REPORT_PAGE_COUNT}-page PDF · 11 sections · email attachment</p>
                         <ul id="pdf-mock-toc" class="mt-5 space-y-1.5 text-[11px] text-zinc-600 leading-snug">
@@ -246,7 +246,7 @@ function getLandingHTML() {
                     <div class="lg:col-span-2 text-left">
                         <p id="pdf-mock-caption" class="text-lg text-zinc-200 font-semibold mb-3">This is the file you receive — not what your customers see</p>
                         <p id="pdf-mock-desc" class="pc-body text-zinc-400 mb-4">A complete PDF in your inbox — not a dashboard login. Forward it to your team, implement from section IX, and track with the 21-day roadmap in section XI.</p>
-                        <p id="pdf-mock-proof" class="text-sm text-emerald-500/90 font-medium">Same ${TITAN_REPORT_PAGE_COUNT}-page format for websites, service businesses, and social profiles.</p>
+                        <p id="pdf-mock-proof" class="text-sm text-violet-400/90 font-medium">Same ${TITAN_REPORT_PAGE_COUNT}-page format for websites, service businesses, and social profiles.</p>
                     </div>
                 </div>
 
@@ -281,7 +281,7 @@ function getLandingHTML() {
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start mb-6">
                     <div class="lg:col-span-2 report-card p-6 md:p-7">
                         <div class="flex items-center gap-2 mb-5 pb-4 border-b border-zinc-200">
-                            <div class="w-7 h-7 bg-emerald-500 rounded-full flex items-center justify-center shrink-0">
+                            <div class="w-7 h-7 bg-violet-500 rounded-full flex items-center justify-center shrink-0">
                                 <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                             </div>
                             <div>
@@ -296,7 +296,7 @@ function getLandingHTML() {
                             </div>
                             <div class="text-center p-3 bg-zinc-100 rounded-lg">
                                 <p class="text-sm text-zinc-500 mb-1">AI visibility</p>
-                                <p class="score-pill text-emerald-700">85</p>
+                                <p class="score-pill text-violet-700">85</p>
                             </div>
                             <div class="text-center p-3 bg-zinc-100 rounded-lg">
                                 <p class="text-sm text-zinc-500 mb-1">Load</p>
@@ -315,8 +315,8 @@ function getLandingHTML() {
                             <p id="sample-leak-h2" class="text-sm font-bold text-amber-600 uppercase tracking-wide mb-2">What scares buyers · #09</p>
                             <p id="sample-leak2" class="text-sm text-zinc-800 leading-relaxed"><strong>No delivery date on custom orders.</strong> Made-to-order products show photos and price, but buyers can't see when it ships — so they hesitate on personalized items.</p>
                         </div>
-                        <div class="report-card p-5 border-l-4 border-emerald-600 bg-emerald-50">
-                            <p id="sample-fix-h" class="text-sm font-bold text-emerald-700 uppercase tracking-wide mb-2">What to fix first · #09</p>
+                        <div class="report-card p-5 border-l-4 border-violet-600 bg-violet-50">
+                            <p id="sample-fix-h" class="text-sm font-bold text-violet-700 uppercase tracking-wide mb-2">What to fix first · #09</p>
                             <p id="sample-action" class="text-sm text-zinc-800 leading-relaxed">Add a clear <strong>Ships in 5–7 business days</strong> badge above Add to Cart on every personalized product page.</p>
                         </div>
                     </div>
@@ -338,7 +338,7 @@ function getLandingHTML() {
                     <div class="report-card p-5 md:p-6">
                         <p id="sample-ai-title" class="sample-panel-title">How ChatGPT &amp; other AIs see you</p>
                         <div id="sample-ai-rows">
-                            <div class="sample-ai-row"><span>Overall AI readiness</span><span class="score-pill text-emerald-700">85/100</span></div>
+                            <div class="sample-ai-row"><span>Overall AI readiness</span><span class="score-pill text-violet-700">85/100</span></div>
                             <div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Can cite you — with errors</span></div>
                             <div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Can cite you — with errors</span></div>
                             <div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Can cite you — with errors</span></div>
@@ -357,12 +357,12 @@ function getLandingHTML() {
             <div class="max-w-4xl mx-auto">
                 <h2 id="included-title" class="text-2xl md:text-3xl font-black text-white text-center mb-8">Everything in the Titan Report</h2>
                 <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 pc-body text-zinc-300">
-                    <li id="inc-1" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> Desktop + mobile capture with measured load time</li>
-                    <li id="inc-2" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> SEO forensics: title, meta, schema, sitemap, robots</li>
-                    <li id="inc-3" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> AI discoverability score (GEO) 0–100</li>
-                    <li id="inc-4" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> 4 buyer psychology profiles for your industry</li>
-                    <li id="inc-5" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> 15 ranked drop-offs + 15 tactical actions</li>
-                    <li id="inc-6" class="flex gap-3"><span class="text-emerald-500 shrink-0">✓</span> Competitive benchmark + 21-day implementation roadmap</li>
+                    <li id="inc-1" class="flex gap-3"><span class="text-violet-400 shrink-0">✓</span> Desktop + mobile capture with measured load time</li>
+                    <li id="inc-2" class="flex gap-3"><span class="text-violet-400 shrink-0">✓</span> SEO forensics: title, meta, schema, sitemap, robots</li>
+                    <li id="inc-3" class="flex gap-3"><span class="text-violet-400 shrink-0">✓</span> AI discoverability score (GEO) 0–100</li>
+                    <li id="inc-4" class="flex gap-3"><span class="text-violet-400 shrink-0">✓</span> 4 buyer psychology profiles for your industry</li>
+                    <li id="inc-5" class="flex gap-3"><span class="text-violet-400 shrink-0">✓</span> 15 ranked drop-offs + 15 tactical actions</li>
+                    <li id="inc-6" class="flex gap-3"><span class="text-violet-400 shrink-0">✓</span> Competitive benchmark + 21-day implementation roadmap</li>
                 </ul>
                 <p id="included-foot" class="text-center text-sm text-zinc-500 mt-8 max-w-lg mx-auto">Structured PDF by email — not a ChatGPT paragraph. More deliverables than agencies charging $3k+ for the same public URL review.</p>
             </div>
@@ -400,7 +400,7 @@ function getLandingHTML() {
         </section>
 
         <!-- REVIEWS -->
-        <section id="reviews-section" class="py-14 md:py-16 px-4 md:px-6 bg-emerald-950/10 border-b border-zinc-900">
+        <section id="reviews-section" class="py-14 md:py-16 px-4 md:px-6 bg-violet-950/10 border-b border-zinc-900">
             <div class="max-w-5xl mx-auto">
                 <h2 id="reviews-title" class="text-2xl md:text-3xl font-black text-white text-center mb-2">Trusted by shop owners &amp; creators</h2>
                 <p id="reviews-sub" class="pc-body text-zinc-400 text-center mb-10 max-w-xl mx-auto">Real feedback from different business types — website, local services, and social profiles.</p>
@@ -467,13 +467,13 @@ function getLandingHTML() {
         </section>
 
         <!-- BUY (Titan primary) -->
-        <section id="buy-section" class="py-14 md:py-16 px-4 md:px-6 bg-emerald-950/15 border-t border-emerald-900/30">
+        <section id="buy-section" class="py-14 md:py-16 px-4 md:px-6 bg-violet-950/15 border-t border-violet-900/30">
             <div class="max-w-xl mx-auto">
                 <h2 id="buy-title" class="text-2xl md:text-3xl font-black text-white text-center mb-2">Get your Titan Report</h2>
                 <p id="buy-sub" class="pc-body text-zinc-400 text-center mb-2">Enter your page and email — secure Stripe checkout.</p>
-                <p id="buy-delivery" class="text-sm text-emerald-500/90 text-center mb-8">Your PDF arrives from ${supportEmail} · usually within 60 minutes</p>
+                <p id="buy-delivery" class="text-sm text-violet-400/90 text-center mb-8">Your PDF arrives from ${supportEmail} · usually within 60 minutes</p>
 
-                <div id="setup-stage" class="terminal-box p-6 md:p-8 shadow-[0_0_40px_rgba(16,185,129,0.12)]">
+                <div id="setup-stage" class="terminal-box p-6 md:p-8 shadow-[0_0_40px_rgba(139,92,246,0.12)]">
                     <p id="asset-picker-label" class="text-xs text-zinc-500 uppercase tracking-widest font-bold mb-2">Where is your page?</p>
                     <div id="asset-type-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                         <label class="asset-option selected" data-asset="web">
@@ -494,31 +494,31 @@ function getLandingHTML() {
                         </label>
                     </div>
                     <div class="space-y-4">
-                        <input type="text" id="dna-url" placeholder="yourbusiness.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input" autocomplete="off">
+                        <input type="text" id="dna-url" placeholder="yourbusiness.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-violet-500 transition-all font-mono pc-input" autocomplete="off">
                         <p id="url-preview" class="text-xs text-zinc-600 text-center font-mono break-all"></p>
-                        <input type="email" id="user-email" placeholder="you@email.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-emerald-500 transition-all font-mono pc-input">
+                        <input type="email" id="user-email" placeholder="you@email.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-violet-500 transition-all font-mono pc-input">
                         <p id="buy-price-line" class="text-sm text-center text-zinc-400">Charged today: <strong class="text-white">USD $199</strong> · monitoring $25/mo from day 30</p>
                         <p id="setup-error" class="hidden-flow text-sm text-red-400 text-center font-medium" role="alert"></p>
-                        <button type="button" id="btn-titan" class="w-full bg-emerald-600 text-white font-black py-4 rounded-lg hover:bg-emerald-500 transition-all uppercase tracking-wide text-base disabled:opacity-60 disabled:cursor-wait shadow-[0_0_24px_rgba(16,185,129,0.3)]">
+                        <button type="button" id="btn-titan" class="w-full bg-violet-600 text-white font-black py-4 rounded-lg hover:bg-violet-500 transition-all uppercase tracking-wide text-base disabled:opacity-60 disabled:cursor-wait shadow-[0_0_24px_rgba(139,92,246,0.3)]">
                             Pay $199 — Get Titan Report
                         </button>
                         <p id="checkout-error" class="hidden-flow text-sm text-red-400 text-center" role="alert"></p>
-                        <p id="cancel-badge" class="text-xs text-zinc-500 text-center leading-relaxed">By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a></p>
+                        <p id="cancel-badge" class="text-xs text-zinc-500 text-center leading-relaxed">By paying you agree to our <a href="/terms" class="text-violet-500 underline">Terms</a> and <a href="/privacy" class="text-violet-500 underline">Privacy Policy</a></p>
                         <p id="titan-eta-before" class="text-xs text-zinc-600 text-center">PDF may take up to 60 minutes after payment. Statement: PREDICTACORE.</p>
                     </div>
                 </div>
 
-                <div id="scanner-stage" class="hidden-flow terminal-box p-8 relative overflow-hidden shadow-[0_0_40px_rgba(16,185,129,0.2)] mt-6">
+                <div id="scanner-stage" class="hidden-flow terminal-box p-8 relative overflow-hidden shadow-[0_0_40px_rgba(139,92,246,0.2)] mt-6">
                     <div class="scan-line"></div>
-                    <div id="terminal-output" class="font-mono text-sm text-emerald-500 space-y-1 h-48 overflow-y-auto">
+                    <div id="terminal-output" class="font-mono text-sm text-violet-400 space-y-1 h-48 overflow-y-auto">
                         <p id="log-init">>> INITIALIZING PREDICTACORE CORE...</p>
                     </div>
                 </div>
 
-                <div id="upsell-stage" class="hidden-flow terminal-box p-8 text-center mt-6 border border-emerald-500/50">
+                <div id="upsell-stage" class="hidden-flow terminal-box p-8 text-center mt-6 border border-violet-500/50">
                     <h2 id="up-t" class="text-xl font-black text-white mb-2">Scan complete</h2>
                     <p class="text-zinc-400 text-sm mb-2" id="up-st">Successfully sent to <span id="sent-email" class="text-white font-bold"></span>.</p>
-                    <p id="lite-queued-msg" class="text-emerald-500 text-sm font-semibold mb-4">Your Lite report is being generated and will arrive by email.</p>
+                    <p id="lite-queued-msg" class="text-violet-400 text-sm font-semibold mb-4">Your Lite report is being generated and will arrive by email.</p>
                     <p id="lite-eta-after" class="text-amber-500/90 text-sm mb-4">Check inbox and spam — delivery up to 60 minutes.</p>
                     <p id="upsell-leaks-title" class="text-xs font-bold uppercase tracking-widest text-red-400 mb-3 text-left">Issues found in your Lite scan</p>
                     <p id="upsell-leaks-wait" class="text-zinc-500 text-sm mb-4 text-left">Pulling your 3 critical leaks from the scan…</p>
@@ -526,7 +526,7 @@ function getLandingHTML() {
                     <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-lg mb-6 text-left">
                         <p id="box-text" class="text-sm text-zinc-300 leading-relaxed">These leaks are still live on your page — every day unfixed you lose visitors who were ready to buy. Titan ranks all 15 and gives you step-by-step fixes.</p>
                     </div>
-                    <button type="button" id="btn-titan-upsell" class="w-full bg-emerald-600 text-white font-black py-4 rounded-lg text-base uppercase tracking-wide">Get Full Titan Report — $199</button>
+                    <button type="button" id="btn-titan-upsell" class="w-full bg-violet-600 text-white font-black py-4 rounded-lg text-base uppercase tracking-wide">Get Full Titan Report — $199</button>
                 </div>
             </div>
         </section>
@@ -545,19 +545,19 @@ function getLandingHTML() {
 
         <div id="checkout-overlay" class="hidden-flow fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md px-6" aria-live="polite" aria-busy="true">
             <div class="terminal-box w-full max-w-md p-10 text-center">
-                <div class="w-11 h-11 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" role="status"></div>
+                <div class="w-11 h-11 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" role="status"></div>
                 <p id="checkout-overlay-title" class="text-white font-black uppercase tracking-widest text-sm mb-3">Secure checkout</p>
                 <p id="checkout-overlay-sub" class="text-zinc-500 text-sm leading-relaxed font-mono">Connecting to Stripe…</p>
             </div>
         </div>
 
-        <div id="sticky-cta" class="fixed bottom-0 left-0 right-0 z-40 md:hidden p-3 glass-panel border-t border-emerald-500/20">
-            <a href="#buy-section" id="sticky-btn" class="block w-full bg-emerald-600 text-white font-black py-3.5 rounded-lg text-center text-sm uppercase tracking-wide">Get Titan — $199</a>
+        <div id="sticky-cta" class="fixed bottom-0 left-0 right-0 z-40 md:hidden p-3 glass-panel border-t border-violet-500/20">
+            <a href="#buy-section" id="sticky-btn" class="block w-full bg-violet-600 text-white font-black py-3.5 rounded-lg text-center text-sm uppercase tracking-wide">Get Titan — $199</a>
         </div>
 
         <footer class="py-10 bg-black border-t border-zinc-900 text-center px-4">
-            <p id="footer-text" class="text-sm text-emerald-600 mb-3">Consultant or agency? Join our audit partner network.</p>
-            <p id="disclaimer-text" class="text-sm text-zinc-500 leading-relaxed mb-4 max-w-xl mx-auto">PredictaCore AI audits. USD $199 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-emerald-600 underline">Terms</a> · <a href="/privacy" class="text-emerald-600 underline">Privacy</a></p>
+            <p id="footer-text" class="text-sm text-violet-500 mb-3">Consultant or agency? Join our audit partner network.</p>
+            <p id="disclaimer-text" class="text-sm text-zinc-500 leading-relaxed mb-4 max-w-xl mx-auto">PredictaCore AI audits. USD $199 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a></p>
             <p class="text-sm text-zinc-600">© 2026 PredictaCore · predictacore.ai</p>
         </footer>
 
@@ -579,7 +579,7 @@ function getLandingHTML() {
                     pageTitle: "PredictaCore | Find why your page loses customers",
                     navTitan: "Get Titan — $199",
                     heroBadge: "Independent page review · no login",
-                    heroTitle: "Find out why your page is <span class='text-emerald-500'>losing sales</span>",
+                    heroTitle: "Find out why your page is <span class='text-violet-400'>losing sales</span>",
                     heroValue: "PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.",
                     heroAsk: "When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.",
                     heroPriceLabel: "Titan Report",
@@ -635,7 +635,7 @@ function getLandingHTML() {
                     sampleSeoRows: '<div class="sample-row"><span>Page title</span><span class="sample-status-ok">OK</span></div><div class="sample-row"><span>Main headline (H1)</span><span class="sample-status-bad">Missing</span></div><div class="sample-row"><span>Product image labels</span><span class="sample-status-bad">6% only</span></div><div class="sample-row"><span>Rich results (stars, price in search)</span><span class="sample-status-bad">None</span></div><div class="sample-row"><span>Sitemap &amp; robots.txt</span><span class="sample-status-ok">Found</span></div><div class="sample-row"><span>Page speed</span><span class="sample-status-warn">4.3 sec</span></div>',
                     sampleSeoNote: "Without a main headline and product data for Google, your store ranks weaker and looks less trustworthy in search — even when traffic arrives.",
                     sampleAiTitle: "How ChatGPT & other AIs see you",
-                    sampleAiRows: '<div class="sample-ai-row"><span>Overall AI readiness</span><span class="score-pill text-emerald-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Allowed — hard to feature</span></div>',
+                    sampleAiRows: '<div class="sample-ai-row"><span>Overall AI readiness</span><span class="score-pill text-violet-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Can cite you — with errors</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Allowed — hard to feature</span></div>',
                     sampleAiNote: "AIs are allowed to read this shop, but with no structured product data and no clear main headline they guess — and may recommend a competitor with a clearer page instead.",
                     sampleFoot: "What you see above is a small extract. The full ${TITAN_REPORT_PAGE_COUNT}-page PDF also includes buyer profiles, competitor comparison, screenshots, and a 21-day action plan.",
                     includedTitle: "Everything in the Titan Report",
@@ -667,7 +667,7 @@ function getLandingHTML() {
                     buyPriceLine: "Charged today: <strong class='text-white'>USD $199</strong> · monitoring $25/mo from day 30",
                     btnTitan: "Pay $199 — Get Titan Report",
                     btnTitanUpsell: "Get Full Titan Report — $199",
-                    cancelBadge: 'By paying you agree to our <a href="/terms" class="text-emerald-600 underline">Terms</a> and <a href="/privacy" class="text-emerald-600 underline">Privacy Policy</a>',
+                    cancelBadge: 'By paying you agree to our <a href="/terms" class="text-violet-500 underline">Terms</a> and <a href="/privacy" class="text-violet-500 underline">Privacy Policy</a>',
                     titanEtaBefore: "PDF may take up to 60 minutes after payment. Statement: PREDICTACORE.",
                     liteTitle: "Not ready to pay?",
                     liteSub: "Run a free Lite scan — 3 critical leaks + score snapshot. Same form above; click below instead.",
@@ -682,7 +682,7 @@ function getLandingHTML() {
                     liteQueued: "Your Lite report is being generated and will arrive by email.",
                     liteEtaAfter: "Check inbox and spam — delivery up to 60 minutes.",
                     footerText: "Consultant or agency? Join our audit partner network.",
-                    disclaimerText: 'PredictaCore AI audits. USD $199 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-emerald-600 underline">Terms</a> · <a href="/privacy" class="text-emerald-600 underline">Privacy</a>',
+                    disclaimerText: 'PredictaCore AI audits. USD $199 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a>',
                     checkoutLoading: "Opening secure checkout…",
                     checkoutOverlayTitle: "Secure checkout",
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
@@ -700,7 +700,7 @@ function getLandingHTML() {
                     pageTitle: "PredictaCore | Descubre por qué tu página pierde clientes",
                     navTitan: "Obtener Titán — $199",
                     heroBadge: "Revisión independiente de tu página · sin login",
-                    heroTitle: "Descubre por qué tu página <span class='text-emerald-500'>pierde ventas</span>",
+                    heroTitle: "Descubre por qué tu página <span class='text-violet-400'>pierde ventas</span>",
                     heroValue: "PredictaCore revisa tu web o perfil social público como lo haría un visitante por primera vez — y te envía un PDF claro por correo. Verás cómo se ve tu página, qué tan fácil es encontrarte en Google, cómo te comparas con la competencia, qué hace que la gente se vaya sin comprar, qué corregir primero y un plan sencillo de 21 días para convertir más visitas en clientes.",
                     heroAsk: "Cuando quieras, comparte tu enlace abajo — tu web o un perfil de Instagram, Facebook o TikTok. Sin contraseñas ni configuraciones complicadas.",
                     heroPriceLabel: "Reporte Titán",
@@ -756,7 +756,7 @@ function getLandingHTML() {
                     sampleSeoRows: '<div class="sample-row"><span>Título de página</span><span class="sample-status-ok">OK</span></div><div class="sample-row"><span>Titular principal (H1)</span><span class="sample-status-bad">Ausente</span></div><div class="sample-row"><span>Texto en imágenes de producto</span><span class="sample-status-bad">Solo 6%</span></div><div class="sample-row"><span>Resultados enriquecidos (estrellas, precio)</span><span class="sample-status-bad">Ninguno</span></div><div class="sample-row"><span>Sitemap y robots.txt</span><span class="sample-status-ok">Encontrados</span></div><div class="sample-row"><span>Velocidad de carga</span><span class="sample-status-warn">4,3 seg</span></div>',
                     sampleSeoNote: "Sin titular principal ni datos de producto para Google, tu tienda posiciona peor y se ve menos confiable en búsqueda — aunque llegue tráfico.",
                     sampleAiTitle: "Cómo te ven ChatGPT y otras IAs",
-                    sampleAiRows: '<div class="sample-ai-row"><span>Preparación general para IAs</span><span class="score-pill text-emerald-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Permitido — difícil destacar</span></div>',
+                    sampleAiRows: '<div class="sample-ai-row"><span>Preparación general para IAs</span><span class="score-pill text-violet-700">85/100</span></div><div class="sample-ai-row"><span>ChatGPT (OpenAI)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Claude (Anthropic)</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Perplexity</span><span class="sample-status-warn">Puede citarte — con errores</span></div><div class="sample-ai-row"><span>Google AI Overviews</span><span class="sample-status-warn">Permitido — difícil destacar</span></div>',
                     sampleAiNote: "Las IAs pueden leer esta tienda, pero sin datos estructurados de producto ni titular claro adivinan — y pueden recomendar a un competidor con página más clara.",
                     sampleFoot: "Lo de arriba es solo un extracto. El PDF completo de ${TITAN_REPORT_PAGE_COUNT} páginas también incluye perfiles de comprador, comparativa con competencia, capturas y plan de acción de 21 días.",
                     includedTitle: "Todo lo que incluye el Reporte Titán",
@@ -788,7 +788,7 @@ function getLandingHTML() {
                     buyPriceLine: "Cobro hoy: <strong class='text-white'>USD $199</strong> · monitoreo $25/mes desde día 30",
                     btnTitan: "Pagar $199 — Reporte Titán",
                     btnTitanUpsell: "Reporte Titán completo — $199",
-                    cancelBadge: 'Al pagar aceptas nuestros <a href="/terms" class="text-emerald-600 underline">Términos</a> y <a href="/privacy" class="text-emerald-600 underline">Privacidad</a>',
+                    cancelBadge: 'Al pagar aceptas nuestros <a href="/terms" class="text-violet-500 underline">Términos</a> y <a href="/privacy" class="text-violet-500 underline">Privacidad</a>',
                     titanEtaBefore: "El PDF puede tardar hasta 60 min tras el pago. Estado de cuenta: PREDICTACORE.",
                     liteTitle: "¿Aún no quieres pagar?",
                     liteSub: "Escaneo Lite gratis — 3 fugas críticas + snapshot. Mismo formulario arriba; pulsa abajo.",
@@ -803,7 +803,7 @@ function getLandingHTML() {
                     liteQueued: "Tu reporte Lite se está generando y llegará por email.",
                     liteEtaAfter: "Revisa bandeja y spam — entrega hasta 60 min.",
                     footerText: "¿Consultor o agencia? Únete a nuestra red de partners.",
-                    disclaimerText: 'Auditorías PredictaCore AI. USD $199 intro hoy. Monitoreo $25/mes desde día 30; cancelar en audit@predictacore.ai. <a href="/terms" class="text-emerald-600 underline">Términos</a> · <a href="/privacy" class="text-emerald-600 underline">Privacidad</a>',
+                    disclaimerText: 'Auditorías PredictaCore AI. USD $199 intro hoy. Monitoreo $25/mes desde día 30; cancelar en audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Términos</a> · <a href="/privacy" class="text-violet-500 underline">Privacidad</a>',
                     checkoutLoading: "Abriendo checkout seguro…",
                     checkoutOverlayTitle: "Checkout seguro",
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
@@ -891,7 +891,7 @@ function getLandingHTML() {
                 document.getElementById('disclaimer-text').innerHTML = d.disclaimerText;
                 for (let i = 1; i <= 6; i++) {
                     const el = document.getElementById('inc-' + i);
-                    if (el && d['inc' + i]) el.innerHTML = '<span class="text-emerald-500 shrink-0">✓</span> ' + d['inc' + i];
+                    if (el && d['inc' + i]) el.innerHTML = '<span class="text-violet-400 shrink-0">✓</span> ' + d['inc' + i];
                 }
 
                 document.getElementById('user-email').placeholder = d.phEmail;

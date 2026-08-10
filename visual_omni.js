@@ -13,7 +13,7 @@ function getHTMLOmni() {
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
             :root {
-                --pc-green: #10b981;
+                --pc-violet: #8b5cf6;
                 --pc-gold: #d4af37;
                 --pc-crimson: #991b1b;
                 --pc-dark: #0f172a;
@@ -26,7 +26,7 @@ function getHTMLOmni() {
                 .terminal-box { border: none; background: white; }
                 .page-break { page-break-before: always; }
             }
-            .report-section { margin-bottom: 2rem; padding: 1.5rem; border-left: 4px solid var(--pc-green); background: rgba(30, 41, 59, 0.5); }
+            .report-section { margin-bottom: 2rem; padding: 1.5rem; border-left: 4px solid var(--pc-violet); background: rgba(30, 41, 59, 0.5); }
         </style>
     </head>
     <body class="p-4 md:p-8">

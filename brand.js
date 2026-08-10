@@ -1,6 +1,6 @@
 /** PredictaCore shared brand assets (favicon matches nav lightning icon). */
 
-const FAVICON_VERSION = '2';
+const FAVICON_VERSION = '3';
 
 function publicSiteUrl() {
     return (process.env.PUBLIC_BASE_URL || 'https://predictacore.ai').replace(/\/$/, '');
@@ -36,16 +36,16 @@ function getSubscriptionCancellationNotice(lang = 'en', monitoringUsd = 25, tita
     const site = publicSiteUrl();
     if (lang === 'es' || String(lang).startsWith('es')) {
         return `El monitoreo mensual (USD $${monitoringUsd}/mes, desde el día 30) se renueva salvo cancelación. `
-            + `Para solicitar la cancelación del monitoreo recurrente, escriba a <a href="mailto:${support}" class="text-emerald-500 hover:underline">${support}</a> `
+            + `Para solicitar la cancelación del monitoreo recurrente, escriba a <a href="mailto:${support}" class="text-violet-400 hover:underline">${support}</a> `
             + `desde el correo de compra o use el portal de facturación Stripe enviado en su correo de confirmación de pago. `
             + `Debe cancelar al menos <strong>5 días hábiles</strong> antes de la renovación para evitar el siguiente cobro. `
-            + `El Reporte Titán (USD $${titanUsd}) es venta final. Ver <a href="${site}/terms" class="text-emerald-500 hover:underline">Términos</a>.`;
+            + `El Reporte Titán (USD $${titanUsd}) es venta final. Ver <a href="${site}/terms" class="text-violet-400 hover:underline">Términos</a>.`;
     }
     return `Monthly monitoring (USD $${monitoringUsd}/mo, starting day 30) renews unless cancelled. `
-        + `To request cancellation of recurring monitoring, email <a href="mailto:${support}" class="text-emerald-500 hover:underline">${support}</a> `
+        + `To request cancellation of recurring monitoring, email <a href="mailto:${support}" class="text-violet-400 hover:underline">${support}</a> `
         + `from your purchase email or use the Stripe billing portal sent in your activation email. `
         + `Cancel at least <strong>5 business days</strong> before renewal to avoid the next charge. `
-        + `The Titan Report (USD $${titanUsd}) is a final sale. See <a href="${site}/terms" class="text-emerald-500 hover:underline">Terms</a>.`;
+        + `The Titan Report (USD $${titanUsd}) is a final sale. See <a href="${site}/terms" class="text-violet-400 hover:underline">Terms</a>.`;
 }
 
 function getSubscriptionCancellationPlain(lang = 'en', monitoringUsd = 25, titanUsd = 199) {
@@ -64,27 +64,27 @@ function getSubscriptionCancellationEmailHtml(lang = 'en', monitoringUsd = 25, t
     const es = lang === 'es' || String(lang).startsWith('es');
     const portalBlock = portalUrl
         ? (es
-            ? `<br/>Portal de facturación: <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;">gestionar suscripción</a>`
-            : `<br/>Billing portal: <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;">manage subscription</a>`)
+            ? `<br/>Portal de facturación: <a href="${portalUrl}" style="color:#8b5cf6;text-decoration:underline;">gestionar suscripción</a>`
+            : `<br/>Billing portal: <a href="${portalUrl}" style="color:#8b5cf6;text-decoration:underline;">manage subscription</a>`)
         : '';
     if (es) {
         return `<p style="margin:20px 0 0 0;font-size:11px;color:#71717a;line-height:1.55;border-top:1px solid rgba(113,113,122,0.35);padding-top:16px;">`
             + `El monitoreo mensual (USD $${monitoringUsd}/mes) se renueva salvo cancelación. `
             + `Para solicitar la cancelación del monitoreo recurrente, escriba a `
-            + `<a href="mailto:${support}" style="color:#10b981;text-decoration:underline;">${support}</a> `
+            + `<a href="mailto:${support}" style="color:#8b5cf6;text-decoration:underline;">${support}</a> `
             + `desde el correo de compra o use el portal de facturación Stripe.${portalBlock} `
             + `Debe cancelar al menos <strong>5 días hábiles</strong> antes de la renovación. `
             + `Reporte Titán (USD $${titanUsd}) venta final. `
-            + `<a href="${site}/terms" style="color:#10b981;text-decoration:underline;">Términos</a>.</p>`;
+            + `<a href="${site}/terms" style="color:#8b5cf6;text-decoration:underline;">Términos</a>.</p>`;
     }
     return `<p style="margin:20px 0 0 0;font-size:11px;color:#71717a;line-height:1.55;border-top:1px solid rgba(113,113,122,0.35);padding-top:16px;">`
         + `Monthly monitoring (USD $${monitoringUsd}/mo) renews unless cancelled. `
         + `To request cancellation of recurring monitoring, email `
-        + `<a href="mailto:${support}" style="color:#10b981;text-decoration:underline;">${support}</a> `
+        + `<a href="mailto:${support}" style="color:#8b5cf6;text-decoration:underline;">${support}</a> `
         + `from your purchase email or use the Stripe billing portal.${portalBlock} `
         + `Cancel at least <strong>5 business days</strong> before renewal. `
         + `Titan Report (USD $${titanUsd}) is a final sale. `
-        + `<a href="${site}/terms" style="color:#10b981;text-decoration:underline;">Terms</a>.</p>`;
+        + `<a href="${site}/terms" style="color:#8b5cf6;text-decoration:underline;">Terms</a>.</p>`;
 }
 
 /** Deep link to Titan upsell page — email + URL prefilled, one-click checkout */
@@ -116,7 +116,7 @@ function getEmailBrandHeaderBlock(lang = 'en') {
     return `<div style="text-align:center;">
   <img src="${logoUrl}" width="56" height="56" alt="PredictaCore" style="display:inline-block;border-radius:50%;margin-bottom:14px;" />
   <div style="font-family:Inter,Arial,sans-serif;font-size:24px;font-weight:900;letter-spacing:-0.04em;line-height:1;color:#ffffff;text-transform:uppercase;">
-    PREDICTA<span style="color:#10b981;">CORE</span>
+    PREDICTA<span style="color:#8b5cf6;">CORE</span>
   </div>
   <div style="font-family:Inter,Arial,sans-serif;font-size:10px;font-weight:600;letter-spacing:0.32em;text-transform:uppercase;color:#71717a;margin-top:8px;">
     ${tagline}
@@ -139,7 +139,7 @@ function wrapPredictaCoreEmail(lang, bodyHtml, preheader = '') {
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;margin:0 auto;">
     <tr>
       <td style="background:#050505;border-radius:10px;border:1px solid #3f3f46;padding:0;">
-        <div style="padding:24px 24px 16px;border-bottom:1px solid rgba(16,185,129,0.3);">
+        <div style="padding:24px 24px 16px;border-bottom:1px solid rgba(139,92,246,0.3);">
           ${header}
         </div>
         <div style="padding:24px;color:#d1d5db;font-size:14px;line-height:1.6;">
@@ -318,13 +318,13 @@ function getPdfBrandStyles() {
 .pc-brand-mark { flex-shrink: 0; line-height: 0; }
 .pc-brand-text { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
 .pc-logo-img { width: 52px; height: 52px; border-radius: 50%; display: block; object-fit: cover; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-.pc-logo-circle { width: 52px; height: 52px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.pc-logo-circle { width: 52px; height: 52px; background: #8b5cf6; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 .pc-wordmark { font-size: 1.65rem; font-weight: 900; letter-spacing: -0.04em; text-transform: uppercase; color: #0f172a; line-height: 1.05; }
-.pc-accent { color: #10b981; }
+.pc-accent { color: #8b5cf6; }
 .pc-tagline { font-size: 7.5pt; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: #64748b; margin-top: 4px; }
 .pc-lite-social-proof { font-size: 8.5pt; color: #64748b; font-weight: 600; margin: 4px 0 12px 0; letter-spacing: 0.04em; }
 .pc-lite-cover-value { margin: 14px 0 8px 0; page-break-inside: avoid; }
-.pc-lite-cover-kicker { font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.16em; color: #10b981; margin: 0 0 8px 0; }
+.pc-lite-cover-kicker { font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.16em; color: #8b5cf6; margin: 0 0 8px 0; }
 .pc-lite-cover-lead { font-size: 10.5pt; font-weight: 700; color: #0f172a; line-height: 1.45; margin: 0 0 8px 0; }
 .pc-lite-cover-sub { font-size: 9pt; color: #475569; line-height: 1.45; margin: 0 0 14px 0; }
 .pc-lite-cover-grid { display: flex; gap: 14px; margin: 0 0 12px 0; }
@@ -338,7 +338,7 @@ function getPdfBrandStyles() {
 .pc-metric-k { display: block; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.12em; color: #64748b; font-weight: 700; }
 .pc-metric-v { display: block; font-size: 11pt; font-weight: 800; color: #0f172a; margin-top: 2px; }
 .pc-report-closing { margin-top: 28px; padding-top: 18px; page-break-inside: avoid; color: #475569; font-size: 9pt; line-height: 1.55; }
-.pc-closing-rule { width: 72px; height: 4px; background: #10b981; margin-bottom: 14px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.pc-closing-rule { width: 72px; height: 4px; background: #8b5cf6; margin-bottom: 14px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 .pc-closing-lead { font-size: 10pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #0f172a; margin: 0 0 10px 0; }
 .pc-report-closing p { margin: 0 0 10px 0; color: #475569 !important; text-align: left; }
 .pc-closing-meta { font-size: 8pt !important; font-weight: 700; letter-spacing: 0.06em; color: #64748b !important; margin-top: 14px !important; }

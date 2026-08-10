@@ -9,7 +9,7 @@ const UPDATED = 'May 27, 2026';
 
 function wrapPredictacorePage({ title, intro, bodyHtml, footerLinks }) {
     const links = (footerLinks || [])
-        .map((l) => `<a href="${l.href}" class="text-emerald-500 hover:underline">${l.label}</a>`)
+        .map((l) => `<a href="${l.href}" class="text-violet-400 hover:underline">${l.label}</a>`)
         .join(' · ');
 
     return `<!DOCTYPE html>
@@ -24,7 +24,7 @@ function wrapPredictacorePage({ title, intro, bodyHtml, footerLinks }) {
 </head>
 <body class="max-w-3xl mx-auto p-8 text-sm leading-relaxed">
     <header class="border-b border-zinc-800 pb-4 mb-6">
-        <a href="/" class="text-emerald-500 text-xs uppercase tracking-widest font-black">PredictaCore</a>
+        <a href="/" class="text-violet-400 text-xs uppercase tracking-widest font-black">PredictaCore</a>
         <p class="text-[10px] text-zinc-600 mt-1">AI website audits · predictacore.ai</p>
     </header>
     <h1 class="text-2xl font-black text-white mb-2">${title}</h1>
@@ -41,7 +41,7 @@ function getTerminosHTML() {
     const cancelNotice = getSubscriptionCancellationNotice('en', MONITORING_PRICE_USD, TITAN_PRICE_USD);
     return wrapPredictacorePage({
         title: 'Terms of Service',
-        intro: `<div class="border border-emerald-900/50 bg-emerald-950/30 p-4 rounded mb-8 text-xs text-emerald-100/90">
+        intro: `<div class="border border-violet-900/50 bg-violet-950/30 p-4 rounded mb-8 text-xs text-violet-100/90">
             These terms apply only to <strong>PredictaCore</strong> products purchased on predictacore.ai
             (Titan Report and optional monthly monitoring).
         </div>`,

@@ -18,16 +18,16 @@ function getPlaygroundHTML() {
 <body class="p-6 max-w-3xl mx-auto">
     <div class="flex items-center justify-between mb-8 border-b border-zinc-800 pb-4">
         <div>
-            <h1 class="text-emerald-500 font-black text-lg tracking-tighter">PREDICTA<span class="text-white">CORE</span> // PLAYGROUND</h1>
+            <h1 class="text-violet-400 font-black text-lg tracking-tighter">PREDICTA<span class="text-white">CORE</span> // PLAYGROUND</h1>
             <p class="text-zinc-500 text-[10px] mt-1">Entorno de pruebas — no indexado</p>
         </div>
         <span class="text-[10px] text-amber-500 border border-amber-500/30 px-2 py-1 rounded">STAGING ONLY</span>
     </div>
 
     <section class="mb-8">
-        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">01 — System Health</h2>
-        <button onclick="runHealth()" class="bg-emerald-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">Run /health</button>
-        <pre id="out-health" class="mt-3 text-emerald-400">—</pre>
+        <h2 class="text-violet-500 text-[10px] uppercase tracking-widest mb-3">01 — System Health</h2>
+        <button onclick="runHealth()" class="bg-violet-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">Run /health</button>
+        <pre id="out-health" class="mt-3 text-violet-300">—</pre>
     </section>
 
     <div class="grid gap-2 mb-8">
@@ -36,7 +36,7 @@ function getPlaygroundHTML() {
     </div>
 
     <section class="mb-8 border border-zinc-600 bg-zinc-900/40 p-4 rounded">
-        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">02 — Lite Scan (interno, sin métricas ads)</h2>
+        <h2 class="text-violet-500 text-[10px] uppercase tracking-widest mb-3">02 — Lite Scan (interno, sin métricas ads)</h2>
         <p class="text-zinc-400 text-[10px] mb-2">Mismo motor que producción. PDF por email. <strong class="text-amber-400">No escribe en el embudo de ads</strong> ni manda follow-ups de venta.</p>
         <button onclick="runLite()" class="bg-zinc-100 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/lite</button>
         <pre id="out-lite" class="mt-3 text-zinc-400">—</pre>
@@ -48,11 +48,11 @@ function getPlaygroundHTML() {
         <button onclick="runJobStatus()" class="bg-amber-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">GET /playground/job-status</button>
         <pre id="out-job-status" class="mt-3 text-amber-300">—</pre>
     </section>
-    <section class="mb-8 border border-emerald-500/30 bg-emerald-950/10 p-4 rounded">
-        <h2 class="text-emerald-500 text-[10px] uppercase tracking-widest mb-3">02b — Titán completo (sin pago)</h2>
+    <section class="mb-8 border border-violet-500/30 bg-violet-950/10 p-4 rounded">
+        <h2 class="text-violet-400 text-[10px] uppercase tracking-widest mb-3">02b — Titán completo (sin pago)</h2>
         <p class="text-zinc-400 text-[10px] mb-2">Reporte forense completo — 11 secciones. Mismo motor que producción. ~10-20 min. Revisa el PDF y luego ajusta código en GitHub.</p>
-        <button onclick="runTitan()" class="bg-emerald-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/titan</button>
-        <pre id="out-titan" class="mt-3 text-emerald-400">—</pre>
+        <button onclick="runTitan()" class="bg-violet-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/titan</button>
+        <pre id="out-titan" class="mt-3 text-violet-300">—</pre>
     </section>
 
     <section class="mb-8 border border-cyan-500/30 bg-cyan-950/10 p-4 rounded">
@@ -70,14 +70,14 @@ function getPlaygroundHTML() {
     </section>
 
     <section class="mb-8">
-        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">03 — Checkout Stripe (test)</h2>
+        <h2 class="text-violet-500 text-[10px] uppercase tracking-widest mb-3">03 — Checkout Stripe (test)</h2>
         <p class="text-zinc-500 text-[10px] mb-2">Usa tarjeta test 4242 4242 4242 4242 en modo test de Stripe.</p>
         <button onclick="runCheckout()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /start</button>
         <pre id="out-checkout" class="mt-3 text-zinc-400">—</pre>
     </section>
 
     <section class="mb-8">
-        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">04 — Portal Cliente</h2>
+        <h2 class="text-violet-500 text-[10px] uppercase tracking-widest mb-3">04 — Portal Cliente</h2>
         <button onclick="runPortal()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /portal-cliente</button>
         <pre id="out-portal" class="mt-3 text-zinc-400">—</pre>
     </section>
@@ -88,7 +88,7 @@ function getPlaygroundHTML() {
         <input id="pg-session" placeholder="cs_test_..." class="bg-black border border-zinc-700 p-3 rounded text-white w-full mb-2">
         <div class="flex flex-wrap gap-2">
             <button onclick="runFulfill()" class="bg-amber-600 text-black px-4 py-2 rounded text-[10px] font-bold uppercase">POST /fulfill-checkout</button>
-            <button onclick="runReplay()" class="bg-emerald-700 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/replay-delivery</button>
+            <button onclick="runReplay()" class="bg-violet-700 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">POST /playground/replay-delivery</button>
             <button onclick="runCheckoutStatus()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">GET /checkout-status</button>
         </div>
         <pre id="out-fulfill" class="mt-3 text-amber-400">—</pre>
@@ -114,19 +114,19 @@ function getPlaygroundHTML() {
         <pre id="out-email-preview" class="mt-3 text-violet-300">—</pre>
     </section>
 
-    <section class="mb-8 border border-emerald-500/30 bg-emerald-950/10 p-4 rounded">
-        <h2 class="text-emerald-500 text-[10px] uppercase tracking-widest mb-3">05 — Funnel stats (Lite → Titán)</h2>
+    <section class="mb-8 border border-violet-500/30 bg-violet-950/10 p-4 rounded">
+        <h2 class="text-violet-400 text-[10px] uppercase tracking-widest mb-3">05 — Funnel stats (Lite → Titán)</h2>
         <p class="text-zinc-500 text-[10px] mb-2">Visitas /ads/lite se registran en predictacore-ads. Escaneos y ventas vienen de Postgres V5.</p>
         <div class="flex flex-wrap gap-2 mb-2">
             <button onclick="runFunnelStats(7)" class="bg-zinc-800 border border-zinc-600 text-white px-3 py-2 rounded text-[10px] font-bold uppercase">7 días</button>
-            <button onclick="runFunnelStats(30)" class="bg-emerald-600 text-black px-3 py-2 rounded text-[10px] font-bold uppercase">30 días</button>
+            <button onclick="runFunnelStats(30)" class="bg-violet-600 text-black px-3 py-2 rounded text-[10px] font-bold uppercase">30 días</button>
             <button onclick="runFunnelStats(90)" class="bg-zinc-800 border border-zinc-600 text-white px-3 py-2 rounded text-[10px] font-bold uppercase">90 días</button>
         </div>
-        <pre id="out-funnel-stats" class="mt-3 text-emerald-400">—</pre>
+        <pre id="out-funnel-stats" class="mt-3 text-violet-300">—</pre>
     </section>
 
     <section>
-        <h2 class="text-emerald-600 text-[10px] uppercase tracking-widest mb-3">06 — DB Snapshot</h2>
+        <h2 class="text-violet-500 text-[10px] uppercase tracking-widest mb-3">06 — DB Snapshot</h2>
         <button onclick="runDb()" class="bg-zinc-800 border border-zinc-600 text-white px-4 py-2 rounded text-[10px] font-bold uppercase">GET /playground/db</button>
         <pre id="out-db" class="mt-3 text-zinc-400">—</pre>
     </section>

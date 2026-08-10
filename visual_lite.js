@@ -17,11 +17,11 @@ function getHTMLLite() {
             ${getPdfBrandStyles()}
             .header-info { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e2e8f0; }
             .cover-title { font-size: 1.5rem; font-weight: 800; color: #64748b; text-transform: uppercase; line-height: 1.1; margin-top: 8px; }
-            .cover-accent { width: 80px; height: 5px; background: #10b981; margin: 10px 0; }
+            .cover-accent { width: 80px; height: 5px; background: #8b5cf6; margin: 10px 0; }
             .report-section { margin-bottom: 20px; page-break-inside: avoid; }
             .markdown-content h3 {
                 color: #0f172a; font-size: 1.15rem; font-weight: 800;
-                border-bottom: 2px solid #10b981; padding-bottom: 4px; margin: 0 0 10px 0; text-transform: uppercase;
+                border-bottom: 2px solid #8b5cf6; padding-bottom: 4px; margin: 0 0 10px 0; text-transform: uppercase;
             }
             .markdown-content ul, .markdown-content ol { padding-left: 1.2rem; margin-bottom: 1rem; }
             .markdown-content li { margin-bottom: 0.5rem; line-height: 1.5; color: #1e293b; font-size: 10pt; }
@@ -33,7 +33,7 @@ function getHTMLLite() {
             tr:last-child td { border-bottom: none; }
             tr:nth-child(even) td { background: #f8fafc; }
             .lite-titan-cta {
-                margin-top: 28px; padding: 18px; border: 2px solid #10b981; border-radius: 8px;
+                margin-top: 28px; padding: 18px; border: 2px solid #8b5cf6; border-radius: 8px;
                 background: #ecfdf5; page-break-inside: avoid;
             }
             .lite-titan-cta h3 { color: #065f46; font-size: 11pt; margin: 0 0 8px 0; text-transform: uppercase; border: none; }

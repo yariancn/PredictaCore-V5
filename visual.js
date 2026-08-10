@@ -14,7 +14,7 @@ function getHTML() {
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
 
             :root {
-                --pc-green: #10b981;
+                --pc-violet: #8b5cf6;
                 --pc-gold: #d4af37;
                 --pc-crimson: #991b1b;
                 --pc-crimson-bg: #fef2f2;
@@ -46,7 +46,7 @@ function getHTML() {
                 }
                 .cover-page .cover-main { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-top: 8mm; }
                 .cover-title { font-size: 2.25rem; font-weight: 800; color: var(--pc-dark) !important; text-transform: uppercase; line-height: 1.1; margin-top: 0.5rem; }
-                .cover-accent { width: 100px; height: 8px; background: var(--pc-green); margin: 1.25rem 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .cover-accent { width: 100px; height: 8px; background: var(--pc-violet); margin: 1.25rem 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
                 .cover-tag { color: #059669; font-weight: 700; text-transform: uppercase; letter-spacing: 0.28em; font-size: 9pt; margin-top: 1rem; }
                 .cover-domain { font-size: 1.15rem; color: #64748b; margin-top: 0.75rem; word-break: break-word; }
                 .cover-date-row { margin-top: auto; padding-top: 1.5rem; border-top: 1px solid #e2e8f0; text-align: right; }
@@ -67,7 +67,7 @@ function getHTML() {
 
                 .markdown-content h3 { 
                     color: var(--pc-dark) !important; font-size: 1.15rem !important; font-weight: 800 !important;
-                    border-bottom: 2px solid var(--pc-green); padding-bottom: 0.4rem; margin: 0 0 1.25rem 0 !important;
+                    border-bottom: 2px solid var(--pc-violet); padding-bottom: 0.4rem; margin: 0 0 1.25rem 0 !important;
                     text-transform: uppercase; page-break-after: avoid; line-height: 1.25 !important;
                     -webkit-print-color-adjust: exact; print-color-adjust: exact;
                 }
@@ -137,10 +137,10 @@ function getHTML() {
         <div class="max-w-6xl mx-auto">
             <header class="mb-16 flex justify-between items-end no-print">
                 <div>
-                    <h1 class="text-3xl font-extrabold text-white uppercase tracking-tighter">PREDICTACORE <span class="text-emerald-500">TITÁN</span></h1>
+                    <h1 class="text-3xl font-extrabold text-white uppercase tracking-tighter">PREDICTACORE <span class="text-violet-400">TITÁN</span></h1>
                     <p class="text-zinc-500 text-[10px] uppercase tracking-[0.4em]">Forensic Audit Intelligence</p>
                 </div>
-                <button id="btn-pdf" onclick="descargarPDFBackend()" class="hidden border border-emerald-500 text-emerald-500 px-6 py-2 text-xs uppercase hover:bg-emerald-500 hover:text-black transition-all">
+                <button id="btn-pdf" onclick="descargarPDFBackend()" class="hidden border border-violet-500 text-violet-400 px-6 py-2 text-xs uppercase hover:bg-violet-500 hover:text-black transition-all">
                     Exportar Reporte Titán
                 </button>
             </header>
@@ -166,8 +166,8 @@ function getHTML() {
             </div>
 
             <div class="terminal-box p-10 mt-20 no-print">
-                <input type="text" id="dna" placeholder="Ingresa dominio..." class="w-full bg-transparent text-2xl text-white border-b border-zinc-800 pb-2 focus:outline-none focus:border-emerald-500">
-                <button onclick="ejecutar()" id="btn-ejecutar" class="mt-8 bg-emerald-600 text-white font-bold py-4 px-8 text-xs uppercase hover:bg-emerald-400 w-full md:w-auto transition-all">Ejecutar Auditoría</button>
+                <input type="text" id="dna" placeholder="Ingresa dominio..." class="w-full bg-transparent text-2xl text-white border-b border-zinc-800 pb-2 focus:outline-none focus:border-violet-500">
+                <button onclick="ejecutar()" id="btn-ejecutar" class="mt-8 bg-violet-600 text-white font-bold py-4 px-8 text-xs uppercase hover:bg-violet-400 w-full md:w-auto transition-all">Ejecutar Auditoría</button>
                 <div id="status" class="mt-6 text-[10px] text-zinc-500 uppercase tracking-widest">Esperando secuencia...</div>
             </div>
         </div>
@@ -199,7 +199,7 @@ function getHTML() {
                     if (m) {
                         const v = parseInt(m[1]);
                         td.style.fontWeight = '800';
-                        td.style.color = v <= 5 ? '#ef4444' : v <= 7 ? '#f59e0b' : '#10b981';
+                        td.style.color = v <= 5 ? '#ef4444' : v <= 7 ? '#f59e0b' : '#8b5cf6';
                     }
                 });
                 return d.innerHTML;

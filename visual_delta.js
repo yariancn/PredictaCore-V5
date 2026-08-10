@@ -31,15 +31,15 @@ function getHTMLDelta() {
             .delta-glance li { margin-bottom: 4px; color: #334155; }
             .pc-header-disclaimer { font-size: 7.5pt; color: #64748b; line-height: 1.4; margin: 8px 0 0 0; padding: 6px 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; }
             .pc-report-closing { margin-top: 28px; padding-top: 18px; page-break-inside: avoid; color: #475569; font-size: 9pt; line-height: 1.55; }
-            .pc-closing-rule { width: 72px; height: 4px; background: #10b981; margin-bottom: 14px; }
+            .pc-closing-rule { width: 72px; height: 4px; background: #8b5cf6; margin-bottom: 14px; }
             .pc-closing-lead { font-size: 10pt; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #0f172a; margin: 0 0 10px 0; }
             .pc-disclaimer { font-size: 8.5pt; background: #f8fafc; border-left: 3px solid #f59e0b; padding: 8px 10px; margin: 0 0 10px 0; }
             .pc-closing-meta { font-size: 8pt; font-weight: 700; letter-spacing: 0.06em; color: #64748b; margin-top: 14px; }
         </style>
     </head>
     <body class="bg-white text-slate-800 p-8">
-        <header class="border-b-4 border-emerald-500 pb-4 mb-8">
-            <div class="text-[10px] text-emerald-600 font-bold tracking-widest uppercase">PredictaCore // Monthly Monitoring</div>
+        <header class="border-b-4 border-violet-500 pb-4 mb-8">
+            <div class="text-[10px] text-violet-500 font-bold tracking-widest uppercase">PredictaCore // Monthly Monitoring</div>
             <h1 class="text-2xl font-black text-slate-900 mt-2">MONITORING REPORT</h1>
             <p id="pdf-domain" class="text-xs text-slate-500 mt-1 font-mono"></p>
             <div id="pdf-header-disclaimer"></div>

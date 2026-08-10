@@ -294,11 +294,11 @@ function buildLiteUpsellEmailHtml(lang, { titanUrl, targetUrl }) {
     const es = lang === 'es';
     const title = es ? 'Encontramos fugas — te faltan 12 más' : 'We found leaks — 12 more are still hidden';
     const pdfBanner = es
-        ? '<strong style="color:#10b981;">PDF Lite adjunto</strong> — ábrelo primero. Luego desbloquea el Reporte Titán completo abajo.'
-        : '<strong style="color:#10b981;">Lite PDF attached</strong> — open it first. Then unlock the full Titan Report below.';
+        ? '<strong style="color:#8b5cf6;">PDF Lite adjunto</strong> — ábrelo primero. Luego desbloquea el Reporte Titán completo abajo.'
+        : '<strong style="color:#8b5cf6;">Lite PDF attached</strong> — open it first. Then unlock the full Titan Report below.';
     const hook = es
-        ? `Tu escaneo Lite de <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> detectó fricción real. Pero cada día que pasa sin arreglar <strong style="color:#10b981;">las 15 fugas principales</strong>, sigues perdiendo visitantes que ya llegaron y se van en silencio.`
-        : `Your Lite scan of <strong style="color:#fff;">${targetUrl || 'your page'}</strong> found real friction. But every day you leave <strong style="color:#10b981;">all 15 major drop-off points</strong> unfixed, you keep losing visitors who already arrived and leave in silence.`;
+        ? `Tu escaneo Lite de <strong style="color:#fff;">${targetUrl || 'tu página'}</strong> detectó fricción real. Pero cada día que pasa sin arreglar <strong style="color:#8b5cf6;">las 15 fugas principales</strong>, sigues perdiendo visitantes que ya llegaron y se van en silencio.`
+        : `Your Lite scan of <strong style="color:#fff;">${targetUrl || 'your page'}</strong> found real friction. But every day you leave <strong style="color:#8b5cf6;">all 15 major drop-off points</strong> unfixed, you keep losing visitors who already arrived and leave in silence.`;
     const bullets = es
         ? [
             'Las <strong>15 fugas</strong> que ahuyentan compradores (no solo 3)',
@@ -319,12 +319,12 @@ function buildLiteUpsellEmailHtml(lang, { titanUrl, targetUrl }) {
     const cancelHtml = getSubscriptionCancellationEmailHtml(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
     const bulletHtml = bullets.map((b) => `<li style="margin:0 0 8px 0;">${b}</li>`).join('');
 
-    return `<p style="margin:0 0 18px 0;padding:12px 14px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.35);border-radius:6px;font-size:13px;line-height:1.5;color:#d1d5db;text-align:center;">${pdfBanner}</p>
+    return `<p style="margin:0 0 18px 0;padding:12px 14px;background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.35);border-radius:6px;font-size:13px;line-height:1.5;color:#d1d5db;text-align:center;">${pdfBanner}</p>
   <h1 style="color:#fff;font-size:20px;text-align:center;margin:0 0 12px 0;line-height:1.3;">${title}</h1>
   <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;color:#d1d5db;">${getLiteReportIntro(lang)}</p>
   <p style="font-size:14px;line-height:1.65;margin:0 0 16px 0;color:#d1d5db;">${hook}</p>
   <ul style="font-size:13px;line-height:1.55;margin:0 0 20px 0;padding-left:18px;color:#a1a1aa;">${bulletHtml}</ul>
-  <p style="margin:28px 0;text-align:center;"><a href="${titanUrl}" style="background:#10b981;color:#000;padding:14px 28px;text-decoration:none;font-weight:900;border-radius:6px;display:inline-block;font-size:14px;text-transform:uppercase;letter-spacing:0.04em;">${ctaLabel}</a></p>
+  <p style="margin:28px 0;text-align:center;"><a href="${titanUrl}" style="background:#8b5cf6;color:#fff;padding:14px 28px;text-decoration:none;font-weight:900;border-radius:6px;display:inline-block;font-size:14px;text-transform:uppercase;letter-spacing:0.04em;">${ctaLabel}</a></p>
   <p style="font-size:11px;color:#71717a;text-align:center;margin:0 0 8px 0;">${pdfNote}</p>
   ${cancelHtml}
   <p style="font-size:11px;color:#71717a;text-align:center;margin-top:16px;">PredictaCore · predictacore.ai</p>`;
@@ -687,7 +687,7 @@ function buildLiteTitanCtaHtml(locale, titanUpgradeUrl) {
     <li>${es ? 'Herramientas para implementar' : 'Tools to implement the fixes'}</li>
     <li>${es ? 'Benchmark + plan 21 días' : 'Benchmark + 21-day plan'}</li>
   </ul>
-  <p style="margin-top:14px;text-align:center;"><a href="${titanUpgradeUrl}" style="display:inline-block;background:#10b981;color:#000;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">${btn}</a></p>
+  <p style="margin-top:14px;text-align:center;"><a href="${titanUpgradeUrl}" style="display:inline-block;background:#8b5cf6;color:#fff;padding:12px 20px;font-weight:800;text-decoration:none;border-radius:6px;font-size:11pt;text-transform:uppercase;">${btn}</a></p>
 </div>`;
 }
 
