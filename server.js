@@ -833,6 +833,23 @@ app.get('/apple-touch-icon.png', (req, res) => {
     res.sendFile(path.join(__dirname, 'static', 'apple-touch-icon.png'));
 });
 
+/** AI / search discovery — VisionAI + crawlers (GPTBot, Perplexity, etc.) */
+app.get('/llms.txt', (req, res) => {
+    res.type('text/plain; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(__dirname, 'static', 'llms.txt'));
+});
+app.get('/robots.txt', (req, res) => {
+    res.type('text/plain; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(__dirname, 'static', 'robots.txt'));
+});
+app.get('/sitemap.xml', (req, res) => {
+    res.type('application/xml; charset=utf-8');
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(__dirname, 'static', 'sitemap.xml'));
+});
+
 app.use('/static', express.static(path.join(__dirname, 'static'), { maxAge: '7d' }));
 
 app.get('/', (req, res) => {

@@ -100,6 +100,82 @@ function getLandingHTML() {
             #sticky-cta { transform: translateY(100%); transition: transform 0.3s ease; }
             #sticky-cta.visible { transform: translateY(0); }
         </style>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://predictacore.ai/#organization",
+              "name": "PredictaCore",
+              "url": "https://predictacore.ai",
+              "email": "audit@predictacore.ai",
+              "sameAs": ["https://predictacore.ai/ads", "https://predictacore.ai/ads/software", "https://predictacore.ai/ads/lite"]
+            },
+            {
+              "@type": "SoftwareApplication",
+              "name": "PredictaCore Titan Report",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://predictacore.ai",
+              "description": "Public-page conversion audit that emails a forensic PDF with ranked leaks, SEO and AI visibility scores, and a 21-day fix plan. No login required.",
+              "offers": {
+                "@type": "Offer",
+                "price": "199",
+                "priceCurrency": "USD",
+                "url": "https://predictacore.ai"
+              },
+              "provider": { "@id": "https://predictacore.ai/#organization" }
+            },
+            {
+              "@type": "SoftwareApplication",
+              "name": "PredictaCore Software / App Design Blueprints",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://predictacore.ai/ads/software",
+              "description": "Productized software and app design blueprints for clinics and service businesses.",
+              "provider": { "@id": "https://predictacore.ai/#organization" }
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [
+                {
+                  "@type": "Question",
+                  "name": "What is PredictaCore?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "PredictaCore reviews a public website or social page and emails a clear PDF showing why visitors leave without buying, plus SEO and AI visibility scores."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Do I need to give PredictaCore backend access?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No. Only a public URL or one Instagram, Facebook, or TikTok profile is required."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "What is the difference between Lite and Titan?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Lite is free and shows 3 critical leaks plus a score snapshot. Titan is the full 17-page forensic PDF with 15 leaks, 15 fixes, competitor context, and a 21-day plan."
+                  }
+                },
+                {
+                  "@type": "Question",
+                  "name": "Does PredictaCore design apps?",
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Software and app design blueprints live at https://predictacore.ai/ads/software."
+                  }
+                }
+              ]
+            }
+          ]
+        }
+        </script>
     </head>
     <body class="antialiased pb-20 md:pb-0">
         <div class="mesh-bg"></div>
