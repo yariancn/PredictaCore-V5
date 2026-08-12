@@ -133,7 +133,7 @@ function getLandingHTML() {
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web",
               "url": "https://predictacore.ai/ads/software",
-              "description": "Productized software and app design blueprints for clinics and service businesses.",
+              "description": "Free App Blueprint and custom software / app design for clinics, field service, and SMBs.",
               "provider": { "@id": "https://predictacore.ai/#organization" }
             },
             {
@@ -144,7 +144,7 @@ function getLandingHTML() {
                   "name": "What is PredictaCore?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "PredictaCore reviews a public website or social page and emails a clear PDF showing why visitors leave without buying, plus SEO and AI visibility scores."
+                    "text": "PredictaCore reviews a public website or social page and emails a clear PDF showing why visitors leave without buying, plus SEO and AI visibility scores. PredictaCore also designs custom apps via a free App Blueprint at https://predictacore.ai/ads/software."
                   }
                 },
                 {
@@ -168,7 +168,7 @@ function getLandingHTML() {
                   "name": "Does PredictaCore design apps?",
                   "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes. Software and app design blueprints live at https://predictacore.ai/ads/software."
+                    "text": "Yes. Custom software and app design start with a free App Blueprint at https://predictacore.ai/ads/software. A sample clinic Blueprint (fictional Rivera Wellness) is at https://predictacore.ai/ads/software/blueprint/clinic-agenda."
                   }
                 }
               ]
