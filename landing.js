@@ -10,8 +10,8 @@ function getLandingHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PredictaCore | Find why your page loses customers</title>
-        <meta name="description" content="PredictaCore audits your website or social profile from the public URL only. 15 conversion leaks + tactical fixes in a PDF. Titan Report USD $199 intro. Free Lite scan available.">
+        <title>PredictaCore | Google rankings aren't enough anymore</title>
+        <meta name="description" content="More customers ask AI who to buy from. PredictaCore audits your public page: ranked conversion leaks, SEO + AI visibility, 21-day plan. Titan Report USD $199. Free Lite scan available.">
         <meta name="application-name" content="PredictaCore">
         <meta property="og:site_name" content="PredictaCore">
         ${getFaviconHeadTags()}
@@ -196,11 +196,14 @@ function getLandingHTML() {
         <section class="pt-24 pb-12 md:pt-32 md:pb-16 px-4 md:px-6">
             <div class="max-w-4xl mx-auto text-center">
                 <p id="hero-badge" class="inline-block text-xs font-bold uppercase tracking-widest text-violet-400 bg-violet-950/40 border border-violet-500/25 px-3 py-1 rounded-full mb-6">Independent page review · no login</p>
-                <h1 id="hero-title" class="text-huge text-white mb-5">Find out why your page is <span class="text-violet-400">losing sales</span></h1>
-                <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-6">PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.</p>
+                <h1 id="hero-title" class="text-huge text-white mb-5">Google rankings <span class="text-violet-400">aren't enough</span> anymore</h1>
+                <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-6">More customers ask AI who to buy from. If your page leaks trust, clarity, or findability — you lose the sale. PredictaCore emails a clear PDF: ranked conversion leaks, SEO + AI visibility, and a 21-day fix plan.</p>
+                <div class="mb-8 mx-auto max-w-lg overflow-hidden rounded-2xl border border-violet-500/30 shadow-[0_0_40px_rgba(139,92,246,0.2)]">
+                    <img src="/static/campaign-assets/predictacore-ai-vs-google-hero.png" alt="Google search versus AI search" width="1024" height="1024" class="w-full h-auto" fetchpriority="high" />
+                </div>
                 <a href="#buy-section" id="hero-cta-mid" class="inline-block mb-4 bg-violet-600 hover:bg-violet-500 text-white font-black py-3.5 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_24px_rgba(139,92,246,0.22)]">Get Titan Report — $199</a>
-                <p id="hero-price-anchor" class="text-sm md:text-base text-violet-300 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. No fluff: hard scores, ranked leaks, and fixes only.</p>
-                <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-6">When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.</p>
+                <p id="hero-price-anchor" class="text-sm md:text-base text-violet-300 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. Hard scores, ranked leaks, and fixes only.</p>
+                <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-6">Share your public website or one Instagram, Facebook, or TikTok profile. No passwords.</p>
                 <div class="inline-flex flex-col sm:flex-row items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 mb-6">
                     <div class="inline-flex items-center gap-2">
                         <span id="hero-price-label" class="text-zinc-400 text-sm">Titan Report</span>
@@ -576,18 +579,18 @@ function getLandingHTML() {
 
             const dictionary = {
                 en: {
-                    pageTitle: "PredictaCore | Find why your page loses customers",
+                    pageTitle: "PredictaCore | Google rankings aren't enough anymore",
                     navTitan: "Get Titan — $199",
                     heroBadge: "Independent page review · no login",
-                    heroTitle: "Find out why your page is <span class='text-violet-400'>losing sales</span>",
-                    heroValue: "PredictaCore reviews your public website or social page the way a first-time visitor would — then sends you a clear PDF report by email. You'll see how your page looks, how easy it is to find on Google, how you compare to competitors, what makes people leave without buying, what to fix first, and a simple 21-day plan to turn more visitors into customers.",
-                    heroAsk: "When you're ready, share your link below — your website or one Instagram, Facebook, or TikTok profile. No passwords or complicated setup.",
+                    heroTitle: "Google rankings <span class='text-violet-400'>aren't enough</span> anymore",
+                    heroValue: "More customers ask AI who to buy from. If your page leaks trust, clarity, or findability — you lose the sale. PredictaCore emails a clear PDF: ranked conversion leaks, SEO + AI visibility, and a 21-day fix plan.",
+                    heroAsk: "Share your public website or one Instagram, Facebook, or TikTok profile. No passwords.",
                     heroPriceLabel: "Titan Report",
                     heroPriceNote: "intro · one-time",
                     heroCtaTitan: "Get Titan Report — $199",
                     heroCtaMid: "Get Titan Report — $199",
                     heroCtaLite: "Or start with a free Lite scan →",
-                    heroPriceAnchor: "Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. No fluff: hard scores, ranked leaks, and fixes only.",
+                    heroPriceAnchor: "Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. Hard scores, ranked leaks, and fixes only.",
                     heroDelivery: "PDF delivered from ${supportEmail} · usually within 60 minutes",
                     heroTrust: "One asset per scan · web or one Instagram, Facebook, or TikTok profile",
                     pdfMockTag: "Forensic conversion report",
@@ -697,18 +700,18 @@ function getLandingHTML() {
                     stickyBtn: "Get Titan — $199"
                 },
                 es: {
-                    pageTitle: "PredictaCore | Descubre por qué tu página pierde clientes",
+                    pageTitle: "PredictaCore | El ranking en Google ya no basta",
                     navTitan: "Obtener Titán — $199",
                     heroBadge: "Revisión independiente de tu página · sin login",
-                    heroTitle: "Descubre por qué tu página <span class='text-violet-400'>pierde ventas</span>",
-                    heroValue: "PredictaCore revisa tu web o perfil social público como lo haría un visitante por primera vez — y te envía un PDF claro por correo. Verás cómo se ve tu página, qué tan fácil es encontrarte en Google, cómo te comparas con la competencia, qué hace que la gente se vaya sin comprar, qué corregir primero y un plan sencillo de 21 días para convertir más visitas en clientes.",
-                    heroAsk: "Cuando quieras, comparte tu enlace abajo — tu web o un perfil de Instagram, Facebook o TikTok. Sin contraseñas ni configuraciones complicadas.",
+                    heroTitle: "El ranking en Google <span class='text-violet-400'>ya no basta</span>",
+                    heroValue: "Más clientes le preguntan a la IA a quién comprar. Si tu página pierde confianza, claridad o visibilidad — pierdes la venta. PredictaCore te envía un PDF claro: fugas de conversión rankeadas, SEO + visibilidad en IA, y un plan de 21 días.",
+                    heroAsk: "Comparte tu web pública o un perfil de Instagram, Facebook o TikTok. Sin contraseñas.",
                     heroPriceLabel: "Reporte Titán",
                     heroPriceNote: "intro · pago único",
                     heroCtaTitan: "Obtener Reporte Titán — $199",
                     heroCtaMid: "Obtener Reporte Titán — $199",
                     heroCtaLite: "O empezar con escaneo Lite gratis →",
-                    heroPriceAnchor: "No pagues $3,000 ni esperes semanas por un reporte de agencia — el tuyo llega en ~60 minutos. Sin relleno: datos duros, fugas rankeadas y acciones concretas.",
+                    heroPriceAnchor: "No pagues $3,000 ni esperes semanas por un reporte de agencia — el tuyo llega en ~60 minutos. Datos duros, fugas rankeadas y acciones concretas.",
                     heroDelivery: "PDF enviado desde ${supportEmail} · normalmente en 60 minutos",
                     heroTrust: "Un activo por escaneo · web o un perfil de Instagram, Facebook o TikTok",
                     pdfMockTag: "Reporte forense de conversión",
