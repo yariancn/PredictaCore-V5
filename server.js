@@ -72,7 +72,7 @@ const {
 } = require('./db/comercial');
 
 const { isSocialMediaUrl, resolveAuditTarget } = require('./audit-target');
-const { buildTitanUpgradeUrl, wrapPredictaCoreEmail, getPdfCoverMetricsHtml, getPdfLiteSocialProofHtml, getPdfLiteCoverValueHtml, getResendFrom, getSalesNotifyEmail, getPdfClosingHtml, getPdfHeaderDisclaimerHtml, getSubscriptionCancellationPlain } = require('./brand');
+const { buildTitanUpgradeUrl, wrapPredictaCoreEmail, getPdfCoverMetricsHtml, getPdfLiteSocialProofHtml, getPdfLiteCoverValueHtml, getResendFrom, getSalesNotifyEmail, getSalesNotifyCc, getPdfClosingHtml, getPdfHeaderDisclaimerHtml, getSubscriptionCancellationPlain } = require('./brand');
 const {
     getLocaleFromDossier,
     getLanguageLockInstruction,
@@ -212,6 +212,10 @@ async function sendTitanSaleNotificationEmail({ customerEmail, targetUrl, sessio
         return;
     }
 
+    const notifyCc = getSalesNotifyCc().filter(
+        (e) => e.toLowerCase() !== String(notifyTo).toLowerCase(),
+    );
+
     const amount = amountUsd != null ? amountUsd : TITAN_PRICE_USD;
     const subject = `PredictaCore — Venta Titán USD $${amount} · ${customerEmail}`;
     const bodyHtml = `
@@ -239,12 +243,13 @@ async function sendTitanSaleNotificationEmail({ customerEmail, targetUrl, sessio
     const { error } = await resend.emails.send({
         from: getResendFrom(),
         to: notifyTo,
+        ...(notifyCc.length ? { cc: notifyCc } : {}),
         subject,
         text,
         html: wrapPredictaCoreEmail('es', bodyHtml),
     });
     if (error) throw new Error(`Sale notification: ${error.message}`);
-    console.log(`>>> Sale notification sent to ${notifyTo}`);
+    console.log(`>>> Sale notification sent to ${notifyTo}${notifyCc.length ? ` (cc ${notifyCc.join(', ')})` : ''}`);
 }
 
 async function sendTitanActivationEmail(email, lang, customerId) {

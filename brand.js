@@ -24,6 +24,15 @@ function getSalesNotifyEmail() {
     return process.env.SALES_NOTIFY_EMAIL || 'yarianc@yahoo.com';
 }
 
+/** CC for internal sale / ops alerts. */
+function getSalesNotifyCc() {
+    const raw = process.env.SALES_NOTIFY_CC || 'rociofernandaloera@gmail.com';
+    return raw
+        .split(/[,;]+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+}
+
 /** Resend "from" header — must match a verified domain in Resend */
 function getResendFrom() {
     if (process.env.RESEND_FROM) return process.env.RESEND_FROM;
@@ -371,6 +380,7 @@ module.exports = {
     publicSiteUrl,
     getSupportEmail,
     getSalesNotifyEmail,
+    getSalesNotifyCc,
     getResendFrom,
     getSubscriptionCancellationNotice,
     getSubscriptionCancellationPlain,
