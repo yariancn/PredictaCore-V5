@@ -3,6 +3,7 @@
  * Keeps ads dashboard first-party funnel in sync when Lite completes or Titan sells.
  */
 
+const { TITAN_PRICE_USD } = require('./brand');
 const ADS_FUNNEL_PATH = '/ads/api/funnel/events';
 const TEST_REF = 'internal_test';
 
@@ -87,7 +88,7 @@ async function notifyTitanPurchase({ email, urlSitio, jobId, stripeSessionId }) 
         email,
         urlSitio,
         jobId,
-        metadata: { stripe_session_id: stripeSessionId, product: 'titan', amount_usd: 199 },
+        metadata: { stripe_session_id: stripeSessionId, product: 'titan', amount_usd: TITAN_PRICE_USD },
     });
 }
 

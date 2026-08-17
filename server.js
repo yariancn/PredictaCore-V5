@@ -852,7 +852,17 @@ app.get('/robots.txt', (req, res) => {
 app.get('/sitemap.xml', (req, res) => {
     res.type('application/xml; charset=utf-8');
     res.set('Cache-Control', 'public, max-age=3600');
-    res.sendFile(path.join(__dirname, 'static', 'sitemap.xml'));
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://predictacore.ai/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://predictacore.ai/ads/lite</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://predictacore.ai/ads</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://predictacore.ai/ads/software</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://predictacore.ai/ads/software/blueprint/clinic-agenda</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://predictacore.ai/titan</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://predictacore.ai/privacy</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://predictacore.ai/terms</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+</urlset>`);
 });
 
 app.use('/static', express.static(path.join(__dirname, 'static'), { maxAge: '7d' }));

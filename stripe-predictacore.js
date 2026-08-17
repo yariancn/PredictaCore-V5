@@ -3,14 +3,11 @@
  * Customer-facing copy and descriptors use PredictaCore only.
  */
 
-const { getSupportEmail } = require('./brand');
+const { getSupportEmail, TITAN_PRICE_USD, TITAN_PRICE_CENTS, MONITORING_PRICE_USD } = require('./brand');
 
 const BRAND = 'predictacore';
 const LEGAL_ENTITY = 'Regenoxy LLC';
-const TITAN_PRICE_USD = 199;
-const TITAN_PRICE_CENTS = 19900;
-const MONITORING_PRICE_USD = 25;
-const MONITORING_PRICE_CENTS = 2500;
+const MONITORING_PRICE_CENTS = MONITORING_PRICE_USD * 100;
 const TERMS_URL = 'https://predictacore.ai/terms';
 const PRIVACY_URL = 'https://predictacore.ai/privacy';
 const STATEMENT_SUFFIX = () => (process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE').slice(0, 22);
@@ -34,44 +31,41 @@ function checkoutMetadata({ dna, email, refCode, lang }) {
     };
 }
 
+function titanPriceDataItem() {
+    return {
+        price_data: {
+            currency: 'usd',
+            product_data: {
+                name: 'Predictacore Titan',
+                description: `Titan Report. USD $${TITAN_PRICE_USD} charged today.`,
+                metadata: { brand: BRAND, product: BRAND },
+            },
+            unit_amount: TITAN_PRICE_CENTS,
+        },
+        quantity: 1,
+    };
+}
+
+function monitoringPriceDataItem() {
+    return {
+        price_data: {
+            currency: 'usd',
+            product_data: {
+                name: 'PredictaCore Monthly Monitoring',
+                description: `USD $${MONITORING_PRICE_USD}/month. Starts 30 days after purchase.`,
+                metadata: { brand: BRAND, product: BRAND },
+            },
+            unit_amount: MONITORING_PRICE_CENTS,
+            recurring: { interval: 'month' },
+        },
+        quantity: 1,
+    };
+}
+
 function buildCheckoutLineItems() {
-    const priceTitan = PRICE_TITAN();
     const priceSub = PRICE_SUB();
-
-    if (priceTitan && priceSub) {
-        return [
-            { price: priceTitan, quantity: 1 },
-            { price: priceSub, quantity: 1 },
-        ];
-    }
-
-    return [
-        {
-            price_data: {
-                currency: 'usd',
-                product_data: {
-                    name: 'Predictacore Titan',
-                    description: `Introductory Titan Report. USD $${TITAN_PRICE_USD} charged today.`,
-                    metadata: { brand: BRAND, product: BRAND },
-                },
-                unit_amount: TITAN_PRICE_CENTS,
-            },
-            quantity: 1,
-        },
-        {
-            price_data: {
-                currency: 'usd',
-                product_data: {
-                    name: 'PredictaCore Monthly Monitoring',
-                    description: `USD $${MONITORING_PRICE_USD}/month. Starts 30 days after purchase.`,
-                    metadata: { brand: BRAND, product: BRAND },
-                },
-                unit_amount: MONITORING_PRICE_CENTS,
-                recurring: { interval: 'month' },
-            },
-            quantity: 1,
-        },
-    ];
+    // Always charge TITAN_PRICE_USD via price_data so a stale Stripe Price ID ($199) cannot overcharge.
+    return [titanPriceDataItem(), priceSub ? { price: priceSub, quantity: 1 } : monitoringPriceDataItem()];
 }
 
 function getCheckoutCustomText(lang = 'en') {
@@ -154,47 +148,38 @@ function stripeKeyMode() {
 }
 
 async function validateCheckoutPrices(stripe) {
-    const titanId = PRICE_TITAN();
     const subId = PRICE_SUB();
     const mode = stripeKeyMode();
+    const lineItems = buildCheckoutLineItems();
 
-    if (!titanId || !subId) {
-        return { ok: true, lineItems: buildCheckoutLineItems(), mode, usingEnvPrices: false };
+    if (!subId) {
+        return { ok: true, lineItems, mode, usingEnvPrices: false };
     }
 
     try {
-        const [titan, sub] = await Promise.all([
-            stripe.prices.retrieve(titanId),
-            stripe.prices.retrieve(subId),
-        ]);
-
+        const sub = await stripe.prices.retrieve(subId);
         const errors = [];
-        if (!titan.active) errors.push('STRIPE_PRICE_TITAN is inactive in Stripe.');
         if (!sub.active) errors.push('STRIPE_PRICE_SUBSCRIPTION is inactive in Stripe.');
         if (!sub.recurring) errors.push('STRIPE_PRICE_SUBSCRIPTION must be a recurring (monthly) price.');
-        if (titan.currency !== sub.currency) errors.push('Titan and subscription prices must use the same currency.');
-
-        if (titan.unit_amount !== TITAN_PRICE_CENTS) {
-            errors.push(`STRIPE_PRICE_TITAN should be USD $${TITAN_PRICE_USD} (${TITAN_PRICE_CENTS} cents); Stripe price has ${titan.unit_amount} cents.`);
-        }
         if (sub.unit_amount !== MONITORING_PRICE_CENTS) {
             errors.push(`STRIPE_PRICE_SUBSCRIPTION should be USD $${MONITORING_PRICE_USD}/mo (${MONITORING_PRICE_CENTS} cents).`);
         }
 
-        if (mode === 'test' && (titan.livemode || sub.livemode)) {
-            errors.push('Stripe is in Test mode but your Price IDs are Live. Create Test prices and update Railway.');
+        if (mode === 'test' && sub.livemode) {
+            errors.push('Stripe is in Test mode but STRIPE_PRICE_SUBSCRIPTION is Live.');
         }
-        if (mode === 'live' && (!titan.livemode || !sub.livemode)) {
-            errors.push('Stripe is in Live mode but your Price IDs are Test. Use Live Price IDs in Railway.');
+        if (mode === 'live' && !sub.livemode) {
+            errors.push('Stripe is in Live mode but STRIPE_PRICE_SUBSCRIPTION is Test.');
         }
 
         return {
             ok: errors.length === 0,
             errors,
-            lineItems: [{ price: titanId, quantity: 1 }, { price: subId, quantity: 1 }],
+            lineItems,
             mode,
-            usingEnvPrices: true,
-            titanType: titan.type,
+            usingEnvPrices: false,
+            titanChargedVia: 'price_data',
+            expectedTitanCents: TITAN_PRICE_CENTS,
             subRecurring: !!sub.recurring,
         };
     } catch (err) {
@@ -207,10 +192,10 @@ async function validateCheckoutPrices(stripe) {
                 ok: false,
                 errors: [`Price ID not found. ${modeHint}`],
                 mode,
-                usingEnvPrices: true,
+                usingEnvPrices: false,
             };
         }
-        return { ok: false, errors: [msg], mode, usingEnvPrices: true };
+        return { ok: false, errors: [msg], mode, usingEnvPrices: false };
     }
 }
 

@@ -10,8 +10,8 @@ function getLandingHTML() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PredictaCore | Google rankings aren't enough anymore</title>
-        <meta name="description" content="More customers ask AI who to buy from. PredictaCore audits your public page: ranked conversion leaks, SEO + AI visibility, 21-day plan. Titan Report USD $199. Free Lite scan available.">
+        <title>PredictaCore | Free conversion score in 60 seconds</title>
+        <meta name="description" content="Paste your store URL. Free live conversion score + #1 revenue leak on screen. Full 3-leak PDF by email. Titan Report USD $39.">
         <meta name="application-name" content="PredictaCore">
         <meta property="og:site_name" content="PredictaCore">
         ${getFaviconHeadTags()}
@@ -121,7 +121,7 @@ function getLandingHTML() {
               "description": "Public-page conversion audit that emails a forensic PDF with ranked leaks, SEO and AI visibility scores, and a 21-day fix plan. No login required.",
               "offers": {
                 "@type": "Offer",
-                "price": "199",
+                "price": "39",
                 "priceCurrency": "USD",
                 "url": "https://predictacore.ai"
               },
@@ -188,35 +188,32 @@ function getLandingHTML() {
                     <span class="text-zinc-700">/</span>
                     <span id="lang-es" class="lang-btn">ES</span>
                 </div>
-                <a href="#buy-section" id="nav-titan" class="hidden sm:inline-flex bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm px-4 py-2 rounded transition-colors">Get Titan — $199</a>
+                <a href="https://predictacore.ai/ads/lite" id="nav-titan" class="hidden sm:inline-flex bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm px-4 py-2 rounded transition-colors">Get my free score</a>
             </div>
         </nav>
 
         <!-- HERO -->
         <section class="pt-24 pb-12 md:pt-32 md:pb-16 px-4 md:px-6">
             <div class="max-w-4xl mx-auto text-center">
-                <p id="hero-badge" class="inline-block text-xs font-bold uppercase tracking-widest text-violet-400 bg-violet-950/40 border border-violet-500/25 px-3 py-1 rounded-full mb-6">Independent page review · no login</p>
-                <h1 id="hero-title" class="text-huge text-white mb-5">Google rankings <span class="text-violet-400">aren't enough</span> anymore</h1>
-                <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-6">More customers ask AI who to buy from. If your page leaks trust, clarity, or findability — you lose the sale. PredictaCore emails a clear PDF: ranked conversion leaks, SEO + AI visibility, and a 21-day fix plan.</p>
-                <div class="mb-8 mx-auto max-w-lg overflow-hidden rounded-2xl border border-violet-500/30 shadow-[0_0_40px_rgba(139,92,246,0.2)]">
-                    <img src="/static/campaign-assets/predictacore-ai-vs-google-hero.png" alt="Google search versus AI search" width="1024" height="1024" class="w-full h-auto" fetchpriority="high" />
+                <p id="hero-badge" class="inline-block text-xs font-bold uppercase tracking-widest text-violet-400 bg-violet-950/40 border border-violet-500/25 px-3 py-1 rounded-full mb-6">Free conversion score · no card · ~1 min</p>
+                <h1 id="hero-title" class="text-huge text-white mb-5">Get your conversion score in <span class="text-violet-400">60 seconds</span></h1>
+                <p id="hero-value" class="pc-body text-zinc-300 max-w-2xl mx-auto mb-8">Paste your store URL. See your score and #1 revenue leak on this page — before email. Full 3-leak PDF is free. Titan is $39 if you want all 15 fixes.</p>
+                <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-6">Shopify, DTC, or any public page. No passwords. No credit card for the free score.</p>
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md mx-auto sm:max-w-none">
+                    <a href="https://predictacore.ai/ads/lite" id="hero-cta-mid" class="bg-violet-600 hover:bg-violet-500 text-white font-black py-4 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_30px_rgba(139,92,246,0.25)]">Get my free score →</a>
+                    <a href="#buy-section" id="hero-cta-titan" class="border border-zinc-600 hover:border-violet-400 text-zinc-200 hover:text-white font-bold py-4 px-6 rounded-lg text-sm tracking-wide transition-all">Full Titan PDF — $39</a>
                 </div>
-                <a href="#buy-section" id="hero-cta-mid" class="inline-block mb-4 bg-violet-600 hover:bg-violet-500 text-white font-black py-3.5 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_24px_rgba(139,92,246,0.22)]">Get Titan Report — $199</a>
-                <p id="hero-price-anchor" class="text-sm md:text-base text-violet-300 font-bold max-w-xl mx-auto mb-5 leading-snug">Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. Hard scores, ranked leaks, and fixes only.</p>
-                <p id="hero-ask" class="pc-body text-zinc-400 max-w-xl mx-auto mb-6">Share your public website or one Instagram, Facebook, or TikTok profile. No passwords.</p>
-                <div class="inline-flex flex-col sm:flex-row items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 mb-6">
+                <div class="inline-flex flex-col sm:flex-row items-center gap-2 bg-zinc-900 border border-zinc-700 rounded-2xl px-5 py-3 mt-8 mb-4">
                     <div class="inline-flex items-center gap-2">
-                        <span id="hero-price-label" class="text-zinc-400 text-sm">Titan Report</span>
-                        <span class="text-2xl font-black text-white">$199</span>
-                        <span id="hero-price-note" class="text-xs text-violet-400 font-semibold">intro · one-time</span>
+                        <span id="hero-price-label" class="text-zinc-400 text-sm">Titan after the free score</span>
+                        <span class="text-2xl font-black text-white">$39</span>
+                        <span id="hero-price-note" class="text-xs text-violet-400 font-semibold">one-time</span>
                     </div>
                 </div>
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md mx-auto sm:max-w-none">
-                    <a href="#buy-section" id="hero-cta-titan" class="bg-violet-600 hover:bg-violet-500 text-white font-black py-4 px-8 rounded-lg text-base uppercase tracking-wide transition-all shadow-[0_0_30px_rgba(139,92,246,0.25)]">Get Titan Report — $199</a>
-                    <a href="#lite-section" id="hero-cta-lite" class="text-zinc-400 hover:text-white text-sm font-semibold py-4 px-4 underline-offset-4 hover:underline">Or start with a free Lite scan →</a>
-                </div>
-                <p id="hero-delivery" class="mt-5 text-sm text-zinc-500">PDF delivered from <span class="text-zinc-300">${supportEmail}</span> · usually within 60 minutes</p>
-                <p id="hero-trust" class="mt-2 text-sm text-zinc-600">One asset per scan · web or one Instagram, Facebook, or TikTok profile</p>
+                <p id="hero-price-anchor" class="text-sm md:text-base text-violet-300 font-bold max-w-xl mx-auto mb-3 leading-snug">Agencies charge $3,000 and take weeks. Titan is $39 and lands in ~60 minutes.</p>
+                <a href="#lite-section" id="hero-cta-lite" class="text-zinc-400 hover:text-white text-sm font-semibold underline-offset-4 hover:underline">Or start Lite from this page →</a>
+                <p id="hero-delivery" class="mt-5 text-sm text-zinc-500">Free PDF from <span class="text-zinc-300">${supportEmail}</span> · score first, email second</p>
+                <p id="hero-trust" class="mt-2 text-sm text-zinc-600">No card for Lite · Titan $39 one-time</p>
             </div>
         </section>
 
@@ -382,7 +379,7 @@ function getLandingHTML() {
                             <tr>
                                 <th id="compare-th-feature">What you get</th>
                                 <th id="compare-th-lite">Lite · Free</th>
-                                <th id="compare-th-titan" class="col-titan">Titan · $199</th>
+                                <th id="compare-th-titan" class="col-titan">Titan · $39</th>
                             </tr>
                         </thead>
                         <tbody id="compare-body">
@@ -451,7 +448,7 @@ function getLandingHTML() {
                     </details>
                     <details class="faq-item">
                         <summary id="faq-q2">What's the difference between Lite and Titan?</summary>
-                        <p id="faq-a2" class="faq-answer">Lite is free and shows 3 critical leaks plus a score snapshot. Titan is the full 11-section PDF with all 15 leaks, 15 tactical actions, buyer profiles, benchmark, and roadmap — USD $199 introductory price.</p>
+                        <p id="faq-a2" class="faq-answer">Lite is free and shows 3 critical leaks plus a score snapshot. Titan is the full 11-section PDF with all 15 leaks, 15 tactical actions, buyer profiles, benchmark, and roadmap — USD $39 introductory price.</p>
                     </details>
                     <details class="faq-item">
                         <summary id="faq-q3">How fast do I get the report?</summary>
@@ -459,7 +456,7 @@ function getLandingHTML() {
                     </details>
                     <details class="faq-item">
                         <summary id="faq-q4">What does $25/month monitoring mean?</summary>
-                        <p id="faq-a4" class="faq-answer">USD $199 is charged today for the Titan Report. Monitoring ($25/mo) starts 30 days later and renews unless you cancel via audit@predictacore.ai or the Stripe billing portal. See Terms for full details.</p>
+                        <p id="faq-a4" class="faq-answer">USD $39 is charged today for the Titan Report. Monitoring ($25/mo) starts 30 days later and renews unless you cancel via audit@predictacore.ai or the Stripe billing portal. See Terms for full details.</p>
                     </details>
                     <details class="faq-item">
                         <summary id="faq-q5">Can I scan Instagram, Facebook, or TikTok instead of a website?</summary>
@@ -500,10 +497,10 @@ function getLandingHTML() {
                         <input type="text" id="dna-url" placeholder="yourbusiness.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-violet-500 transition-all font-mono pc-input" autocomplete="off">
                         <p id="url-preview" class="text-xs text-zinc-600 text-center font-mono break-all"></p>
                         <input type="email" id="user-email" placeholder="you@email.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-violet-500 transition-all font-mono pc-input">
-                        <p id="buy-price-line" class="text-sm text-center text-zinc-400">Charged today: <strong class="text-white">USD $199</strong> · monitoring $25/mo from day 30</p>
+                        <p id="buy-price-line" class="text-sm text-center text-zinc-400">Charged today: <strong class="text-white">USD $39</strong> · monitoring $25/mo from day 30</p>
                         <p id="setup-error" class="hidden-flow text-sm text-red-400 text-center font-medium" role="alert"></p>
                         <button type="button" id="btn-titan" class="w-full bg-violet-600 text-white font-black py-4 rounded-lg hover:bg-violet-500 transition-all uppercase tracking-wide text-base disabled:opacity-60 disabled:cursor-wait shadow-[0_0_24px_rgba(139,92,246,0.3)]">
-                            Pay $199 — Get Titan Report
+                            Pay $39 — Get Titan Report
                         </button>
                         <p id="checkout-error" class="hidden-flow text-sm text-red-400 text-center" role="alert"></p>
                         <p id="cancel-badge" class="text-xs text-zinc-500 text-center leading-relaxed">By paying you agree to our <a href="/terms" class="text-violet-500 underline">Terms</a> and <a href="/privacy" class="text-violet-500 underline">Privacy Policy</a></p>
@@ -529,7 +526,7 @@ function getLandingHTML() {
                     <div class="bg-zinc-900 border border-zinc-700 p-5 rounded-lg mb-6 text-left">
                         <p id="box-text" class="text-sm text-zinc-300 leading-relaxed">These leaks are still live on your page — every day unfixed you lose visitors who were ready to buy. Titan ranks all 15 and gives you step-by-step fixes.</p>
                     </div>
-                    <button type="button" id="btn-titan-upsell" class="w-full bg-violet-600 text-white font-black py-4 rounded-lg text-base uppercase tracking-wide">Get Full Titan Report — $199</button>
+                    <button type="button" id="btn-titan-upsell" class="w-full bg-violet-600 text-white font-black py-4 rounded-lg text-base uppercase tracking-wide">Get Full Titan Report — $39</button>
                 </div>
             </div>
         </section>
@@ -537,12 +534,12 @@ function getLandingHTML() {
         <!-- LITE (secondary, hidden in ads mode) -->
         <section id="lite-section" class="py-12 px-4 md:px-6 border-t border-zinc-900">
             <div class="max-w-xl mx-auto text-center">
-                <h2 id="lite-title" class="text-xl font-bold text-white mb-2">Not ready to pay?</h2>
-                <p id="lite-sub" class="pc-body text-zinc-400 mb-6">Run a free Lite scan — 3 critical leaks + score snapshot. Best experience on our dedicated landing.</p>
-                <a href="https://predictacore.ai/ads/lite" id="btn-start" class="inline-flex w-full max-w-sm mx-auto items-center justify-center border border-zinc-600 text-zinc-200 font-bold py-3 px-6 rounded-lg hover:border-violet-500 hover:text-violet-400 transition-all text-base">
-                    Run free Lite scan
+                <h2 id="lite-title" class="text-xl font-bold text-white mb-2">Start with the free score</h2>
+                <p id="lite-sub" class="pc-body text-zinc-400 mb-6">Paste your URL — live score in about a minute, no card. Best on the dedicated Lite page.</p>
+                <a href="https://predictacore.ai/ads/lite" id="btn-start" class="inline-flex w-full max-w-sm mx-auto items-center justify-center bg-violet-600 hover:bg-violet-500 text-white font-bold py-3 px-6 rounded-lg transition-all text-base">
+                    Get my free score →
                 </a>
-                <p id="lite-eta-before" class="text-sm text-zinc-600 mt-4">Lite report by email once processing finishes (up to 60 min).</p>
+                <p id="lite-eta-before" class="text-sm text-zinc-600 mt-4">Score on screen first. Full 3-leak PDF by email after.</p>
             </div>
         </section>
 
@@ -555,12 +552,12 @@ function getLandingHTML() {
         </div>
 
         <div id="sticky-cta" class="fixed bottom-0 left-0 right-0 z-40 md:hidden p-3 glass-panel border-t border-violet-500/20">
-            <a href="#buy-section" id="sticky-btn" class="block w-full bg-violet-600 text-white font-black py-3.5 rounded-lg text-center text-sm uppercase tracking-wide">Get Titan — $199</a>
+            <a href="https://predictacore.ai/ads/lite" id="sticky-btn" class="block w-full bg-violet-600 text-white font-black py-3.5 rounded-lg text-center text-sm uppercase tracking-wide">Get my free score</a>
         </div>
 
         <footer class="py-10 bg-black border-t border-zinc-900 text-center px-4">
             <p id="footer-text" class="text-sm text-violet-500 mb-3">Consultant or agency? Join our audit partner network.</p>
-            <p id="disclaimer-text" class="text-sm text-zinc-500 leading-relaxed mb-4 max-w-xl mx-auto">PredictaCore AI audits. USD $199 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a></p>
+            <p id="disclaimer-text" class="text-sm text-zinc-500 leading-relaxed mb-4 max-w-xl mx-auto">PredictaCore AI audits. USD $39 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a></p>
             <p class="text-sm text-zinc-600">© 2026 PredictaCore · predictacore.ai</p>
         </footer>
 
@@ -579,20 +576,20 @@ function getLandingHTML() {
 
             const dictionary = {
                 en: {
-                    pageTitle: "PredictaCore | Google rankings aren't enough anymore",
-                    navTitan: "Get Titan — $199",
-                    heroBadge: "Independent page review · no login",
-                    heroTitle: "Google rankings <span class='text-violet-400'>aren't enough</span> anymore",
-                    heroValue: "More customers ask AI who to buy from. If your page leaks trust, clarity, or findability — you lose the sale. PredictaCore emails a clear PDF: ranked conversion leaks, SEO + AI visibility, and a 21-day fix plan.",
-                    heroAsk: "Share your public website or one Instagram, Facebook, or TikTok profile. No passwords.",
-                    heroPriceLabel: "Titan Report",
-                    heroPriceNote: "intro · one-time",
-                    heroCtaTitan: "Get Titan Report — $199",
-                    heroCtaMid: "Get Titan Report — $199",
-                    heroCtaLite: "Or start with a free Lite scan →",
-                    heroPriceAnchor: "Don't pay $3,000 and wait weeks for an agency report — yours arrives in ~60 minutes. Hard scores, ranked leaks, and fixes only.",
-                    heroDelivery: "PDF delivered from ${supportEmail} · usually within 60 minutes",
-                    heroTrust: "One asset per scan · web or one Instagram, Facebook, or TikTok profile",
+                    pageTitle: "PredictaCore | Free conversion score in 60 seconds",
+                    navTitan: "Get my free score",
+                    heroBadge: "Free conversion score · no card · ~1 min",
+                    heroTitle: "Get your conversion score in <span class='text-violet-400'>60 seconds</span>",
+                    heroValue: "Paste your store URL. See your score and #1 revenue leak on this page — before email. Full 3-leak PDF is free. Titan is $39 if you want all 15 fixes.",
+                    heroAsk: "Shopify, DTC, or any public page. No passwords. No credit card for the free score.",
+                    heroPriceLabel: "Titan after the free score",
+                    heroPriceNote: "one-time",
+                    heroCtaTitan: "Full Titan PDF — $39",
+                    heroCtaMid: "Get my free score →",
+                    heroCtaLite: "Or start Lite from this page →",
+                    heroPriceAnchor: "Agencies charge $3,000 and take weeks. Titan is $39 and lands in ~60 minutes.",
+                    heroDelivery: "Free PDF from ${supportEmail} · score first, email second",
+                    heroTrust: "No card for Lite · Titan $39 one-time",
                     pdfMockTag: "Forensic conversion report",
                     pdfMockTitle: "Titan Intelligence",
                     pdfMockMeta: "${TITAN_REPORT_PAGE_COUNT}-page PDF · 11 sections · email attachment",
@@ -605,7 +602,7 @@ function getLandingHTML() {
                     compareSub: "Lite is a free teaser. Titan is the full ${TITAN_REPORT_PAGE_COUNT}-page report that shows every reason people leave and what to do about it.",
                     compareThFeature: "What you get",
                     compareThLite: "Lite · Free",
-                    compareThTitan: "Titan · $199",
+                    compareThTitan: "Titan · $39",
                     compareBody: '<tr><td>Conversion problems found</td><td class="compare-partial">3 only</td><td class="col-titan compare-yes">All 15 ranked</td></tr><tr><td>Recommended fixes</td><td class="compare-no">Summary only</td><td class="col-titan compare-yes">15 step-by-step actions</td></tr><tr><td>Google SEO scorecard</td><td class="compare-partial">Snapshot</td><td class="col-titan compare-yes">Full forensic breakdown</td></tr><tr><td>AI visibility (ChatGPT, etc.)</td><td class="compare-partial">Score only</td><td class="col-titan compare-yes">Engine-by-engine verdict</td></tr><tr><td>Competitor comparison</td><td class="compare-no">—</td><td class="col-titan compare-yes">Included</td></tr><tr><td>Buyer psychology profiles</td><td class="compare-partial">Brief</td><td class="col-titan compare-yes">4 profiles by industry</td></tr><tr><td>Desktop + mobile screenshots</td><td class="compare-no">—</td><td class="col-titan compare-yes">Included</td></tr><tr><td>21-day action plan</td><td class="compare-no">—</td><td class="col-titan compare-yes">Included</td></tr><tr><td>Report length</td><td class="compare-partial">Short teaser</td><td class="col-titan compare-yes">${TITAN_REPORT_PAGE_COUNT} pages</td></tr>',
                     compareFoot: "Most owners start with Lite, then upgrade when they see how much is still hidden.",
                     reviewsTitle: "Trusted by shop owners & creators",
@@ -653,11 +650,11 @@ function getLandingHTML() {
                     faqQ1: "Do I need to give you analytics or backend access?",
                     faqA1: "No. We only need your public URL — website or one social profile. We scan exactly what a stranger sees before they buy.",
                     faqQ2: "What's the difference between Lite and Titan?",
-                    faqA2: "Lite is free and shows 3 critical leaks plus a score snapshot. Titan is the full 11-section PDF with all 15 leaks, 15 tactical actions, buyer profiles, benchmark, and roadmap — USD $199 introductory price.",
+                    faqA2: "Lite is free and shows 3 critical leaks plus a score snapshot. Titan is the full 11-section PDF with all 15 leaks, 15 tactical actions, buyer profiles, benchmark, and roadmap — USD $39 introductory price.",
                     faqQ3: "How fast do I get the report?",
                     faqA3: "Most reports arrive within 60 minutes by email. Check spam and Promotions. Titan delivery starts right after payment; Lite after your free scan completes.",
                     faqQ4: "What does $25/month monitoring mean?",
-                    faqA4: "USD $199 is charged today for the Titan Report. Monitoring ($25/mo) starts 30 days later and renews unless you cancel via audit@predictacore.ai or the Stripe billing portal. See Terms for full details.",
+                    faqA4: "USD $39 is charged today for the Titan Report. Monitoring ($25/mo) starts 30 days later and renews unless you cancel via audit@predictacore.ai or the Stripe billing portal. See Terms for full details.",
                     faqQ5: "Can I scan Instagram, Facebook, or TikTok instead of a website?",
                     faqA5: "Yes — pick one network and enter your @handle. One asset per scan: either your website or a single public social profile.",
                     buyTitle: "Get your Titan Report",
@@ -667,15 +664,15 @@ function getLandingHTML() {
                     assetWeb: "Website", assetInstagram: "Instagram", assetFacebook: "Facebook", assetTiktok: "TikTok",
                     phWeb: "yourbusiness.com", phInstagram: "yourbrand", phFacebook: "pagename", phTiktok: "yourbrand",
                     urlPreviewPrefix: "We'll scan:",
-                    buyPriceLine: "Charged today: <strong class='text-white'>USD $199</strong> · monitoring $25/mo from day 30",
-                    btnTitan: "Pay $199 — Get Titan Report",
-                    btnTitanUpsell: "Get Full Titan Report — $199",
+                    buyPriceLine: "Charged today: <strong class='text-white'>USD $39</strong> · monitoring $25/mo from day 30",
+                    btnTitan: "Pay $39 — Get Titan Report",
+                    btnTitanUpsell: "Get Full Titan Report — $39",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-violet-500 underline">Terms</a> and <a href="/privacy" class="text-violet-500 underline">Privacy Policy</a>',
                     titanEtaBefore: "PDF may take up to 60 minutes after payment. Statement: PREDICTACORE.",
-                    liteTitle: "Not ready to pay?",
-                    liteSub: "Run a free Lite scan — 3 critical leaks + score snapshot. Same form above; click below instead.",
-                    btnStart: "Run free Lite scan",
-                    liteEtaBefore: "Lite report by email once processing finishes (up to 60 min).",
+                    liteTitle: "Start with the free score",
+                    liteSub: "Paste your URL — live score in about a minute, no card. Best on the dedicated Lite page.",
+                    btnStart: "Get my free score →",
+                    liteEtaBefore: "Score on screen first. Full 3-leak PDF by email after.",
                     logInit: ">> INITIALIZING PREDICTACORE CORE...",
                     upT: "Scan complete", upSt: "Successfully sent to",
                     boxText: "These leaks are still live on your page — every day unfixed you lose visitors who were ready to buy. Titan ranks all 15 and gives you step-by-step fixes.",
@@ -685,7 +682,7 @@ function getLandingHTML() {
                     liteQueued: "Your Lite report is being generated and will arrive by email.",
                     liteEtaAfter: "Check inbox and spam — delivery up to 60 minutes.",
                     footerText: "Consultant or agency? Join our audit partner network.",
-                    disclaimerText: 'PredictaCore AI audits. USD $199 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a>',
+                    disclaimerText: 'PredictaCore AI audits. USD $39 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a>',
                     checkoutLoading: "Opening secure checkout…",
                     checkoutOverlayTitle: "Secure checkout",
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
@@ -697,23 +694,23 @@ function getLandingHTML() {
                     useSocialPicker: "For Instagram, Facebook, or TikTok, select that network above.",
                     scanError: "Could not start the scan. Try again in a moment.",
                     phEmail: "you@email.com",
-                    stickyBtn: "Get Titan — $199"
+                    stickyBtn: "Get my free score"
                 },
                 es: {
-                    pageTitle: "PredictaCore | El ranking en Google ya no basta",
-                    navTitan: "Obtener Titán — $199",
-                    heroBadge: "Revisión independiente de tu página · sin login",
-                    heroTitle: "El ranking en Google <span class='text-violet-400'>ya no basta</span>",
-                    heroValue: "Más clientes le preguntan a la IA a quién comprar. Si tu página pierde confianza, claridad o visibilidad — pierdes la venta. PredictaCore te envía un PDF claro: fugas de conversión rankeadas, SEO + visibilidad en IA, y un plan de 21 días.",
-                    heroAsk: "Comparte tu web pública o un perfil de Instagram, Facebook o TikTok. Sin contraseñas.",
-                    heroPriceLabel: "Reporte Titán",
-                    heroPriceNote: "intro · pago único",
-                    heroCtaTitan: "Obtener Reporte Titán — $199",
-                    heroCtaMid: "Obtener Reporte Titán — $199",
-                    heroCtaLite: "O empezar con escaneo Lite gratis →",
-                    heroPriceAnchor: "No pagues $3,000 ni esperes semanas por un reporte de agencia — el tuyo llega en ~60 minutos. Datos duros, fugas rankeadas y acciones concretas.",
-                    heroDelivery: "PDF enviado desde ${supportEmail} · normalmente en 60 minutos",
-                    heroTrust: "Un activo por escaneo · web o un perfil de Instagram, Facebook o TikTok",
+                    pageTitle: "PredictaCore | Score de conversión gratis en 60 segundos",
+                    navTitan: "Obtener mi score gratis",
+                    heroBadge: "Score gratis · sin tarjeta · ~1 min",
+                    heroTitle: "Obtén tu score de conversión en <span class='text-violet-400'>60 segundos</span>",
+                    heroValue: "Pega la URL de tu tienda. Ves el score y la fuga #1 en esta página — antes del email. El PDF de 3 fugas es gratis. Titán es $39 si quieres las 15 correcciones.",
+                    heroAsk: "Shopify, DTC o cualquier página pública. Sin contraseñas. Sin tarjeta para el score gratis.",
+                    heroPriceLabel: "Titán después del score gratis",
+                    heroPriceNote: "pago único",
+                    heroCtaTitan: "PDF Titán completo — $39",
+                    heroCtaMid: "Obtener mi score gratis →",
+                    heroCtaLite: "O empezar Lite en esta página →",
+                    heroPriceAnchor: "Las agencias cobran $3,000 y tardan semanas. Titán es $39 y llega en ~60 minutos.",
+                    heroDelivery: "PDF gratis desde ${supportEmail} · primero el score, luego el email",
+                    heroTrust: "Sin tarjeta en Lite · Titán $39 pago único",
                     pdfMockTag: "Reporte forense de conversión",
                     pdfMockTitle: "Inteligencia Titán",
                     pdfMockMeta: "PDF de ${TITAN_REPORT_PAGE_COUNT} páginas · 11 secciones · adjunto por email",
@@ -726,7 +723,7 @@ function getLandingHTML() {
                     compareSub: "Lite es un avance gratis. Titán es el reporte completo de ${TITAN_REPORT_PAGE_COUNT} páginas con cada razón por la que la gente se va y qué hacer al respecto.",
                     compareThFeature: "Qué incluye",
                     compareThLite: "Lite · Gratis",
-                    compareThTitan: "Titán · $199",
+                    compareThTitan: "Titán · $39",
                     compareBody: '<tr><td>Problemas de conversión detectados</td><td class="compare-partial">Solo 3</td><td class="col-titan compare-yes">Los 15 rankeados</td></tr><tr><td>Correcciones recomendadas</td><td class="compare-no">Solo resumen</td><td class="col-titan compare-yes">15 acciones paso a paso</td></tr><tr><td>Scorecard SEO Google</td><td class="compare-partial">Snapshot</td><td class="col-titan compare-yes">Desglose forense completo</td></tr><tr><td>Visibilidad en IAs (ChatGPT, etc.)</td><td class="compare-partial">Solo score</td><td class="col-titan compare-yes">Veredicto motor por motor</td></tr><tr><td>Comparativa con competencia</td><td class="compare-no">—</td><td class="col-titan compare-yes">Incluida</td></tr><tr><td>Perfiles de psicología de comprador</td><td class="compare-partial">Breve</td><td class="col-titan compare-yes">4 perfiles por giro</td></tr><tr><td>Capturas desktop + móvil</td><td class="compare-no">—</td><td class="col-titan compare-yes">Incluidas</td></tr><tr><td>Plan de acción 21 días</td><td class="compare-no">—</td><td class="col-titan compare-yes">Incluido</td></tr><tr><td>Extensión del reporte</td><td class="compare-partial">Teaser corto</td><td class="col-titan compare-yes">${TITAN_REPORT_PAGE_COUNT} páginas</td></tr>',
                     compareFoot: "La mayoría empieza con Lite y sube a Titán cuando ve cuánto falta por descubrir.",
                     reviewsTitle: "Confianza de tiendas y creadores",
@@ -774,11 +771,11 @@ function getLandingHTML() {
                     faqQ1: "¿Necesito dar analytics o acceso al backend?",
                     faqA1: "No. Solo tu URL pública — web o un perfil social. Escaneamos exactamente lo que ve un desconocido antes de comprar.",
                     faqQ2: "¿Qué diferencia hay entre Lite y Titán?",
-                    faqA2: "Lite es gratis: 3 fugas críticas y snapshot de scores. Titán es el PDF completo de 11 secciones con las 15 fugas, 15 acciones, perfiles, benchmark y roadmap — USD $199 precio introductorio.",
+                    faqA2: "Lite es gratis: 3 fugas críticas y snapshot de scores. Titán es el PDF completo de 11 secciones con las 15 fugas, 15 acciones, perfiles, benchmark y roadmap — USD $39 precio introductorio.",
                     faqQ3: "¿Qué tan rápido llega el reporte?",
                     faqA3: "La mayoría llega en 60 minutos por email. Revisa spam y Promociones. Titán tras el pago; Lite tras completar el escaneo gratis.",
                     faqQ4: "¿Qué significa el monitoreo de $25/mes?",
-                    faqA4: "Hoy se cobra USD $199 por el Reporte Titán. El monitoreo ($25/mes) empieza a los 30 días y renueva salvo cancelación en audit@predictacore.ai o portal Stripe. Ver Términos.",
+                    faqA4: "Hoy se cobra USD $39 por el Reporte Titán. El monitoreo ($25/mes) empieza a los 30 días y renueva salvo cancelación en audit@predictacore.ai o portal Stripe. Ver Términos.",
                     faqQ5: "¿Puedo escanear Instagram, Facebook o TikTok?",
                     faqA5: "Sí — elige una red e ingresa tu @usuario. Un activo por escaneo: tu web o un solo perfil social público.",
                     buyTitle: "Obtén tu Reporte Titán",
@@ -788,15 +785,15 @@ function getLandingHTML() {
                     assetWeb: "Sitio web", assetInstagram: "Instagram", assetFacebook: "Facebook", assetTiktok: "TikTok",
                     phWeb: "tunegocio.com", phInstagram: "tumarca", phFacebook: "nombrepagina", phTiktok: "tumarca",
                     urlPreviewPrefix: "Escanearemos:",
-                    buyPriceLine: "Cobro hoy: <strong class='text-white'>USD $199</strong> · monitoreo $25/mes desde día 30",
-                    btnTitan: "Pagar $199 — Reporte Titán",
-                    btnTitanUpsell: "Reporte Titán completo — $199",
+                    buyPriceLine: "Cobro hoy: <strong class='text-white'>USD $39</strong> · monitoreo $25/mes desde día 30",
+                    btnTitan: "Pagar $39 — Reporte Titán",
+                    btnTitanUpsell: "Reporte Titán completo — $39",
                     cancelBadge: 'Al pagar aceptas nuestros <a href="/terms" class="text-violet-500 underline">Términos</a> y <a href="/privacy" class="text-violet-500 underline">Privacidad</a>',
                     titanEtaBefore: "El PDF puede tardar hasta 60 min tras el pago. Estado de cuenta: PREDICTACORE.",
-                    liteTitle: "¿Aún no quieres pagar?",
-                    liteSub: "Escaneo Lite gratis — 3 fugas críticas + snapshot. Mismo formulario arriba; pulsa abajo.",
-                    btnStart: "Escaneo Lite gratis",
-                    liteEtaBefore: "Reporte Lite por email al terminar (hasta 60 min).",
+                    liteTitle: "Empieza con el score gratis",
+                    liteSub: "Pega tu URL — score en vivo en un minuto, sin tarjeta. Mejor en la landing Lite.",
+                    btnStart: "Obtener mi score gratis →",
+                    liteEtaBefore: "Score en pantalla primero. PDF de 3 fugas por email después.",
                     logInit: ">> INICIALIZANDO PREDICTACORE CORE...",
                     upT: "Escaneo completo", upSt: "Enviado correctamente a",
                     boxText: "Estas fugas siguen activas en tu página — cada día sin corregir pierdes visitas listas para comprar. Titán rankea las 15 y te da correcciones paso a paso.",
@@ -806,7 +803,7 @@ function getLandingHTML() {
                     liteQueued: "Tu reporte Lite se está generando y llegará por email.",
                     liteEtaAfter: "Revisa bandeja y spam — entrega hasta 60 min.",
                     footerText: "¿Consultor o agencia? Únete a nuestra red de partners.",
-                    disclaimerText: 'Auditorías PredictaCore AI. USD $199 intro hoy. Monitoreo $25/mes desde día 30; cancelar en audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Términos</a> · <a href="/privacy" class="text-violet-500 underline">Privacidad</a>',
+                    disclaimerText: 'Auditorías PredictaCore AI. USD $39 intro hoy. Monitoreo $25/mes desde día 30; cancelar en audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Términos</a> · <a href="/privacy" class="text-violet-500 underline">Privacidad</a>',
                     checkoutLoading: "Abriendo checkout seguro…",
                     checkoutOverlayTitle: "Checkout seguro",
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
@@ -818,7 +815,7 @@ function getLandingHTML() {
                     useSocialPicker: "Para Instagram, Facebook o TikTok, selecciona esa red arriba.",
                     scanError: "No se pudo iniciar el escaneo. Intenta en un momento.",
                     phEmail: "tu@correo.com",
-                    stickyBtn: "Titán — $199"
+                    stickyBtn: "Obtener mi score gratis"
                 }
             };
 
@@ -1151,7 +1148,7 @@ function getLandingHTML() {
                 btn.disabled = true;
                 btn.innerText = d.checkoutLoading;
                 showCheckoutOverlay();
-                pcPixel('InitiateCheckout', { value: 199, currency: 'USD', content_name: 'Titan Report' });
+                pcPixel('InitiateCheckout', { value: 39, currency: 'USD', content_name: 'Titan Report' });
 
                 try {
                     const res = await fetch('/start', {

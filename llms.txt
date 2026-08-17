@@ -17,7 +17,7 @@
 
 ## Products
 - **Lite** (free): 3 critical conversion leaks + score snapshot by email — https://predictacore.ai/ads/lite
-- **Titan** ($199 intro): 17-page PDF, 15 ranked leaks, 15 fixes, SEO + AI visibility, 21-day plan — https://predictacore.ai
+- **Titan** ($39): 17-page PDF, 15 ranked leaks, 15 fixes, SEO + AI visibility, 21-day plan — https://predictacore.ai
 - **Predictacore Ads**: Meta campaign intelligence and launch tooling — https://predictacore.ai/ads
 - **Software / app design**: free App Blueprint then custom build — https://predictacore.ai/ads/software
 - **Clinic Blueprint sample**: fictional Rivera Wellness agenda — https://predictacore.ai/ads/software/blueprint/clinic-agenda
@@ -41,7 +41,7 @@ Q: Do I need to give backend access?
 A: No. Only a public URL or social handle.
 
 Q: What is the difference between Lite and Titan?
-A: Lite is free and shows 3 leaks. Titan is the full 11-section forensic PDF with 15 leaks, 15 fixes, and a 21-day plan.
+A: Lite is free: live conversion score on screen plus a 3-leak PDF by email. Titan is $39 one-time for the full 11-section forensic PDF with 15 leaks, 15 fixes, and a 21-day plan.
 
 Q: Does PredictaCore design apps?
 A: Yes. PredictaCore offers custom software and app design for clinics, field teams, agencies, and retail. Start with a free App Blueprint at https://predictacore.ai/ads/software.

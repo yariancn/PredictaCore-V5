@@ -40,7 +40,11 @@ function getResendFrom() {
 }
 
 /** Neutral subscription cancellation disclosure (legal notice — not a marketing CTA). */
-function getSubscriptionCancellationNotice(lang = 'en', monitoringUsd = 25, titanUsd = 199) {
+const TITAN_PRICE_USD = 39;
+const TITAN_PRICE_CENTS = TITAN_PRICE_USD * 100;
+const MONITORING_PRICE_USD = 25;
+
+function getSubscriptionCancellationNotice(lang = 'en', monitoringUsd = MONITORING_PRICE_USD, titanUsd = TITAN_PRICE_USD) {
     const support = getSupportEmail();
     const site = publicSiteUrl();
     if (lang === 'es' || String(lang).startsWith('es')) {
@@ -57,7 +61,7 @@ function getSubscriptionCancellationNotice(lang = 'en', monitoringUsd = 25, tita
         + `The Titan Report (USD $${titanUsd}) is a final sale. See <a href="${site}/terms" class="text-violet-400 hover:underline">Terms</a>.`;
 }
 
-function getSubscriptionCancellationPlain(lang = 'en', monitoringUsd = 25, titanUsd = 199) {
+function getSubscriptionCancellationPlain(lang = 'en', monitoringUsd = MONITORING_PRICE_USD, titanUsd = TITAN_PRICE_USD) {
     const support = getSupportEmail();
     const site = publicSiteUrl();
     if (lang === 'es' || String(lang).startsWith('es')) {
@@ -67,7 +71,7 @@ function getSubscriptionCancellationPlain(lang = 'en', monitoringUsd = 25, titan
 }
 
 /** Inline HTML block for report / transactional emails (Resend). */
-function getSubscriptionCancellationEmailHtml(lang = 'en', monitoringUsd = 25, titanUsd = 199, portalUrl = null) {
+function getSubscriptionCancellationEmailHtml(lang = 'en', monitoringUsd = MONITORING_PRICE_USD, titanUsd = TITAN_PRICE_USD, portalUrl = null) {
     const support = getSupportEmail();
     const site = publicSiteUrl();
     const es = lang === 'es' || String(lang).startsWith('es');
@@ -387,4 +391,7 @@ module.exports = {
     getSubscriptionCancellationEmailHtml,
     buildTitanUpgradeUrl,
     TITAN_REPORT_PAGE_COUNT,
+    TITAN_PRICE_USD,
+    TITAN_PRICE_CENTS,
+    MONITORING_PRICE_USD,
 };
