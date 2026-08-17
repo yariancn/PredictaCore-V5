@@ -455,8 +455,8 @@ function getLandingHTML() {
                         <p id="faq-a3" class="faq-answer">Most reports arrive within 60 minutes by email. Check spam and Promotions. Titan delivery starts right after payment; Lite after your free scan completes.</p>
                     </details>
                     <details class="faq-item">
-                        <summary id="faq-q4">What does $25/month monitoring mean?</summary>
-                        <p id="faq-a4" class="faq-answer">USD $39 is charged today for the Titan Report. Monitoring ($25/mo) starts 30 days later and renews unless you cancel via audit@predictacore.ai or the Stripe billing portal. See Terms for full details.</p>
+                        <summary id="faq-q4">Is there a monthly subscription?</summary>
+                        <p id="faq-a4" class="faq-answer">No — Titan is USD $39 one-time. Monthly monitoring ($25/mo) is optional: only if you check the box at checkout. If you do, it starts on day 30 and you can cancel via audit@predictacore.ai or the Stripe billing portal.</p>
                     </details>
                     <details class="faq-item">
                         <summary id="faq-q5">Can I scan Instagram, Facebook, or TikTok instead of a website?</summary>
@@ -497,7 +497,11 @@ function getLandingHTML() {
                         <input type="text" id="dna-url" placeholder="yourbusiness.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-violet-500 transition-all font-mono pc-input" autocomplete="off">
                         <p id="url-preview" class="text-xs text-zinc-600 text-center font-mono break-all"></p>
                         <input type="email" id="user-email" placeholder="you@email.com" class="w-full bg-black border border-zinc-700 rounded-lg p-4 text-white focus:outline-none focus:border-violet-500 transition-all font-mono pc-input">
-                        <p id="buy-price-line" class="text-sm text-center text-zinc-400">Charged today: <strong class="text-white">USD $39</strong> · monitoring $25/mo from day 30</p>
+                        <p id="buy-price-line" class="text-sm text-center text-zinc-400">Charged today: <strong class="text-white">USD $39</strong> — one-time, no subscription</p>
+                        <label class="flex items-start gap-3 text-left text-sm text-zinc-400 cursor-pointer select-none">
+                            <input type="checkbox" id="opt-monitoring" class="mt-1 accent-violet-500 shrink-0">
+                            <span id="opt-monitoring-label">Optional: add monthly monitoring $25/mo starting day 30. Leave unchecked to pay $39 today only.</span>
+                        </label>
                         <p id="setup-error" class="hidden-flow text-sm text-red-400 text-center font-medium" role="alert"></p>
                         <button type="button" id="btn-titan" class="w-full bg-violet-600 text-white font-black py-4 rounded-lg hover:bg-violet-500 transition-all uppercase tracking-wide text-base disabled:opacity-60 disabled:cursor-wait shadow-[0_0_24px_rgba(139,92,246,0.3)]">
                             Pay $39 — Get Titan Report
@@ -557,7 +561,7 @@ function getLandingHTML() {
 
         <footer class="py-10 bg-black border-t border-zinc-900 text-center px-4">
             <p id="footer-text" class="text-sm text-violet-500 mb-3">Consultant or agency? Join our audit partner network.</p>
-            <p id="disclaimer-text" class="text-sm text-zinc-500 leading-relaxed mb-4 max-w-xl mx-auto">PredictaCore AI audits. USD $39 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a></p>
+            <p id="disclaimer-text" class="text-sm text-zinc-500 leading-relaxed mb-4 max-w-xl mx-auto">PredictaCore AI audits. USD $39 one-time intro. Monthly monitoring $25 is optional at checkout. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a></p>
             <p class="text-sm text-zinc-600">© 2026 PredictaCore · predictacore.ai</p>
         </footer>
 
@@ -653,8 +657,8 @@ function getLandingHTML() {
                     faqA2: "Lite is free and shows 3 critical leaks plus a score snapshot. Titan is the full 11-section PDF with all 15 leaks, 15 tactical actions, buyer profiles, benchmark, and roadmap — USD $39 introductory price.",
                     faqQ3: "How fast do I get the report?",
                     faqA3: "Most reports arrive within 60 minutes by email. Check spam and Promotions. Titan delivery starts right after payment; Lite after your free scan completes.",
-                    faqQ4: "What does $25/month monitoring mean?",
-                    faqA4: "USD $39 is charged today for the Titan Report. Monitoring ($25/mo) starts 30 days later and renews unless you cancel via audit@predictacore.ai or the Stripe billing portal. See Terms for full details.",
+                    faqQ4: "Is there a monthly subscription?",
+                    faqA4: "No — Titan is USD $39 one-time. Monthly monitoring ($25/mo) is optional: only if you check the box at checkout. If you do, it starts on day 30 and you can cancel via audit@predictacore.ai or the Stripe billing portal.",
                     faqQ5: "Can I scan Instagram, Facebook, or TikTok instead of a website?",
                     faqA5: "Yes — pick one network and enter your @handle. One asset per scan: either your website or a single public social profile.",
                     buyTitle: "Get your Titan Report",
@@ -664,7 +668,8 @@ function getLandingHTML() {
                     assetWeb: "Website", assetInstagram: "Instagram", assetFacebook: "Facebook", assetTiktok: "TikTok",
                     phWeb: "yourbusiness.com", phInstagram: "yourbrand", phFacebook: "pagename", phTiktok: "yourbrand",
                     urlPreviewPrefix: "We'll scan:",
-                    buyPriceLine: "Charged today: <strong class='text-white'>USD $39</strong> · monitoring $25/mo from day 30",
+                    buyPriceLine: "Charged today: <strong class='text-white'>USD $39</strong> — one-time, no subscription",
+                    optMonitoringLabel: "Optional: add monthly monitoring $25/mo starting day 30. Leave unchecked to pay $39 today only.",
                     btnTitan: "Pay $39 — Get Titan Report",
                     btnTitanUpsell: "Get Full Titan Report — $39",
                     cancelBadge: 'By paying you agree to our <a href="/terms" class="text-violet-500 underline">Terms</a> and <a href="/privacy" class="text-violet-500 underline">Privacy Policy</a>',
@@ -682,7 +687,7 @@ function getLandingHTML() {
                     liteQueued: "Your Lite report is being generated and will arrive by email.",
                     liteEtaAfter: "Check inbox and spam — delivery up to 60 minutes.",
                     footerText: "Consultant or agency? Join our audit partner network.",
-                    disclaimerText: 'PredictaCore AI audits. USD $39 intro today. Monitoring $25/mo from day 30; cancel via audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a>',
+                    disclaimerText: 'PredictaCore AI audits. USD $39 one-time intro. Monthly monitoring $25 is optional at checkout. <a href="/terms" class="text-violet-500 underline">Terms</a> · <a href="/privacy" class="text-violet-500 underline">Privacy</a>',
                     checkoutLoading: "Opening secure checkout…",
                     checkoutOverlayTitle: "Secure checkout",
                     checkoutOverlaySub: "Redirecting to Stripe. Do not close this window.",
@@ -774,8 +779,8 @@ function getLandingHTML() {
                     faqA2: "Lite es gratis: 3 fugas críticas y snapshot de scores. Titán es el PDF completo de 11 secciones con las 15 fugas, 15 acciones, perfiles, benchmark y roadmap — USD $39 precio introductorio.",
                     faqQ3: "¿Qué tan rápido llega el reporte?",
                     faqA3: "La mayoría llega en 60 minutos por email. Revisa spam y Promociones. Titán tras el pago; Lite tras completar el escaneo gratis.",
-                    faqQ4: "¿Qué significa el monitoreo de $25/mes?",
-                    faqA4: "Hoy se cobra USD $39 por el Reporte Titán. El monitoreo ($25/mes) empieza a los 30 días y renueva salvo cancelación en audit@predictacore.ai o portal Stripe. Ver Términos.",
+                    faqQ4: "¿Hay una suscripción mensual?",
+                    faqA4: "No — Titán es USD $39 de un solo pago. El monitoreo mensual ($25/mes) es opcional: solo si marcas la casilla en el checkout. Si lo haces, empieza el día 30 y puedes cancelar en audit@predictacore.ai o el portal Stripe.",
                     faqQ5: "¿Puedo escanear Instagram, Facebook o TikTok?",
                     faqA5: "Sí — elige una red e ingresa tu @usuario. Un activo por escaneo: tu web o un solo perfil social público.",
                     buyTitle: "Obtén tu Reporte Titán",
@@ -785,7 +790,8 @@ function getLandingHTML() {
                     assetWeb: "Sitio web", assetInstagram: "Instagram", assetFacebook: "Facebook", assetTiktok: "TikTok",
                     phWeb: "tunegocio.com", phInstagram: "tumarca", phFacebook: "nombrepagina", phTiktok: "tumarca",
                     urlPreviewPrefix: "Escanearemos:",
-                    buyPriceLine: "Cobro hoy: <strong class='text-white'>USD $39</strong> · monitoreo $25/mes desde día 30",
+                    buyPriceLine: "Cobro hoy: <strong class='text-white'>USD $39</strong> — pago único, sin suscripción",
+                    optMonitoringLabel: "Opcional: añadir monitoreo mensual $25/mes desde el día 30. Si no marcas, hoy solo pagas $39.",
                     btnTitan: "Pagar $39 — Reporte Titán",
                     btnTitanUpsell: "Reporte Titán completo — $39",
                     cancelBadge: 'Al pagar aceptas nuestros <a href="/terms" class="text-violet-500 underline">Términos</a> y <a href="/privacy" class="text-violet-500 underline">Privacidad</a>',
@@ -803,7 +809,7 @@ function getLandingHTML() {
                     liteQueued: "Tu reporte Lite se está generando y llegará por email.",
                     liteEtaAfter: "Revisa bandeja y spam — entrega hasta 60 min.",
                     footerText: "¿Consultor o agencia? Únete a nuestra red de partners.",
-                    disclaimerText: 'Auditorías PredictaCore AI. USD $39 intro hoy. Monitoreo $25/mes desde día 30; cancelar en audit@predictacore.ai. <a href="/terms" class="text-violet-500 underline">Términos</a> · <a href="/privacy" class="text-violet-500 underline">Privacidad</a>',
+                    disclaimerText: 'Auditorías PredictaCore AI. USD $39 intro, pago único. El monitoreo de $25/mes es opcional en el checkout. <a href="/terms" class="text-violet-500 underline">Términos</a> · <a href="/privacy" class="text-violet-500 underline">Privacidad</a>',
                     checkoutLoading: "Abriendo checkout seguro…",
                     checkoutOverlayTitle: "Checkout seguro",
                     checkoutOverlaySub: "Redirigiendo a Stripe. No cierres esta ventana.",
@@ -887,6 +893,8 @@ function getLandingHTML() {
                 if (d.sampleSeoRows) document.getElementById('sample-seo-rows').innerHTML = d.sampleSeoRows;
                 if (d.sampleAiRows) document.getElementById('sample-ai-rows').innerHTML = d.sampleAiRows;
                 document.getElementById('buy-price-line').innerHTML = d.buyPriceLine;
+                const optLabel = document.getElementById('opt-monitoring-label');
+                if (optLabel) optLabel.innerText = d.optMonitoringLabel;
                 document.getElementById('cancel-badge').innerHTML = d.cancelBadge;
                 document.getElementById('disclaimer-text').innerHTML = d.disclaimerText;
                 for (let i = 1; i <= 6; i++) {
@@ -1154,7 +1162,13 @@ function getLandingHTML() {
                     const res = await fetch('/start', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email, refCode, lang: currentLang, ...payload }),
+                        body: JSON.stringify({
+                            email,
+                            refCode,
+                            lang: currentLang,
+                            monitoring: !!document.getElementById('opt-monitoring')?.checked,
+                            ...payload,
+                        }),
                     });
                     const data = await res.json().catch(function() { return {}; });
 

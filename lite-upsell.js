@@ -3,12 +3,8 @@
  */
 
 const { parseSimulationFindings } = require('./fugas-builder');
-const { TITAN_PRICE_USD, MONITORING_PRICE_USD } = require('./stripe-predictacore');
-const {
-    buildTitanUpgradeUrl,
-    getSubscriptionCancellationEmailHtml,
-    getSubscriptionCancellationPlain,
-} = require('./brand');
+const { TITAN_PRICE_USD } = require('./stripe-predictacore');
+const { buildTitanUpgradeUrl } = require('./brand');
 
 function stripMarkdownInline(text) {
     return String(text || '')
@@ -129,8 +125,6 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
     const es = lang === 'es';
     const metricsLine = formatMetricsLine(metrics, lang);
     const ctaLabel = es ? `Pagar $${TITAN_PRICE_USD} — Reporte Titán` : `Pay $${TITAN_PRICE_USD} — Titan Report`;
-    const cancelHtml = getSubscriptionCancellationEmailHtml(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
-    const cancelPlain = getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
 
     let subject;
     let headline;
@@ -189,7 +183,6 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
   ${whyTitan}
   <p style="margin:28px 0;text-align:center;"><a href="${titanUrl}" style="background:#8b5cf6;color:#fff;padding:14px 28px;text-decoration:none;font-weight:900;border-radius:6px;display:inline-block;font-size:14px;text-transform:uppercase;letter-spacing:0.04em;">${ctaLabel}</a></p>
   <p style="font-size:13px;color:#71717a;text-align:center;margin:0 0 8px 0;">${es ? 'Tu correo y URL ya están listos — un clic para pagar.' : 'Your email and URL are pre-filled — one click to pay.'}</p>
-  ${cancelHtml}
   <p style="font-size:11px;color:#71717a;text-align:center;margin-top:16px;">PredictaCore · predictacore.ai</p>`;
 
     const text = [
@@ -200,8 +193,6 @@ function getLiteEmailContent({ variant, lang, targetUrl, titanUrl, leaks, metric
         leaksTextBlock(leaks, lang),
         '',
         es ? `Obtener Titán: ${titanUrl}` : `Get Titan: ${titanUrl}`,
-        '',
-        cancelPlain,
     ].join('\n');
 
     const preheader = variant === 'day1'

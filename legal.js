@@ -51,12 +51,12 @@ function getTerminosHTML() {
         <div><h2 class="text-white font-bold mb-2">2. Service</h2>
             <p>AI-powered website and digital profile audits delivered as PDF reports. We do not edit your website or guarantee revenue outcomes.</p></div>
         <div><h2 class="text-white font-bold mb-2">3. Pricing</h2>
-            <p><strong>Titan Report:</strong> USD $${TITAN_PRICE_USD}.00 — introductory price, charged at purchase.</p>
-            <p class="mt-2"><strong>Monthly monitoring (subscription):</strong> USD $${MONITORING_PRICE_USD}.00/month — starts 30 days after purchase.</p></div>
+            <p><strong>Titan Report:</strong> USD $${TITAN_PRICE_USD}.00 — introductory price, one-time charge at purchase.</p>
+            <p class="mt-2"><strong>Monthly monitoring (optional add-on):</strong> USD $${MONITORING_PRICE_USD}.00/month — created only if you opt in at checkout. If you opt in, the first charge is 30 days after purchase and renews monthly until cancelled.</p></div>
         <div><h2 class="text-white font-bold mb-2">4. Card charges</h2>
             <p>Charges should appear on your statement as <strong>PREDICTACORE</strong> (or similar PredictaCore descriptor). If you do not recognize a charge, contact ${support} before disputing with your bank.</p></div>
         <div><h2 class="text-white font-bold mb-2">5. No refunds</h2>
-            <p><strong>ALL SALES ARE FINAL.</strong> USD $${TITAN_PRICE_USD} and processed USD $${MONITORING_PRICE_USD} monthly charges are non-refundable.</p></div>
+            <p><strong>ALL SALES ARE FINAL.</strong> USD $${TITAN_PRICE_USD} Titan charges and, if you opted in, processed USD $${MONITORING_PRICE_USD} monthly charges are non-refundable.</p></div>
         <div><h2 class="text-white font-bold mb-2">6. Subscription cancellation</h2>
             <p class="text-zinc-400 text-xs leading-relaxed">${cancelNotice}</p></div>
         <div><h2 class="text-white font-bold mb-2">7. Limitation of liability</h2>

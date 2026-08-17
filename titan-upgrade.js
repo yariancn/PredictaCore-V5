@@ -160,10 +160,13 @@ function getTitanUpgradeHTML() {
         </div>
 
         <div class="pc-wrap mb-6">
-            <div class="rounded-xl border border-violet-500/30 bg-violet-950/20 p-5">
-                <p id="monitoring-title" class="text-sm font-bold text-violet-200 mb-2">What monitoring includes (USD $${MONITORING_PRICE_USD}/mo from day 30)</p>
-                <p id="monitoring-body" class="text-xs text-zinc-400 leading-relaxed"></p>
-            </div>
+            <label class="flex items-start gap-3 rounded-xl border border-violet-500/30 bg-violet-950/20 p-5 cursor-pointer">
+                <input type="checkbox" id="opt-monitoring" class="mt-1 accent-violet-500 shrink-0">
+                <span>
+                    <p id="monitoring-title" class="text-sm font-bold text-violet-200 mb-2">Optional: monthly monitoring (USD $${MONITORING_PRICE_USD}/mo from day 30)</p>
+                    <p id="monitoring-body" class="text-xs text-zinc-400 leading-relaxed"></p>
+                </span>
+            </label>
         </div>
 
         <div class="pc-wrap text-center mb-4">
@@ -173,7 +176,7 @@ function getTitanUpgradeHTML() {
             <p id="checkout-hint" class="text-sm text-zinc-600 mt-3 mb-2"></p>
             <p id="checkout-error" class="hidden-flow text-sm text-red-400 font-medium mb-2" role="alert"></p>
             <p id="terms-line" class="text-[10px] text-zinc-600 leading-relaxed mb-3"></p>
-            <div id="cancel-notice-en" class="text-[10px] text-zinc-600 leading-relaxed text-left">${cancelNoticeEn}</div>
+            <div id="cancel-notice-en" class="hidden-flow text-[10px] text-zinc-600 leading-relaxed text-left">${cancelNoticeEn}</div>
             <div id="cancel-notice-es" class="hidden-flow text-[10px] text-zinc-600 leading-relaxed text-left">${cancelNoticeEs}</div>
             <p class="mt-4"><a href="${LITE_LANDING}" id="free-lite-link" class="text-sm font-semibold text-zinc-500 hover:text-violet-400">No Lite yet? Free scan →</a></p>
         </div>
@@ -274,8 +277,8 @@ function getTitanUpgradeHTML() {
                 document.getElementById('free-lite-link').innerText = d.freeLiteLink;
                 document.getElementById('leaks-title').innerText = d.leaksTitle;
                 document.getElementById('leaks-wait').innerText = d.leaksWait;
-                document.getElementById('cancel-notice-en').classList.toggle('hidden-flow', currentLang !== 'en');
-                document.getElementById('cancel-notice-es').classList.toggle('hidden-flow', currentLang !== 'es');
+                document.getElementById('cancel-notice-en').classList.toggle('hidden-flow', !document.getElementById('opt-monitoring').checked || currentLang !== 'en');
+                document.getElementById('cancel-notice-es').classList.toggle('hidden-flow', !document.getElementById('opt-monitoring').checked || currentLang !== 'es');
                 document.getElementById('lang-en').classList.toggle('pc-purple', currentLang === 'en');
                 document.getElementById('lang-en').classList.toggle('text-zinc-500', currentLang !== 'en');
                 document.getElementById('lang-es').classList.toggle('pc-purple', currentLang === 'es');
@@ -406,6 +409,7 @@ function getTitanUpgradeHTML() {
                             lang: currentLang,
                             refCode: refCode,
                             cancelUrl: cancelUrl,
+                            monitoring: !!document.getElementById('opt-monitoring')?.checked,
                         }),
                     });
                     const data = await res.json().catch(function() { return {}; });
@@ -430,6 +434,7 @@ function getTitanUpgradeHTML() {
 
             document.getElementById('btn-pay').addEventListener('click', startCheckout);
             document.getElementById('btn-pay-sticky').addEventListener('click', startCheckout);
+            document.getElementById('opt-monitoring').addEventListener('change', applyLang);
             document.getElementById('lang-en').addEventListener('click', function() { currentLang = 'en'; applyLang(); loadContext(); });
             document.getElementById('lang-es').addEventListener('click', function() { currentLang = 'es'; applyLang(); loadContext(); });
 

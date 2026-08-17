@@ -115,6 +115,7 @@ const {
     MONITORING_PRICE_USD,
     buildCheckoutSessionParams,
     createMonitoringSubscription,
+    wantsMonitoring,
     getCheckoutPaymentMethodId,
     ensureCustomerDefaultPaymentMethod,
     isMonitoringInvoiceAmount,
@@ -170,36 +171,57 @@ async function createCustomerPortalUrl(customerId) {
     return session.url;
 }
 
-function buildTitanActivationEmail(lang, portalUrl) {
+function buildTitanActivationEmail(lang, portalUrl, { monitoring } = {}) {
     const es = lang === 'es';
-    const cancelPlain = getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD);
+    const optedIn = wantsMonitoring(monitoring);
+    const cancelPlain = optedIn
+        ? getSubscriptionCancellationPlain(lang, MONITORING_PRICE_USD, TITAN_PRICE_USD)
+        : '';
     const portalLine = portalUrl
         ? (es ? `Portal de facturación: ${portalUrl}` : `Billing portal: ${portalUrl}`)
         : '';
-    const manageBlock = `<p style="margin:20px 0 0 0;font-size:11px;color:#71717a;line-height:1.55;border-top:1px solid rgba(113,113,122,0.35);padding-top:16px;">${cancelPlain}${portalLine ? `<br/>${portalLine}` : ''}</p>`;
+    const manageInner = [cancelPlain, portalLine].filter(Boolean).join(portalLine && cancelPlain ? '<br/>' : '');
+    const manageBlock = manageInner
+        ? `<p style="margin:20px 0 0 0;font-size:11px;color:#71717a;line-height:1.55;border-top:1px solid rgba(113,113,122,0.35);padding-top:16px;">${manageInner}</p>`
+        : '';
+
+    const monitoringHtml = optedIn
+        ? (es
+            ? `<p style="color:#d1d5db;margin:0 0 12px 0;">Monitoreo PredictaCore (<strong style="color:#fff;">$${MONITORING_PRICE_USD}/mes</strong>) activo. Primer cobro el <strong style="color:#fff;">día 30</strong>. Estado de cuenta: <strong style="color:#fff;">PREDICTACORE</strong>.</p>`
+            : `<p style="color:#d1d5db;margin:0 0 12px 0;">PredictaCore monitoring (<strong style="color:#fff;">$${MONITORING_PRICE_USD}/mo</strong>) is active. First charge on <strong style="color:#fff;">day 30</strong>. Statement: <strong style="color:#fff;">PREDICTACORE</strong>.</p>`)
+        : (es
+            ? `<p style="color:#d1d5db;margin:0 0 12px 0;">Titán es un pago único. No se inició suscripción mensual. Estado de cuenta: <strong style="color:#fff;">PREDICTACORE</strong>.</p>`
+            : `<p style="color:#d1d5db;margin:0 0 12px 0;">Titan is a one-time purchase. No monthly subscription was started. Statement: <strong style="color:#fff;">PREDICTACORE</strong>.</p>`);
 
     const subject = es ? 'PredictaCore — Pago confirmado' : 'PredictaCore — Payment confirmed';
     const inner = es ? `
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">PAGO CONFIRMADO</h1>
     <p style="color:#d1d5db;margin:0 0 12px 0;">Tu pago de <strong style="color:#fff;">USD $${TITAN_PRICE_USD}</strong> fue procesado. El motor forense PredictaCore ya analiza tu activo digital.</p>
     <p style="color:#8b5cf6;font-size:12px;font-weight:bold;text-transform:uppercase;margin:0 0 12px 0;">Recibirás el PDF del Reporte Titán en un correo aparte (puede tardar hasta 60 min). Revisa spam si no lo ves.</p>
-    <p style="color:#d1d5db;margin:0 0 12px 0;">Monitoreo PredictaCore (<strong style="color:#fff;">$${MONITORING_PRICE_USD}/mes</strong>) activo. Primer cobro el <strong style="color:#fff;">día 30</strong>. Estado de cuenta: <strong style="color:#fff;">PREDICTACORE</strong>.</p>
+    ${monitoringHtml}
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;margin:0;">Ventas finales — sin reembolsos.</p>` : `
     <h1 style="color:#fff;font-size:18px;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px 0;text-align:center;">PAYMENT CONFIRMED</h1>
     <p style="color:#d1d5db;margin:0 0 12px 0;">Your <strong style="color:#fff;">USD $${TITAN_PRICE_USD}</strong> payment was processed. The PredictaCore forensic engine is now analyzing your digital asset.</p>
     <p style="color:#8b5cf6;font-size:12px;font-weight:bold;text-transform:uppercase;margin:0 0 12px 0;">Your Titan Report PDF will arrive in a separate email (may take up to 60 minutes). Check spam if needed.</p>
-    <p style="color:#d1d5db;margin:0 0 12px 0;">PredictaCore monitoring (<strong style="color:#fff;">$${MONITORING_PRICE_USD}/mo</strong>) is active. First charge on <strong style="color:#fff;">day 30</strong>. Statement: <strong style="color:#fff;">PREDICTACORE</strong>.</p>
+    ${monitoringHtml}
     ${manageBlock}
     <p style="font-size:11px;color:#71717a;margin:0;">All sales final — no refunds.</p>`;
     const html = wrapPredictaCoreEmail(lang, inner);
 
-    const textManage = portalUrl
-        ? (es ? `\n\n${cancelPlain}\nPortal: ${portalUrl}` : `\n\n${cancelPlain}\nPortal: ${portalUrl}`)
-        : `\n\n${cancelPlain}`;
+    const monitoringText = optedIn
+        ? (es
+            ? `Monitoreo $${MONITORING_PRICE_USD}/mes; primer cobro el día 30.`
+            : `Monitoring $${MONITORING_PRICE_USD}/mo; first charge on day 30.`)
+        : (es
+            ? 'Pago único — no se inició suscripción mensual.'
+            : 'One-time purchase — no monthly subscription was started.');
+    const textManage = [cancelPlain, portalUrl ? (es ? `Portal: ${portalUrl}` : `Portal: ${portalUrl}`) : '']
+        .filter(Boolean)
+        .join('\n');
     const text = es
-        ? `PAGO CONFIRMADO\n\nPago USD $${TITAN_PRICE_USD} confirmado. El Reporte Titán llegará en un correo aparte (hasta 60 min).\nMonitoreo $${MONITORING_PRICE_USD}/mes; primer cobro el día 30. PREDICTACORE en el estado de cuenta.${textManage}`
-        : `PAYMENT CONFIRMED\n\nUSD $${TITAN_PRICE_USD} payment confirmed. Titan Report PDF will arrive in a separate email (up to 60 min).\nMonitoring $${MONITORING_PRICE_USD}/mo; first charge on day 30. Statement: PREDICTACORE.${textManage}`;
+        ? `PAGO CONFIRMADO\n\nPago USD $${TITAN_PRICE_USD} confirmado. El Reporte Titán llegará en un correo aparte (hasta 60 min).\n${monitoringText} PREDICTACORE en el estado de cuenta.${textManage ? `\n\n${textManage}` : ''}`
+        : `PAYMENT CONFIRMED\n\nUSD $${TITAN_PRICE_USD} payment confirmed. Titan Report PDF will arrive in a separate email (up to 60 min).\n${monitoringText} Statement: PREDICTACORE.${textManage ? `\n\n${textManage}` : ''}`;
 
     return { subject, html, text };
 }
@@ -252,7 +274,7 @@ async function sendTitanSaleNotificationEmail({ customerEmail, targetUrl, sessio
     console.log(`>>> Sale notification sent to ${notifyTo}${notifyCc.length ? ` (cc ${notifyCc.join(', ')})` : ''}`);
 }
 
-async function sendTitanActivationEmail(email, lang, customerId) {
+async function sendTitanActivationEmail(email, lang, customerId, { monitoring } = {}) {
     let portalUrl = null;
     try {
         const cid = customerId || await resolveStripeCustomerId(email);
@@ -261,7 +283,7 @@ async function sendTitanActivationEmail(email, lang, customerId) {
         console.warn('>>> Email activación: portal no generado:', err.message);
     }
 
-    const { subject, html, text } = buildTitanActivationEmail(lang, portalUrl);
+    const { subject, html, text } = buildTitanActivationEmail(lang, portalUrl, { monitoring });
     const { error } = await resend.emails.send({
         from: getResendFrom(),
         to: email,
@@ -352,6 +374,7 @@ async function resolveCheckoutMetadata(session) {
         email: email ? String(email).trim().toLowerCase() : '',
         refCode,
         lang: lang === 'es' ? 'es' : 'en',
+        monitoring: wantsMonitoring(base.monitoring),
     };
 }
 
@@ -371,7 +394,7 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
         };
     }
 
-    const { dna, email, refCode, lang } = await resolveCheckoutMetadata(session);
+    const { dna, email, refCode, lang, monitoring } = await resolveCheckoutMetadata(session);
     if (!dna || !email) {
         console.warn(`>>> [${source}] checkout sin dna/email — session ${session.id}`);
         return { ok: false, skipped: 'missing_metadata' };
@@ -395,13 +418,14 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
         ? session.subscription
         : session.subscription?.id;
 
-    if (!subscriptionId && customerId) {
+    if (monitoring && !subscriptionId && customerId) {
         try {
             const meta = checkoutMetadata({
                 dna,
                 email,
                 refCode,
                 lang,
+                monitoring: true,
             });
             const paymentMethodId = await getCheckoutPaymentMethodId(stripe, session);
             if (paymentMethodId) {
@@ -417,6 +441,8 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
         } catch (subCreateErr) {
             console.error('!!! No se pudo crear suscripción de monitoreo:', subCreateErr.message);
         }
+    } else if (!monitoring) {
+        console.log(`>>> [${source}] Checkout Titán sin monitoreo — no se crea suscripción`);
     }
 
     let subscriptionStatus = 'inactive';
@@ -430,7 +456,7 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
     }
 
     try {
-        console.log(`>>> [PAGO $${TITAN_PRICE_USD} / ${source}] ${email}. Titán + suscripción (${subscriptionStatus})...`);
+        console.log(`>>> [PAGO $${TITAN_PRICE_USD} / ${source}] ${email}. Titán${subscriptionId ? ` + suscripción (${subscriptionStatus})` : ' (sin suscripción)'}...`);
 
         await upsertCliente({
             email,
@@ -450,7 +476,7 @@ async function fulfillPredictacoreCheckoutSession(rawSession, source = 'webhook'
         }).catch(() => {});
 
         try {
-            await sendTitanActivationEmail(email, lang, customerId);
+            await sendTitanActivationEmail(email, lang, customerId, { monitoring });
         } catch (mailErr) {
             console.error('!!! Email activación Titán:', mailErr.message);
         }
@@ -788,9 +814,7 @@ app.post('/fulfill-checkout', async (req, res) => {
 app.get('/health', async (req, res) => {
     const db = await healthCheck();
     let priceCheck = null;
-    if (normalizeStripeSecretKey(process.env.STRIPE_SECRET_KEY)
-        && process.env.STRIPE_PRICE_TITAN
-        && process.env.STRIPE_PRICE_SUBSCRIPTION) {
+    if (normalizeStripeSecretKey(process.env.STRIPE_SECRET_KEY)) {
         try {
             priceCheck = await validateCheckoutPrices(stripe);
         } catch (err) {
@@ -802,7 +826,8 @@ app.get('/health', async (req, res) => {
         service: 'predictacore-titan',
         phase: '2',
         database: db,
-        stripe_prices: !!(process.env.STRIPE_PRICE_TITAN && process.env.STRIPE_PRICE_SUBSCRIPTION),
+        stripe_prices: !!normalizeStripeSecretKey(process.env.STRIPE_SECRET_KEY),
+        stripe_monitoring_price: !!process.env.STRIPE_PRICE_SUBSCRIPTION,
         stripe_price_validation: priceCheck
             ? {
                 ok: priceCheck.ok,
@@ -979,12 +1004,14 @@ app.get('/exito', async (req, res) => {
     const lang = req.query.lang === 'es' ? 'es' : 'en';
     const sessionId = req.query.session_id;
     let fulfillStatus = 'processing';
+    let monitoring = false;
 
     if (!sessionId || !String(sessionId).startsWith('cs_')) {
         fulfillStatus = 'missing_session';
     } else {
         try {
             const session = await expandCheckoutSession(stripe, await stripe.checkout.sessions.retrieve(String(sessionId)));
+            monitoring = wantsMonitoring(session.metadata?.monitoring);
             const result = await fulfillPredictacoreCheckoutSession(session, 'success_page');
             if (result.started) fulfillStatus = 'ok';
             else if (result.duplicate) fulfillStatus = 'dup';
@@ -999,7 +1026,7 @@ app.get('/exito', async (req, res) => {
         }
     }
 
-    res.send(getSuccessHTML(lang, fulfillStatus));
+    res.send(getSuccessHTML(lang, fulfillStatus, { monitoring }));
 });
 
 app.get('/titan-interno', (req, res) => {
@@ -1452,7 +1479,7 @@ app.post('/playground/replay-delivery', requirePlayground, async (req, res) => {
             return res.status(400).json({ error: 'Session not paid', session: summarizeCheckoutSession(session) });
         }
 
-        const { dna, email, lang } = await resolveCheckoutMetadata(session);
+        const { dna, email, lang, monitoring } = await resolveCheckoutMetadata(session);
         if (!dna || !email) {
             return res.status(400).json({ error: 'Missing dna/email in session metadata' });
         }
@@ -1464,7 +1491,7 @@ app.post('/playground/replay-delivery', requirePlayground, async (req, res) => {
         let activationSent = false;
         let activationError = null;
         try {
-            await sendTitanActivationEmail(email, lang, customerId);
+            await sendTitanActivationEmail(email, lang, customerId, { monitoring });
             activationSent = true;
         } catch (mailErr) {
             activationError = mailErr.message;
@@ -1531,7 +1558,7 @@ app.post('/playground/preview-email', requirePlayground, async (req, res) => {
         for (const t of types) {
             let payload;
             if (t === 'activation') {
-                payload = buildTitanActivationEmail(langCode, portalUrl);
+                payload = buildTitanActivationEmail(langCode, portalUrl, { monitoring: false });
             } else if (t === 'titan') {
                 const mail = getReportEmailCopy('TITAN', reportLocale, { portalUrl, targetUrl });
                 payload = {
@@ -1734,7 +1761,8 @@ app.get('/lite-status', async (req, res) => {
 
 app.post('/start', async (req, res) => {
     try {
-        const { dna, email, refCode, lang, assetType, platform, handle, cancelUrl } = req.body;
+        const { dna, email, refCode, lang, assetType, platform, handle, cancelUrl, monitoring } = req.body;
+        const optedIn = wantsMonitoring(monitoring);
 
         const resolved = resolveAuditTarget({ assetType, dna, platform, handle });
         if (!resolved.ok) {
@@ -1749,7 +1777,7 @@ app.post('/start', async (req, res) => {
             return res.status(400).json({ error: keyDiag.hint });
         }
 
-        const validation = await validateCheckoutPrices(stripe);
+        const validation = await validateCheckoutPrices(stripe, { requireMonitoring: optedIn });
         if (!validation.ok) {
             return res.status(400).json({ error: validation.errors.join(' ') });
         }
@@ -1767,6 +1795,7 @@ app.post('/start', async (req, res) => {
                 lang,
                 lineItems: validation.lineItems,
                 cancelUrl: safeCancelUrl,
+                monitoring: optedIn,
             })
         );
 

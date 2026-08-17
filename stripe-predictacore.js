@@ -19,7 +19,7 @@ function predictacorePriceIds() {
     return [PRICE_TITAN(), PRICE_SUB()].filter(Boolean);
 }
 
-function checkoutMetadata({ dna, email, refCode, lang }) {
+function checkoutMetadata({ dna, email, refCode, lang, monitoring }) {
     return {
         product: BRAND,
         brand: BRAND,
@@ -28,7 +28,14 @@ function checkoutMetadata({ dna, email, refCode, lang }) {
         email: (email || '').trim().toLowerCase(),
         refCode: refCode || '',
         lang: lang === 'es' ? 'es' : 'en',
+        monitoring: wantsMonitoring(monitoring) ? 'opt_in' : 'off',
     };
+}
+
+function wantsMonitoring(value) {
+    if (value === true || value === 1) return true;
+    const raw = String(value || '').trim().toLowerCase();
+    return raw === 'true' || raw === 'opt_in' || raw === '1' || raw === 'yes';
 }
 
 function titanPriceDataItem() {
@@ -37,7 +44,7 @@ function titanPriceDataItem() {
             currency: 'usd',
             product_data: {
                 name: 'Predictacore Titan',
-                description: `Titan Report. USD $${TITAN_PRICE_USD} charged today.`,
+                description: `Titan Report. USD $${TITAN_PRICE_USD} one-time.`,
                 metadata: { brand: BRAND, product: BRAND },
             },
             unit_amount: TITAN_PRICE_CENTS,
@@ -63,30 +70,36 @@ function monitoringPriceDataItem() {
 }
 
 function buildCheckoutLineItems() {
-    const priceSub = PRICE_SUB();
-    // Always charge TITAN_PRICE_USD via price_data so a stale Stripe Price ID ($199) cannot overcharge.
-    return [titanPriceDataItem(), priceSub ? { price: priceSub, quantity: 1 } : monitoringPriceDataItem()];
+    // Titan is a one-time $39 payment. Monitoring is opt-in after metadata.monitoring === 'opt_in'.
+    return [titanPriceDataItem()];
 }
 
-function getCheckoutCustomText(lang = 'en') {
+function getCheckoutCustomText(lang = 'en', { monitoring } = {}) {
     const termsLink = `[Terms of Service](${TERMS_URL})`;
     const privacyLink = `[Privacy Policy](${PRIVACY_URL})`;
     const termsLinkEs = `[Términos](${TERMS_URL})`;
     const privacyLinkEs = `[Privacidad](${PRIVACY_URL})`;
     const descriptor = STATEMENT_SUFFIX();
     const support = getSupportEmail();
+    const optedIn = wantsMonitoring(monitoring);
 
     if (lang === 'es') {
+        const extra = optedIn
+            ? ` Monitoreo opcional $${MONITORING_PRICE_USD}/mes desde el día 30 (se renueva salvo cancelación; ${support} o portal).`
+            : ` Solo Titán hoy — sin suscripción mensual.`;
         return {
             submit: {
-                message: `$${TITAN_PRICE_USD} hoy (Reporte Titán — precio introductorio). Monitoreo $${MONITORING_PRICE_USD}/mes desde el día 30 (se renueva salvo cancelación; solicitud: ${support} o portal en correo de activación). Al pagar aceptas ${termsLinkEs} y ${privacyLinkEs}. Estado de cuenta: ${descriptor}.`,
+                message: `$${TITAN_PRICE_USD} hoy (Reporte Titán).${extra} Al pagar aceptas ${termsLinkEs} y ${privacyLinkEs}. Estado de cuenta: ${descriptor}.`,
             },
         };
     }
 
+    const extra = optedIn
+        ? ` Optional monitoring $${MONITORING_PRICE_USD}/mo starts day 30 (renews unless cancelled; ${support} or portal).`
+        : ` Titan only today — no monthly subscription.`;
     return {
         submit: {
-            message: `$${TITAN_PRICE_USD} charged today (Titan Report — introductory price). $${MONITORING_PRICE_USD}/month monitoring starts day 30 (renews unless cancelled; request via ${support} or portal in activation email). By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}.`,
+            message: `$${TITAN_PRICE_USD} charged today (Titan Report).${extra} By paying you accept our ${termsLink} and ${privacyLink}. Statement: ${descriptor}.`,
         },
     };
 }
@@ -147,13 +160,30 @@ function stripeKeyMode() {
     return stripeKeyDiagnostics().mode;
 }
 
-async function validateCheckoutPrices(stripe) {
+async function validateCheckoutPrices(stripe, { requireMonitoring } = {}) {
     const subId = PRICE_SUB();
     const mode = stripeKeyMode();
     const lineItems = buildCheckoutLineItems();
 
+    if (!requireMonitoring) {
+        return {
+            ok: true,
+            lineItems,
+            mode,
+            usingEnvPrices: false,
+            titanChargedVia: 'price_data',
+            expectedTitanCents: TITAN_PRICE_CENTS,
+        };
+    }
+
     if (!subId) {
-        return { ok: true, lineItems, mode, usingEnvPrices: false };
+        return {
+            ok: false,
+            errors: ['STRIPE_PRICE_SUBSCRIPTION is required when monthly monitoring is selected.'],
+            lineItems,
+            mode,
+            usingEnvPrices: false,
+        };
     }
 
     try {
@@ -242,25 +272,27 @@ async function createMonitoringSubscription(stripe, { customerId, metadata, defa
     return stripe.subscriptions.create(params);
 }
 
-function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang, cancelUrl }) {
-    const meta = checkoutMetadata({ dna, email, refCode, lang });
+function buildCheckoutSessionParams({ host, dna, email, refCode, lineItems, lang, cancelUrl, monitoring }) {
+    const meta = checkoutMetadata({ dna, email, refCode, lang, monitoring });
     const locale = meta.lang === 'es' ? 'es' : 'en';
+    const optedIn = wantsMonitoring(monitoring);
 
-    return {
+    const params = {
         payment_method_types: ['card'],
         customer_email: meta.email || email,
         customer_creation: 'always',
         mode: 'payment',
         line_items: titanCheckoutLineItems(lineItems),
         locale,
-        custom_text: getCheckoutCustomText(meta.lang),
-        payment_intent_data: {
-            setup_future_usage: 'off_session',
-        },
+        custom_text: getCheckoutCustomText(meta.lang, { monitoring: optedIn }),
         success_url: `${host}/exito?session_id={CHECKOUT_SESSION_ID}&email=${encodeURIComponent(meta.email || email)}&lang=${meta.lang}`,
         cancel_url: cancelUrl || `${host}/`,
         metadata: meta,
     };
+    if (optedIn) {
+        params.payment_intent_data = { setup_future_usage: 'off_session' };
+    }
+    return params;
 }
 
 function metadataIsPredictacore(metadata) {
@@ -352,6 +384,7 @@ module.exports = {
     validateCheckoutPrices,
     predictacorePriceIds,
     checkoutMetadata,
+    wantsMonitoring,
     buildCheckoutSessionParams,
     createMonitoringSubscription,
     getCheckoutPaymentMethodId,

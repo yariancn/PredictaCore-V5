@@ -13,8 +13,9 @@ function statusMessage(t, fulfillStatus) {
     return '';
 }
 
-function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
+function getSuccessHTML(lang = 'en', fulfillStatus = 'processing', { monitoring } = {}) {
     const support = getSupportEmail();
+    const optedIn = !!monitoring;
     const sectionsHtml = TITAN_SECTIONS.map((section, index) => {
         const num = String(index + 1).padStart(2, '0');
         return `<li class="flex gap-2 text-left text-[11px] text-zinc-500 leading-relaxed"><span class="font-mono text-violet-500/80 shrink-0">${num}</span><span>${section}</span></li>`;
@@ -27,8 +28,12 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
         email: 'Recibirás un correo de confirmación y, después, el Reporte Titán completo en PDF.',
         eta: 'Por la cantidad de datos que analizamos, el correo puede tardar hasta 60 minutos. Revisa spam y la carpeta Promociones.',
         pdfTitle: 'Qué incluye tu PDF Titán (11 secciones + bonus de producto)',
-        sub: `Monitoreo $${MONITORING_PRICE_USD}/mes activo. Primer cobro el día 30. Estado de cuenta: PREDICTACORE.`,
-        portalNote: `Información de cancelación del monitoreo recurrente: ${getSupportEmail()} o portal de facturación en su correo de confirmación de pago. Ver Términos.`,
+        sub: optedIn
+            ? `Monitoreo $${MONITORING_PRICE_USD}/mes activo. Primer cobro el día 30. Estado de cuenta: PREDICTACORE.`
+            : `Titán es un pago único. No se inició suscripción mensual. Estado de cuenta: PREDICTACORE.`,
+        portalNote: optedIn
+            ? `Información de cancelación del monitoreo recurrente: ${getSupportEmail()} o portal de facturación en su correo de confirmación de pago. Ver Términos.`
+            : `Si más adelante quieres monitoreo mensual, escríbenos a ${support}.`,
         processing: 'Confirmando pago y encolando análisis…',
         processingOk: 'Pago confirmado. Análisis Titán en proceso — revisa tu correo (hasta 60 min).',
         processingDup: 'Pago ya registrado. Tu análisis sigue en cola — revisa tu correo (hasta 60 min).',
@@ -47,8 +52,12 @@ function getSuccessHTML(lang = 'en', fulfillStatus = 'processing') {
         email: 'You will receive a confirmation email, then your full Titan Report PDF.',
         eta: 'Because of the volume of data we process, delivery can take up to 60 minutes. Check spam and Promotions.',
         pdfTitle: 'What your Titan PDF includes (11 sections + product opportunities bonus)',
-        sub: `Monitoring $${MONITORING_PRICE_USD}/mo active. First charge on day 30. Statement: PREDICTACORE.`,
-        portalNote: `Recurring monitoring cancellation: ${getSupportEmail()} or billing portal in your payment confirmation email. See Terms.`,
+        sub: optedIn
+            ? `Monitoring $${MONITORING_PRICE_USD}/mo active. First charge on day 30. Statement: PREDICTACORE.`
+            : `Titan is a one-time purchase. No monthly subscription was started. Statement: PREDICTACORE.`,
+        portalNote: optedIn
+            ? `Recurring monitoring cancellation: ${getSupportEmail()} or billing portal in your payment confirmation email. See Terms.`
+            : `If you later want monthly monitoring, email ${support}.`,
         processing: 'Confirming payment and queuing your audit…',
         processingOk: 'Payment confirmed. Titan audit running — watch your inbox (up to 60 min).',
         processingDup: 'Payment already registered. Your audit is queued — watch your inbox (up to 60 min).',
