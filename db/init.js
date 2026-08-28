@@ -8,10 +8,15 @@ let dbReady = false;
 function getPool() {
     if (!process.env.DATABASE_URL) return null;
     if (!pool) {
+        // Keep Neon Free scale-to-zero viable: release idle clients quickly so
+        // compute can suspend after ~5 min with no open connections.
         pool = new Pool({
             connectionString: process.env.DATABASE_URL,
             ssl: { rejectUnauthorized: false },
             connectionTimeoutMillis: 15000,
+            max: 2,
+            idleTimeoutMillis: 5000,
+            allowExitOnIdle: true,
         });
     }
     return pool;

@@ -59,6 +59,7 @@ const {
     getJobsByEmail,
     markStaleRunningJobs,
     healthCheck,
+    isDbReady,
 } = require('./db/init');
 const {
     normalizeUrl,
@@ -811,7 +812,39 @@ app.post('/fulfill-checkout', async (req, res) => {
     }
 });
 
-app.get('/health', async (req, res) => {
+app.get('/health', (req, res) => {
+    // Shallow health for Railway — do NOT query Neon (healthchecks would burn CU-hours).
+    const dbConfigured = !!process.env.DATABASE_URL;
+    const dbReadyAtBoot = typeof isDbReady === 'function' ? isDbReady() : dbConfigured;
+    res.status(200).json({
+        status: 'ok',
+        service: 'predictacore-titan',
+        phase: '2',
+        database: {
+            ok: dbReadyAtBoot || !dbConfigured,
+            db: !dbConfigured ? 'not_configured' : (dbReadyAtBoot ? 'ready_at_boot' : 'init_pending_or_failed'),
+            note: 'No live Neon query (scale-to-zero). Use GET /health/db for a live check.',
+        },
+        stripe_prices: !!normalizeStripeSecretKey(process.env.STRIPE_SECRET_KEY),
+        stripe_monitoring_price: !!process.env.STRIPE_PRICE_SUBSCRIPTION,
+        stripe_price_validation: null,
+        stripe: {
+            ...stripeKeyDiagnostics(),
+            restricted_key_warning: stripeKeyDiagnostics().restricted
+                ? 'Prefer sk_test_/sk_live_ secret key over rk_ restricted key for Checkout subscriptions.'
+                : null,
+        },
+        stripe_brand: BRAND,
+        stripe_terms_url: TERMS_URL,
+        stripe_statement_descriptor: process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE',
+        playground: !!process.env.API_KEY,
+        resend: !!process.env.RESEND_API_KEY,
+        resend_from: getResendFrom(),
+        timestamp: new Date().toISOString(),
+    });
+});
+
+app.get('/health/db', async (req, res) => {
     const db = await healthCheck();
     let priceCheck = null;
     if (normalizeStripeSecretKey(process.env.STRIPE_SECRET_KEY)) {
@@ -836,18 +869,7 @@ app.get('/health', async (req, res) => {
                 expected_monitoring_usd: MONITORING_PRICE_USD,
             }
             : null,
-        stripe: {
-            ...stripeKeyDiagnostics(),
-            restricted_key_warning: stripeKeyDiagnostics().restricted
-                ? 'Prefer sk_test_/sk_live_ secret key over rk_ restricted key for Checkout subscriptions.'
-                : null,
-        },
-        stripe_brand: BRAND,
-        stripe_terms_url: TERMS_URL,
-        stripe_statement_descriptor: process.env.STRIPE_STATEMENT_DESCRIPTOR || 'PREDICTACORE',
-        playground: !!process.env.API_KEY,
-        resend: !!process.env.RESEND_API_KEY,
-        resend_from: getResendFrom(),
+        stripe: stripeKeyDiagnostics(),
         timestamp: new Date().toISOString(),
     });
 });
@@ -2520,7 +2542,7 @@ async function startServer() {
         processLiteUpsellFollowups().catch((err) => {
             console.error('!!! [LITE UPSELL] Scheduled run failed:', err.message);
         });
-    }, 30 * 60 * 1000);
+    }, 6 * 60 * 60 * 1000); // 6h — enough for day1/weekly; avoids waking Neon every 30m
 
     app.listen(port, '0.0.0.0', () => {
         console.log(`MOTOR UNIFICADO ONLINE - FASE 2 - Puerto ${port}`);
