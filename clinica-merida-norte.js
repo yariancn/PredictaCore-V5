@@ -3,6 +3,11 @@
  * Norte de Mérida — corte 25 de octubre de 2026.
  * Anuncios públicos; no es una visita ni una oferta verificada.
  */
+function shots(base, alt, ext) {
+    const e = ext || 'jpg';
+    return `<div class="photos"><img src="/static/reportes/clinica/${base}-1.${e}" alt="${alt}"><img src="/static/reportes/clinica/${base}-2.${e}" alt="${alt}. Otra vista del anuncio"></div>`;
+}
+
 function getClinicaMeridaNorteHTML() {
     return `<!DOCTYPE html>
 <html lang="es">
@@ -84,6 +89,9 @@ function getClinicaMeridaNorteHTML() {
   table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 18px; }
   th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { color: var(--dim); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .photos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0 4px; }
+  .photos img { width: 100%; height: 210px; object-fit: cover; border-radius: 10px; background: #18181b; }
+  .cap { color: var(--dim); font-size: 12px; margin: 4px 0 0; }
   .sources { color: var(--dim); font-size: 13px; }
   footer { margin-top: 36px; color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); padding-top: 16px; }
   @media (max-width: 720px) {
@@ -124,6 +132,8 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$16,500 + IVA</div>
     </div>
+    ${shots('core-via', 'Render del anuncio de Plaza Core Vía, en Paseo Norte')}
+    <p class="cap">Renders del anuncio. La plaza todavía no está entregada.</p>
     <ul>
       <li>Hay dos anuncios del mismo proyecto. Uno publica $16,500 + IVA y entrega en octubre de 2026. Otro (EB-WK3797) publica $18,500 + IVA y 10% de mantenimiento, locales de planta baja 05, 06, 07, 09 y 10.</li>
       <li>Un tercer anuncio ofrece, en contrato de 2 o 3 años, 30% de descuento el primer año. Sobre $16,500 eso son $11,550 + IVA (unos $13,400 ya con IVA). El mantenimiento, si se cobra aparte, puede volver a pasar el tope.</li>
@@ -141,6 +151,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$19,896</div>
     </div>
+    ${shots('garcia-40', 'Interior del local de 40.44 m² sobre García Lavín')}
     <ul>
       <li>IVA incluido. Queda unos $6,900 arriba del tope, y es el local sobre avenida, del tamaño pedido, que se puede ocupar ahora.</li>
       <li>El anuncio lo describe en buenas condiciones, al norte, con flujo hacia Periférico, cerca de City Center, Walmart y privadas residenciales.</li>
@@ -156,6 +167,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$19,008 + IVA</div>
     </div>
+    ${shots('sr-local', 'Local de 33 m² sobre García Lavín, San Ramón Norte', 'webp')}
     <ul>
       <li>Con IVA son unos $22,050. Está debajo de 40 m² y arriba del presupuesto. Sirve como referencia del precio por metro en esa avenida (cerca de $570/m² + IVA).</li>
     </ul>
@@ -170,6 +182,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$27,000–$30,000 + IVA</div>
     </div>
+    <p class="cap">El listado de Inmuebles24 no deja ver la galería sin pasar su verificación. No puse fotos de otro local para no mezclar inmuebles.</p>
     <ul>
       <li>56 m² (37 m² cerrados, antes cafetería, más terraza de 19 m²) en $27,000 + IVA.</li>
       <li>53 m² en $30,000 + IVA. El anuncio dice que se puede dividir en tres y lo ofrece para consultorio u oficina.</li>
@@ -187,6 +200,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">desde $25,800</div>
     </div>
+    <p class="cap">Son varios locales distintos. No hay una sola galería que los represente.</p>
     <ul>
       <li>60 m², frente de 5 m y fondo de 12 m, doble altura, recepción, dos privados y baño: $25,800 a $25,900 + IVA + 10% de mantenimiento. Aparece en el listado de Santa Gertrudis Copó.</li>
       <li>Town Square, San Ramón Norte, junto a City Center: $350/m² + IVA y 15% de mantenimiento. El local más chico anunciado es de 90 m² (unos $31,500 + IVA). La isla de 16 m² es demasiado pequeña para la cámara.</li>
@@ -217,6 +231,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$13,500</div>
     </div>
+    ${shots('th-13500', 'Townhouse en privada en Montebello, renta de 13,500')}
     <ul>
       <li>La renta más baja que sí dice “privada tranquila”. Planta baja con cocina, sala, comedor, medio baño, bodega y patio. Recámara arriba con vestidor.</li>
       <li>Es de una recámara. Cabe si vive una persona o una pareja. Aval con propiedad en Mérida, o doble depósito, más contrato notarial.</li>
@@ -232,6 +247,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$15,000</div>
     </div>
+    ${shots('th-90', 'Townhouse amueblado de 90 m² en Montebello')}
     <ul>
       <li>Misma ficha en dos portales: amueblado, estufa, refrigerador, minisplits, paneles solares. Incluye internet, basura y mantenimiento de áreas comunes.</li>
       <li>Contrato de 12 meses. Aval con propiedad en Yucatán, sin opción de doble depósito. No mascotas. El contrato se cobra como 75% de un mes.</li>
@@ -247,6 +263,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$15,000</div>
     </div>
+    ${shots('calle23', 'Townhouse de Calle 23 en Montebello, con paneles solares')}
     <ul>
       <li>Amueblado, camas king, aires en sala y recámaras, boiler eléctrico. No mascotas. Pide mes de renta, mes de depósito, gastos notariales y aval.</li>
       <li>Puede ser otro townhouse del mismo tipo de conjunto, no la ficha de 90 m². Conviene tratarlo como anuncio distinto hasta ver la dirección.</li>
@@ -262,6 +279,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$15,000</div>
     </div>
+    ${shots('copo-th', 'Townhouse en Santa Gertrudis Copó, cerca del Periférico')}
     <ul>
       <li>La casa más grande dentro del tope. El portal la clasifica como departamento, pero la descripción es de townhouse de dos plantas.</li>
       <li>Aval o doble depósito. Aires, cortinas blackout, hidroneumático y parrilla de inducción.</li>
@@ -277,6 +295,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$15,000</div>
     </div>
+    <p class="cap">La página pública es el perfil de la agencia y no trae galería de esta casa. No usé fotos de otra residencia.</p>
     <ul>
       <li>Es la ficha que más se parece a un coto chico y no a un townhouse. Estilo californiano, al norte.</li>
       <li>La página pública es el perfil de la agencia, no un anuncio con fotos completas. Hay que pedir la ficha y la dirección antes de agendar.</li>
@@ -292,6 +311,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$15,000</div>
     </div>
+    ${shots('sr-th', 'Townhouse amueblado en San Ramón Norte')}
     <ul>
       <li>Incluye basura, JAPAY y gas, internet, cocina equipada y aires. No mascotas.</li>
       <li>La agencia que lo publica está en Guadalajara. Confirmar que el anuncio sigue vigente y que la visita es en Mérida.</li>
@@ -307,6 +327,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$15,000</div>
     </div>
+    ${shots('casa-alta', 'Casa en Montebello a unos minutos de Altabrisa')}
     <ul>
       <li>El precio entra. El anuncio no dice privada ni caseta, y el metraje publicado (1 m²) no es creíble. Sirve si al visitarla está dentro de un acceso controlado.</li>
     </ul>
@@ -319,17 +340,17 @@ function getClinicaMeridaNorteHTML() {
     <thead><tr><th>Casa</th><th>Renta</th><th>Nota</th></tr></thead>
     <tbody>
       <tr>
-        <td><a href="https://www.pincali.com/en/home/casa-en-renta-en-merida-en-privada-san-ramon-nte">Privada de 6 casas, San Ramón Norte</a><br>EB-WU0608 · 180 m² · 3 recámaras · alberca común</td>
+        <td><a href="https://www.pincali.com/en/home/casa-en-renta-en-merida-en-privada-san-ramon-nte">Privada de 6 casas, San Ramón Norte</a><br>EB-WU0608 · 180 m² · 3 recámaras · alberca común${shots('sr-priv', 'Casa en privada de San Ramón Norte')}</td>
         <td>$16,000</td>
         <td>El coto más claro de San Ramón Norte. Mantenimiento incluido. Mascotas a considerar. $1,000 arriba.</td>
       </tr>
       <tr>
-        <td><a href="https://inmobitaria.easybroker.com/property/casa-santa-gertrudis-copo-dos-recamaras-santa-gertrudis-copo">Casa en Copó, a unas cuadras de García Lavín</a><br>EB-VE1965 · 150 m² · 2 recámaras en planta baja</td>
+        <td><a href="https://inmobitaria.easybroker.com/property/casa-santa-gertrudis-copo-dos-recamaras-santa-gertrudis-copo">Casa en Copó, a unas cuadras de García Lavín</a><br>EB-VE1965 · 150 m² · 2 recámaras en planta baja${shots('copo-casa', 'Casa de dos recámaras en Santa Gertrudis Copó')}</td>
         <td>$16,000</td>
         <td>Acepta perros pequeños y doble depósito. No dice caseta.</td>
       </tr>
       <tr>
-        <td><a href="https://www.asterismoinmobiliaria.com/property/townhouse-con-paneles-solares-en-montebello">Townhouse Montebello, 130 m²</a><br>EB-KA7529 · 2 recámaras · paneles · amueblado</td>
+        <td><a href="https://www.asterismoinmobiliaria.com/property/townhouse-con-paneles-solares-en-montebello">Townhouse Montebello, 130 m²</a><br>EB-KA7529 · 2 recámaras · paneles · amueblado${shots('th-130', 'Townhouse de 130 m² en Montebello')}</td>
         <td>$16,000</td>
         <td>Misma familia de townhouses con paneles. Aval indispensable. No mascotas.</td>
       </tr>
@@ -345,6 +366,7 @@ function getClinicaMeridaNorteHTML() {
       </div>
       <div class="price">$13,500</div>
     </div>
+    ${shots('depto', 'Departamento amueblado en Montebello, con caseta')}
     <ul>
       <li>No es casa. Sí es el anuncio con caseta de vigilancia más barato de la zona. No mascotas. Planta alta, estacionamiento techado para un auto.</li>
     </ul>
