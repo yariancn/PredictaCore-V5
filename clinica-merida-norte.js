@@ -85,6 +85,7 @@ function getClinicaMeridaNorteHTML() {
   .fit { background: #052e16; color: var(--ok); }
   .near { background: #2a2106; color: var(--warn); }
   .out { background: #2a1218; color: var(--bad); }
+  .gone { background: #27272a; color: #d4d4d8; }
   .zone { background: #18181b; color: #d4d4d8; }
   table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 8px 0 18px; }
   th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -112,7 +113,8 @@ function getClinicaMeridaNorteHTML() {
   <p class="lede">Búsqueda en Montebello, San Ramón Norte y Santa Gertrudis Copó, con preferencia por avenidas principales (García Lavín y Paseo Norte). Local de 40 a 60 m² hasta $13,000. Casa en coto o privada hasta $15,000. Precios en pesos mexicanos, tomados de anuncios públicos.</p>
 
   <section class="verdict">
-    <p style="margin:0 0 8px"><span class="badge out">Local</span> <strong>Ningún anuncio de 40–60 m² sobre esas avenidas cabe en $13,000.</strong></p>
+    <p style="margin:0 0 8px"><span class="badge out">Avenida</span> <strong>Sobre García Lavín y Paseo Norte sigue sin haber un local de 40–60 m² en $13,000.</strong></p>
+    <p style="margin:0 0 8px;color:var(--muted)">En la segunda vuelta, sin exigir avenida, sí hay espacios activos dentro del presupuesto. Los más útiles para la clínica son dos oficinas de planta baja en Montebello, de 45 m², a <strong style="color:#fff">$11,200</strong>, y una oficina de 40 m² dentro de una casa-oficina, a <strong style="color:#fff">$10,000 más $1,000 de mantenimiento</strong>.</p>
     <p style="margin:0;color:var(--muted)">El piso de renta en García Lavín y Paseo Norte, para ese tamaño, está entre <strong style="color:#fff">$16,500 y $20,000</strong> antes de sumar IVA y, en plazas, mantenimiento. En San Ramón Norte la mediana publicada ronda <strong style="color:#fff">$430 a $447 por m² al mes</strong>: un local de 40 m² sale cerca de $17,200 y uno de 50 m² cerca de $21,500, sin IVA. Para entrar en $13,000 con 50 m² haría falta cerca de $260/m², unos 40% debajo de esa mediana. Eso aparece en oficinas interiores o en otras colonias, no en el frente de estas avenidas.</p>
     <div class="grid">
       <div class="stat"><span>Mejor local, si pueden esperar</span><b>$16,500 + IVA</b>50 m² · Paseo Norte · entrega oct–nov 2026</div>
@@ -120,6 +122,109 @@ function getClinicaMeridaNorteHTML() {
       <div class="stat"><span>Casas dentro de $15,000</span><b>6 fichas</b>Townhouses y una privada chica</div>
     </div>
   </section>
+
+  <h2>Más cerca del presupuesto, activos hoy</h2>
+  <p class="note">Segunda búsqueda el 25 de octubre de 2026, en calles internas de Montebello, San Ramón Norte y Santa Gertrudis Copó. Cada ficha se abrió en EasyBroker, CDG o el sitio de la agencia. Solo entran las que siguen publicadas.</p>
+
+  <article class="card">
+    <div class="card head">
+      <div>
+        <h3><span class="badge fit">En presupuesto</span><span class="badge zone">Montebello</span> Oficina en planta baja, 45 m²</h3>
+        <p class="meta">Recepción, cubículo con baño y bodega · 1 estacionamiento · agua y basura incluidas · a unos 3 minutos del Hospital Faro · EB-WR5769</p>
+      </div>
+      <div class="price">$11,200</div>
+    </div>
+    ${shots('ofi-faro', 'Oficina de 45 m² en planta baja, Montebello')}
+    <ul>
+      <li>Es el espacio activo que mejor combina tamaño y renta. No es un local de aparador: es oficina en planta baja, con acceso para pacientes.</li>
+      <li>La luz y el internet corren por cuenta del inquilino. Pide aval con propiedad en Mérida, o un segundo depósito.</li>
+      <li>Hay que confirmar altura libre, acceso del equipo y si el reglamento acepta oxígeno. Una cámara monoplaza cabe en 45 m² si el cubículo y la recepción se usan juntos.</li>
+    </ul>
+    <p class="sources"><a href="https://www.easybroker.com/es-mx/listings/oficina-en-renta-norte-de-merida-montebello">EasyBroker EB-WR5769</a></p>
+  </article>
+
+  <article class="card">
+    <div class="card head">
+      <div>
+        <h3><span class="badge fit">En presupuesto</span><span class="badge zone">Montebello</span> Oficina en esquina, planta baja, 45 m²</h3>
+        <p class="meta">Recepción, área privada, cocineta y baño · 1 estacionamiento · aires inverter · mantenimiento, agua y basura incluidos · EB-WN7674</p>
+      </div>
+      <div class="price">$11,200</div>
+    </div>
+    ${shots('ofi-esq', 'Oficina en esquina de 45 m² en Montebello')}
+    <ul>
+      <li>Segunda ficha, también activa y también en $11,200. Trae dos minisplits, cortinas, parrilla y calentador. El anuncio la describe en esquina.</li>
+      <li>Al visitar, confirmar que no sea el mismo espacio que EB-WR5769. Los identificadores y las fotos son distintos.</li>
+    </ul>
+    <p class="sources"><a href="https://www.easybroker.com/es-mx/listings/oficina-en-esquina-en-renta-en-montebello-merida-planta-baja-montebello">EasyBroker EB-WN7674</a></p>
+  </article>
+
+  <article class="card">
+    <div class="card head">
+      <div>
+        <h3><span class="badge fit">En presupuesto</span><span class="badge zone">Montebello</span> Oficinas dentro de una casa, la de 40 m²</h3>
+        <p class="meta">Planta alta · sin muebles · 1 cajón · aire, agua, luz y basura incluidos · recepción, cocina y sala de juntas compartidas · mantenimiento $1,000</p>
+      </div>
+      <div class="price">$11,000</div>
+    </div>
+    ${shots('tierra', 'Casa de oficinas en Montebello, Tierra Linda')}
+    <ul>
+      <li>La renta de la oficina 4 es $10,000. Con el mantenimiento de planta alta ($1,000) el total es $11,000. Las otras oficinas del mismo inmueble miden 5, 10, 12 y 17 m²: no alcanzan para la cámara.</li>
+      <li>El anuncio dice que ya tienen licencia de funcionamiento para oficinas. Para una clínica hay que preguntar si ese permiso cubre servicios de salud y oxígeno, o si hay que tramitar otro.</li>
+      <li>Las fotos son del inmueble, no de un local suelto en la calle.</li>
+    </ul>
+    <p class="sources"><a href="https://www.tierra-linda.com/p/8422675-Oficina-en-Renta-en-Fraccionamiento-Montebello-Montebello">Tierra Linda</a></p>
+  </article>
+
+  <article class="card">
+    <div class="card head">
+      <div>
+        <h3><span class="badge near">Mil pesos arriba</span><span class="badge zone">Montebello</span> Local de 40 m² sobre Avenida 10</h3>
+        <p class="meta">Fachada de cristal · medio baño · 2 estacionamientos · planta a pie de calle · EB-WU5285</p>
+      </div>
+      <div class="price">$14,000</div>
+    </div>
+    ${shots('loc-av10', 'Local de 40 m² sobre Avenida 10, Montebello')}
+    <ul>
+      <li>Es el local comercial activo más cercano al tamaño pedido. Avenida 10 no es García Lavín, y la renta queda $1,000 arriba del tope.</li>
+      <li>El anuncio lo ofrece para consultorio, oficina o showroom. Sigue publicado.</li>
+    </ul>
+    <p class="sources"><a href="https://www.easybroker.com/es-mx/listings/renta-de-local-comercial-en-colonia-montebello">EasyBroker EB-WU5285</a></p>
+  </article>
+
+  <article class="card">
+    <div class="card head">
+      <div>
+        <h3><span class="badge near">Chico y en piso 2</span><span class="badge zone">San Ramón Norte</span> Local en plaza, Cámara de Comercio</h3>
+        <p class="meta">34 m² (4 × 8.30) · baño adentro · aire · estacionamiento · piso 2 · EB-TB5293</p>
+      </div>
+      <div class="price">$8,000</div>
+    </div>
+    ${shots('cdg-cam', 'Local de 34 m² en plaza sobre Cámara de Comercio')}
+    <ul>
+      <li>Es el más barato que sigue activo en la zona. Está debajo de 40 m² y en segundo piso: la cámara y el acceso de pacientes hay que medirlos antes de tomarlo en serio.</li>
+      <li>El anuncio de CDG, revisado hoy, dice $8,000, un mes de depósito y contrato de $8,000. Cámara de Comercio sí es avenida; el ahorro viene del tamaño y del piso, no de estar escondido.</li>
+    </ul>
+    <p class="sources"><a href="https://www.inmobiliariacdg.com/property/local-en-renta-en-plaza-comercial-sobre-avenida-camara-de-comercio">CDG Buildings EB-TB5293</a></p>
+  </article>
+
+  <h2>Casas que siguen activas</h2>
+  <p class="note">Se volvió a abrir cada ficha. Estas no dicen despublicada ni “ya no está disponible”.</p>
+
+  <article class="card">
+    <div class="card head">
+      <div>
+        <h3><span class="badge fit">Activa</span><span class="badge zone">Montebello</span> Townhouse amueblado, 123 m²</h3>
+        <p class="meta">2 recámaras con baño · cochera para 2 autos · paneles · internet, basura y áreas comunes incluidos · a un minuto del Periférico · EB-JZ3877</p>
+      </div>
+      <div class="price">$15,000</div>
+    </div>
+    ${shots('th-estrena', 'Townhouse amueblado de 123 m² en Montebello')}
+    <ul>
+      <li>Ficha nueva respecto a la primera búsqueda, y sigue publicada. No acepta mascotas. Aval con propiedad en Yucatán. El anuncio la clasifica como departamento, pero la distribución es de townhouse.</li>
+    </ul>
+    <p class="sources"><a href="https://www.easybroker.com/es-mx/listings/estrena-este-hermoso-townhouse-en-montebello">EasyBroker EB-JZ3877</a></p>
+  </article>
 
   <h2>Locales para la clínica</h2>
   <p class="note">Una cámara monoplaza con recepción, vestidor y una sala de espera corta cabe en 40–60 m² si el local es abierto y la altura libre pasa de 2.5 m. Conviene planta baja (peso del equipo y acceso de pacientes), cajones para pacientes, y confirmación por escrito de que el reglamento acepta servicios de salud y el manejo de oxígeno. El uso de suelo y el permiso municipal se revisan antes de firmar.</p>
@@ -226,7 +331,7 @@ function getClinicaMeridaNorteHTML() {
   <article class="card">
     <div class="card head">
       <div>
-        <h3><span class="badge fit">En rango</span><span class="badge zone">Montebello</span> Townhouse en privada, 2020</h3>
+        <h3><span class="badge gone">Despublicada el 21 de octubre</span><span class="badge zone">Montebello</span> Townhouse en privada, 2020</h3>
         <p class="meta">77.42 m² · terreno 93.52 m² · 1 recámara · 1 baño y medio · 1 estacionamiento · alberca o patio · mantenimiento incluido · EB-VS9858</p>
       </div>
       <div class="price">$13,500</div>
@@ -242,7 +347,7 @@ function getClinicaMeridaNorteHTML() {
   <article class="card">
     <div class="card head">
       <div>
-        <h3><span class="badge fit">En rango</span><span class="badge zone">Montebello</span> Townhouse amueblado con paneles</h3>
+        <h3><span class="badge fit">Sigue activa</span><span class="badge zone">Montebello</span> Townhouse amueblado con paneles</h3>
         <p class="meta">90 m² · 2 recámaras · 2 baños y medio · 2 estacionamientos techados · áreas comunes · EB-RY7856 y EB-WL9347</p>
       </div>
       <div class="price">$15,000</div>
@@ -258,7 +363,7 @@ function getClinicaMeridaNorteHTML() {
   <article class="card">
     <div class="card head">
       <div>
-        <h3><span class="badge fit">En rango</span><span class="badge zone">Montebello</span> Townhouse, Calle 23, con paneles</h3>
+        <h3><span class="badge gone">Despublicada el 12 de octubre</span><span class="badge zone">Montebello</span> Townhouse, Calle 23, con paneles</h3>
         <p class="meta">75 m² · 2 recámaras · 2 baños · 2 cajones techados · internet y basura incluidos · EB-VB1139</p>
       </div>
       <div class="price">$15,000</div>
@@ -274,7 +379,7 @@ function getClinicaMeridaNorteHTML() {
   <article class="card">
     <div class="card head">
       <div>
-        <h3><span class="badge fit">En rango</span><span class="badge zone">Santa Gertrudis Copó</span> Townhouse cerca del puente del Periférico</h3>
+        <h3><span class="badge gone">Despublicada el 14 de octubre</span><span class="badge zone">Santa Gertrudis Copó</span> Townhouse cerca del puente del Periférico</h3>
         <p class="meta">130 m² · 2 recámaras con vestidor · jardín · cochera techada para 2 autos · paneles · cisterna · EB-WR0931</p>
       </div>
       <div class="price">$15,000</div>
@@ -306,7 +411,7 @@ function getClinicaMeridaNorteHTML() {
   <article class="card">
     <div class="card head">
       <div>
-        <h3><span class="badge fit">En rango</span><span class="badge zone">San Ramón Norte</span> Townhouse amueblado</h3>
+        <h3><span class="badge fit">Sigue activa</span><span class="badge zone">San Ramón Norte</span> Townhouse amueblado</h3>
         <p class="meta">2 recámaras · 1 baño y medio · 2 cajones techados · seguridad de lunes a sábado · EB-QR0749</p>
       </div>
       <div class="price">$15,000</div>
@@ -322,7 +427,7 @@ function getClinicaMeridaNorteHTML() {
   <article class="card">
     <div class="card head">
       <div>
-        <h3><span class="badge near">Revisar si es coto</span><span class="badge zone">Montebello</span> Casa, 3 minutos de Altabrisa</h3>
+        <h3><span class="badge gone">Ya no está disponible</span><span class="badge zone">Montebello</span> Casa, 3 minutos de Altabrisa</h3>
         <p class="meta">2 recámaras · 3 baños · terraza · cochera para 2 autos · mascotas permitidas · EB-WD3588</p>
       </div>
       <div class="price">$15,000</div>
@@ -345,7 +450,7 @@ function getClinicaMeridaNorteHTML() {
         <td>El coto más claro de San Ramón Norte. Mantenimiento incluido. Mascotas a considerar. $1,000 arriba.</td>
       </tr>
       <tr>
-        <td><a href="https://inmobitaria.easybroker.com/property/casa-santa-gertrudis-copo-dos-recamaras-santa-gertrudis-copo">Casa en Copó, a unas cuadras de García Lavín</a><br>EB-VE1965 · 150 m² · 2 recámaras en planta baja${shots('copo-casa', 'Casa de dos recámaras en Santa Gertrudis Copó')}</td>
+        <td><a href="https://inmobitaria.easybroker.com/property/casa-santa-gertrudis-copo-dos-recamaras-santa-gertrudis-copo">Casa en Copó, a unas cuadras de García Lavín</a><br>EB-VE1965 · 150 m² · 2 recámaras en planta baja. La ficha ya no está publicada.${shots('copo-casa', 'Casa de dos recámaras en Santa Gertrudis Copó')}</td>
         <td>$16,000</td>
         <td>Acepta perros pequeños y doble depósito. No dice caseta.</td>
       </tr>
@@ -361,7 +466,7 @@ function getClinicaMeridaNorteHTML() {
   <article class="card">
     <div class="card head">
       <div>
-        <h3><span class="badge zone">Montebello</span> Departamento amueblado con caseta</h3>
+        <h3><span class="badge gone">Ya no está disponible</span><span class="badge zone">Montebello</span> Departamento amueblado con caseta</h3>
         <p class="meta">1 recámara · mantenimiento de $1,600 incluido en la renta · caseta, portón, roof garden, alberca y salón de juegos</p>
       </div>
       <div class="price">$13,500</div>
