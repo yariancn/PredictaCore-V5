@@ -25,6 +25,7 @@ const { getTitanInternalHTML } = require('./titan-internal');
 const { getPlaygroundHTML } = require('./playground');
 const { getTerminosHTML, getPrivacidadHTML } = require('./legal');
 const { getProductIntelHTML } = require('./product-intel-page');
+const { getClinicaMeridaNorteHTML } = require('./clinica-merida-norte');
 const {
     createProductIntelJob,
     getProductIntelJob,
@@ -1005,6 +1006,12 @@ app.get('/api/product-intel/:jobId', (req, res) => {
         error: job.error,
         result: job.status === 'ready' ? job.result : null,
     });
+});
+
+app.get(['/reportes/clinica-merida-norte', '/clinica-merida-norte'], (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.set('X-Robots-Tag', 'noindex, nofollow');
+    res.type('html').send(getClinicaMeridaNorteHTML());
 });
 
 app.get('/terms', (req, res) => res.send(getTerminosHTML()));
